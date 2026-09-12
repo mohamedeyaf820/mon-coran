@@ -8,15 +8,3 @@ html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
 }
-
-@media (max-width: 640px) {
-  html body .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card .qc-list-card__reference.qc-list-card__reference {
-    flex: 0 0 34px !important;
-    width: 34px !important;
-    min-width: 34px !important;
-    height: 34px !important;
-    min-height: 34px !important;
-    padding: 0 !important;
-  }
-}

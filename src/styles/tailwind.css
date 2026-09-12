@@ -8605,14 +8605,6 @@ button:focus:not(:focus-visible) {
     letter-spacing: 0.02em;
 }
 
-.home-hero-title {
-    font-size: 1.12rem !important;
-    font-weight: 700 !important;
-    color: var(--text-primary) !important;
-    margin-bottom: 0.8rem !important;
-    letter-spacing: 0.03em;
-}
-
 .home-hero-desc {
     font-size: 0.92rem !important;
     color: var(--text-secondary) !important;

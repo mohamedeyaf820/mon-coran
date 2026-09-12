@@ -2,6 +2,20 @@ import { test, expect } from "@playwright/test";
 
 test.use({ serviceWorkers: "allow" });
 
+test.beforeEach(async ({ page }, testInfo) => {
+  const failures = [];
+  page.on('requestfailed', (request) => failures.push({ url: request.url(), error: request.failure()?.errorText }));
+  page.on('pageerror', (error) => failures.push({ error: error.message }));
+  page.on('console', (message) => { if (message.type() === 'error') failures.push({ console: message.text() }); });
+  testInfo._qaFailures = failures;
+});
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log('PWA_FAILURES', page.url(), JSON.stringify(testInfo._qaFailures));
+    await testInfo.attach('network-errors', { body: JSON.stringify(testInfo._qaFailures, null, 2), contentType: 'application/json' });
+  }
+});
+
 test("PWA: the visited app shell reloads while offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
@@ -45,6 +59,7 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
   });
   expect(offlineShell.ok).toBe(true);
   expect(offlineShell.html).toContain('id="root"');
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
 });
@@ -78,6 +93,7 @@ test("PWA: a visited surah keeps its Quran text offline", async ({ page, context
   await page.waitForTimeout(500);
 
   await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
   await expect(firstAyah).toBeVisible({ timeout: 30_000 });
   await expect(firstAyah).toContainText(onlineText);
 });
@@ -125,4 +141,17 @@ test("PWA: an explicitly downloaded recitation is served while offline", async (
       cachedResponse.status === 200 ||
       cachedResponse.type === "opaque",
   ).toBe(true);
+
+  const ranges = await page.evaluate(async (url) => {
+    const results = [];
+    for (const range of ['bytes=0-999', 'bytes=-3']) {
+      const response = await fetch(url, { headers: { Range: range } });
+      results.push({ status: response.status, bytes: (await response.arrayBuffer()).byteLength, range: response.headers.get('Content-Range') });
+    }
+    return results;
+  }, audioUrl);
+  expect(ranges).toEqual([
+    { status: 206, bytes: 10, range: 'bytes 0-9/10' },
+    { status: 206, bytes: 3, range: 'bytes 7-9/10' },
+  ]);
 });

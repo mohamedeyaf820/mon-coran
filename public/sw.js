@@ -8,7 +8,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v19";
+const CACHE_NAME = "mushaf-plus-v20";
 const API_CACHE_NAME = "mushaf-plus-api-v6";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {
@@ -202,16 +202,18 @@ function isTrustedAudioRequest(request, url) {
 }
 
 async function createPartialResponse(response, rangeHeader) {
+  // Opaque cross-origin responses cannot be sliced. Preserve their body.
+  if (response.type === "opaque" || response.status !== 200) return response;
+  const matches = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader.trim());
+  // Ignore unsupported/malformed ranges without consuming the full response.
+  if (!matches || (!matches[1] && !matches[2])) return response;
   try {
-    const buffer = await response.arrayBuffer();
+    const buffer = await response.clone().arrayBuffer();
     const total = buffer.byteLength;
-    const matches = /bytes=(\d+)-(\d+)?/.exec(rangeHeader);
-    if (!matches) {
-      return response;
-    }
-    const start = parseInt(matches[1], 10);
-    const end = matches[2] ? parseInt(matches[2], 10) : total - 1;
-    if (start >= total || end >= total || start > end) {
+    const suffix = !matches[1];
+    const start = suffix ? Math.max(0, total - Number(matches[2])) : Number(matches[1]);
+    const end = suffix || !matches[2] ? total - 1 : Math.min(Number(matches[2]), total - 1);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start >= total || start > end) {
       return new Response(null, {
         status: 416,
         statusText: "Range Not Satisfiable",
@@ -239,18 +241,14 @@ async function createPartialResponse(response, rangeHeader) {
 }
 
 async function audioCacheFirst(request) {
-  const cache = await caches.open(AUDIO_CACHE_NAME);
-  const cached =
-    (await cache.match(request, { ignoreVary: true })) ||
-    (await cache.match(request.url, { ignoreVary: true }));
-
-  if (cached) {
-    const rangeHeader = request.headers.get("range");
-    if (rangeHeader) {
-      return createPartialResponse(cached, rangeHeader);
+  try {
+    const cache = await caches.open(AUDIO_CACHE_NAME);
+    const cached = await cache.match(request, { ignoreVary: true });
+    if (cached) {
+      const rangeHeader = request.headers.get("range");
+      return rangeHeader ? createPartialResponse(cached, rangeHeader) : cached;
     }
-    return cached;
-  }
+  } catch { /* Storage unavailable must not prevent online streaming. */ }
 
   try {
     // Streaming stays network-only until the user explicitly downloads it.
@@ -402,7 +400,12 @@ async function putBounded(cache, request, response, cacheName) {
  */
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+  // Static shell files are identical with or without the Origin header.
+  // Vary: Origin must not hide files fetched during worker installation.
+  const url = new URL(request.url);
+  const immutableShell = cacheName === CACHE_NAME &&
+    url.origin === self.location.origin && /^\/(assets|fonts)\//.test(url.pathname);
+  const cached = await cache.match(request, { ignoreVary: immutableShell });
   if (cached) return cached;
 
   try {

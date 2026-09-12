@@ -10,7 +10,7 @@ export default {
   },
   footer: {
     verseRef: 'الذاريات · ٥١:٥٦',
-    credit: 'اقرأ، استمع، احفظ',
+    credit: 'اقرأ، استمع، تدبّر',
   },
   duas: {
     categoriesLabel: 'فئات الأدعية',
@@ -37,6 +37,7 @@ export default {
     voiceStart: 'البحث باستخدام صوتك', voiceStop: 'إيقاف الاستماع',
     voiceStartShort: 'إملاء', voiceStopShort: 'إيقاف', voiceListening: 'أستمع إليك… تحدث الآن.',
     voiceErrors: {
+      secureContext: 'افتح التطبيق عبر عنوان HTTPS لاستخدام الميكروفون.',
       unsupported: 'البحث الصوتي غير مدعوم في هذا المتصفح.',
       permissionDenied: 'اسمح بالوصول إلى الميكروفون لاستخدام البحث الصوتي.',
       noSpeech: 'لم يتم اكتشاف كلام. اضغط على الميكروفون للمحاولة مجددًا.',
@@ -87,6 +88,7 @@ export default {
     scheherazadeWarshHint: 'شهرزاد الجديد، متوافق مع رواية ورش',
   },
   audio: {
+    playbackBlocked: 'أوقف المتصفح التشغيل. اضغط على تشغيل للاستئناف.',
     play: 'تشغيل', pause: 'إيقاف', next: 'الآية التالية', prev: 'الآية السابقة',
     repeat: 'تكرار', playSurah: 'تشغيل السورة كاملة', close: 'إغلاق',
     repeatOn: 'تكرار الآية مفعّل', repeatOff: 'تكرار الآية معطّل',

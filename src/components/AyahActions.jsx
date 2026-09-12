@@ -111,6 +111,9 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
   const [noteText, setNoteText] = useState("");
   const [copied, setCopied] = useState(false);
   const [audioError, setAudioError] = useState(false);
+  const mutationPendingRef = useRef(false);
+  const mutationVersionRef = useRef(0);
+  const noteVersionRef = useRef(0);
   const audioErrTimerRef = useRef(null);
   const copiedTimerRef = useRef(null);
   const playlistTimerRef = useRef(null);
@@ -145,8 +148,10 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
   useEffect(() => {
     let mounted = true;
-    isBookmarked(surah, ayah).then((v) => { if (mounted) setBookmarked(v); });
-    getNote(surah, ayah).then((note) => { if (mounted) setNoteText(note?.text || ""); });
+    const version = mutationVersionRef.current;
+    const noteVersion = noteVersionRef.current;
+    isBookmarked(surah, ayah).then((v) => { if (mounted && version === mutationVersionRef.current) setBookmarked(v); });
+    getNote(surah, ayah).then((note) => { if (mounted && noteVersion === noteVersionRef.current) setNoteText(note?.text || ""); });
     return () => { mounted = false; };
   }, [ayah, surah]);
 
@@ -241,38 +246,45 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     [lang],
   );
 
-  const toggleBookmark = async () => {
-    if (bookmarked) {
-      await removeBookmark(surah, ayah);
-      setBookmarked(false);
-      emitToast(
-        "info",
-        t("toast.bookmarkRemoved", lang),
-      );
-      return;
-    }
+  const reportStorageError = () => emitToast("error", toastText(
+    "Impossible d’enregistrer cette modification. Réessayez.",
+    "تعذّر حفظ التغيير. حاول مرة أخرى.",
+    "Unable to save this change. Try again.",
+  ));
 
-    await addBookmark(surah, ayah);
-    setBookmarked(true);
-    emitToast(
-      "success",
-      t("toast.bookmarkAdded", lang),
-    );
+  const toggleBookmark = async () => {
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    mutationVersionRef.current += 1;
+    try {
+      const saved = bookmarked
+        ? await removeBookmark(surah, ayah)
+        : await addBookmark(surah, ayah);
+      if (!saved) { reportStorageError(); return; }
+      setBookmarked(!bookmarked);
+      emitToast(bookmarked ? "info" : "success", t(bookmarked ? "toast.bookmarkRemoved" : "toast.bookmarkAdded", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
+    }
   };
 
   const handleSaveNote = async () => {
     const cleanText = noteText.trim();
-    if (!cleanText) {
+    if (!cleanText) { closePanels(); return; }
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    noteVersionRef.current += 1;
+    try {
+      if (!(await saveNote(surah, ayah, cleanText))) { reportStorageError(); return; }
       closePanels();
-      return;
+      emitToast("success", t("toast.noteSaved", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
     }
-
-    await saveNote(surah, ayah, cleanText);
-    closePanels();
-    emitToast(
-      "success",
-      t("toast.noteSaved", lang),
-    );
   };
 
   const playAyah = () => {
@@ -1004,19 +1016,23 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                   type="button"
                   className="ayah-actions__playlist-btn"
                   onClick={async () => {
-                    await addAyahToPlaylist(
-                      playlist.id,
-                      surah,
-                      ayah,
-                      ayahData?.text || "",
-                    );
-                    setPlaylistAdded(true);
-                    closePanels();
-                    emitToast(
-                      "success",
-                      t("toast.ayahAddedToPlaylist", lang),
-                    );
-                    window.setTimeout(() => setPlaylistAdded(false), 1800);
+                    if (mutationPendingRef.current) return;
+                    mutationPendingRef.current = true;
+                    try {
+                      const saved = await addAyahToPlaylist(
+                        playlist.id, surah, ayah, ayahData?.text || "",
+                      );
+                      if (!saved) { reportStorageError(); return; }
+                      setPlaylistAdded(true);
+                      closePanels();
+                      emitToast("success", t("toast.ayahAddedToPlaylist", lang));
+                      clearTimeout(playlistTimerRef.current);
+                      playlistTimerRef.current = window.setTimeout(() => setPlaylistAdded(false), 1800);
+                    } catch {
+                      reportStorageError();
+                    } finally {
+                      mutationPendingRef.current = false;
+                    }
                   }}
                 >
                   <Music size={13} />
@@ -1086,7 +1102,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <textarea
             id={`${sheetIdBase}-note`}
             value={noteText}
-            onChange={(event) => setNoteText(event.target.value)}
+            onChange={(event) => { noteVersionRef.current += 1; setNoteText(event.target.value); }}
             placeholder={t("notes.placeholder", lang)}
             className="ayah-actions__textarea"
             rows={4}

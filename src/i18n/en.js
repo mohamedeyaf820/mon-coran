@@ -37,6 +37,7 @@ export default {
     voiceStart: 'Search with your voice', voiceStop: 'Stop listening',
     voiceStartShort: 'Dictate', voiceStopShort: 'Stop', voiceListening: 'Listening… Speak now.',
     voiceErrors: {
+      secureContext: 'Open the app using an HTTPS address to use the microphone.',
       unsupported: 'Voice search is not supported by this browser.',
       permissionDenied: 'Allow microphone access to use voice search.',
       noSpeech: 'No speech was detected. Tap the microphone to try again.',
@@ -88,6 +89,7 @@ export default {
     scheherazadeWarshHint: 'Scheherazade New, compatible with Warsh riwaya',
   },
   audio: {
+    playbackBlocked: 'The browser interrupted playback. Press Play to resume.',
     play: 'Play', pause: 'Pause', next: 'Next Ayah', prev: 'Previous Ayah',
     repeat: 'Repeat', playSurah: 'Play Entire Surah', close: 'Close',
     repeatOn: 'Repeat enabled', repeatOff: 'Repeat disabled',

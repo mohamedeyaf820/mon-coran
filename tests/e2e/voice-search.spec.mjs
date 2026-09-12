@@ -1,4 +1,43 @@
 import { expect, test } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+
+test.beforeEach(async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => localStorage.setItem('mushaf-plus-settings', JSON.stringify({ skipSplashAnimation: true, lang: 'fr' })));
+});
+
+test('dictation retries after a microphone error without an end event', async ({ page }) => {
+  await page.addInitScript(() => {
+    window.__recognitions = [];
+    window.SpeechRecognition = class {
+      constructor() { window.__recognitions.push(this); }
+      start() { this.onstart?.(); }
+      stop() { this.onend?.(); }
+      abort() {}
+    };
+  });
+  await page.goto('/surah/1');
+  await openSearch(page);
+  const dialog = page.getByRole('dialog', { name: /Recherche/ });
+  const start = dialog.getByRole('button', { name: /Rechercher avec votre voix/ });
+  await start.click();
+  await page.evaluate(() => {
+    const old = window.__recognitions[0];
+    window.__lateResult = old.onresult;
+    old.onerror({ error: 'audio-capture' });
+  });
+  await expect(dialog.getByRole('alert')).toContainText(/microphone/);
+  await expect(dialog.locator('.search-pro__voice-status')).toBeHidden();
+  await start.click();
+  await page.evaluate(() => {
+    window.__lateResult({ results: [[{ transcript: 'ancienne session' }]] });
+    const current = window.__recognitions[1];
+    current.onresult({ results: [[{ transcript: 'الرحمن' }]] });
+    current.onend();
+  });
+  await expect(dialog.getByRole('textbox').first()).toHaveValue('الرحمن');
+  await expect(dialog.getByRole('alert')).toHaveCount(0);
+});
 
 async function openSearch(page) {
   const viewportWidth = page.viewportSize()?.width || 1280;

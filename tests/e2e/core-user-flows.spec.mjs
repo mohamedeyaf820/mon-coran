@@ -43,6 +43,13 @@ async function patchDeterministicAudio(page) {
   await page.addInitScript(() => {
     window.__playedAudioUrls = [];
 
+    // A mocked play promise must not race native CDN errors from a real src.
+    const sources = new WeakMap();
+    Object.defineProperty(HTMLMediaElement.prototype, 'src', {
+      configurable: true,
+      get() { return sources.get(this) || ''; },
+      set(value) { sources.set(this, String(value)); },
+    });
     HTMLMediaElement.prototype.load = function patchedLoad() {};
     HTMLMediaElement.prototype.play = function patchedPlay() {
       const url = String(this.src || "");

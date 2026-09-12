@@ -65,17 +65,16 @@ export default function DuasPage() {
     noResults: lang === "ar" ? "لا توجد نتائج مطابقة" : lang === "fr" ? "Aucune invocation trouvée" : "No results found",
   };
 
-  const copyDua = (text) => {
-    navigator.clipboard.writeText(text).then(() => {
-      window.dispatchEvent(
-        new CustomEvent("quran-toast", {
-          detail: {
-            type: "success",
-            message: lang === "ar" ? "تم النسخ بنجاح!" : lang === "fr" ? "Invocation copiée !" : "Copied successfully!",
-          },
-        }),
-      );
-    });
+  const copyDua = async (text) => {
+    let type = "success";
+    let message = lang === "ar" ? "تم النسخ بنجاح!" : lang === "fr" ? "Invocation copiée !" : "Copied successfully!";
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      type = "error";
+      message = lang === "ar" ? "تعذّر النسخ. يمكنك تحديد النص ونسخه يدويًا." : lang === "fr" ? "Impossible de copier. Vous pouvez sélectionner le texte et le copier manuellement." : "Unable to copy. You can select the text and copy it manually.";
+    }
+    window.dispatchEvent(new CustomEvent("quran-toast", { detail: { type, message } }));
   };
 
   const filteredDuas = useMemo(() => {

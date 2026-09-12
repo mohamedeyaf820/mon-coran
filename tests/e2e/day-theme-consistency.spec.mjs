@@ -216,8 +216,9 @@ test("clair: les onglets et la fermeture de la sidebar restent lisibles", async 
 
   expect(closeStyle.backgroundImage).toBe("none");
   expect(contrastRatio(closeStyle.color, closeStyle.backgroundColor)).toBeGreaterThanOrEqual(3);
-  expect(closeStyle.iconWidth).toBeGreaterThanOrEqual(16);
-  expect(closeStyle.iconHeight).toBeGreaterThanOrEqual(16);
+  // Chromium can report a nominal 16px SVG as 15.999998px after compositing.
+  expect(closeStyle.iconWidth).toBeGreaterThanOrEqual(15.9);
+  expect(closeStyle.iconHeight).toBeGreaterThanOrEqual(15.9);
 });
 
 test("clair: la recherche utilise un backdrop translucide et une surface lisible", async ({ page }) => {

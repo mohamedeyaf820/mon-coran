@@ -41,7 +41,9 @@ async function prepareReader(page, verseCount = 50) {
         configurable: true,
         value: false,
       });
-      return Promise.reject(new DOMException("blocked", "NotAllowedError"));
+      // This scenario exercises successful rapid playback. A permission
+      // rejection now correctly leaves the transport paused (covered elsewhere).
+      return Promise.resolve();
     };
   }, { key: SETTINGS_KEY });
 

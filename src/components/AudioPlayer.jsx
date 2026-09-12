@@ -342,6 +342,10 @@ export default function AudioPlayer() {
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);
       }
+      if (error?.name === "NotAllowedError") {
+        setAudioError(t("audio.playbackBlocked", lang));
+        return;
+      }
       markReciterUnavailable(reciter, error);
       failedRecitersRef.current.add(reciter);
       const switched = await tryAutoReciterFailover();

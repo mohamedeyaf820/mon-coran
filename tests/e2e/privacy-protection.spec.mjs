@@ -82,7 +82,9 @@ async function readRawPrivateRecords(page) {
 }
 
 test("privacy: protected mode migrates records and locks after reload", async ({ page }) => {
+  test.slow(); // Multiple 600,000-iteration key derivations and reloads.
   await page.addInitScript(() => {
+    if (localStorage.getItem("mushaf-plus-settings")) return;
     localStorage.setItem(
       "mushaf-plus-settings",
       JSON.stringify({

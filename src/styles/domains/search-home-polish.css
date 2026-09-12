@@ -2548,50 +2548,10 @@ html[data-theme="dark"] .search-pro__close:hover {
     display: none;
 }
 
-.app-root .app-view-home .home-hero-shell,
-.app-root[data-view="home"] .home-hero-shell {
-    border-radius: 16px;
-    border-color: var(--border);
-    background: var(--bg-primary);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
-}
-
-.app-root .app-view-home .home-hero-shell > .pointer-events-none,
-.app-root[data-view="home"] .home-hero-shell > .pointer-events-none {
-    opacity: 0.38;
-}
-
-.app-root .app-view-home .home-hero-layout,
-.app-root[data-view="home"] .home-hero-layout {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: stretch;
-}
-
-@media (min-width: 980px) {
-    .app-root .app-view-home .home-hero-layout,
-    .app-root[data-view="home"] .home-hero-layout {
-        grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.78fr);
-    }
-}
-
 .app-root .app-view-home .home-hero-main,
 .app-root[data-view="home"] .home-hero-main {
     justify-content: center;
     min-height: 0;
-}
-
-.app-root .app-view-home .home-hero-title,
-.app-root[data-view="home"] .home-hero-title {
-    font-size: clamp(1.5rem, 3.5vw, 2rem) !important;
-    line-height: 1 !important;
-    color: var(--text-primary, #14231d);
-    letter-spacing: -0.01em;
-}
-
-.app-root .app-view-home .home-brand-ar,
-.app-root[data-view="home"] .home-brand-ar {
-    font-size: clamp(1.45rem, 2.4vw, 2.25rem);
-    color: color-mix(in srgb, var(--primary, #0b6235) 35%, transparent);
 }
 
 .app-root .app-view-home .home-hero-copy,
@@ -2610,28 +2570,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     box-shadow: none;
 }
 
-.app-root .app-view-home .home-cta-primary,
-.app-root .app-view-home .home-cta-secondary,
-.app-root[data-view="home"] .home-cta-primary,
-.app-root[data-view="home"] .home-cta-secondary {
-    min-height: 44px;
-    border-radius: 12px;
-}
-
-.app-root .app-view-home .home-cta-primary,
-.app-root[data-view="home"] .home-cta-primary {
-    background: var(--primary, #0b6235) !important;
-    color: #ffffff !important;
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.15);
-}
-
-.app-root .app-view-home .home-cta-secondary,
-.app-root[data-view="home"] .home-cta-secondary {
-    border: 1px solid var(--border, #d6e4df);
-    background: var(--bg-secondary, #f5faf7) !important;
-    color: var(--text-primary, #14231d) !important;
-}
-
 .app-root .app-view-home .home-hero-side,
 .app-root[data-view="home"] .home-hero-side {
     min-height: 0;
@@ -2641,43 +2579,6 @@ html[data-theme="dark"] .search-pro__close:hover {
 .app-root[data-view="home"] .home-info-panel {
     display: block;
     height: 100%;
-}
-
-.app-root .app-view-home .home-info-card,
-.app-root[data-view="home"] .home-info-card {
-    height: 100%;
-    min-height: 240px;
-    border-radius: 14px;
-    border-color: var(--border, #d6e4df);
-    background: var(--bg-secondary, #f5faf7);
-    box-shadow: none;
-}
-
-.app-root .app-view-home .home-info-card > div:first-child,
-.app-root[data-view="home"] .home-info-card > div:first-child {
-    border-color: color-mix(in srgb, var(--border, #d6e4df) 70%, transparent);
-}
-
-.app-root .app-view-home .home-info-card > div:first-child button,
-.app-root[data-view="home"] .home-info-card > div:first-child button {
-    border-bottom-width: 0 !important;
-}
-
-.app-root .app-view-home .home-info-card button,
-.app-root[data-view="home"] .home-info-card button {
-    min-height: 44px;
-}
-
-.app-root[data-view="home"] .home-info-card [role="tab"] {
-    padding: 0.55rem 0.7rem;
-    color: var(--text-secondary) !important;
-    font-size: 0.78rem !important;
-}
-
-.app-root[data-view="home"] .home-info-card [role="tab"][aria-selected="true"] {
-    background: color-mix(in srgb, var(--primary) 11%, transparent) !important;
-    color: var(--primary) !important;
-    box-shadow: inset 0 -2px var(--primary);
 }
 
 .app-root .app-view-home .home-content-zone,
@@ -2698,37 +2599,11 @@ html[data-theme="dark"] .search-pro__close:hover {
     background: transparent !important;
 }
 
-[data-theme="dark"] .app-root .app-view-home .home-hero-shell,
-[data-theme="dark"] .app-root[data-view="home"] .home-hero-shell {
-    border-color: var(--theme-border);
-    background: var(--bg-primary);
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
-}
-
-[data-theme="dark"] .app-root .app-view-home .home-info-card,
-[data-theme="dark"] .app-root[data-view="home"] .home-info-card,
 [data-theme="dark"] .app-root .app-view-home .home-content-zone > section > div:first-child,
 [data-theme="dark"] .app-root[data-view="home"] .home-content-zone > section > div:first-child {
     border-color: var(--theme-border);
     background: var(--bg-secondary) !important;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-[data-theme="dark"] .app-root .app-view-home .home-hero-title,
-[data-theme="dark"] .app-root[data-view="home"] .home-hero-title {
-    color: var(--theme-text);
-}
-
-[data-theme="dark"] .app-root .app-view-home .home-cta-primary,
-[data-theme="dark"] .app-root[data-view="home"] .home-cta-primary {
-    background: var(--theme-primary) !important;
-    color: var(--theme-text-inverse) !important;
-}
-
-[data-theme="dark"] .app-root .app-view-home .home-cta-secondary,
-[data-theme="dark"] .app-root[data-view="home"] .home-cta-secondary {
-    background: rgba(255, 255, 255, 0.065) !important;
-    color: var(--theme-text) !important;
 }
 
 [data-theme="dark"] .app-root .app-view-home .home-hero-copy,
@@ -2759,12 +2634,6 @@ html[data-theme="dark"] .search-pro__close:hover {
         gap: 0.6rem;
     }
 
-    .app-root .app-view-home .home-hero-shell,
-    .app-root[data-view="home"] .home-hero-shell {
-        border-radius: 14px;
-        padding: 0.6rem;
-    }
-
     .app-root .app-view-home .home-brand-row,
     .app-root[data-view="home"] .home-brand-row {
         align-items: center;
@@ -2788,12 +2657,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root[data-view="home"] .home-hero-kicker-row > * {
         padding: 0.3rem 0.55rem;
         font-size: 0.62rem;
-    }
-
-    .app-root .app-view-home .home-hero-title,
-    .app-root[data-view="home"] .home-hero-title {
-        font-size: 1.2rem !important;
-        line-height: 1.08 !important;
     }
 
     .app-root .app-view-home .home-hero-copy,
@@ -2838,9 +2701,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 
-.app-root .app-view-home .home-hero-shell,
 .app-root .app-view-home .home-content-section,
-.app-root[data-view="home"] .home-hero-shell,
 .app-root[data-view="home"] .home-content-section {
     letter-spacing: 0;
 }

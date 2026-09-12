@@ -9,7 +9,7 @@ export default {
   },
   footer: {
     verseRef: 'Adh-Dhariyat · 51:56',
-    credit: 'Lis, écoute, mémorise',
+    credit: 'Lis, écoute, comprends',
   },
   duas: {
     categoriesLabel: 'Catégories d’invocations',
@@ -36,6 +36,7 @@ export default {
     voiceStart: 'Rechercher avec votre voix', voiceStop: 'Arrêter l’écoute',
     voiceStartShort: 'Dicter', voiceStopShort: 'Arrêter', voiceListening: 'Je vous écoute… Parlez maintenant.',
     voiceErrors: {
+      secureContext: 'Ouvrez l’application avec une adresse HTTPS pour utiliser le microphone.',
       unsupported: 'La recherche vocale n’est pas prise en charge par ce navigateur.',
       permissionDenied: 'Autorisez l’accès au microphone pour utiliser la recherche vocale.',
       noSpeech: 'Aucune parole détectée. Appuyez sur le micro pour réessayer.',
@@ -87,6 +88,7 @@ export default {
     scheherazadeWarshHint: 'Scheherazade New, compatible riwaya Warsh',
   },
   audio: {
+    playbackBlocked: 'Le navigateur a interrompu la lecture. Appuyez sur Lecture pour reprendre.',
     play: 'Lecture', pause: 'Pause', next: 'Verset suivant', prev: 'Verset précédent',
     repeat: 'Répéter', playSurah: 'Lire la sourate entière', close: 'Fermer',
     repeatOn: 'Répétition activée', repeatOff: 'Répétition désactivée',

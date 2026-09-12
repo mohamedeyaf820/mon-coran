@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import vm from "node:vm";
 
 const sw = fs.readFileSync(new URL("../public/sw.js", import.meta.url), "utf8");
 
@@ -33,11 +34,20 @@ test("service worker bounds runtime caches and awaits cache writes", () => {
   assert.match(sw, /\[API_CACHE_NAME\]: 200/);
   assert.match(sw, /async function putBounded/);
   assert.doesNotMatch(sw, /(?<!await )cache\.put\(/);
-  assert.doesNotMatch(
-    sw,
-    /response\.type\s*===\s*["']opaque["']/,
-    "opaque responses must not be persisted as successful content",
-  );
+});
+
+test('runtime cache does not persist opaque network responses', async () => {
+  let writes = 0;
+  const opaque = { status: 0, type: 'opaque' };
+  const context = {
+    URL, Response, AbortController, setTimeout, clearTimeout,
+    self: { location: { origin: 'https://qa.test' }, addEventListener() {} },
+    caches: { open: async () => ({ match: async () => null, put: async () => { writes++; } }) },
+    fetch: async () => opaque,
+  };
+  vm.runInNewContext(sw, context);
+  assert.equal(await context.cacheFirst(new Request('https://qa.test/assets/test.js'), 'mushaf-plus-v20'), opaque);
+  assert.equal(writes, 0);
 });
 
 test("service worker does not precache optional PWA gallery screenshots", () => {

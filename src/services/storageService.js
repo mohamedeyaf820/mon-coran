@@ -9,6 +9,7 @@ import {
   dbDelete,
   dbGetAll,
   dbReplaceStores,
+  dbCompareAndSet,
 } from "./dbService.js";
 import {
   encryptData,
@@ -59,25 +60,39 @@ async function writePrivateRecord(storeName, schema, value) {
   return key !== undefined;
 }
 
+async function migratePrivateRecord(storeName, schema, raw, value) {
+  const record = parseRecordOrNull(schema, value);
+  if (!record) return false;
+  return dbCompareAndSet(storeName, record.id, raw, encodePrivateRecord(record));
+}
+
 async function readPrivateRecord(storeName, schema, key) {
   const raw = await dbGet(storeName, key);
   const decoded = decodePrivateRecord(schema, raw);
   if (decoded.record && decoded.needsMigration) {
-    await writePrivateRecord(storeName, schema, decoded.record);
+    await migratePrivateRecord(storeName, schema, raw, decoded.record);
+    const current = await dbGet(storeName, key);
+    return decodePrivateRecord(schema, current).record;
   }
   return decoded.record;
 }
 
 async function readAllPrivateRecords(storeName, schema) {
-  const rawRecords = await dbGetAll(storeName);
+  const rawRecords = await dbGetAll(storeName, { strict: true });
   const decoded = (Array.isArray(rawRecords) ? rawRecords : [])
-    .map((value) => decodePrivateRecord(schema, value))
+    .map((value) => ({ ...decodePrivateRecord(schema, value), raw: value }))
     .filter(({ record }) => Boolean(record));
-  await Promise.all(
-    decoded
-      .filter(({ needsMigration }) => needsMigration)
-      .map(({ record }) => writePrivateRecord(storeName, schema, record)),
-  );
+  const migrations = decoded.filter(({ needsMigration }) => needsMigration);
+  if (migrations.length) {
+    await Promise.all(
+      migrations.map(({ record, raw }) =>
+        migratePrivateRecord(storeName, schema, raw, record)),
+    );
+    const current = await dbGetAll(storeName, { strict: true });
+    return current
+      .map((value) => decodePrivateRecord(schema, value).record)
+      .filter(Boolean);
+  }
   return decoded.map(({ record }) => record);
 }
 
@@ -556,8 +571,8 @@ export async function readPrivateDataSnapshot() {
 export async function readRawPrivateDataSnapshot() {
   return {
     settings: localStorage.getItem(SETTINGS_KEY),
-    notes: await dbGetAll("notes"),
-    bookmarks: await dbGetAll("bookmarks"),
+    notes: await dbGetAll("notes", { strict: true }),
+    bookmarks: await dbGetAll("bookmarks", { strict: true }),
   };
 }
 

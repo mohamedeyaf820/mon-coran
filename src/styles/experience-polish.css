@@ -1,12 +1,3 @@
-html body .app-root[data-view="home"] .home-info-card {
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
-  border-radius: 1.15rem;
-  background:
-    linear-gradient(145deg, color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%), var(--bg-card)) !important;
-  box-shadow: 0 16px 38px color-mix(in srgb, var(--text-primary) 8%, transparent);
-}
-
 html body .app-root[data-view="home"] .home-quick-tabs {
   min-height: 3.15rem !important;
   padding: 0.35rem 0.45rem 0;
@@ -902,7 +893,6 @@ html body .app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 svg 
 }
 
 html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > *,
-html[data-theme="sepia"] body .app-root[data-view="home"] .home-info-card,
 html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
   border-color: color-mix(in srgb, var(--border) 76%, #a9782d 24%);
 }

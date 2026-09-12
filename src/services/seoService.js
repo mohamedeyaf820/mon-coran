@@ -9,7 +9,7 @@ const COPY = {
   fr: {
     homeTitle: "Coran en ligne — Lecture, écoute & Tajwid",
     homeDescription:
-      "Lisez, écoutez et mémorisez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh sur MushafPlus.",
+      "Lisez, écoutez et comprenez gratuitement le Saint Coran en ligne avec Tajwid, traductions et récitations Hafs et Warsh sur MushafPlus.",
     duasTitle: "Douas en arabe avec traduction",
     duasDescription:
       "Découvrez une sélection de douas en arabe avec traduction française et références.",
@@ -27,7 +27,7 @@ const COPY = {
   en: {
     homeTitle: "Quran online — Read, listen & learn Tajweed",
     homeDescription:
-      "Read, listen to and memorize the Holy Quran online with Tajweed, translations, Hafs and Warsh recitations on MushafPlus.",
+      "Read, listen to and understand the Holy Quran online with Tajweed, translations, Hafs and Warsh recitations on MushafPlus.",
     duasTitle: "Duas in Arabic with translation",
     duasDescription:
       "Explore a selection of duas with Arabic text, translation and references.",
@@ -45,7 +45,7 @@ const COPY = {
   ar: {
     homeTitle: "القرآن الكريم — قراءة واستماع وأحكام التجويد",
     homeDescription:
-      "اقرأ واستمع واحفظ القرآن الكريم عبر الإنترنت مع أحكام التجويد والترجمات وروايتي حفص وورش على MushafPlus.",
+      "اقرأ واستمع وتدبّر القرآن الكريم عبر الإنترنت مع أحكام التجويد والترجمات وروايتي حفص وورش على MushafPlus.",
     duasTitle: "أدعية بالنص العربي والترجمة",
     duasDescription: "مجموعة من الأدعية بالنص العربي والترجمة والمراجع.",
     page: "صفحة",

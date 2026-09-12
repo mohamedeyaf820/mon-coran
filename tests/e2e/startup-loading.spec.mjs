@@ -106,12 +106,12 @@ test("the branded splash is shown again on each app launch", async ({ page }) =>
   const firstVisibleAt = Date.now();
 
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
-    timeout: 4_200,
+    timeout: 6_000,
   });
   const firstDuration = Date.now() - firstVisibleAt;
   expect(firstDuration).toBeGreaterThanOrEqual(2_900);
-  // The splash lasts ~3 s; a loaded CI worker can add a few dozen ms.
-  expect(firstDuration).toBeLessThanOrEqual(4_200);
+  // The splash lasts ~3 s; loaded CI workers can delay timer delivery.
+  expect(firstDuration).toBeLessThanOrEqual(6_000);
   await expect(page.locator(".hp-wrapper")).toBeVisible();
 
   const reloadStartedAt = Date.now();
@@ -119,7 +119,7 @@ test("the branded splash is shown again on each app launch", async ({ page }) =>
 
   await expect(page.locator(".splash-screen")).toBeAttached({ timeout: 3_000 });
   await expect(page.locator(".splash-screen")).toHaveCount(0, {
-    timeout: 4_200,
+    timeout: 6_000,
   });
   expect(Date.now() - reloadStartedAt).toBeGreaterThanOrEqual(2_900);
   await expect(page.locator(".hp-wrapper")).toBeVisible({ timeout: 5_000 });

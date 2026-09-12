@@ -465,7 +465,6 @@ html body .app-root[data-view="home"] .reciter-card__copy {
     max-height: 100dvh !important;
   }
 
-  .app-root .home-hero-shell,
   .app-root .duas-hero {
     padding-block: 0.75rem;
   }
@@ -1685,11 +1684,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 }
 
 /* Verse list density -------------------------------------------------------
-   The verse toolbar must scale independently from the Quran text. A 44px
-   control is comfortable on a tablet, but it consumes almost half of a 319px
-   row once the reference, play, bookmark and overflow actions are present.
-   Keep the icon itself quiet and progressively grow the hit target with the
-   viewport. */
+   The verse toolbar keeps the same 44px targets on every device.
+   Only icon size and gaps adapt to the compact viewport. */
 @media (max-width: 640px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-verse-by-verse-view {
@@ -1705,7 +1701,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top {
-    min-height: 34px !important;
+    min-height: 44px !important;
     gap: 0.35rem !important;
     margin-bottom: 0.38rem !important;
   }
@@ -1722,10 +1718,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__reference.qc-list-card__reference,
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top .ayah-actions button {
-    width: 34px !important;
-    min-width: 34px !important;
-    height: 34px !important;
-    min-height: 34px !important;
     padding: 0 !important;
     border-radius: 0.62rem !important;
   }
@@ -1797,16 +1789,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
-  html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__reference.qc-list-card__reference,
-  html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top .ayah-actions button {
-    width: 40px !important;
-    min-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
-  }
-
   html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card__top .ayah-actions button svg {
     width: 0.78rem !important;

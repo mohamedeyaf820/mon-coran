@@ -57,9 +57,19 @@ function isChunkLoadErrorLike(errorLike) {
   );
 }
 
-function tryRecoverFromChunkLoad(errorLike) {
-  if (chunkReloadTriggered || !isChunkLoadErrorLike(errorLike)) return;
+async function tryRecoverFromChunkLoad(errorLike) {
+  if (navigator.onLine === false || chunkReloadTriggered || !isChunkLoadErrorLike(errorLike)) return;
   chunkReloadTriggered = true;
+
+  // The online hint can remain true in a dead zone. HEAD bypasses the
+  // GET-only service worker, so a cached shell cannot authorize its deletion.
+  try {
+    const probe = await fetch("/index.html", { method: "HEAD", cache: "no-store" });
+    if (!probe.ok || navigator.onLine === false) return;
+  } catch {
+    chunkReloadTriggered = false;
+    return;
+  }
 
   let alreadyReloaded = false;
   try {
@@ -172,8 +182,8 @@ if ("serviceWorker" in navigator) {
           });
         worker.postMessage({ type: "CACHE_SHELL_URLS", urls: [...urls] });
       };
-      navigator.serviceWorker.ready.then(() => setTimeout(shareLoadedShell, 800)).catch(() => {});
-      navigator.serviceWorker.addEventListener("controllerchange", () => setTimeout(shareLoadedShell, 800));
+      navigator.serviceWorker.ready.then(shareLoadedShell).catch(() => {});
+      navigator.serviceWorker.addEventListener("controllerchange", shareLoadedShell);
       return;
     }
 

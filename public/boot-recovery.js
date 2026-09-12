@@ -42,8 +42,16 @@
     }, 15000);
   }
 
-  function cleanupAndReload() {
-    if (hasAlreadyRetried()) return;
+  async function cleanupAndReload() {
+    // An unavailable optional chunk must never erase a usable offline shell.
+    if (navigator.onLine === false || hasAlreadyRetried()) return;
+    try {
+      // HEAD bypasses our GET-only worker; a cached shell is not proof of connectivity.
+      var probe = await fetch("/index.html", { method: "HEAD", cache: "no-store" });
+      if (!probe.ok || navigator.onLine === false || hasAlreadyRetried()) return;
+    } catch (_) {
+      return;
+    }
     markRetried();
 
     var tasks = [];

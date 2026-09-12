@@ -350,17 +350,20 @@ export async function downloadSurahForReciter(
       const urlCandidates = getAudioUrlCandidates({ item, normalized });
       let existing = null;
       for (const url of urlCandidates) {
-        existing = await cache.match(url);
+        existing = await cache.match(url, { ignoreVary: true });
         if (existing) break;
       }
       let downloaded = Boolean(existing);
       if (!existing) {
         for (const url of urlCandidates) {
           try {
-            const response = await fetch(url, {
-              mode: "no-cors",
-              signal: controller.signal,
-            });
+            // Prefer a readable response: Safari needs byte ranges when
+            // seeking offline. Keep opaque fallback for CDNs without CORS.
+            const response = await fetch(url, { signal: controller.signal })
+              .catch((error) => {
+                if (controller.signal.aborted) throw error;
+                return fetch(url, { mode: "no-cors", signal: controller.signal });
+              });
             if (response.ok || response.type === "opaque") {
               await cache.put(url, response.clone());
               downloaded = true;

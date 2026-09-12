@@ -50,7 +50,7 @@ test("reader and mobile settings keep a compact, labelled hierarchy", () => {
 test("feature-level accessibility labels use the active locale", () => {
   const expectations = [
     ["DuasPage.jsx", /t\(["']duas\.categoriesLabel["'],\s*lang\)/],
-    ["Footer.jsx", /aria-label=\{t\(["']footer\.verseRef["'],\s*lang\)\}/],
+    ["Footer.jsx", /aria-label=\{verseReference\}/],
     ["Quran/AyahMarker.jsx", /t\(["']quran\.sajda["'],\s*lang\)/],
   ];
 

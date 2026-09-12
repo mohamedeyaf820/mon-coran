@@ -10,14 +10,16 @@ async function openSettings(page) {
 }
 
 test("privacy control deletes settings, notes, bookmarks and caches", async ({ page }) => {
-  await page.addInitScript(() => {
+  await page.goto("/");
+  await page.evaluate(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({ lang: "fr", theme: "light", showHome: true, skipSplashAnimation: true }));
     localStorage.setItem("mushaf-reading-history", "seed");
   });
-  await page.goto("/");
+  await page.reload();
+  await expect(page.locator(".app-view-home")).toBeVisible();
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 2);
+      const request = indexedDB.open("mushafplus");
       request.onupgradeneeded = () => {
         const nextDb = request.result;
         for (const name of ["cache", "notes", "bookmarks", "wird", "history", "playlists"]) {
@@ -44,14 +46,27 @@ test("privacy control deletes settings, notes, bookmarks and caches", async ({ p
   await page.getByRole("tab", { name: "Confidentialité" }).click();
   await page.getByTestId("delete-local-data").click();
   await expect(page.getByText("Supprimer toutes les données ?")).toBeVisible();
-  await page.getByRole("button", { name: "Tout supprimer" }).click();
-  await page.waitForFunction(() => localStorage.length === 0);
-  const state = await page.evaluate(async () => ({
-    localKeys: Object.keys(localStorage),
-    cacheNames: await caches.keys(),
-    databases: typeof indexedDB.databases === "function" ? await indexedDB.databases() : [],
-  }));
-  expect(state.localKeys).toEqual([]);
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: "domcontentloaded" }),
+    page.getByRole("button", { name: "Tout supprimer" }).click(),
+  ]);
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  const state = await page.evaluate(async () => {
+    const db = await new Promise((resolve, reject) => {
+      const request = indexedDB.open("mushafplus");
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    });
+    const counts = await Promise.all(["notes", "bookmarks", "playlists"].map((name) => new Promise((resolve, reject) => {
+      if (!db.objectStoreNames.contains(name)) { resolve(0); return; }
+      const request = db.transaction(name).objectStore(name).count();
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error);
+    })));
+    db.close();
+    return { history: localStorage.getItem("mushaf-reading-history"), cacheNames: await caches.keys(), counts };
+  });
+  expect(state.history).toBeNull();
   expect(state.cacheNames).not.toContain("mushafplus-test-cache");
-  expect(state.databases.map((item) => item.name)).not.toContain("mushafplus");
+  expect(state.counts).toEqual([0, 0, 0]);
 });

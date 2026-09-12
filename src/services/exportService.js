@@ -1,6 +1,7 @@
+import { getAllPlaylists, importPlaylistRecord } from "./playlistService.js";
 /**
  * Export / Import service – JSON format.
- * Exports: bookmarks, notes, settings.
+ * Exports: bookmarks, notes, playlists, settings.
  */
 
 import {
@@ -196,13 +197,15 @@ export async function exportData() {
   const bookmarks = await getAllBookmarks();
   const notes = await getAllNotes();
   const settings = getSettings();
+  const playlists = await getAllPlaylists();
 
   const payload = {
     app: 'MushafPlus',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     bookmarks,
     notes,
+    playlists,
     settings,
   };
 
@@ -255,15 +258,21 @@ export async function importData(jsonString) {
     if (await importNoteRecord(note)) importedNotes += 1;
   }
 
+  let importedPlaylists = 0;
+  for (const playlist of Array.isArray(data.playlists) ? data.playlists : []) {
+    if (await importPlaylistRecord(playlist)) importedPlaylists += 1;
+  }
+
   // Import settings (merge)
   if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
     const current = getSettings();
-    saveSettings({ ...current, ...data.settings });
+    if (!saveSettings({ ...current, ...data.settings })) throw new Error("Unable to restore settings");
   }
 
   return {
     bookmarks: importedBookmarks,
     notes: importedNotes,
+    playlists: importedPlaylists,
     settingsRestored: !!(data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
   };
 }

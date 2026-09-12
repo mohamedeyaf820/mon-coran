@@ -25,6 +25,7 @@ import { parseInitialRoute } from "../hooks/useUrlSync";
 import { getSurahAyahCount } from "../data/surahs";
 import { loadAudioService } from "../services/loadAudioService";
 import {
+  LOCAL_DATA_DELETION_EVENT,
   PRIVACY_BEFORE_LOCK_EVENT,
   PRIVACY_BEFORE_ROTATION_EVENT,
 } from "../services/privacyEvents";
@@ -560,12 +561,23 @@ export function AppProvider({ children }) {
     };
   });
 
+  const persistenceSuspendedRef = useRef(false);
+  useEffect(() => {
+    const suspend = (event) => {
+      persistenceSuspendedRef.current = event.detail?.cancelled !== true;
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    };
+    window.addEventListener(LOCAL_DATA_DELETION_EVENT, suspend);
+    return () => window.removeEventListener(LOCAL_DATA_DELETION_EVENT, suspend);
+  }, []);
+
   const flushSettings = useCallback(() => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
-    if (persistentSettingsRef.current) {
+    if (!persistenceSuspendedRef.current && persistentSettingsRef.current) {
       saveSettings(persistentSettingsRef.current);
     }
   }, []);
@@ -573,7 +585,7 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveSettings(persistentSettingsRef.current);
+      if (!persistenceSuspendedRef.current) saveSettings(persistentSettingsRef.current);
       saveTimerRef.current = null;
     }, 500);
     return () => {

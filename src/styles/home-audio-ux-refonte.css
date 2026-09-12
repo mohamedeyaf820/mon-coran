@@ -274,9 +274,7 @@ html.dark .app-root > .mp-header :is(.mp-header__sub, .mp-header__kicker, .mp-he
   display: none !important;
 }
 
-.home-hero-shell,
-.home-content-section,
-.home-info-card {
+.home-content-section {
   border-color: color-mix(in srgb, var(--theme-border, rgba(148, 163, 184, 0.28)) 70%, transparent);
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 92%, transparent)) !important;
@@ -284,12 +282,8 @@ html.dark .app-root > .mp-header :is(.mp-header__sub, .mp-header__kicker, .mp-he
     0 18px 52px rgba(10, 24, 18, 0.12);
 }
 
-html[data-theme="dark"] .home-hero-shell,
-html.dark .home-hero-shell,
 html[data-theme="dark"] .home-content-section,
-html.dark .home-content-section,
-html[data-theme="dark"] .home-info-card,
-html.dark .home-info-card {
+html.dark .home-content-section {
   background:
     linear-gradient(180deg, rgba(18, 28, 24, 0.94), rgba(10, 18, 16, 0.92)) !important;
   border-color: rgba(134, 157, 143, 0.2);
@@ -297,64 +291,6 @@ html.dark .home-info-card {
     0 24px 70px rgba(0, 0, 0, 0.38);
 }
 
-.home-hero-shell {
-  border-radius: var(--home-surface-radius);
-  overflow: clip;
-  position: relative;
-  background:
-    radial-gradient(circle at 12% 8%, rgba(var(--theme-primary-rgb, 11, 98, 53), 0.14), transparent 34%),
-    radial-gradient(circle at 94% 18%, rgba(212, 168, 32, 0.12), transparent 30%),
-    linear-gradient(145deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 96%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 90%, transparent)) !important;
-}
-
-.home-hero-shell::after {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  pointer-events: none;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
-}
-
-.home-hero-layout {
-  grid-template-columns: minmax(0, 1.08fr) minmax(340px, 0.72fr);
-  align-items: stretch;
-}
-
-.home-brand-ar {
-  font-size: 0 !important;
-  min-height: 1.5rem;
-}
-
-.home-brand-ar::before {
-  content: "\FDFD";
-  font-size: var(--ts-xl);
-  line-height: 1;
-}
-
-
-
-.home-hero-title {
-  letter-spacing: 0;
-  text-wrap: balance;
-}
-
-.home-hero-copy-clean {
-  color: color-mix(in srgb, var(--theme-text, #111827) 70%, var(--theme-text-muted, #64748b)) !important;
-}
-
-
-
-.home-cta-primary,
-.home-cta-secondary {
-  border-radius: var(--r-md-lg);
-  min-height: 48px;
-  letter-spacing: 0;
-  box-shadow: 0 12px 28px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.16);
-}
-
-.home-cta-primary:hover,
-.home-cta-secondary:hover,
 .hp-card:hover,
 .home-reciter-card:hover,
 .reciter-card:hover,
@@ -362,7 +298,6 @@ html.dark .home-info-card {
   transform: translateY(-2px);
 }
 
-.home-hero-shell button,
 .home-content-toolbar button,
 .hp-card button,
 .reciter-card button,
@@ -641,8 +576,7 @@ html.dark [data-reciter-card="true"] {
 
 .audio-player-modal button,
 .mp-audio-player button,
-.home-content-section button,
-.home-hero-shell button {
+.home-content-section button {
   outline-offset: 3px;
 }
 
@@ -654,23 +588,9 @@ html.dark [data-reciter-card="true"] {
 .audio-player-modal button:focus-visible,
 .mp-audio-player button:focus-visible,
 .home-content-section button:focus-visible,
-.home-hero-shell button:focus-visible,
 .hp-card:focus-visible,
 .reciter-card button:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--theme-primary, #0b6235) 72%, white 28%);
-}
-
-html[data-theme="dark"] .home-hero-shell,
-html.dark .home-hero-shell {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(var(--theme-primary-rgb, 11, 98, 53), 0.22), transparent 35%),
-    radial-gradient(circle at 92% 18%, rgba(212, 168, 32, 0.12), transparent 32%),
-    linear-gradient(145deg, rgba(17, 29, 25, 0.96), rgba(8, 15, 13, 0.94)) !important;
-}
-
-html[data-theme="dark"] .home-hero-copy-clean,
-html.dark .home-hero-copy-clean {
-  color: rgba(226, 232, 226, 0.76) !important;
 }
 
 html[data-theme="dark"] .mp-audio-player,
@@ -701,10 +621,6 @@ html.dark .audio-player-modal__surface {
 
   .app-root > .mp-header .mp-header__network {
     display: none !important;
-  }
-
-  .home-hero-layout {
-    grid-template-columns: 1fr;
   }
 
   .home-content-toolbar {
@@ -776,11 +692,6 @@ html.dark .audio-player-modal__surface {
     padding-block: 0.75rem calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem);
   }
 
-  .home-hero-shell {
-    border-radius: var(--r-xl);
-    padding: var(--space-4);
-  }
-
   .home-hero-actions > button {
     width: 100%;
     justify-content: center;
@@ -790,10 +701,6 @@ html.dark .audio-player-modal__surface {
     position: relative;
     top: auto;
     padding: 0.65rem;
-  }
-
-  .home-hero-layout {
-    gap: var(--space-4);
   }
 
   .home-content-toolbar > * {
@@ -854,10 +761,6 @@ html.dark .audio-player-modal__surface {
 @media (max-width: 420px) {
   :root {
     --touch-target: 44px;
-  }
-
-  .home-hero-shell {
-    padding-inline: 0.9rem;
   }
 
   .mp-player-mobile-meta {
@@ -952,36 +855,8 @@ html.dark .audio-player-modal__surface {
   display: inline-flex !important;
 }
 
-
-.home-hero-shell {
-  padding: clamp(1.05rem, 2.2vw, 1.85rem);
-}
-
-.home-hero-layout {
-  gap: clamp(1.1rem, 2vw, 1.8rem);
-}
-
-.home-hero-title {
-  font-size: clamp(2rem, 1.28rem + 2.6vw, 3.25rem) !important;
-  line-height: 0.98 !important;
-  font-weight: 900 !important;
-}
-
-.home-hero-copy-clean {
-  max-width: 60ch !important;
-  font-size: clamp(0.94rem, 0.86rem + 0.22vw, 1.04rem) !important;
-  line-height: 1.68 !important;
-}
-
 .home-hero-actions {
   margin-top: clamp(1.05rem, 2vw, 1.45rem);
-}
-
-.home-cta-primary,
-.home-cta-secondary {
-  min-height: 3.15rem !important;
-  padding-inline: clamp(1rem, 2vw, 1.35rem);
-  font-size: var(--ts-base) !important;
 }
 
 .home-content-section {
@@ -1078,15 +953,6 @@ html.dark .audio-player-modal__surface {
 
   .app-root > .mp-header .mp-header__riwaya-mobile {
     display: inline-flex !important;
-  }
-
-  .home-hero-title {
-    font-size: clamp(1.8rem, 9vw, 2.42rem) !important;
-  }
-
-  .home-hero-copy-clean {
-    font-size: var(--ts-base) !important;
-    line-height: 1.58 !important;
   }
 
   .home-content-section {
@@ -2935,12 +2801,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root :is(.home-hero-shell, .home-content-section) {
     padding: clamp(0.58rem, 2.5vw, 0.78rem);
-  }
-
-  html body .app-root .app-view-home .home-hero-title {
-    font-size: clamp(1.12rem, 5vw, 1.38rem) !important;
-    line-height: 1.08 !important;
-    text-wrap: pretty;
   }
 
   html body .app-root .app-view-home .home-hero-logo {

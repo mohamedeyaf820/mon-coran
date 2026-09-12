@@ -568,6 +568,11 @@ function TajweedHighlightWords({
             const rects = getTextRangeRects(entry.node, entry.start, entry.end);
             if (rectsContainPoint(rects, x, y)) return entry;
         }
+        // Some engines round Arabic glyph ranges differently from the word
+        // box. Keep the guide usable when the pointer is visibly over a word
+        // that contains one or more coloured rules.
+        const wordRect = wordEl.getBoundingClientRect();
+        if (rectsContainPoint([wordRect], x, y)) return list[0] || null;
         return null;
     };
 
@@ -637,12 +642,20 @@ function TajweedHighlightWords({
                         ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
                         : null;
                     const nextWord = words[wordIndex + 1];
+                    const firstRule = word.parts
+                        .flatMap((part) => part.rules || [])[0];
+                    const firstRuleLabel = firstRule
+                        ? getRuleLabel(firstRule.ruleId, lang, ruleMetadata.get(firstRule.ruleId))
+                        : null;
 
                     return (
                         <React.Fragment key={wordIndex}>
                             <span
                                 className={word.isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
                                 data-tajwid-word={wordIndex}
+                                data-tajwid-name={firstRuleLabel?.name}
+                                data-tajwid-desc={firstRuleLabel?.desc}
+                                data-tajwid-color={firstRule ? resolveRuleColor(firstRule.ruleId, tajweedColors) : undefined}
                                 onClick={!word.isMarker
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}

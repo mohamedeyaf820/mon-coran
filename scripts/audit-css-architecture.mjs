@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { glob } from "glob";
 import postcss from "postcss";
@@ -114,7 +114,8 @@ if (contentFiles.length === 0) {
 const rows = [];
 const parsedCssFiles = [];
 for (const cssFile of cssFiles) {
-  const raw = await readFile(cssFile, "utf8");
+  // Compare canonical source bytes on Windows (CRLF) and CI (LF).
+  const raw = (await readFile(cssFile, "utf8")).replace(/\r\n/g, "\n");
   const relativeFile = path.relative(process.cwd(), cssFile);
   parsedCssFiles.push({ file: relativeFile, css: raw });
   const duplicateRules = findExactDuplicateRules(raw);
@@ -132,6 +133,7 @@ for (const cssFile of cssFiles) {
     retainedBytes: Buffer.byteLength(result?.css || ""),
     importantCount: raw.match(IMPORTANT_PATTERN)?.length || 0,
     rejectedCount: result?.rejected?.length || 0,
+    candidateSelectors: result?.rejected || [],
     duplicateCount: duplicateRules.count,
     duplicateBytes: duplicateRules.bytes,
     duplicateSelectors: duplicateRules.selectors,
@@ -181,6 +183,23 @@ console.log(
   `- Exact duplicate rules: ${totals.duplicateCount} (${formatKb(totals.duplicateBytes)})`,
 );
 console.log(`- Cross-file exact duplicate rules: ${crossFileDuplicates.length}`);
+
+// Candidates require runtime/visual verification before source removal.
+// Keep this opt-in: CI normally needs only the budget result.
+if (process.argv.includes("--report")) {
+  const reportPath = ".codex-artifacts/qa/css-maintenance.json";
+  await mkdir(path.dirname(reportPath), { recursive: true });
+  await writeFile(reportPath, JSON.stringify({
+    generatedAt: new Date().toISOString(),
+    warning: "Static candidates, not proof of unused CSS. Verify dynamic classes and rendered states before deleting.",
+    totals,
+    limits: LIMITS,
+    crossFileDuplicates,
+    files: [...rows].sort((a, b) =>
+      (b.sourceBytes - b.retainedBytes) - (a.sourceBytes - a.retainedBytes)),
+  }, null, 2) + "\n");
+  console.log(`[css-audit] Maintenance report: ${reportPath}`);
+}
 
 if (crossFileDuplicates.length > 0) {
   console.log("[css-audit] Cross-file exact duplicates");

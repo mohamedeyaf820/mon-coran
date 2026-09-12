@@ -667,10 +667,10 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
-test("verse list cards scale their controls and typography with the device", async ({ page }) => {
+test("verse list cards preserve touch targets while typography scales with the device", async ({ page }) => {
   for (const profile of [
-    { viewport: { width: 319, height: 698 }, control: 34, minArabic: 24.9, maxArabic: 29.1 },
-    { viewport: { width: 820, height: 920 }, control: 40, minArabic: 32, maxArabic: 40 },
+    { viewport: { width: 319, height: 698 }, control: 44, minArabic: 24.9, maxArabic: 29.1 },
+    { viewport: { width: 820, height: 920 }, control: 44, minArabic: 32, maxArabic: 40 },
   ]) {
     await openReader(page, profile.viewport);
     // The card controls mount with the verse window: measure once they are there.
@@ -720,12 +720,12 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(typographyTrigger?.height || 0).toBeGreaterThanOrEqual(39.9);
-  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(44.1);
   expect(verseCard?.width || 0).toBeLessThanOrEqual(390);
   expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
   expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(27);
@@ -878,12 +878,12 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(37.9);
   expect(homeLogo?.height || 0).toBeGreaterThanOrEqual(37.9);
-  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseReference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(versePlay?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(34.1);
+  expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseReference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(versePlay?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(verseBookmark?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(verseBookmark?.width || 0).toBeLessThanOrEqual(44.1);
   expect(verseCard?.width || 0).toBeLessThanOrEqual(280);
   expect(versePlayIcon?.width || 0).toBeLessThanOrEqual(12.1);
   expect(await fontSizePx(page, ".qc-list-card .qc-ayah-text-ar")).toBeGreaterThanOrEqual(24.9);
@@ -978,10 +978,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
   await openReader(page, viewport);
 
   const reference = await box(page, ".qc-list-card__reference");
-  expect(reference?.width || 0).toBeGreaterThanOrEqual(33.9);
-  expect(reference?.width || 0).toBeLessThanOrEqual(34.1);
-  expect(reference?.height || 0).toBeGreaterThanOrEqual(33.9);
-  expect(reference?.height || 0).toBeLessThanOrEqual(34.1);
+  expect(reference?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(reference?.width || 0).toBeLessThanOrEqual(44.1);
+  expect(reference?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(reference?.height || 0).toBeLessThanOrEqual(44.1);
 
   const visibleActionSizes = await page
     .locator(".qc-list-card__top .ayah-actions button")
@@ -995,10 +995,10 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     );
   expect(visibleActionSizes.length).toBeGreaterThanOrEqual(3);
   for (const action of visibleActionSizes) {
-    expect(action.width).toBeGreaterThanOrEqual(33.9);
-    expect(action.height).toBeGreaterThanOrEqual(33.9);
-    expect(action.width).toBeLessThanOrEqual(34.1);
-    expect(action.height).toBeLessThanOrEqual(34.1);
+    expect(action.width).toBeGreaterThanOrEqual(43.9);
+    expect(action.height).toBeGreaterThanOrEqual(43.9);
+    expect(action.width).toBeLessThanOrEqual(44.1);
+    expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
   const searchBtn = page.getByRole("button", { name: "Rechercher", exact: true }).last();

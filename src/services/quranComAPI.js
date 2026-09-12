@@ -27,15 +27,18 @@ function getMemoryCache(key) {
   return value;
 }
 
-function persistCache(key, data) {
-  dbSet(IDB_STORE, { key, data, ts: Date.now() })
-    .then(() =>
-      dbPruneByPrefix(IDB_STORE, IDB_PREFIX, {
-        maxEntries: 360,
-        maxAgeMs: CACHE_TTL,
-      }),
-    )
-    .catch(() => {});
+async function persistCache(key, data) {
+  try {
+    const savedKey = await dbSet(IDB_STORE, { key, data, ts: Date.now() });
+    if (savedKey === undefined) return false;
+    void dbPruneByPrefix(IDB_STORE, IDB_PREFIX, {
+      maxEntries: 360,
+      maxAgeMs: CACHE_TTL,
+    }).catch(() => {});
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 const VERSE_FIELDS = [
@@ -162,7 +165,7 @@ function refreshInBackground(url, cacheKey) {
     .then((json) => {
       if (json && typeof json === "object") {
         setMemoryCache(cacheKey, json);
-        persistCache(cacheKey, json);
+        void persistCache(cacheKey, json);
       }
     })
     .catch(()=>{})
@@ -242,7 +245,10 @@ async function fetchJson(url, signal) {
       }
 
       setMemoryCache(cacheKey, json);
-      persistCache(cacheKey, json);
+      // The visible Quran text is only considered loaded once its durable
+      // offline copy has settled. This also prevents an immediate reload from
+      // cancelling the IndexedDB transaction.
+      await persistCache(cacheKey, json);
       return json;
     } catch (error) {
       if (error?.name === "AbortError") {

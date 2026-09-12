@@ -36,6 +36,7 @@ test("la recherche unifiée reste simple sur un très petit écran", async ({ pa
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 319, height: 698 });
   await page.goto("/surah/63", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".qc-list-card").first()).toBeVisible({ timeout: 30_000 });
 
   await page.locator(".mp-header__more").click();
   await page.locator('.mp-header-menu__item[data-key="search"]').click();
@@ -163,10 +164,10 @@ test("le verset 53:4 conserve un flux arabe canonique et RTL sur mobile", async 
   // The compact reader row intentionally uses a 34px control on phones. It
   // remains above the WCAG 2.2 minimum target size while leaving enough room
   // for reference, play, bookmark and overflow on a 319px WebKit viewport.
-  expect(touchTarget.width).toBeGreaterThanOrEqual(33.9);
-  expect(touchTarget.height).toBeGreaterThanOrEqual(33.9);
-  expect(touchTarget.width).toBeLessThanOrEqual(34.1);
-  expect(touchTarget.height).toBeLessThanOrEqual(34.1);
+  expect(touchTarget.width).toBeGreaterThanOrEqual(43.9);
+  expect(touchTarget.height).toBeGreaterThanOrEqual(43.9);
+  expect(touchTarget.width).toBeLessThanOrEqual(44.1);
+  expect(touchTarget.height).toBeLessThanOrEqual(44.1);
 
   for (const width of [320, 375, 390, 430]) {
     await page.setViewportSize({ width, height: 844 });
@@ -399,8 +400,8 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
       const rect = element.getBoundingClientRect();
       return { width: rect.width, height: rect.height };
     });
-    expect(dimensions.width).toBeLessThanOrEqual(40);
-    expect(dimensions.height).toBeGreaterThanOrEqual(40);
+    expect(dimensions.width).toBeGreaterThanOrEqual(44);
+    expect(dimensions.height).toBeGreaterThanOrEqual(44);
   }
 
   const disclosure = page.locator(".srh-mobile-bar__disclosure");

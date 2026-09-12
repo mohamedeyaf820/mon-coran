@@ -18,6 +18,14 @@ function devWarn(...args) {
     }
 }
 
+function observeTransaction(transaction) {
+    const done = transaction.done;
+    // A request can reject before its caller reaches `transaction.done`.
+    // Observe it immediately to avoid leaking an unhandled AbortError.
+    void done.catch(() => {});
+    return done;
+}
+
 /**
  * Get (or initialize) the IndexedDB instance.
  */
@@ -49,6 +57,9 @@ export function getDB() {
                     if (db.objectStoreNames.contains('history')) db.deleteObjectStore('history');
                 }
             },
+        }).catch((error) => {
+            dbPromise = null;
+            throw error;
         });
     }
     return dbPromise;
@@ -60,7 +71,7 @@ export function getDB() {
 export async function dbGet(storeName, key) {
     try {
         const db = await getDB();
-        return db.get(storeName, key);
+        return await db.get(storeName, key);
     } catch (err) {
         devWarn(`DB read error in ${storeName}:`, err);
         return undefined;
@@ -71,10 +82,16 @@ export async function dbGet(storeName, key) {
  * Generic SET in a store.
  */
 export async function dbSet(storeName, value) {
+    let transactionDone;
     try {
         const db = await getDB();
-        return db.put(storeName, value);
+        const tx = db.transaction(storeName, 'readwrite');
+        transactionDone = observeTransaction(tx);
+        const key = await tx.store.put(value);
+        await transactionDone;
+        return key;
     } catch (err) {
+        await transactionDone?.catch(() => {});
         if (err?.name === 'QuotaExceededError') {
             devWarn(`IndexedDB quota exceeded in ${storeName}`);
             return undefined;
@@ -83,26 +100,56 @@ export async function dbSet(storeName, value) {
     }
 }
 
+/** Replace a record only when it has not changed since it was read. */
+export async function dbCompareAndSet(storeName, key, expected, value) {
+    let transactionDone;
+    try {
+        const db = await getDB();
+        const tx = db.transaction(storeName, 'readwrite');
+        transactionDone = observeTransaction(tx);
+        const current = await tx.store.get(key);
+        if (JSON.stringify(current) !== JSON.stringify(expected)) {
+            await transactionDone;
+            return false;
+        }
+        await tx.store.put(value);
+        await transactionDone;
+        return true;
+    } catch (err) {
+        await transactionDone?.catch(() => {});
+        devWarn(`DB conditional write error in ${storeName}:`, err);
+        return false;
+    }
+}
+
 /**
  * Generic DELETE from a store.
  */
 export async function dbDelete(storeName, key) {
+    let transactionDone;
     try {
         const db = await getDB();
-        return db.delete(storeName, key);
+        const tx = db.transaction(storeName, 'readwrite');
+        transactionDone = observeTransaction(tx);
+        await tx.store.delete(key);
+        await transactionDone;
+        return true;
     } catch (err) {
+        await transactionDone?.catch(() => {});
         devWarn(`DB delete error in ${storeName}:`, err);
+        return false;
     }
 }
 
 /**
  * Generic GET ALL from a store.
  */
-export async function dbGetAll(storeName) {
+export async function dbGetAll(storeName, { strict = false } = {}) {
     try {
         const db = await getDB();
-        return db.getAll(storeName);
+        return await db.getAll(storeName);
     } catch (err) {
+        if (strict) throw err;
         devWarn(`DB getAll error in ${storeName}:`, err);
         return [];
     }
@@ -155,11 +202,16 @@ export async function dbPruneByPrefix(
 
 /** Clear one store and report whether the operation really completed. */
 export async function dbClear(storeName) {
+    let transactionDone;
     try {
         const db = await getDB();
-        await db.clear(storeName);
+        const tx = db.transaction(storeName, 'readwrite');
+        transactionDone = observeTransaction(tx);
+        await tx.store.clear();
+        await transactionDone;
         return true;
     } catch (err) {
+        await transactionDone?.catch(() => {});
         devWarn(`DB clear error in ${storeName}:`, err);
         return false;
     }
@@ -169,9 +221,11 @@ export async function dbClear(storeName) {
 export async function dbReplaceStores(recordsByStore) {
     const storeNames = Object.keys(recordsByStore || {});
     if (!storeNames.length) return true;
+    let transactionDone;
     try {
         const db = await getDB();
         const transaction = db.transaction(storeNames, 'readwrite');
+        transactionDone = observeTransaction(transaction);
         for (const storeName of storeNames) {
             const store = transaction.objectStore(storeName);
             await store.clear();
@@ -179,9 +233,10 @@ export async function dbReplaceStores(recordsByStore) {
                 await store.put(record);
             }
         }
-        await transaction.done;
+        await transactionDone;
         return true;
     } catch (err) {
+        await transactionDone?.catch(() => {});
         devWarn('DB atomic store replacement failed:', err);
         return false;
     }
@@ -203,6 +258,7 @@ export default {
     getDB,
     dbGet,
     dbSet,
+    dbCompareAndSet,
     dbPruneByPrefix,
     dbDelete,
     dbGetAll,

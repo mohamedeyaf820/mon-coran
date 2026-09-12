@@ -10,61 +10,18 @@ import {
   resolveSurahStreamAyah,
 } from "../utils/surahStreamSync.js";
 
+import { isTrustedAudioUrl, ISLAMIC_FALLBACK_MAP } from "./audioSources.js";
+import { observeNativePlayback, preparePlaybackSession } from "./audioSession.js";
+
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
 const RETRY_DELAY = 800; // ms
-const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 
 function devLog(method, ...args) {
   if (import.meta.env?.DEV && typeof console !== "undefined") {
     console[method]?.(...args);
   }
 }
-
-function isTrustedAudioUrl(url) {
-  try {
-    const parsed = new URL(String(url || ""));
-    if (parsed.protocol !== "https:") return false;
-
-    const host = parsed.hostname.toLowerCase();
-    const path = parsed.pathname || "/";
-
-    if (host === "cdn.islamic.network") {
-      return path.startsWith("/quran/audio/") && /\.mp3$/i.test(path);
-    }
-    if (host === "everyayah.com" || host === "www.everyayah.com") {
-      return path.startsWith("/data/") && /\.mp3$/i.test(path);
-    }
-    if (host === "download.quranicaudio.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (host === "audio.qurancdn.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (host === "verses.quran.com") {
-      return /\.mp3$/i.test(path);
-    }
-    if (TRUSTED_MP3QURAN_HOST.test(host)) {
-      return /\.mp3$/i.test(path);
-    }
-
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-const ISLAMIC_FALLBACK_MAP = {
-  "ar.husary": "Husary_128kbps",
-  "ar.alafasy": "Alafasy_128kbps",
-  "ar.abdulbasitmurattal": "Abdul_Basit_Murattal_192kbps",
-  "ar.minshawi": "Minshawy_Murattal_128kbps",
-  "ar.shaatree": "Abu_Bakr_Ash-Shaatree_128kbps",
-  "ar.hudhaify": "Hudhaify_128kbps",
-  "ar.ajamy": "Ahmed_ibn_Ali_al-Ajamy_128kbps_ketaballah.net",
-  "ar.ghamadi": "Ghamadi_40kbps",
-  "ar.muaiqly": "MaherAlMuaiqly128kbps",
-};
 
 class AudioService {
   static isSurahStreamCdn(cdnType = "islamic") {
@@ -198,6 +155,7 @@ class AudioService {
     this.audio.addEventListener("stalled", this._boundStalled);
     this.audio.addEventListener("canplay", this._boundCanPlay);
     this.audio.addEventListener("playing", this._boundPlaying);
+    this._releaseNativePlayback = observeNativePlayback(this);
   }
 
   /* ── Build Audio URL ───────────────────────── */
@@ -540,6 +498,7 @@ class AudioService {
   }
 
   resume() {
+    preparePlaybackSession(this._audioCtx);
     if (this.audio.src && this.audio.src !== window.location.href) {
       this.audio.play()
         .then(() => {
@@ -549,10 +508,9 @@ class AudioService {
           );
         })
         .catch((err) => {
-          if (err?.name !== "NotAllowedError") {
-            this.isPlaying = false;
-            this.onError?.(err);
-          }
+          this.isPlaying = false;
+          this._notifyPause(this.currentAyah);
+          this.onError?.(err);
         });
     }
   }
@@ -803,6 +761,8 @@ class AudioService {
    * Waits for 'canplay' before calling play(). Retries on failure.
    */
   _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+    preparePlaybackSession(this._audioCtx);
+    if (typeof navigator !== "undefined" && navigator.onLine === false) retries = 0;
     this._cancelPendingLoad?.();
     return new Promise((resolve, reject) => {
       if (!isTrustedAudioUrl(url)) {
@@ -818,8 +778,7 @@ class AudioService {
           .play()
           .then(() => resolve())
           .catch((e) => {
-            if (e?.name === "NotAllowedError") resolve();
-            else reject(e);
+            reject(e);
           });
         return;
       }
@@ -894,7 +853,7 @@ class AudioService {
             .catch((e) => {
               // Browser may block autoplay — user gesture needed
               if (e.name === "NotAllowedError") {
-                finishResolve(); // Not a real load error
+                finishReject(e);
               } else if (retriesLeft > 0) {
                 retryTimer = setTimeout(
                   () => attempt(retriesLeft - 1),
@@ -955,7 +914,7 @@ class AudioService {
           .catch((e) => {
             if (settled || requestId !== this._loadRequestId) return;
             if (e?.name === "NotAllowedError") {
-              finishResolve();
+              finishReject(e);
             } else if (retriesLeft > 0) {
               cleanup();
               this._clearLoadTimeout();
@@ -1054,7 +1013,7 @@ class AudioService {
           loadedUrl = urlCandidate;
           break;
         } catch (err) {
-          if (err?.name === "AbortError") throw err;
+          if (err?.name === "AbortError" || err?.name === "NotAllowedError") throw err;
           lastErr = err;
         }
       }
@@ -1104,6 +1063,7 @@ class AudioService {
       this.onError?.(err);
       // Keep current ayah on error (don't skip ahead and desync highlighting)
       this.isPlaying = false;
+      this._notifyPause(this.currentAyah);
       if (throwOnError) {
         throw err;
       }
@@ -1377,11 +1337,16 @@ class AudioService {
   }
   applyEqPreset(preset) {
     this.eqPreset = preset;
+    // Flat playback must stay on the native media path; routing it through
+    // Web Audio unnecessarily makes it subject to background suspension.
+    if (preset === "flat" && !this._eqConnected) return;
+    preparePlaybackSession(this._audioCtx);
     this._ensureAudioCtx();
     if (this._eqConnected) this._applyEqGains();
   }
 
   destroy() {
+    this._releaseNativePlayback();
     if (this._rafId) {
       cancelAnimationFrame(this._rafId);
       this._rafId = null;

@@ -35,11 +35,18 @@ export default function useVoiceSearch({
   const clearError = useCallback(() => setErrorCode(null), []);
 
   const stop = useCallback(() => {
-    recognitionRef.current?.stop?.();
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+    // Stopping during the permission/start phase can throw on Safari.
+    try {
+      recognition.stop();
+    } catch {
+      recognition.onend?.();
+    }
   }, []);
 
   const toggle = useCallback(() => {
-    if (status === "listening" || status === "starting") {
+    if (recognitionRef.current) {
       stop();
       return;
     }
@@ -53,7 +60,22 @@ export default function useVoiceSearch({
       return;
     }
 
-    const recognition = new Recognition();
+    if (window.isSecureContext === false) {
+      setErrorCode("secureContext");
+      return;
+    }
+    if (navigator.onLine === false) {
+      setErrorCode("network");
+      return;
+    }
+
+    let recognition;
+    try {
+      recognition = new Recognition();
+    } catch {
+      setErrorCode("unsupported");
+      return;
+    }
     recognition.lang = getVoiceRecognitionLanguage(
       searchMode,
       interfaceLanguage,
@@ -66,8 +88,18 @@ export default function useVoiceSearch({
     setErrorCode(null);
     setStatus("starting");
 
-    recognition.onstart = () => setStatus("listening");
+    const isCurrent = () => recognitionRef.current === recognition;
+    const release = () => {
+      if (!isCurrent()) return;
+      recognitionRef.current = null;
+      recognition.onstart = recognition.onresult = recognition.onerror = recognition.onend = null;
+      setStatus("idle");
+    };
+    recognition.onstart = () => {
+      if (isCurrent()) setStatus("listening");
+    };
     recognition.onresult = (event) => {
+      if (!isCurrent()) return;
       const transcript = Array.from(event.results || [])
         .map((result) => result?.[0]?.transcript || "")
         .join(" ")
@@ -78,8 +110,12 @@ export default function useVoiceSearch({
       onTranscriptRef.current?.(transcript);
     };
     recognition.onerror = (event) => {
+      if (!isCurrent()) return;
       const code = event?.error;
-      if (code === "aborted") return;
+      if (code === "aborted") {
+        release();
+        return;
+      }
       if (code === "not-allowed" || code === "service-not-allowed") {
         setErrorCode("permissionDenied");
       } else if (code === "no-speech") {
@@ -91,32 +127,35 @@ export default function useVoiceSearch({
       } else {
         setErrorCode("failed");
       }
+      // Some mobile implementations omit end after an error. Allow retry
+      // immediately and detach callbacks before aborting the old session.
+      release();
+      try { recognition.abort?.(); } catch { /* already stopped */ }
     };
     recognition.onend = () => {
+      if (!isCurrent()) return;
       if (!transcriptReceivedRef.current) {
         setErrorCode((current) => current || "noSpeech");
       }
-      recognitionRef.current = null;
-      setStatus("idle");
+      release();
     };
 
     recognitionRef.current = recognition;
     try {
       recognition.start();
-    } catch {
-      recognitionRef.current = null;
-      setStatus("idle");
-      setErrorCode("failed");
+    } catch (error) {
+      release();
+      setErrorCode(error?.name === "NotAllowedError" ? "permissionDenied" : "failed");
     }
-  }, [interfaceLanguage, searchMode, status, stop]);
+  }, [interfaceLanguage, searchMode, stop]);
 
   useEffect(
     () => () => {
       const recognition = recognitionRef.current;
       recognitionRef.current = null;
       if (recognition) {
-        recognition.onend = null;
-        recognition.abort?.();
+        recognition.onstart = recognition.onresult = recognition.onerror = recognition.onend = null;
+        try { recognition.abort?.(); } catch { /* already stopped */ }
       }
     },
     [],

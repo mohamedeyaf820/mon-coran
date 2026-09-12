@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Bookmark,
@@ -39,6 +39,10 @@ import { confirmAction } from "../services/interactionService";
 
 const COPY = {
   fr: {
+    loadError: "Impossible de charger la bibliothèque.",
+    saveError: "Impossible d’enregistrer cette modification. Votre saisie est conservée.",
+    audioError: "Impossible de lancer cette liste audio. Réessayez.",
+    retry: "Réessayer",
     title: "Bibliothèque",
     subtitle: "Favoris, notes et listes audio réunis au même endroit.",
     favorites: "Favoris",
@@ -57,6 +61,10 @@ const COPY = {
     save: "Enregistrer",
   },
   en: {
+    loadError: "Unable to load the library.",
+    saveError: "Unable to save this change. Your input has been kept.",
+    audioError: "Unable to play this audio list. Try again.",
+    retry: "Retry",
     title: "Library",
     subtitle: "Bookmarks, notes and audio lists in one calm space.",
     favorites: "Bookmarks",
@@ -75,6 +83,10 @@ const COPY = {
     save: "Save",
   },
   ar: {
+    loadError: "تعذّر تحميل المكتبة.",
+    saveError: "تعذّر حفظ التغيير. تم الاحتفاظ بما كتبته.",
+    audioError: "تعذّر تشغيل القائمة الصوتية. حاول مرة أخرى.",
+    retry: "إعادة المحاولة",
     title: "المكتبة",
     subtitle: "المفضلة والملاحظات والقوائم الصوتية في مكان واحد.",
     favorites: "المفضلة",
@@ -112,6 +124,9 @@ export default function LibraryModal() {
   const [editingPlaylistId, setEditingPlaylistId] = useState(null);
   const [editingPlaylistName, setEditingPlaylistName] = useState("");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const actionPending = useRef(false);
 
   useEffect(() => {
     setTab(requestedTab);
@@ -120,20 +135,37 @@ export default function LibraryModal() {
   const close = () => set({ libraryOpen: false });
   const load = useCallback(async () => {
     setLoading(true);
-    const [nextBookmarks, nextNotes, nextPlaylists] = await Promise.all([
-      getAllBookmarks(),
-      getAllNotes(),
-      getAllPlaylists(),
-    ]);
-    setBookmarks([...(nextBookmarks || [])].sort((a, b) => b.createdAt - a.createdAt));
-    setNotes([...(nextNotes || [])].sort((a, b) => b.updatedAt - a.updatedAt));
-    setPlaylists(nextPlaylists || []);
-    setLoading(false);
+    setError(null);
+    try {
+      const [nextBookmarks, nextNotes, nextPlaylists] = await Promise.all([
+        getAllBookmarks(), getAllNotes(), getAllPlaylists(),
+      ]);
+      setBookmarks([...nextBookmarks].sort((a, b) => b.createdAt - a.createdAt));
+      setNotes([...nextNotes].sort((a, b) => b.updatedAt - a.updatedAt));
+      setPlaylists(nextPlaylists);
+    } catch {
+      setError("loadError");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  useEffect(() => {
-    load().catch(() => setLoading(false));
-  }, [load]);
+  useEffect(() => { void load(); }, [load]);
+
+  const runAction = async (operation, errorKey = "saveError") => {
+    if (actionPending.current) return;
+    actionPending.current = true;
+    setBusy(true);
+    setError(null);
+    try {
+      await operation();
+    } catch {
+      setError(errorKey);
+    } finally {
+      actionPending.current = false;
+      setBusy(false);
+    }
+  };
 
   const tabs = useMemo(
     () => [
@@ -160,8 +192,10 @@ export default function LibraryModal() {
   };
 
   const removeSavedItem = async (kind, item) => {
-    if (kind === "favorites") await removeBookmark(item.surah, item.ayah);
-    else await deleteNote(item.surah, item.ayah);
+    const removed = kind === "favorites"
+      ? await removeBookmark(item.surah, item.ayah)
+      : await deleteNote(item.surah, item.ayah);
+    if (!removed) throw new Error("Unable to delete item");
     await load();
   };
 
@@ -186,7 +220,7 @@ export default function LibraryModal() {
   const commitNote = async (item) => {
     const value = editingNoteText.trim();
     if (!value) return;
-    await saveNote(item.surah, item.ayah, value);
+    if (!(await saveNote(item.surah, item.ayah, value))) throw new Error("Note was not saved");
     setEditingNoteId(null);
     setEditingNoteText("");
     await load();
@@ -195,7 +229,7 @@ export default function LibraryModal() {
   const commitPlaylistName = async (playlist) => {
     const value = editingPlaylistName.trim();
     if (!value) return;
-    await renamePlaylist(playlist.id, value);
+    if (!(await renamePlaylist(playlist.id, value))) throw new Error("List no longer exists");
     setEditingPlaylistId(null);
     setEditingPlaylistName("");
     await load();
@@ -238,7 +272,7 @@ export default function LibraryModal() {
             <div className="library-row__editor">
               <span className="library-row__ref">{item.surah}:{item.ayah}</span>
               <textarea value={editingNoteText} onChange={(event) => setEditingNoteText(event.target.value)} maxLength={2000} autoFocus aria-label={copy.edit} />
-              <button type="button" onClick={() => commitNote(item)} aria-label={copy.save}><Check size={16} /></button>
+              <button type="button" disabled={busy} onClick={() => runAction(() => commitNote(item))} aria-label={copy.save}><Check size={16} /></button>
             </div>
           ) : <button type="button" className="library-row__main" onClick={() => goToVerse(item.surah, item.ayah)}>
             <span className="library-row__ref">{item.surah}:{item.ayah}</span>
@@ -253,7 +287,7 @@ export default function LibraryModal() {
               <Pencil size={16} aria-hidden="true" />
             </button>
           ) : null}
-          <button type="button" className="library-row__delete" onClick={() => removeSavedItem(kind, item)} aria-label={copy.remove}>
+          <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeSavedItem(kind, item))} aria-label={copy.remove}>
             <Trash2 size={16} aria-hidden="true" />
           </button>
         </article>
@@ -274,14 +308,24 @@ export default function LibraryModal() {
               </div>
               <button type="button" className="library-close" onClick={close} aria-label={copy.close}><X size={18} /></button>
             </header>
-            <nav className="library-tabs" aria-label={copy.title}>
+            <nav className="library-tabs" role="tablist" aria-label={copy.title}>
               {tabs.map(({ id, label, Icon, count }) => (
-                <button key={id} type="button" className={tab === id ? "is-active" : ""} onClick={() => setTab(id)} aria-selected={tab === id} role="tab">
+                <button key={id} type="button" className={tab === id ? "is-active" : ""} onClick={() => setTab(id)} id={`library-tab-${id}`} aria-controls={`library-panel-${id}`} tabIndex={tab === id ? 0 : -1} onKeyDown={(event) => {
+                  const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+                  if (!keys.includes(event.key)) return;
+                  event.preventDefault();
+                  const current = tabs.findIndex((item) => item.id === id);
+                  const step = (event.key === "ArrowRight" ? 1 : -1) * (lang === "ar" ? -1 : 1);
+                  const index = event.key === "Home" ? 0 : event.key === "End" ? tabs.length - 1 : (current + step + tabs.length) % tabs.length;
+                  setTab(tabs[index].id);
+                  document.getElementById(`library-tab-${tabs[index].id}`)?.focus();
+                }} aria-selected={tab === id} role="tab">
                   <Icon size={17} /><span>{label}</span><small>{count}</small>
                 </button>
               ))}
             </nav>
-            <div className="library-modal__body">
+            <div className="library-modal__body" role="tabpanel" id={`library-panel-${tab}`} aria-labelledby={`library-tab-${tab}`} aria-busy={loading || busy}>
+              {error ? <div className="library-empty" role="alert"><span>{copy[error]}</span>{error === "loadError" ? <button type="button" onClick={load}>{copy.retry}</button> : null}</div> : null}
               {tab === "notes" ? (
                 <label className="library-search">
                   <Search size={16} aria-hidden="true" />
@@ -289,26 +333,26 @@ export default function LibraryModal() {
                 </label>
               ) : null}
               {loading ? <div className="library-loading"><Loader2 size={22} className="animate-spin" /></div> : null}
-              {!loading && tab === "favorites" ? renderSaved(bookmarks, "favorites", copy.emptyFavorites) : null}
-              {!loading && tab === "notes" ? renderSaved(filteredNotes, "notes", copy.emptyNotes) : null}
-              {!loading && tab === "playlists" ? (
+              {!loading && error !== "loadError" && tab === "favorites" ? renderSaved(bookmarks, "favorites", copy.emptyFavorites) : null}
+              {!loading && error !== "loadError" && tab === "notes" ? renderSaved(filteredNotes, "notes", copy.emptyNotes) : null}
+              {!loading && error !== "loadError" && tab === "playlists" ? (
                 <div className="library-playlists">
                   <div className="library-create">
                     <Plus size={17} aria-hidden="true" />
-                    <input value={newName} onChange={(event) => setNewName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && createList()} placeholder={copy.newList} maxLength={50} />
-                    <button type="button" onClick={createList}>{copy.create}</button>
+                    <input value={newName} onChange={(event) => setNewName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && runAction(createList)} placeholder={copy.newList} aria-label={copy.newList} maxLength={50} />
+                    <button type="button" disabled={busy || !newName.trim()} onClick={() => runAction(createList)}>{copy.create}</button>
                   </div>
                   {!playlists.length ? <div className="library-empty"><span>{copy.emptyPlaylists}</span></div> : playlists.map((playlist) => (
                     <article className="library-row library-row--playlist" key={playlist.id}>
                       <div className="library-row__main">
                         <span className="library-row__ref"><ListMusic size={17} /></span>
                         {editingPlaylistId === playlist.id ? (
-                          <span className="library-row__rename"><input value={editingPlaylistName} onChange={(event) => setEditingPlaylistName(event.target.value)} maxLength={50} autoFocus aria-label={copy.edit} /><button type="button" onClick={() => commitPlaylistName(playlist)} aria-label={copy.save}><Check size={15} /></button></span>
+                          <span className="library-row__rename"><input value={editingPlaylistName} onChange={(event) => setEditingPlaylistName(event.target.value)} maxLength={50} autoFocus aria-label={copy.edit} /><button type="button" disabled={busy} onClick={() => runAction(() => commitPlaylistName(playlist))} aria-label={copy.save}><Check size={15} /></button></span>
                         ) : <span className="library-row__copy"><strong>{playlist.name}</strong><small>{playlist.ayahs.length} {lang === "fr" ? "versets" : lang === "ar" ? "آيات" : "verses"}</small></span>}
                       </div>
                       {editingPlaylistId !== playlist.id ? <button type="button" className="library-row__edit" onClick={() => { setEditingPlaylistId(playlist.id); setEditingPlaylistName(playlist.name); }} aria-label={copy.edit}><Pencil size={16} /></button> : null}
-                      <button type="button" className="library-row__play" onClick={() => playList(playlist)} disabled={!playlist.ayahs.length} aria-label={copy.listen}><Play size={16} /></button>
-                      <button type="button" className="library-row__delete" onClick={() => removeList(playlist.id)} aria-label={copy.remove}><Trash2 size={16} /></button>
+                      <button type="button" className="library-row__play" onClick={() => runAction(() => playList(playlist), "audioError")} disabled={busy || !playlist.ayahs.length} aria-label={copy.listen}><Play size={16} /></button>
+                      <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeList(playlist.id))} aria-label={copy.remove}><Trash2 size={16} /></button>
                     </article>
                   ))}
                 </div>

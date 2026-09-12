@@ -290,31 +290,6 @@
    ─ Premium tabs with smooth active state
    ═══════════════════════════════════════════════════════════════ */
 
-.ayah-study-tabs {
-    gap: 0.2rem !important;
-    padding: 0.22rem !important;
-    border-radius: 12px !important;
-    background: var(--bg-secondary) !important;
-    border: 1px solid color-mix(in srgb, var(--border) 60%, transparent) !important;
-}
-
-.ayah-study-tab {
-    border-radius: 9px !important;
-    font-size: 0.72rem !important;
-    font-weight: 700 !important;
-    transition: all 160ms ease !important;
-}
-
-.ayah-study-tab[aria-selected="true"] {
-    background: var(--bg-card) !important;
-    color: var(--primary) !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08) !important;
-}
-
-.ayah-study-content {
-    border-radius: 0 0 14px 14px !important;
-}
-
 /* ═══════════════════════════════════════════════════════════════
    8. FULLSCREEN MUSHAF OVERLAY
    ─ More immersive, darker veil, page shadow

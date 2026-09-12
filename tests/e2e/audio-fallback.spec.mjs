@@ -55,6 +55,8 @@ test("E2E: bouton play explicite démarre la lecture, clic mot joue l'audio du m
     .poll(async () => page.evaluate(() => Number(window.__audioPlayCalls || 0)))
     .toBeGreaterThan(0);
 
+  await expect(page.getByText('Le navigateur a interrompu la lecture. Appuyez sur Lecture pour reprendre.')).toBeVisible();
+
   await page.evaluate(() => {
     window.__restorePlay?.();
   });

@@ -3,7 +3,7 @@
  * CRUD for custom ayah playlists, stored in IndexedDB.
  */
 
-import { getDB } from './dbService';
+import { getDB } from './dbService.js';
 
 const STORE = 'playlists';
 
@@ -38,40 +38,63 @@ export async function getAllPlaylists() {
   return all.sort((a, b) => b.updatedAt - a.updatedAt);
 }
 
-/** Update a playlist name */
-export async function renamePlaylist(id, newName) {
+// Keep the read and write in one transaction so concurrent tabs cannot lose updates.
+async function updatePlaylist(id, update) {
   const db = await getDB();
-  const pl = await db.get(STORE, id);
-  if (!pl) return null;
-  pl.name = newName;
-  pl.updatedAt = Date.now();
-  await db.put(STORE, pl);
-  return pl;
+  const tx = db.transaction(STORE, 'readwrite');
+  try {
+    const playlist = await tx.store.get(id);
+    if (!playlist) { await tx.done; return null; }
+    update(playlist);
+    playlist.updatedAt = Date.now();
+    await tx.store.put(playlist);
+    await tx.done;
+    return playlist;
+  } catch (error) {
+    try { tx.abort(); } catch { /* The transaction may already have aborted. */ }
+    await tx.done.catch(() => {});
+    throw error;
+  }
 }
 
-/** Add an ayah to a playlist */
-export async function addAyahToPlaylist(playlistId, surah, ayah, text = '') {
-  const db = await getDB();
-  const pl = await db.get(STORE, playlistId);
-  if (!pl) return null;
-  // Avoid duplicates
-  const exists = pl.ayahs.some(a => a.surah === surah && a.ayah === ayah);
-  if (exists) return pl;
-  pl.ayahs.push({ surah, ayah, text });
-  pl.updatedAt = Date.now();
-  await db.put(STORE, pl);
-  return pl;
+export function renamePlaylist(id, newName) {
+  return updatePlaylist(id, (playlist) => { playlist.name = newName; });
 }
 
-/** Remove an ayah from a playlist */
-export async function removeAyahFromPlaylist(playlistId, surah, ayah) {
+export function addAyahToPlaylist(playlistId, surah, ayah, text = '') {
+  return updatePlaylist(playlistId, (playlist) => {
+    if (!playlist.ayahs.some((entry) => entry.surah === surah && entry.ayah === ayah)) {
+      playlist.ayahs.push({ surah, ayah, text });
+    }
+  });
+}
+
+export function removeAyahFromPlaylist(playlistId, surah, ayah) {
+  return updatePlaylist(playlistId, (playlist) => {
+    playlist.ayahs = playlist.ayahs.filter((entry) => !(entry.surah === surah && entry.ayah === ayah));
+  });
+}
+
+/** Validate an imported playlist before merging it into the local collection. */
+export async function importPlaylistRecord(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return false;
+  if (typeof value.id !== 'string' || !/^pl-[a-zA-Z0-9-]{1,100}$/.test(value.id)) return false;
+  if (typeof value.name !== 'string' || !value.name.trim() || value.name.length > 50) return false;
+  if (![value.createdAt, value.updatedAt].every((time) => Number.isSafeInteger(time) && time >= 0)) return false;
+  if (!Array.isArray(value.ayahs) || value.ayahs.length > 6236) return false;
+  const seen = new Set();
+  const ayahs = [];
+  for (const item of value.ayahs) {
+    if (!item || !Number.isInteger(item.surah) || item.surah < 1 || item.surah > 114 ||
+      !Number.isInteger(item.ayah) || item.ayah < 1 || item.ayah > 286 ||
+      (item.text !== undefined && (typeof item.text !== 'string' || item.text.length > 8000))) return false;
+    const key = item.surah + ':' + item.ayah;
+    if (!seen.has(key)) ayahs.push({ surah: item.surah, ayah: item.ayah, text: item.text || '' });
+    seen.add(key);
+  }
   const db = await getDB();
-  const pl = await db.get(STORE, playlistId);
-  if (!pl) return null;
-  pl.ayahs = pl.ayahs.filter(a => !(a.surah === surah && a.ayah === ayah));
-  pl.updatedAt = Date.now();
-  await db.put(STORE, pl);
-  return pl;
+  await db.put(STORE, { id: value.id, name: value.name, createdAt: value.createdAt, updatedAt: value.updatedAt, ayahs });
+  return true;
 }
 
 /** Delete a playlist */
@@ -85,4 +108,5 @@ export async function clearAllPlaylists() {
   const db = await getDB();
   const tx = db.transaction(STORE, 'readwrite');
   await tx.objectStore(STORE).clear();
+  await tx.done;
 }

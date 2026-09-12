@@ -1617,30 +1617,6 @@ html[data-theme="sepia"] .app-root .ayah-action-sheet {
     box-shadow: 0 20px 56px rgba(72, 55, 35, 0.12);
 }
 
-html[data-theme="sepia"] .app-root .ayah-study-content {
-    background: rgba(255, 250, 238, 0.7);
-    border-color: rgba(139, 107, 62, 0.14);
-}
-
-html[data-theme="sepia"] .app-root .ayah-study-source {
-    background: rgba(181, 125, 42, 0.1);
-    color: #7c4a17;
-}
-
-html[data-theme="sepia"] .app-root .ayah-study-tafsir p {
-    color: #4a3520;
-}
-
-html[data-theme="sepia"] .app-root .ayah-study-tab {
-    color: #6b5535;
-}
-
-html[data-theme="sepia"] .app-root .ayah-study-tab.is-active {
-    background: rgba(181, 125, 42, 0.12);
-    color: #7c4a17;
-    border-color: rgba(181, 125, 42, 0.28);
-}
-
 html[data-theme="sepia"] [role="menu"],
 html[data-theme="sepia"] .dropdown-content,
 html[data-theme="sepia"] [data-radix-popper-content-wrapper] > div {

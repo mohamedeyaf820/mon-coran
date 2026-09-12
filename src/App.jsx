@@ -30,11 +30,10 @@ import {
 } from "./data/reciters";
 const loadHomePage = () => import("./components/HomePage");
 let resolvedQuranDisplay;
-const loadQuranDisplay = () =>
-  import("./components/QuranDisplay").then((module) => {
-    resolvedQuranDisplay = module.default;
-    return module;
-  });
+const loadQuranDisplay = () => import("./components/QuranDisplay").then((module) => {
+  resolvedQuranDisplay = module.default;
+  return module;
+});
 if (typeof globalThis !== "undefined") {
   globalThis.__mushafPlusLoadQuranDisplay = loadQuranDisplay;
 }
@@ -43,7 +42,12 @@ const loadLegalPage = () => import("./components/LegalPage");
 const loadDuasPage = () => import("./components/DuasPage");
 const HomePage = lazy(loadHomePage);
 const Header = lazy(loadHeader);
-const QuranDisplay = lazy(loadQuranDisplay);
+const LazyQuranDisplay = lazy(loadQuranDisplay);
+function QuranDisplay() {
+  // Use preloaded code immediately, while retaining one component type per visit.
+  const Reader = useRef(resolvedQuranDisplay || LazyQuranDisplay).current;
+  return <Reader />;
+}
 const LegalPage = lazy(loadLegalPage);
 const NotFoundPage = lazy(() => import("./components/NotFoundPage"));
 const ConfirmDialogHost = lazy(() => import("./components/ConfirmDialogHost"));
@@ -296,7 +300,6 @@ export default function App() {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
-  const ActiveQuranDisplay = resolvedQuranDisplay || QuranDisplay;
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -846,7 +849,7 @@ export default function App() {
               ) : (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
-                    <ActiveQuranDisplay />
+                    <QuranDisplay />
                   </Suspense>
                 </ErrorBoundary>
               )}
