@@ -4,7 +4,7 @@ import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import { getNativeAyahMarker } from "../../data/fonts";
 import WarshWordText from "./WarshWordText";
 
-const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
+const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\uFC00-\uFD1C\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 const WAQF_MARKER_TOKEN_RE = /^[\u06d6-\u06dc]+$/u;
 const DEFAULT_WARSH_CALIBRATION = {
   offsetSec: 0.2,

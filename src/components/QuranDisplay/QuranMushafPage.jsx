@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { getJuzForAyah } from "../../data/juz";
 import SURAHS, { getSurahLigature, toAr } from "../../data/surahs";
 import {
@@ -12,6 +12,7 @@ import { sanitizeHtml } from "../../lib/security";
 import {
   getQuranWordTextForFont,
   resolveFontFamily,
+  stripEmbeddedAyahMarkers,
 } from "../../data/fonts";
 
 function decodeHtmlEntity(str) {
@@ -56,6 +57,67 @@ function normalizeArabicText(text) {
   return String(text).normalize("NFC");
 }
 
+function getCleanWarshWords(ayah) {
+  const source = Array.isArray(ayah?.warshWords) && ayah.warshWords.length > 0
+    ? ayah.warshWords
+        .map((word) => typeof word === "string" ? word : word?.text || "")
+        .join(" ")
+    : ayah?.text || "";
+  return stripEmbeddedAyahMarkers(normalizeArabicText(source))
+    .split(/\s+/u)
+    .filter(Boolean);
+}
+
+function getWarshWordWeight(text) {
+  const bases = normalizeArabicText(text)
+    .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, "");
+  return Math.max(1, Array.from(bases).length);
+}
+
+function balanceWarshPageTokens(tokens) {
+  if (tokens.length === 0) return new Map();
+  const firstLine = Math.min(...tokens.map((token) => token.minLine));
+  const lastLine = Math.max(...tokens.map((token) => token.maxLine));
+  const occupiedLineCount = Math.max(1, lastLine - firstLine + 1);
+  const targetWeight = tokens.reduce((sum, token) => sum + token.weight, 0) / occupiedLineCount;
+  const states = Array.from({ length: 16 }, () => new Map());
+  states[0].set(0, { cost: 0, previous: null });
+
+  for (let lineNumber = 1; lineNumber <= 15; lineNumber += 1) {
+    for (const [startIndex, state] of states[lineNumber - 1]) {
+      let lineWeight = 0;
+      for (let endIndex = startIndex; endIndex <= tokens.length; endIndex += 1) {
+        if (endIndex > startIndex) {
+          const token = tokens[endIndex - 1];
+          if (lineNumber < token.minLine || lineNumber > token.maxLine) break;
+          lineWeight += token.weight;
+        }
+        const isOccupiedLine = lineNumber >= firstLine && lineNumber <= lastLine;
+        const deviation = isOccupiedLine ? lineWeight - targetWeight : lineWeight;
+        const overflowPenalty = lineWeight > targetWeight * 1.12 ? 4 : 1;
+        const cost = state.cost + deviation * deviation * overflowPenalty;
+        const current = states[lineNumber].get(endIndex);
+        if (!current || cost < current.cost) {
+          states[lineNumber].set(endIndex, { cost, previous: startIndex });
+        }
+      }
+    }
+  }
+
+  if (!states[15].has(tokens.length)) return new Map();
+  const lines = new Map();
+  let endIndex = tokens.length;
+  for (let lineNumber = 15; lineNumber >= 1; lineNumber -= 1) {
+    const state = states[lineNumber].get(endIndex);
+    if (!state) return new Map();
+    if (endIndex > state.previous) {
+      lines.set(lineNumber, tokens.slice(state.previous, endIndex).map((token) => token.word));
+    }
+    endIndex = state.previous;
+  }
+  return lines;
+}
+
 function groupWarshPageLines(ayahs) {
   const hasLineMetadata = ayahs.some((ayah) => Number(ayah?.lineStart) || Number(ayah?.lineEnd));
   if (!hasLineMetadata) {
@@ -63,10 +125,7 @@ function groupWarshPageLines(ayahs) {
     ayahs.forEach((ayah) => {
       const surah = ayah.surah?.number;
       const ayahNum = ayah.numberInSurah;
-      const rawText = normalizeArabicText(ayah.text || "");
-      const warshWords = Array.isArray(ayah.warshWords)
-        ? ayah.warshWords.map((word) => normalizeArabicText(word))
-        : rawText.split(/\s+/).filter(Boolean);
+      const warshWords = getCleanWarshWords(ayah);
 
       warshWords.forEach((text, index) => {
         tokens.push({
@@ -95,32 +154,18 @@ function groupWarshPageLines(ayahs) {
     }));
   }
 
-  const lines = new Map();
-
-  ayahs.forEach((ayah) => {
+  const tokens = ayahs.flatMap((ayah) => {
     const surah = ayah.surah?.number;
     const ayahNum = ayah.numberInSurah;
-    const rawText = normalizeArabicText(ayah.text || "");
-    const warshWords = Array.isArray(ayah.warshWords)
-      ? ayah.warshWords.map(w => normalizeArabicText(w))
-      : rawText.split(/\s+/).filter(Boolean);
-
-    if (warshWords.length === 0) return;
-
-    // Distribute words across lines using line_start and line_end from the ayah
-    const lineStart = Number(ayah.lineStart) || 1;
-    const lineEnd = Number(ayah.lineEnd) || 15;
-    const lineSpan = Math.max(1, lineEnd - lineStart + 1);
-    const wordsPerLine = Math.max(1, Math.ceil(warshWords.length / lineSpan));
-
-    warshWords.forEach((text, idx) => {
-      const lineIndex = Math.min(lineSpan - 1, Math.floor(idx / wordsPerLine));
-      const lineNumber = lineStart + lineIndex;
-
-      if (lineNumber < 1 || lineNumber > 15) return;
-      if (!lines.has(lineNumber)) lines.set(lineNumber, []);
-
-      lines.get(lineNumber).push({
+    const warshWords = getCleanWarshWords(ayah);
+    if (warshWords.length === 0) return [];
+    const lineStart = Math.max(1, Math.min(15, Number(ayah.lineStart) || 1));
+    const lineEnd = Math.max(lineStart, Math.min(15, Number(ayah.lineEnd) || 15));
+    const wordTokens = warshWords.map((text, idx) => ({
+      minLine: idx === 0 ? lineStart : lineStart,
+      maxLine: idx === 0 ? lineStart : lineEnd,
+      weight: getWarshWordWeight(text),
+      word: {
         charType: "word",
         globalAyah: ayah.number,
         surah,
@@ -128,29 +173,25 @@ function groupWarshPageLines(ayahs) {
         position: idx + 1,
         text,
         isWarsh: true,
-      });
-    });
-
-    // Add ayah end marker on the last line
-    const lastLine = Math.min(15, lineEnd);
-    if (lines.has(lastLine)) {
-      lines.get(lastLine).push({
-        charType: "end",
-        globalAyah: ayah.number,
-        surah,
-        ayah: ayahNum,
-        isWarsh: true,
-      });
-    }
+      },
+    }));
+    return [...wordTokens, {
+      minLine: lineEnd,
+      maxLine: lineEnd,
+      weight: 1.6,
+      word: { charType: "end", globalAyah: ayah.number, surah, ayah: ayahNum, isWarsh: true },
+    }];
   });
+  const lines = balanceWarshPageTokens(tokens);
 
-  return Array.from({ length: 15 }, (_, index) => {
+  const pageLines = Array.from({ length: 15 }, (_, index) => {
     const lineNumber = index + 1;
     return {
       lineNumber,
       words: lines.get(lineNumber) || [],
     };
   });
+  return markSurahEndings(placeSurahOpenings(pageLines, { warsh: true }));
 }
 
 const BASMALA_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
@@ -163,7 +204,7 @@ function getSurahMeta(surah) {
 // fresh line under its title band and, except for Al-Fatiha (whose basmala is
 // verse 1) and At-Tawbah, the basmala: those slots come back as empty lines
 // above the first word, so this restores them the way the printed page reads.
-function placeSurahOpenings(lines) {
+function placeSurahOpenings(lines, { warsh = false } = {}) {
   lines.forEach((line, index) => {
     const first = line.words[0];
     if (!first) return;
@@ -173,7 +214,7 @@ function placeSurahOpenings(lines) {
     const surah = Number(first.surah);
     const above2 = lines[index - 2];
     const hasBasmalaLine =
-      surah !== 1 && surah !== 9 && above2 && above2.words.length === 0 && !above2.kind;
+      surah !== 9 && (surah !== 1 || warsh) && above2 && above2.words.length === 0 && !above2.kind;
     if (hasBasmalaLine) {
       above2.kind = "surah-header";
       above2.surah = surah;
@@ -282,6 +323,8 @@ export default function QuranMushafPage({
   const isWarsh = riwaya === "warsh";
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
+  const [warshLineFits, setWarshLineFits] = useState({});
+  const linesRef = useRef(null);
 
   const lines = useMemo(
     () => (isWarsh ? groupWarshPageLines(ayahs) : groupPageLines(ayahs)),
@@ -322,6 +365,52 @@ export default function QuranMushafPage({
       cancelled = true;
     };
   }, [currentPage, fontFamily, isWarsh, version]);
+
+  useLayoutEffect(() => {
+    if (!isWarsh || !linesRef.current) {
+      setWarshLineFits({});
+      return undefined;
+    }
+
+    let frame = 0;
+    const measure = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const next = {};
+        linesRef.current?.querySelectorAll(".qcm-line").forEach((line) => {
+          const children = [...line.children];
+          if (children.length === 0) return;
+          const lineRect = line.getBoundingClientRect();
+          const currentScale = Number.parseFloat(
+            getComputedStyle(line).getPropertyValue("--qcm-line-fit"),
+          ) || 1;
+          const left = Math.min(...children.map((child) => child.getBoundingClientRect().left));
+          const right = Math.max(...children.map((child) => child.getBoundingClientRect().right));
+          const naturalWidth = Math.max(1, (right - left) / currentScale);
+          next[line.dataset.lineNumber] = Math.max(
+            0.55,
+            Math.min(1, (lineRect.width - 4) / naturalWidth),
+          );
+        });
+        setWarshLineFits((current) => {
+          const keys = Object.keys(next);
+          const unchanged = keys.length === Object.keys(current).length
+            && keys.every((key) => Math.abs((current[key] || 1) - next[key]) < 0.005);
+          return unchanged ? current : next;
+        });
+      });
+    };
+
+    measure();
+    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
+    observer?.observe(linesRef.current);
+    window.addEventListener("resize", measure);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer?.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, [fontLoaded, isWarsh, lines]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);
@@ -370,8 +459,8 @@ export default function QuranMushafPage({
             letterSpacing: 0,
             wordSpacing: 0,
             textRendering: 'optimizeLegibility',
-            WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
-            fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1',
+            WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
+            fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
             WebkitFontSmoothing: 'antialiased',
             MozOsxFontSmoothing: 'grayscale',
             unicodeBidi: 'isolate',
@@ -439,7 +528,7 @@ export default function QuranMushafPage({
           <span className="text-[var(--text-muted)] text-[0.65rem] font-semibold">{meta.top}</span>
           <strong className="text-[var(--text-primary)] text-[0.72rem] font-bold tracking-wide">{meta.middle}</strong>
         </header>
-        <div className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
+        <div ref={linesRef} className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
           {lines.map((line) => {
             if (line.kind === "surah-header") {
               const surahMeta = getSurahMeta(line.surah);
@@ -494,6 +583,7 @@ export default function QuranMushafPage({
                 key={line.lineNumber}
                 className={lineClass}
                 data-line-number={line.lineNumber}
+                style={isWarsh ? { "--qcm-line-fit": warshLineFits[line.lineNumber] || 1 } : undefined}
               >
                 {line.words.map(renderWord)}
               </div>

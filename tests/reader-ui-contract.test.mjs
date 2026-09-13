@@ -219,10 +219,13 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(display, /const ayahInView =/);
   assert.match(display, /await prepareReadingTarget\("page", targetPage\)/);
 
-  // Neighbouring pages are cached ahead; a turn beyond the cache asks the reader.
+  // Neighbouring pages are cached ahead; a turn waits for its page payload
+  // while the current leaf stays visible.
   assert.match(overlay, /preloadQuranDisplayData/);
-  assert.match(overlay, /pageCache\.has\(currentPage \+ 1\)/);
-  assert.match(overlay, /pageCache\.has\(currentPage - 1\)/);
+  assert.match(overlay, /currentPage - 2, currentPage - 1, currentPage, currentPage \+ 1, currentPage \+ 2/);
+  assert.match(overlay, /pageCacheRef\.current\.has\(targetPage\)/);
+  assert.match(overlay, /navigateToPage\(currentPage \+ 1, "next"\)/);
+  assert.match(overlay, /navigateToPage\(currentPage - 1, "prev"\)/);
 
   // An Arabic book is leafed from left to right: the left arrow key and the
   // left edge button go forward, the right ones go back, Escape closes.
@@ -237,15 +240,19 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(book, /\[data-turn="next"\]/);
   assert.match(book, /prefers-reduced-motion: no-preference/);
 
-  // Zoom is a transform on the sheet; the template string is what the
-  // ReferenceError of the first release came from.
-  assert.match(overlay, /transform: `scale\(\$\{zoom\}\)`/);
+  // Zoom changes the page's typographic measure so enlarged glyphs participate
+  // in scrolling instead of being visually scaled outside their layout box.
+  assert.match(overlay, /style=\{\{ "--mfp-zoom": zoom \}\}/);
+  assert.doesNotMatch(overlay, /transform: `scale/);
   assert.match(overlay, /const MAX_ZOOM = 2\.2/);
+  assert.match(overlay, /ZOOM_STORAGE_KEY/);
+  assert.match(overlay, /onWheel=\{handleWheel\}/);
 
   // The exact Madani page is set like print: measure and pitch from the type,
   // opening pages centred, title band and basmala on the empty lines.
   assert.match(overlay, /<QuranMushafPage/);
-  assert.match(overlay, /"mfp-book mfp-book--exact" : "mfp-book mfp-book--flow"/);
+  assert.match(overlay, /className="mfp-book mfp-book--exact"/);
+  assert.doesNotMatch(overlay, /<CleanPageView/);
   assert.match(overlay, /data-page-kind=\{pageKind\}/);
   assert.match(book, /--mfp-line-measure: 16\.7em/);
   assert.match(book, /--mfp-line-pitch: 1\.62em/);
@@ -280,7 +287,7 @@ test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page contro
   assert.match(overlay, /document\.body\.classList\.add\("mfp-open"\)/);
   assert.match(overlay, /"--font-quran": quranFontFamily/);
   assert.doesNotMatch(overlay, /event\.key === "Enter"[\s\S]*?onPlayAyah/);
-  assert.match(overlay, /onPlayAyah=\{onPlayAyah\}/);
+  assert.match(overlay, /const startPageAudio = \(\) =>/);
   assert.match(display, /onOpenPlayer=\{openImmersiveAudioPlayer\}/);
   assert.match(display, /isPlaying=\{isPlaying\}/);
   assert.match(display, /audioAyah=\{currentPlayingAyah\}/);
@@ -377,6 +384,21 @@ test("continuous Mushaf text strips embedded markers before rendering its marker
 
   assert.match(renderer, /effectiveRiwaya,\s*appendNativeMarker/);
   assert.match(renderer, /return appendNativeAyahMarker\(/);
+});
+
+test("Warsh page data and fullscreen share one renderer with one marker owner", () => {
+  const service = source("src/services/warshService.js");
+  const page = source("src/components/QuranDisplay/QuranMushafPage.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const fonts = source("src/data/fonts.js");
+
+  assert.match(service, /normalizeWarshAyahText/);
+  assert.match(service, /stripEmbeddedAyahMarkers\(normalizeWhitespace\(text\)\)/);
+  assert.match(page, /getCleanWarshWords/);
+  assert.match(page, /charType: "end"/);
+  assert.match(overlay, /<QuranMushafPage/);
+  assert.doesNotMatch(overlay, /riwaya !== "warsh"/);
+  assert.equal(fonts.includes("[\\\\uFC00-\\\\uFD1C]"), true);
 });
 
 test("continuous Mushaf markers leave a readable gap before the next ayah", () => {

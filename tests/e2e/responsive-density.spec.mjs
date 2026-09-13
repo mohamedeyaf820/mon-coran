@@ -630,8 +630,9 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
     has: page.getByRole("button", { name: "Verset 4", exact: true }),
   });
   const renderMode = await tajwidText.getAttribute("data-tajwid-render");
-  if (renderMode === "plain") {
+  if (renderMode === "word-fallback") {
     expect(await card.locator(".tajwid-rule-segment").count()).toBe(0);
+    await expect(card.locator("[data-tajwid-word='0']")).toHaveAttribute("data-tajwid", /.+/);
     return;
   }
   const target = renderMode === "highlight"

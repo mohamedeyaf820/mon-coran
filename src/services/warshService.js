@@ -11,6 +11,7 @@ import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSo
 import { getSurah } from '../data/surahs';
 import { fetchQuranComText } from './quranComAPI';
 import { fetchWithTimeout } from './fetchWithTimeout';
+import { stripEmbeddedAyahMarkers } from '../data/fonts';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v6-s-';
@@ -86,9 +87,13 @@ function normalizeWhitespace(text) {
 }
 
 function splitWarshWords(text) {
-  const normalized = normalizeWhitespace(text);
+  const normalized = normalizeWarshAyahText(text);
   // Split on whitespace but preserve the diacritics attached to words
   return normalized.split(/\s+/).filter(word => word.length > 0);
+}
+
+function normalizeWarshAyahText(text) {
+  return stripEmbeddedAyahMarkers(normalizeWhitespace(text));
 }
 
 function getSurahNumberFromRaw(raw) {
@@ -269,7 +274,7 @@ function validateWarshRows(records, surahNumber) {
  */
 function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
   const ayahNumber = Number(raw?.aya_no ?? raw?.ayah_number ?? raw?.ayah ?? raw?.verse ?? fallbackAyahNumber);
-  const text = normalizeWhitespace(raw?.aya_text ?? raw?.text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
+  const text = normalizeWarshAyahText(raw?.aya_text ?? raw?.text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
 
   if (!ayahNumber || !text) {
     return null;
@@ -304,7 +309,7 @@ async function fetchWarshSurahRows(surahNumber) {
  * Converts a normalized record to the final Ayah object.
  */
 function toWarshAyah(record) {
-  const text = record?.text || '';
+  const text = normalizeWarshAyahText(record?.text || '');
   return {
     number: null, // Global number fallback
     warshNumber: null,
@@ -625,7 +630,7 @@ export async function getWarshJuzVerses(juzNum) {
   const rows = indexed?.byJuz?.get(cacheKey) || [];
   if (rows.length > 0) {
     const ayahs = rows.map((ayah) => {
-      const text = normalizeWhitespace(ayah.aya_text || ayah.text || '');
+      const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '');
       const words = splitWarshWords(text);
       return {
         text,
@@ -660,11 +665,30 @@ export async function getWarshPageVerses(pageNum) {
   if (!indexed) {
     return { ayahs: [], number: pageNum };
   }
-  const pageAyahs = indexed.byPage.get(cacheKey) || [];
+  let pageAyahs = indexed.byPage.get(cacheKey) || [];
+
+  // The legacy JSON puts the closing guidance phrase of the illuminated
+  // Al-Baqara opening leaf at the bottom of page 2. In the Warsh page model
+  // used by the reader it is the opening line of page 3. Keep the source text
+  // and ayah identity untouched; only correct its printed-page placement.
+  const openingCarry = (indexed.byPage.get(2) || []).find((ayah) =>
+    getSurahNumberFromRaw(ayah) === 2
+      && Number(ayah?.aya_no ?? ayah?.ayah_number ?? ayah?.ayah) === 4,
+  );
+  if (openingCarry && cacheKey === 2) {
+    pageAyahs = pageAyahs.filter((ayah) => ayah !== openingCarry);
+  } else if (openingCarry && cacheKey === 3) {
+    pageAyahs = [{
+      ...openingCarry,
+      page: 3,
+      line_start: 1,
+      line_end: 1,
+    }, ...pageAyahs];
+  }
   
   // Format compatible avec QuranMushafPage
   const formattedAyahs = pageAyahs.map(ayah => {
-    const text = normalizeWhitespace(ayah.aya_text || ayah.text || '');
+    const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '');
     const words = splitWarshWords(text);
     
     return {
@@ -677,16 +701,8 @@ export async function getWarshPageVerses(pageNum) {
       juz: Number(ayah.jozz),
       lineStart: Number(ayah.line_start) || null,
       lineEnd: Number(ayah.line_end) || null,
-      // Ajouter hafsSupport avec words pour compatibilité avec groupWarshPageLines
-      hafsSupport: {
-        words: words.map((word, idx) => ({
-          text: word,
-          lineV2: Number(ayah.line_start) || 1,
-          charType: 'word',
-          surah: Number(ayah.sura_no),
-          ayah: Number(ayah.aya_no),
-        }))
-      }
+      requestedRiwaya: 'warsh',
+      source: WARSH_SOURCE_ID,
     };
   });
   

@@ -164,6 +164,9 @@ const AYAH_MARKER_SUFFIX_RE = new RegExp(
   `(?:(?:\\s|&nbsp;)*(?:` +
     `[\\u06DD\\u06DE\\u06E9]?[\\u0660-\\u0669\\u06F0-\\u06F9\\d]+|` +
     `[\\uFD3E\\uFD3F][\\u0660-\\u0669\\u06F0-\\u06F9\\d]+[\\uFD3E\\uFD3F]|` +
+    // The legacy Warsh page source stores ayah numbers as custom-font
+    // presentation-form glyphs (U+FC00 for ayah 1 through U+FD1C for 285).
+    `[\\uFC00-\\uFD1C]|` +
     `[\\u06DD\\u06DE]` +
   `))+${INVISIBLE_SUFFIX}\\s*$`,
   "u",

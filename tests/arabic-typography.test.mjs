@@ -232,6 +232,8 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     `${verse} ۱`,
     `${verse} ﴿١﴾`,
     `${verse} ۝\u200f`,
+    `${verse} \uFC00`,
+    `${verse} \uFC17 \uFC17`,
   ];
 
   const fontMarkers = [

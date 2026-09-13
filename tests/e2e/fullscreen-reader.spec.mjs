@@ -22,9 +22,9 @@ async function openFullscreenReader(page, viewport, overrides = {}) {
       ...overrides,
     }));
   }, { key: SETTINGS_KEY, overrides });
-  await page.goto("/surah/3");
+  await page.goto(overrides.currentPage ? `/page/${overrides.currentPage}` : "/surah/3");
   await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
-  const trigger = page.locator(".srh-fullscreen-btn:visible").first();
+  const trigger = page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first();
   await expect(trigger).toBeVisible();
   await trigger.click();
   await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
@@ -70,4 +70,111 @@ test("mobile fullscreen reader fits without clipped controls", async ({ page }) 
   const overflow = await overlay.evaluate((element) => element.scrollWidth - element.clientWidth);
   expect(overflow).toBeLessThanOrEqual(1);
   await page.screenshot({ path: "test-results/fullscreen-reader-mobile.png" });
+});
+
+test("Warsh fullscreen uses the shared 15-line page with one marker per ayah", async ({ page }) => {
+  await openFullscreenReader(page, { width: 390, height: 844 }, {
+    displayMode: "page",
+    currentPage: 50,
+    currentSurah: 3,
+    currentJuz: 3,
+    lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 },
+    riwaya: "warsh",
+    fontFamily: "qpc-warsh",
+    fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
+  });
+  const overlay = page.locator(".mfp-portal-root");
+  const lines = overlay.locator('.qcm-lines[data-warsh="true"]');
+
+  await expect(lines.locator(".qcm-word--warsh").first()).toBeVisible({ timeout: 30_000 });
+  await expect(lines.locator(".qcm-line")).toHaveCount(15);
+  await expect(lines.locator(".qcm-ayah-marker")).toHaveCount(5);
+  expect(await lines.textContent()).not.toMatch(/[\uFC00-\uFD1C]/u);
+  const typography = await lines.evaluate((element) => ({
+    family: getComputedStyle(element.querySelector(".qcm-word--warsh")).fontFamily,
+    wraps: [...element.querySelectorAll(".qcm-line")].map((line) => getComputedStyle(line).flexWrap),
+  }));
+  expect(typography.family).toMatch(/QPC Warsh|KFGQPC Warsh/i);
+  expect(new Set(typography.wraps)).toEqual(new Set(["nowrap"]));
+  await expect.poll(() => overlay.evaluate((root) => {
+    const pageBox = root.querySelector(".qcm-page").getBoundingClientRect();
+    return [...root.querySelectorAll(".qcm-word, .qcm-ayah-marker")].filter((word) => {
+      const box = word.getBoundingClientRect();
+      return box.left < pageBox.left - 2 || box.right > pageBox.right + 2;
+    }).length;
+  })).toBe(0);
+  await page.screenshot({ path: "test-results/fullscreen-reader-warsh-mobile.png" });
+});
+
+test("Warsh opening leaves keep the title, basmala and page 2 to 3 carry", async ({ page }) => {
+  await openFullscreenReader(page, { width: 632, height: 840 }, {
+    displayMode: "page",
+    currentSurah: 2,
+    currentPage: 2,
+    currentJuz: 1,
+    lastPosition: { surah: 2, ayah: 1, page: 2, juz: 1 },
+    riwaya: "warsh",
+    fontFamily: "qpc-warsh",
+    fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
+  });
+  const overlay = page.locator(".mfp-portal-root");
+  await expect(overlay.locator(".qcm-line--surah-header")).toBeVisible();
+  await expect(overlay.locator(".qcm-line--basmala")).toBeVisible();
+  await expect(overlay.locator(".qcm-ayah-marker")).toHaveCount(3);
+  await expect(overlay.locator(".qcm-lines")).not.toContainText("أُوْلَٰٓئِكَ");
+
+  await overlay.locator(".mfp-mobile-pagination button").first().click();
+  await expect(overlay.locator(".mfp-header__copy h2")).toContainText("Page 3");
+  await expect(overlay.locator('.qcm-line[data-line-number="1"]')).toContainText("أُوْلَٰٓئِكَ");
+  expect(await overlay.locator('.qcm-line[data-line-number="1"]').evaluate((line) => getComputedStyle(line).justifyContent)).toBe("center");
+});
+
+test("fullscreen page remains usable from 280px to 1920px and zoom persists", async ({ page }) => {
+  await openFullscreenReader(page, { width: 1280, height: 800 });
+  const overlay = page.locator(".mfp-portal-root");
+  const zoom = overlay.locator(".mfp-zoom-value");
+  const plus = overlay.getByRole("button", { name: "Zoom avant" });
+  await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
+  const baseFont = Number.parseFloat(await overlay.locator(".qcm-lines").evaluate((node) => getComputedStyle(node).fontSize));
+
+  await plus.click();
+  await expect(zoom).toHaveText("115%");
+  const zoomedFont = Number.parseFloat(await overlay.locator(".qcm-lines").evaluate((node) => getComputedStyle(node).fontSize));
+  expect(zoomedFont).toBeGreaterThan(baseFont);
+  const pageLabelBefore = await overlay.locator(".mfp-header__copy h2").textContent();
+  await overlay.locator(".mfp-side-nav--next").click();
+  await expect.poll(() => overlay.locator(".mfp-header__copy h2").textContent()).not.toBe(pageLabelBefore);
+  await expect(zoom).toHaveText("115%");
+
+  await overlay.getByRole("button", { name: "Fermer" }).click();
+  await expect(overlay).toBeHidden();
+  await page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first().click();
+  await expect(page.locator(".mfp-zoom-value")).toHaveText("115%");
+  await page.locator(".mfp-zoom-value").click();
+
+  for (const width of [280, 320, 360, 390, 414, 768, 1024, 1280, 1440, 1920]) {
+    await page.setViewportSize({ width, height: width < 600 ? 844 : 900 });
+    const contract = await page.locator(".mfp-portal-root").evaluate((root) => {
+      const viewport = root.querySelector(".mfp-viewport");
+      const controls = [...root.querySelectorAll("button")].filter((button) => button.getClientRects().length > 0);
+      const clippedControls = controls.filter((button) => {
+        const box = button.getBoundingClientRect();
+        return box.left < -1 || box.right > innerWidth + 1 || box.top < -1 || box.bottom > innerHeight + 1;
+      }).length;
+      const words = [...root.querySelectorAll(".qcm-word")];
+      const pageBox = root.querySelector(".qcm-page")?.getBoundingClientRect();
+      const clippedWords = pageBox ? words.filter((word) => {
+        const box = word.getBoundingClientRect();
+        return box.left < pageBox.left - 2 || box.right > pageBox.right + 2;
+      }).length : 0;
+      return {
+        clippedControls,
+        clippedWords,
+        canScrollX: viewport.scrollWidth >= viewport.clientWidth,
+      };
+    });
+    expect(contract.clippedControls, `${width}px controls`).toBe(0);
+    expect(contract.clippedWords, `${width}px Arabic words`).toBe(0);
+    expect(contract.canScrollX).toBe(true);
+  }
 });

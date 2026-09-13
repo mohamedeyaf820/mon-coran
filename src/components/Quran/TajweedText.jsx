@@ -16,7 +16,7 @@ import {
 } from '../../utils/tajweedHighlights';
 import useKaraokeWordIndex from '../../hooks/useKaraokeWordIndex';
 
-const AYAH_MARKER_TOKEN_RE = /^[\u06DD\u06DE\u06E9\uFD3F\uFD3E\d\u0660-\u0669\u06F0-\u06F9]+$/u;
+const AYAH_MARKER_TOKEN_RE = /^[\u06DD\u06DE\u06E9\uFC00-\uFD1C\uFD3F\uFD3E\d\u0660-\u0669\u06F0-\u06F9]+$/u;
 function isMarkerToken(str) {
     if (!str) return false;
     const compact = String(str).replace(/\s+/g, '');
@@ -443,6 +443,56 @@ function buildHighlightWords(segments) {
     }
     flush();
     return words;
+}
+
+function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajweedColors, ruleMetadata }) {
+    return (
+        <span className="quran-tajwid-text" dir="rtl" lang="ar" data-tajwid-render="word-fallback">
+            {words.map((word, wordIndex) => {
+                const firstRule = word.parts.flatMap((part) => part.rules || [])[0];
+                const ruleLabel = firstRule
+                    ? getRuleLabel(firstRule.ruleId, lang, ruleMetadata.get(firstRule.ruleId))
+                    : null;
+                const audioUrl = !word.isMarker && surahNum && ayahNumber
+                    ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
+                    : null;
+                const play = !word.isMarker
+                    ? (event) => {
+                        event.stopPropagation();
+                        playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordIndex + 1 });
+                    }
+                    : undefined;
+
+                return (
+                    <React.Fragment key={wordIndex}>
+                        <span
+                            className={word.isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                            data-tajwid-word={wordIndex}
+                            data-tajwid={firstRule?.ruleId}
+                            data-tajwid-name={ruleLabel?.name}
+                            data-tajwid-desc={ruleLabel?.desc}
+                            style={{ color: firstRule ? resolveRuleColor(firstRule.ruleId, tajweedColors) : "inherit" }}
+                            onClick={play}
+                            onKeyDown={play ? (event) => {
+                                if (event.key === "Enter" || event.key === " ") {
+                                    event.preventDefault();
+                                    play(event);
+                                }
+                            } : undefined}
+                            role={play ? "button" : undefined}
+                            tabIndex={play ? 0 : undefined}
+                            aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
+                        >
+                            {word.parts.map((part, partIndex) => part.type === "waqf"
+                                ? <WaqfSign key={partIndex} char={part.char} lang={lang} riwaya={riwaya} />
+                                : <React.Fragment key={partIndex}>{part.text}</React.Fragment>)}
+                        </span>
+                        {wordIndex < words.length - 1 ? (words[wordIndex + 1]?.isMarker ? "\u202F" : " ") : null}
+                    </React.Fragment>
+                );
+            })}
+        </span>
+    );
 }
 
 /**
@@ -928,9 +978,7 @@ const TajweedText = React.memo(function TajweedText({
         [riwaya],
     );
     const highlightWords = useMemo(
-        () => (TAJWEED_HIGHLIGHTS_SUPPORTED && segments && segments.length > 0
-            ? buildHighlightWords(segments)
-            : null),
+        () => (segments && segments.length > 0 ? buildHighlightWords(segments) : null),
         [segments],
     );
 
@@ -953,7 +1001,7 @@ const TajweedText = React.memo(function TajweedText({
         return <span>{text}</span>;
     }
 
-    if (highlightWords) {
+    if (TAJWEED_HIGHLIGHTS_SUPPORTED && highlightWords) {
         return (
             <TajweedHighlightWords
                 words={highlightWords}
@@ -969,11 +1017,10 @@ const TajweedText = React.memo(function TajweedText({
         );
     }
 
-    // Splitting connected Arabic glyphs across coloured spans can drop
-    // letters or crash older shaping engines. In browsers without the CSS
-    // Custom Highlight API, preserve the canonical text as one run. Tajweed
-    // colours are progressive enhancement; Quran text integrity is not.
-    return <span className="quran-tajwid-text" dir="rtl" lang="ar" data-tajwid-render="plain">{segments.map((segment) => segment.text).join('')}</span>;
+    // Older engines cannot paint sub-ranges without splitting the cursive run.
+    // Keep each Arabic word as one shaped text node and apply the first Tajwid
+    // rule to the whole word: colour precision is reduced, never text integrity.
+    return <TajweedWordFallback words={highlightWords} lang={lang} riwaya={riwaya} surahNum={surahNum} ayahNumber={ayahNumber} tajweedColors={tajweedColors} ruleMetadata={ruleMetadata} />;
 });
 
 export default TajweedText;

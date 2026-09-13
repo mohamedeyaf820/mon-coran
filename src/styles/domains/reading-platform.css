@@ -2546,13 +2546,13 @@ html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[d
 
 html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     direction: rtl;
-    justify-content: flex-start;
-    gap: 0 0.4em;
+    justify-content: space-between;
+    gap: 0;
     white-space: nowrap;
-    align-items: baseline;
-    padding-inline: 0.5em;
+    align-items: center;
+    padding-inline: 0;
 }
 
 html body :is(.app-root .quran-display--platform, .mfp-portal-root) .qcm-lines[data-warsh="true"] .qcm-line .qcm-word--warsh {

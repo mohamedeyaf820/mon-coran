@@ -100,14 +100,12 @@
 .mfp-zoom-value { min-width: 3.25rem; font-size: 0.7rem; font-weight: 750; font-variant-numeric: tabular-nums; }
 
 .mfp-viewport {
-  display: flex;
-  overflow-x: hidden;
-  overflow-y: auto;
+  display: block;
+  overflow: auto;
   flex: 1 1 auto;
-  align-items: center;
   padding: 1.5rem 1rem 5rem;
+  overscroll-behavior: contain;
 }
-.mfp-viewport .mfp-book { transform-origin: top center; }
 
 .mfp-side-nav {
   position: fixed;
@@ -214,103 +212,6 @@
   border-bottom-color: transparent;
 }
 
-/* --- Fallback sheet (Unicode flow when the page has no line data) ---------- */
-
-.mfp-portal-root .mfp-book--flow .cpv-container {
-  --mushaf-paper: var(--reader-page-paper);
-  --mushaf-ink: var(--reader-page-ink);
-  --mushaf-muted: var(--reader-page-muted);
-  --mushaf-accent: var(--primary, #0b6235);
-  container-type: inline-size;
-  position: relative;
-  width: min(100%, 760px);
-  margin-inline: auto;
-  padding: clamp(1.4rem, 3vw, 2.2rem) clamp(1.5rem, 4vw, 3rem) clamp(1.4rem, 3vw, 2rem);
-  aspect-ratio: 1 / 1.38;
-  display: flex;
-  flex-direction: column;
-  border: 1.5px solid var(--mushaf-gold);
-  outline: 1px solid color-mix(in srgb, var(--mushaf-gold) 36%, transparent);
-  outline-offset: -8px;
-  border-radius: 0.3rem;
-  background: var(--reader-page-paper);
-  color: var(--reader-page-ink);
-  box-shadow: var(--reader-page-shadow);
-}
-
-.mfp-portal-root .mfp-book--flow .mushaf-page-wrapper > .pointer-events-none.mb-0,
-.mfp-portal-root .mfp-book--flow .mushaf-corner {
-  display: none;
-}
-
-.mfp-portal-root .mfp-book--flow .mushaf-page-header {
-  display: flex;
-  justify-content: space-between;
-  direction: ltr;
-  margin-bottom: 1.1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--mushaf-gold) 40%, transparent);
-  color: var(--reader-page-muted);
-  font-family: var(--font-quran, serif);
-  font-size: 0.85rem;
-}
-
-.mfp-portal-root .mfp-book--flow .mushaf-header-sep {
-  display: none;
-}
-
-/* A full line of the Madani mushaf holds nine to ten words: derive the size
-   from the sheet width instead of the list font preference. */
-.mfp-portal-root .mfp-book--flow .mushaf-text-block {
-  --cpv-font-size: clamp(17px, 3.1cqw, 30px) !important;
-  font-size: clamp(17px, 3.1cqw, 30px) !important;
-  line-height: 2 !important;
-  word-spacing: 0 !important;
-  text-align: justify;
-  text-align-last: right;
-  text-justify: inter-word;
-  color: var(--reader-page-ink);
-}
-
-/* Pages 1 and 2 are set centred inside the frame, as in the printed mushaf. */
-.mfp-portal-root .mfp-book--flow[data-page-kind="opening"] .mushaf-text-block {
-  max-width: 82%;
-  margin: auto;
-  text-align: center;
-  text-align-last: center;
-}
-
-.mfp-portal-root .mfp-book--flow .mushaf-page-footer {
-  display: flex;
-  justify-content: center;
-  margin-top: auto;
-  padding-top: 1rem;
-  color: var(--reader-page-muted);
-  font-size: 0.85rem;
-}
-
-.mfp-portal-root .mfp-book--flow .mushaf-page-number-medallion {
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  font-weight: 500;
-}
-
-/* Surah band: a rule with the calligraphic name, no card, no shadow. */
-.mfp-portal-root .cpv-surah-title-box {
-  border-color: color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
-  border-radius: 0.3rem;
-  background: transparent;
-  box-shadow: none;
-}
-
-.mfp-portal-root .cpv-surah-name-tr {
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  text-transform: none;
-  color: var(--reader-page-muted);
-}
-
 /* --- Overlay chrome -------------------------------------------------------- */
 
 .mfp-portal-root .mfp-riwaya {
@@ -353,19 +254,21 @@
 }
 
 #root ~ .mfp-portal-root .mfp-book--exact {
-  width: fit-content;
-  max-width: 100%;
+  width: max-content;
+  max-width: none;
   margin-inline: auto;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
   grid-template-columns: auto minmax(0, max-content) auto;
+  width: max-content;
+  min-width: 100%;
   padding-block: 0.75rem 1rem;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-page {
   width: max-content;
-  max-width: 100%;
+  max-width: none;
   min-height: 0;
   padding: 1rem clamp(1.1rem, 4vw, 2.25rem) 0.9rem;
 }
@@ -387,7 +290,7 @@
   width: var(--mfp-line-measure);
   max-width: 100%;
   margin-inline: auto;
-  font-size: var(--mfp-font);
+  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1));
   line-height: 1;
   min-height: 0;
   grid-template-rows: repeat(15, var(--mfp-line-pitch));
@@ -422,6 +325,19 @@
 #root ~ .mfp-portal-root .mfp-book .qcm-line--surah-end {
   justify-content: center;
   gap: 0.3em;
+}
+
+/* The two illuminated opening leaves use a narrower, centred text block in
+   print. Keep their title, basmala and short verses together around the
+   optical centre instead of leaving the composition stuck to the top. */
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines {
+  position: relative;
+  top: 1.5em;
+  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 1.08);
+}
+
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-warsh="true"] {
+  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 1.04);
 }
 
 /* Surah title band: a thin double frame around the calligraphic name. */
@@ -460,7 +376,7 @@
   .mfp-portal-root {
     --mfp-chrome: 230px;
     --mfp-hchrome: 44px;
-    --mfp-min-font: 16px;
+    --mfp-min-font: 14px;
   }
 
   #root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
@@ -502,6 +418,24 @@
   .mfp-mobile-pagination { gap: 0.25rem; color: var(--mfp-btn-text); font-size: 0.72rem; }
 }
 
+#root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] {
+  /* Unicode Warsh has wider natural word metrics than the page-specific QCF
+     Hafs glyphs. Keep the same physical line measure while giving glyph
+     overhangs and stacked marks a small safety margin. */
+  width: calc(var(--mfp-line-measure) / 0.96);
+  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 0.96);
+  line-height: 1;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] .qcm-line {
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.16em;
+  padding-inline: 0.12em;
+  font-size: calc(1em * var(--qcm-line-fit, 1));
+}
+
 @media (max-width: 380px) {
   .mfp-header__copy { display: none; }
   .mfp-zoom-value { min-width: 44px; padding: 0; }
@@ -513,24 +447,22 @@
    the motion uses the separate translate property. */
 @media (prefers-reduced-motion: no-preference) {
   .mfp-portal-root .mfp-book[data-turn="next"] {
-    animation: mfp-turn-next 240ms ease-out;
+    animation: mfp-turn-next 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .mfp-portal-root .mfp-book[data-turn="prev"] {
-    animation: mfp-turn-prev 240ms ease-out;
+    animation: mfp-turn-prev 180ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 }
 
 @keyframes mfp-turn-next {
   from {
-    opacity: 0;
-    translate: -3% 0;
+    translate: -1.25% 0;
   }
 }
 
 @keyframes mfp-turn-prev {
   from {
-    opacity: 0;
-    translate: 3% 0;
+    translate: 1.25% 0;
   }
 }

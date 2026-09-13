@@ -266,9 +266,10 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
     // WebKit does not paint custom highlights inside user-select: none.
     expect(contract.firstWordUserSelect).not.toBe("none");
   } else {
-    expect(contract.render).toBe("plain");
+    expect(contract.render).toBe("word-fallback");
     expect(contract.segments).toBe(0);
     expect(contract.joiners).toBe(0);
+    expect(contract.firstWordChildren).toBeGreaterThanOrEqual(1);
   }
 });
 

@@ -35,7 +35,7 @@ function mockQuranComVerse(
     ? FATIHA_WORDS[2]
     : withWaqfSigns && Number(ayah) === 2
       ? text.split(/\s+/)
-      : canonicalWords;
+      : canonicalWords.length > 0 ? canonicalWords : text.split(/\s+/);
   return {
     id: Number(surah) * 1000 + ayah,
     chapter_id: Number(surah),
@@ -71,6 +71,7 @@ function mockQuranComVerse(
       location: `${surah}:${ayah}:${index + 1}`,
       position: index + 1,
       page_number: page,
+      line_number: 1 + ((Number(ayah) - 1) % 15),
       text_uthmani: word,
       text_uthmani_tajweed:
         index === 0
@@ -121,6 +122,51 @@ function mockWarshVerses(surah, { withWaqfSigns = false } = {}) {
         ? "أَلَٓمِّٓۖ اَ۫للَّهُ لَآ إِلَٰهَ إِلَّا هُوَۖ اَ۫لْحَيُّ اُ۫لْقَيُّومُ"
         : `نَصُّ وَرْشٍ التَّجْرِيبِيُّ ${index + 1}`,
   }));
+}
+
+function mockLegacyWarshPage(page = 50) {
+  const ranges = [[1, 4, 35], [4, 9, 41], [9, 11, 21], [11, 13, 14], [13, 15, 20]];
+  const vocabulary = ["وَبَشِّرِ", "اَ۬لذِينَ", "ءَامَنُواْ", "وَعَمِلُواْ", "اُ۬لصَّٰلِحَٰتِ", "رُزِقُواْ", "مُتَشَٰبِهاٗ"];
+  return ranges.map(([lineStart, lineEnd, wordCount], index) => ({
+    id: page * 100 + index + 1,
+    sura_no: 3,
+    aya_no: index + 1,
+    page: String(page),
+    jozz: 3,
+    line_start: lineStart,
+    line_end: lineEnd,
+    aya_text: `${Array.from({ length: wordCount }, (_, wordIndex) => vocabulary[(wordIndex + index) % vocabulary.length]).join(" ")}\u00A0${String.fromCharCode(0xFC00 + index)}`,
+  }));
+}
+
+function mockLegacyWarshOpeningPages() {
+  const records = [
+    [2, 1, 3, 4, "أَلَٓمِّٓۖ ذَٰلِكَ اَ۬لْكِتَٰبُ لَا رَيْبَۖ فِيهِ هُدىٗ لِّلْمُتَّقِينَ"],
+    [2, 2, 4, 5, "اَ۬لذِينَ يُومِنُونَ بِالْغَيْبِ وَيُقِيمُونَ اَ۬لصَّلَوٰةَ وَمِمَّا رَزَقْنَٰهُمْ يُنفِقُونَۖ"],
+    [2, 3, 5, 6, "وَالذِينَ يُومِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِالَاخِرَةِ هُمْ يُوقِنُونَ"],
+    [2, 4, 7, 8, "أُوْلَٰٓئِكَ عَلَىٰ هُدىٗ مِّن رَّبِّهِمْۖ وَأُوْلَٰٓئِكَ هُمُ اُ۬لْمُفْلِحُونَۖ"],
+    [3, 5, 1, 3, "إِنَّ اَ۬لذِينَ كَفَرُواْ سَوَآءٌ عَلَيْهِمُۥٓ ءَآنذَرْتَهُمُۥٓ أَمْ لَمْ تُنذِرْهُمْ لَا يُومِنُونَۖ"],
+    [3, 6, 3, 7, "خَتَمَ اَ۬للَّهُ عَلَىٰ قُلُوبِهِمْ وَعَلَىٰ سَمْعِهِمْۖ وَعَلَىٰٓ أَبْصٰ۪رِهِمْ غِشَٰوَةٞۖ وَلَهُمْ عَذَابٌ عَظِيمٞۖ"],
+    [3, 7, 7, 11, "وَمِنَ اَ۬لنَّاسِ مَنْ يَّقُولُ ءَامَنَّا بِاللَّهِ وَبِالْيَوْمِ اِ۬لَاخِرِ وَمَا هُم بِمُومِنِينَۖ"],
+    [3, 8, 11, 15, "يُخَٰدِعُونَ اَ۬للَّهَ وَالذِينَ ءَامَنُواْۖ وَمَا يُخَٰدِعُونَ إِلَّآ أَنفُسَهُمْ وَمَا يَشْعُرُونَۖ"],
+  ];
+  return records.map(([page, ayah, lineStart, lineEnd, text]) => ({
+    id: page * 100 + ayah,
+    sura_no: 2,
+    aya_no: ayah,
+    page: String(page),
+    jozz: 1,
+    line_start: lineStart,
+    line_end: lineEnd,
+    aya_text: `${text}\u00A0${String.fromCharCode(0xFC00 + ayah - 1)}`,
+  }));
+}
+
+function mockLegacyWarshDataset() {
+  return [
+    ...mockLegacyWarshOpeningPages(),
+    ...[49, 50, 51].flatMap((page) => mockLegacyWarshPage(page)),
+  ];
 }
 
 export async function installQuranNetworkFixtures(page, options = {}) {
@@ -180,6 +226,13 @@ export async function installQuranNetworkFixtures(page, options = {}) {
       await route.fulfill({
         json: mockWarshVerses(Number(match?.[1] || 1), options),
       });
+    },
+  );
+
+  await page.route(
+    (url) => url.pathname.endsWith("/warshData_v2-1.json"),
+    async (route) => {
+      await route.fulfill({ json: mockLegacyWarshDataset() });
     },
   );
 }
