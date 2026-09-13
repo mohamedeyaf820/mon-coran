@@ -659,8 +659,16 @@ function TajweedHighlightWords({
                                 onClick={!word.isMarker
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}
-                                role="button"
-                                tabIndex={0}
+                                onKeyDown={!word.isMarker
+                                    ? (event) => {
+                                        if (event.key === "Enter" || event.key === " ") {
+                                            event.preventDefault();
+                                            handleWordClick(event, wordIndex, audioUrl);
+                                        }
+                                    }
+                                    : undefined}
+                                role={word.isMarker ? undefined : "button"}
+                                tabIndex={word.isMarker ? undefined : 0}
                                 aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
@@ -790,7 +798,10 @@ function groupSegmentsIntoWords(segments) {
     return words;
 }
 
-function TajweedSegmentWords({
+// Kept temporarily for comparison while the safe, unsegmented fallback rolls
+// out across supported WebKit versions.
+// eslint-disable-next-line no-unused-vars
+function _TajweedSegmentWords({
     segments,
     lang,
     riwaya,
@@ -958,17 +969,11 @@ const TajweedText = React.memo(function TajweedText({
         );
     }
 
-    return (
-        <TajweedSegmentWords
-            segments={segments}
-            lang={lang}
-            riwaya={riwaya}
-            surahNum={surahNum}
-            ayahNumber={ayahNumber}
-            tajweedColors={tajweedColors}
-            ruleMetadata={ruleMetadata}
-        />
-    );
+    // Splitting connected Arabic glyphs across coloured spans can drop
+    // letters or crash older shaping engines. In browsers without the CSS
+    // Custom Highlight API, preserve the canonical text as one run. Tajweed
+    // colours are progressive enhancement; Quran text integrity is not.
+    return <span className="quran-tajwid-text" dir="rtl" lang="ar" data-tajwid-render="plain">{segments.map((segment) => segment.text).join('')}</span>;
 });
 
 export default TajweedText;

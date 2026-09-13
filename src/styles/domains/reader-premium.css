@@ -503,11 +503,11 @@ html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   15. CANONICAL QURAN TYPOGRAPHY
-   This is the final reader cascade layer. Keep Unicode Quran text in one
-   natural RTL shaping run across Liste and Mushaf. Valid waqf signs remain
-   in the source; only spacing introduced by legacy UI layers is neutralised.
-   ═══════════════════════════════════════════════════════════════ */
+    15. CANONICAL QURAN TYPOGRAPHY
+    This is the final reader cascade layer. Keep Unicode Quran text in one
+    natural RTL shaping run across Liste and Mushaf. Valid waqf signs remain
+    in the source; only spacing introduced by legacy UI layers is neutralised.
+    ═══════════════════════════════════════════════════════════════ */
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card .qc-ayah-text-ar,
@@ -523,17 +523,17 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     text-rendering: optimizeLegibility;
     -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
     font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card .qc-ayah-text-ar {
     line-height: var(--quran-line-height, 1.76) !important;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
     line-height: var(--quran-line-height, 1.64) !important;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
@@ -542,7 +542,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     letter-spacing: inherit !important;
     word-spacing: inherit !important;
     line-height: inherit !important;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
@@ -558,13 +558,13 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     opacity: 0.72 !important;
     transform: none !important;
     white-space: nowrap !important;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {
     margin-inline: 0 !important;
     padding-inline: 0 !important;
-}
+  }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block
@@ -572,6 +572,41 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     margin-inline-start: 0.12em !important;
     margin-inline-end: 0.7em !important;
     padding-inline: 0 !important;
+  }
+
+/* Ensure RTL and inline Arabic typography is consistent across all Quran surfaces,
+   including the fullscreen portal. This overrides portal-specific CSS for proper
+   Arabic text flow and rendering. */
+html body .mfp-portal-root [dir="rtl"] .quran-canonical-text,
+html body .mfp-portal-root [dir="rtl"] .quran-canonical-text > span,
+html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
+html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text > span,
+html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
+html body .mfp-portal-root [dir="rtl"] .mfp-ayah > span,
+html body .mfp-portal-root [dir="rtl"] .verse-text,
+html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
+html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
+    display: inline !important;
+    letter-spacing: 0 !important;
+    word-spacing: 0 !important;
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+}
+
+html body .mfp-portal-root [dir="rtl"] .quran-canonical-text,
+html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
+html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
+html body .mfp-portal-root [dir="rtl"] .mfp-ayah > span,
+html body .mfp-portal-root [dir="rtl"] .verse-text,
+html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
+html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
+    direction: rtl !important;
+    unicode-bidi: plaintext !important;
+    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
+    font-kerning: normal !important;
+    text-rendering: optimizeLegibility !important;
+    font-synthesis: none !important;
 }
 
 /* ═══════════════════════════════════════════════════════════════

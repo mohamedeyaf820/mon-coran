@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import "../styles/readerStyles.js";
@@ -72,6 +73,7 @@ export default function QuranDisplay() {
     shallowEqual,
   );
   const [activeAyah, setActiveAyah] = useState(null);
+  const fullscreenTriggerRef = useRef(null);
 
   // Preload fullscreen bundle in background so first open is instant
   useEffect(() => {
@@ -224,7 +226,9 @@ export default function QuranDisplay() {
     ],
   );
 
-  const openImmersiveMushaf = useCallback(async () => {
+  const openImmersiveMushaf = useCallback(async (event) => {
+    fullscreenTriggerRef.current =
+      event?.currentTarget || document.activeElement || null;
     // The verse at the top of the viewport, so that the book opens where the
     // reader is, not where the last navigation landed.
     const ayahInView = (() => {
@@ -612,7 +616,10 @@ export default function QuranDisplay() {
               onNextPage={navigation.goNextPage}
               onPlayAyah={playAyah}
               onPrevPage={navigation.goPrevPage}
+              returnFocusRef={fullscreenTriggerRef}
               riwaya={riwaya}
+              isPlaying={isPlaying}
+              audioAyah={currentPlayingAyah}
             />
           </Suspense>
         ) : null}

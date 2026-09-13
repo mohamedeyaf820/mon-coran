@@ -226,11 +226,11 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
 
   // An Arabic book is leafed from left to right: the left arrow key and the
   // left edge button go forward, the right ones go back, Escape closes.
-  assert.match(overlay, /if \(e\.key === "ArrowLeft"\) \{[\s\S]*?turnRef\.current = "next"/);
-  assert.match(overlay, /if \(e\.key === "ArrowRight"\) \{[\s\S]*?turnRef\.current = "prev"/);
-  assert.match(overlay, /if \(e\.key === "Escape"\) \{ onClose\(\)/);
-  assert.match(overlay, /onClick=\{handleNext\}[\s\S]*?left: "0\.75rem"/);
-  assert.match(overlay, /onClick=\{handlePrev\}[\s\S]*?right: "0\.75rem"/);
+  assert.match(overlay, /event\.key === "ArrowLeft"[\s\S]*?handleNext\(\)/);
+  assert.match(overlay, /event\.key === "ArrowRight"[\s\S]*?handlePrev\(\)/);
+  assert.match(overlay, /event\.key === "Escape"[\s\S]*?onClose\(\)/);
+  assert.match(overlay, /className="mfp-side-nav mfp-side-nav--next"[\s\S]*?onClick=\{handleNext\}/);
+  assert.match(overlay, /className="mfp-side-nav mfp-side-nav--prev"[\s\S]*?onClick=\{handlePrev\}/);
   assert.match(overlay, /onTouchEnd=\{handleTouchEnd\}/);
   assert.match(overlay, /key=\{currentPage\}/);
   assert.match(overlay, /data-turn=\{turnRef\.current/);
@@ -271,12 +271,19 @@ test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page contro
   assert.match(overlay, /aria-label=\{t\("audio\.close", lang\)\}/);
   assert.match(overlay, /aria-label="Zoom arrière"/);
   assert.match(overlay, /aria-label="Zoom avant"/);
-  assert.match(overlay, /aria-label="Page suivante"/);
-  assert.match(overlay, /aria-label="Page précédente"/);
+  assert.match(overlay, /aria-label=\{t\("nav\.nextPage", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("nav\.prevPage", lang\)\}/);
   assert.match(overlay, /className="mfp-mobile-footer"/);
-  assert.match(overlay, /className="mfp-riwaya"/);
+  assert.match(overlay, /className=\{`mfp-audio-controls/);
+  assert.match(overlay, /audioService\.toggle\(\)/);
+  assert.match(overlay, /onClick=\{onOpenPlayer\}/);
+  assert.match(overlay, /document\.body\.classList\.add\("mfp-open"\)/);
+  assert.match(overlay, /"--font-quran": quranFontFamily/);
+  assert.doesNotMatch(overlay, /event\.key === "Enter"[\s\S]*?onPlayAyah/);
   assert.match(overlay, /onPlayAyah=\{onPlayAyah\}/);
   assert.match(display, /onOpenPlayer=\{openImmersiveAudioPlayer\}/);
+  assert.match(display, /isPlaying=\{isPlaying\}/);
+  assert.match(display, /audioAyah=\{currentPlayingAyah\}/);
   assert.match(display, /onClose=\{\(\) => view\.setFullPage\(false\)\}/);
 });
 

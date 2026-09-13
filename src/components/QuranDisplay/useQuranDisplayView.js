@@ -65,15 +65,6 @@ export default function useQuranDisplayView({
   }, []);
 
   useEffect(() => {
-    if (!fullPage) return undefined;
-    const handler = (event) => {
-      if (event.key === "Escape") setFullPage(false);
-    };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [fullPage]);
-
-  useEffect(() => {
     let frameId;
     const updateWidth = () => {
       window.cancelAnimationFrame(frameId);
