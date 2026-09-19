@@ -558,23 +558,37 @@
   color: var(--reader-page-ink);
 }
 
-/* Warsh: natural flow with subtle per-line fit scale (NOT space-between). */
+/* Warsh prints as one continuous justified flow, like the Madinah mushaf:
+   words wrap typographically inside .qcm-flow segments, and the renderer's
+   fit loop scales --qcm-flow-fit (the glyph size) until the segments fill
+   exactly the fifteen printed lines. The block is plain flow, not a 15-row
+   grid: the surah openings (one .qcm-line each) and the wrapped body share
+   the same constant row pitch, so the sheet never drifts off the grid. */
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] {
-  width: calc(var(--mfp-line-measure) / 0.96);
-  font-size: calc(var(--mfp-font) * 0.96);
-  line-height: 1;
+  display: block;
+  width: var(--mfp-line-measure);
+  font-size: var(--mfp-font);
+  line-height: var(--mfp-line-pitch);
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] .qcm-line {
-  flex-wrap: nowrap;
+  /* A title band or basmala occupies exactly one printed line. */
+  display: flex;
   align-items: center;
-  /* Warsh uses a proportional font (not glyphs cut to fill), so short rows
-     are centred like a printed Mushaf centres a short line; full rows fill
-     the measure through the per-line fit scale. Never space-between. */
   justify-content: center;
-  gap: 0;
-  padding-inline: 0.05em;
-  font-size: calc(1em * var(--qcm-line-fit, 1));
+  height: var(--mfp-line-pitch);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-flow {
+  /* Glyphs scale with the fit; the line-height divides the same factor out
+     so every wrapped row keeps the page's constant pitch. Full rows are
+     justified to the measure, the last row of a segment is centred —
+     exactly how the printed sheet sets continuous ayahs. */
+  font-size: calc(1em * var(--qcm-flow-fit, 1));
+  line-height: calc(var(--mfp-line-pitch) / var(--qcm-flow-fit, 1));
+  direction: rtl;
+  text-align: justify;
+  text-align-last: center;
 }
 
 /* Narrow screens: no side gutters, the sheet takes the width. */

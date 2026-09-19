@@ -9,6 +9,49 @@ import { getSurahMeta } from "./mushafPageComposition";
  * differs, so the caller supplies renderWord and (for Warsh) a per-line
  * fit style.
  */
+export function SurahHeaderLine({ surah, lineNumber }) {
+  const surahMeta = getSurahMeta(surah);
+  return (
+    <div
+      className="qcm-line qcm-line--surah-header"
+      data-line-number={lineNumber}
+    >
+      <span
+        className="qcm-surah-title"
+        role="heading"
+        aria-level={2}
+        aria-label={`سورة ${surahMeta?.ar || surah}`}
+      >
+        <span
+          className="qcm-surah-title__name font-surah-names"
+          dir="ltr"
+          lang="en"
+          aria-hidden="true"
+        >
+          {getSurahLigature(surah)}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+export function BasmalaLine({ surah, lineNumber, riwaya, fallbackFontFamily }) {
+  return (
+    <div
+      className="qcm-line qcm-line--basmala"
+      data-line-number={lineNumber}
+    >
+      <span
+        className="qcm-basmala"
+        lang="ar"
+        style={{ fontFamily: fallbackFontFamily }}
+      >
+        {getBasmalaText(riwaya)}
+      </span>
+    </div>
+  );
+}
+
 export default function MushafPageLines({
   fallbackFontFamily,
   lineStyleFor,
@@ -28,46 +71,19 @@ export default function MushafPageLines({
     >
       {lines.map((line) => {
         if (line.kind === "surah-header") {
-          const surahMeta = getSurahMeta(line.surah);
           return (
-            <div
-              key={line.lineNumber}
-              className="qcm-line qcm-line--surah-header"
-              data-line-number={line.lineNumber}
-            >
-              <span
-                className="qcm-surah-title"
-                role="heading"
-                aria-level={2}
-                aria-label={`سورة ${surahMeta?.ar || line.surah}`}
-              >
-                <span
-                  className="qcm-surah-title__name font-surah-names"
-                  dir="ltr"
-                  lang="en"
-                  aria-hidden="true"
-                >
-                  {getSurahLigature(line.surah)}
-                </span>
-              </span>
-            </div>
+            <SurahHeaderLine key={line.lineNumber} surah={line.surah} lineNumber={line.lineNumber} />
           );
         }
         if (line.kind === "basmala") {
           return (
-            <div
+            <BasmalaLine
               key={line.lineNumber}
-              className="qcm-line qcm-line--basmala"
-              data-line-number={line.lineNumber}
-            >
-              <span
-                className="qcm-basmala"
-                lang="ar"
-                style={{ fontFamily: fallbackFontFamily }}
-              >
-                {getBasmalaText(riwaya)}
-              </span>
-            </div>
+              surah={line.surah}
+              lineNumber={line.lineNumber}
+              riwaya={riwaya}
+              fallbackFontFamily={fallbackFontFamily}
+            />
           );
         }
         const lineClass = line.words.length === 0

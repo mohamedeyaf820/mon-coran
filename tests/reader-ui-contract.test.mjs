@@ -512,15 +512,17 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   assert.match(theme, /--gold: var\(--brand-gold, var\(--theme-accent\)\)/);
   assert.match(fonts, /--font-quran-warsh: "KFGQPC Warsh"/);
   assert.match(fonts, /font-synthesis: none/);
-  // The portal rule keeps Warsh words at the line measure; the renderer
-  // repeats 1em/inherit inline so the per-line fit scale is never defeated.
+  // The portal rule keeps Warsh words at the flow's own size; the renderer
+  // repeats 1em/inherit inline so the continuous-flow fit scale is never
+  // defeated by per-word overrides. Gaps between words come from the flow's
+  // justification, not from hardcoded inline spacing.
   assert.match(mushafBook, /\.qcm-word--warsh \{[\s\S]*?font-size: 1em;[\s\S]*?line-height: inherit;/);
+  assert.match(mushafBook, /\.qcm-flow \{[\s\S]*?text-align: justify;[\s\S]*?text-align-last: center;/);
+  assert.match(mushafBook, /--qcm-flow-fit/);
   assert.match(mushafPage, /fontSize: '1em'/);
   assert.match(mushafPage, /lineHeight: 'inherit'/);
-  assert.match(mushafPage, /wordSpacing: 0/);
   assert.match(mushafPage, /unicodeBidi: 'isolate'/);
-  assert.match(mushafPage, /marginInlineEnd: '0\.035em'/);
-  assert.doesNotMatch(mushafPage, /wordSpacing: '0\.05em'/);
+  assert.doesNotMatch(mushafPage, /marginInlineEnd|wordSpacing/);
   assert.match(readingPolish, /"Iowan Old Style", "Palatino Linotype", Georgia, serif/);
   assert.match(verseView, /className="qc-ayah-transliteration"/);
   assert.match(supplement, /className="ayah-transliteration" dir="ltr"/);

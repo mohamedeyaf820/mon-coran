@@ -3,9 +3,11 @@ import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mj
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
-async function openFullscreenReader(page, viewport, overrides = {}) {
+async function openFullscreenReader(page, viewport, overrides = {}, { live = false } = {}) {
   await page.setViewportSize(viewport);
-  await installQuranNetworkFixtures(page);
+  // The Warsh Mushaf specs run against the live pinned dataset: the service
+  // verifies its SHA-256 digest, which mock fixtures cannot satisfy.
+  if (!live) await installQuranNetworkFixtures(page);
   await page.addInitScript(({ key, overrides }) => {
     localStorage.setItem(key, JSON.stringify({
       skipSplashAnimation: true,
@@ -72,7 +74,7 @@ test("mobile fullscreen reader fits without clipped controls", async ({ page }) 
   await page.screenshot({ path: "test-results/fullscreen-reader-mobile.png" });
 });
 
-test("Warsh fullscreen uses the shared 15-line page with one marker per ayah", async ({ page }) => {
+test("Warsh fullscreen prints one continuous justified flow filling 15 lines", async ({ page }) => {
   await openFullscreenReader(page, { width: 390, height: 844 }, {
     displayMode: "page",
     currentPage: 50,
@@ -82,20 +84,40 @@ test("Warsh fullscreen uses the shared 15-line page with one marker per ayah", a
     riwaya: "warsh",
     fontFamily: "qpc-warsh",
     fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
-  });
+  }, { live: true });
   const overlay = page.locator(".mfp-portal-root");
   const lines = overlay.locator('.qcm-lines[data-warsh="true"]');
 
   await expect(lines.locator(".qcm-word--warsh").first()).toBeVisible({ timeout: 30_000 });
-  await expect(lines.locator(".qcm-line")).toHaveCount(15);
-  await expect(lines.locator(".qcm-ayah-marker")).toHaveCount(5);
+  // Ali 'Imran opens this page (title band + basmala) and its first nine
+  // ayahs flow as one continuous body, each closed by exactly one marker.
+  await expect(lines.locator(".qcm-ayah-marker")).toHaveCount(9);
+  await expect(lines.locator(".qcm-line--surah-header")).toHaveCount(1);
+  await expect(lines.locator(".qcm-line--basmala")).toHaveCount(1);
+  await expect(lines.locator(".qcm-flow")).toHaveCount(1);
   expect(await lines.textContent()).not.toMatch(/[\uFC00-\uFD1C]/u);
-  const typography = await lines.evaluate((element) => ({
-    family: getComputedStyle(element.querySelector(".qcm-word--warsh")).fontFamily,
-    wraps: [...element.querySelectorAll(".qcm-line")].map((line) => getComputedStyle(line).flexWrap),
-  }));
+  const typography = await lines.evaluate((element) => {
+    const flow = element.querySelector(".qcm-flow");
+    return {
+      family: getComputedStyle(element.querySelector(".qcm-word--warsh")).fontFamily,
+      align: getComputedStyle(flow).textAlign,
+      lastAlign: getComputedStyle(flow).textAlignLast,
+    };
+  });
   expect(typography.family).toMatch(/QPC Warsh|KFGQPC Warsh/i);
-  expect(new Set(typography.wraps)).toEqual(new Set(["nowrap"]));
+  expect(typography.align).toBe("justify");
+  expect(typography.lastAlign).toBe("center");
+
+  // The fit loop drives the type size until the openings plus the wrapped
+  // body fill exactly the fifteen printed lines of the Madani sheet.
+  await expect.poll(() => lines.evaluate((element) => {
+    const openingRows = element.querySelectorAll(".qcm-line").length;
+    const flowRows = [...element.querySelectorAll(".qcm-flow")].reduce((total, flow) => {
+      const pitch = Number.parseFloat(getComputedStyle(flow).lineHeight) || 1;
+      return total + Math.round(flow.offsetHeight / pitch);
+    }, 0);
+    return openingRows + flowRows;
+  }), null, { timeout: 15_000 }).toBe(15);
   await expect.poll(() => overlay.evaluate((root) => {
     const pageBox = root.querySelector(".qcm-page").getBoundingClientRect();
     return [...root.querySelectorAll(".qcm-word, .qcm-ayah-marker")].filter((word) => {
@@ -116,8 +138,9 @@ test("Warsh opening leaves keep the title, basmala and page 2 to 3 carry", async
     riwaya: "warsh",
     fontFamily: "qpc-warsh",
     fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
-  });
+  }, { live: true });
   const overlay = page.locator(".mfp-portal-root");
+  await expect(overlay.locator(".qcm-word--warsh").first()).toBeVisible({ timeout: 30_000 });
   await expect(overlay.locator(".qcm-line--surah-header")).toBeVisible();
   await expect(overlay.locator(".qcm-line--basmala")).toBeVisible();
   await expect(overlay.locator(".qcm-ayah-marker")).toHaveCount(3);
@@ -125,8 +148,12 @@ test("Warsh opening leaves keep the title, basmala and page 2 to 3 carry", async
 
   await overlay.locator(".mfp-mobile-pagination button").first().click();
   await expect(overlay.locator(".mfp-header__copy h2")).toContainText("Page 3");
-  await expect(overlay.locator('.qcm-line[data-line-number="1"]')).toContainText("أُوْلَٰٓئِكَ");
-  expect(await overlay.locator('.qcm-line[data-line-number="1"]').evaluate((line) => getComputedStyle(line).justifyContent)).toBe("center");
+  // Page 3 continues the ayah mid-flow: no new opening line, and the carried
+  // word starts the page's first justified segment.
+  await expect(overlay.locator('.qcm-lines[data-warsh="true"] .qcm-line')).toHaveCount(0);
+  await expect.poll(() => overlay.locator(".qcm-flow").first().evaluate((flow) =>
+    flow.textContent.trim().startsWith("أُوْلَٰٓئِكَ"),
+  ), null, { timeout: 15_000 }).toBe(true);
 });
 
 test("fullscreen page remains usable from 280px to 1920px and zoom persists", async ({ page }) => {

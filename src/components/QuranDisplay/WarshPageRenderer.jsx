@@ -3,14 +3,13 @@ import { ensureFontLoaded } from "../../services/fontLoader";
 import { resolveFontFamily, stripEmbeddedAyahMarkers } from "../../data/fonts";
 import { playWordAudio } from "../../utils/wordAudio";
 import AyahMarker from "../Quran/AyahMarker";
-import MushafPageLines from "./MushafPageLines";
+import { t } from "../../i18n";
+import { BasmalaLine, SurahHeaderLine } from "./MushafPageLines";
 import MushafPageShell from "./MushafPageShell";
 import {
   getPageMeta,
   getVerseKey,
-  markSurahEndings,
   normalizeArabicText,
-  placeSurahOpenings,
 } from "./mushafPageComposition";
 
 function getCleanWarshWords(ayah) {
@@ -26,53 +25,43 @@ function getCleanWarshWords(ayah) {
     .filter(Boolean);
 }
 
-// Words of a Warsh ayah flow across the printed lines the dataset records in
-// line_start/line_end (Madinah Mushaf, 15 lines per page). Those fields are
-// per-ayah, so multi-line ayahs distribute their words evenly inside their own
-// line range — the only layout claim the data supports. Ayahs missing the
-// metadata continue the flow from the previous line end instead of being
-// poured into a global grid.
+// Warsh prints like the Madinah mushaf: the ayahs of a surah flow across the
+// page as one continuous, justified body — a new ayah starts right after the
+// previous end marker, wherever that falls on the line — and the page fills
+// exactly fifteen lines. Line breaks are therefore typographic (the browser
+// breaks the flow, justification stretches the word spaces to the measure),
+// never a per-ayah claim the dataset cannot support. A surah opening breaks
+// the flow for its title band and basmala, then a fresh flow segment starts
+// below, and the short last line of each segment is centred, as printed.
 const WARSH_PAGE_LINES = 15;
-const WARSH_FALLBACK_WORDS_PER_LINE = 12;
+// Smallest legible Warsh type, as a fraction of the page body size: below it
+// the page reports a degraded fit instead of printing micro-glyphs.
+const WARSH_MIN_LINE_FIT = 0.45;
+const WARSH_MAX_LINE_FIT = 1.6;
 
-function groupWarshPageLines(ayahs) {
-  const linesByNumber = new Map();
-  let cursor = 1;
-
-  const push = (lineNumber, token) => {
-    if (!linesByNumber.has(lineNumber)) linesByNumber.set(lineNumber, []);
-    linesByNumber.get(lineNumber).push(token);
-  };
+function buildWarshSegments(ayahs) {
+  const segments = [];
+  let flow = null;
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
     const ayahNum = ayah.numberInSurah;
-    const warshWords = getCleanWarshWords(ayah);
-    if (warshWords.length === 0) return;
+    const words = getCleanWarshWords(ayah);
+    if (words.length === 0) return;
 
-    const metaStart = Number(ayah.lineStart) > 0 ? Number(ayah.lineStart) : null;
-    const metaEnd = Number(ayah.lineEnd) > 0 ? Number(ayah.lineEnd) : null;
-    const lineStart = Math.max(1, Math.min(WARSH_PAGE_LINES, metaStart ?? cursor));
-    const lineEnd = Math.max(
-      lineStart,
-      Math.min(
-        WARSH_PAGE_LINES,
-        metaEnd ??
-          lineStart + Math.ceil((warshWords.length + 1) / WARSH_FALLBACK_WORDS_PER_LINE) - 1,
-      ),
-    );
-    cursor = Math.min(WARSH_PAGE_LINES, lineEnd + 1);
-
-    const lineCount = lineEnd - lineStart + 1;
-    const lastIndex = warshWords.length - 1;
-    warshWords.forEach((text, idx) => {
-      // Even flow inside the ayah's own lines; the last word and the end
-      // marker always close on lineEnd, as in the printed mushaf.
-      const lineNumber =
-        idx === lastIndex
-          ? lineEnd
-          : Math.min(lineEnd, lineStart + Math.floor((idx * lineCount) / warshWords.length));
-      push(lineNumber, {
+    if (Number(ayahNum) === 1) {
+      segments.push({ kind: "surah-header", surah });
+      // Every Warsh surah but At-Tawbah carries its own basmala band, and
+      // in the Warsh count the Fatiha basmala is not verse 1.
+      if (Number(surah) !== 9) segments.push({ kind: "basmala", surah });
+      flow = null;
+    }
+    if (!flow) {
+      flow = { kind: "flow", tokens: [] };
+      segments.push(flow);
+    }
+    words.forEach((text, idx) => {
+      flow.tokens.push({
         charType: "word",
         globalAyah: ayah.number,
         surah,
@@ -82,8 +71,7 @@ function groupWarshPageLines(ayahs) {
         isWarsh: true,
       });
     });
-
-    push(lineEnd, {
+    flow.tokens.push({
       charType: "end",
       globalAyah: ayah.number,
       surah,
@@ -92,12 +80,7 @@ function groupWarshPageLines(ayahs) {
     });
   });
 
-  const pageLines = Array.from({ length: WARSH_PAGE_LINES }, (_, index) => ({
-    lineNumber: index + 1,
-    words: linesByNumber.get(index + 1) || [],
-  }));
-
-  return markSurahEndings(placeSurahOpenings(pageLines, { warsh: true }));
+  return segments;
 }
 
 export default function WarshPageRenderer({
@@ -116,10 +99,11 @@ export default function WarshPageRenderer({
   // re-measure signal for the fit loop.
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
-  const [lineFits, setLineFits] = useState({});
+  const [flowFit, setFlowFit] = useState(1);
+  const [fitDegraded, setFitDegraded] = useState(false);
   const linesRef = useRef(null);
 
-  const lines = useMemo(() => groupWarshPageLines(ayahs), [ayahs]);
+  const segments = useMemo(() => buildWarshSegments(ayahs), [ayahs]);
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang, riwaya),
     [ayahs, currentPage, lang, riwaya],
@@ -143,113 +127,116 @@ export default function WarshPageRenderer({
 
   const fitPassRef = useRef(0);
   const fitKeyRef = useRef("");
-  const fitsRef = useRef({});
-  fitsRef.current = lineFits;
 
   useLayoutEffect(() => {
     if (!linesRef.current) return undefined;
 
-    // A new page or line set restarts the refinement budget; a fit update
-    // alone keeps refining until every row converges inside its box instead
-    // of stopping after a single pass that still overflows.
-    const inputKey = `${currentPage}|${fontLoaded}|${lines.length}`;
+    // A new page, font load or segment set restarts the refinement budget.
+    // Row count is proportional to the type size (bigger glyphs fit fewer
+    // words per line), so each pass multiplies the fit by target/rows until
+    // the segments fill exactly the fifteen printed lines.
+    const inputKey = `${currentPage}|${fontLoaded}|${segments.length}|${ayahs.length}`;
     if (fitKeyRef.current !== inputKey) {
       fitKeyRef.current = inputKey;
       fitPassRef.current = 0;
     }
-    if (fitPassRef.current >= 8) return undefined;
+    if (fitPassRef.current >= 10) return undefined;
 
     let frame = 0;
-    let timer = 0;
     let disposed = false;
 
     const measure = () => {
-      if (disposed || fitPassRef.current >= 8) return;
+      if (disposed || fitPassRef.current >= 10) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
         if (disposed || !linesRef.current) return;
-        const next = {};
-        let stable = true;
-        linesRef.current.querySelectorAll(".qcm-line").forEach((line) => {
-          const children = [...line.children];
-          if (children.length === 0) return;
-          const lineRect = line.getBoundingClientRect();
-          const currentScale = Number.parseFloat(
-            getComputedStyle(line).getPropertyValue("--qcm-line-fit"),
-          ) || 1;
-          const left = Math.min(...children.map((child) => child.getBoundingClientRect().left));
-          const right = Math.max(...children.map((child) => child.getBoundingClientRect().right));
-          const naturalWidth = Math.max(1, (right - left) / currentScale);
-          // No readability floor: glyphs that cannot fit would spill outside
-          // the ornamental frame, which no printed mushaf ever allows. Small
-          // text stays inside; clipped text never would.
-          const fit = Math.max(0.05, Math.min(1, (lineRect.width - 6) / naturalWidth));
-          const key = line.dataset.lineNumber;
-          next[key] = fit;
-          if (Math.abs((fitsRef.current[key] || 1) - fit) >= 0.004) stable = false;
+        const root = linesRef.current;
+        const flows = [...root.querySelectorAll(".qcm-flow")];
+        if (flows.length === 0) return;
+        const openingRows = root.querySelectorAll(".qcm-line").length;
+        const target = WARSH_PAGE_LINES - openingRows;
+        let rows = 0;
+        flows.forEach((flow) => {
+          const pitch = Number.parseFloat(getComputedStyle(flow).lineHeight) || 1;
+          rows += Math.max(1, Math.round(flow.offsetHeight / pitch));
         });
-        if (stable || disposed) return;
-        fitPassRef.current += 1;
-        setLineFits(next);
-        window.clearTimeout(timer);
-        timer = window.setTimeout(() => {
-          if (!disposed) measure();
-        }, 120);
+        if (target <= 0) return;
+
+        setFlowFit((current) => {
+          const next = Math.min(
+            WARSH_MAX_LINE_FIT,
+            Math.max(WARSH_MIN_LINE_FIT, current * (target / rows)),
+          );
+          if (Math.abs(next - current) < 0.004) {
+            // Converged: degraded only when the floor still overflows the
+            // fifteen-line budget instead of silently printing a taller page.
+            setFitDegraded(current <= WARSH_MIN_LINE_FIT + 0.001 && rows > target);
+            fitPassRef.current = 10;
+            return current;
+          }
+          fitPassRef.current += 1;
+          if (fitPassRef.current < 10) {
+            window.setTimeout(measure, 60);
+          } else {
+            setFitDegraded(next <= WARSH_MIN_LINE_FIT + 0.001 && rows > target);
+          }
+          return next;
+        });
       });
     };
 
     measure();
     const onResize = () => {
       fitKeyRef.current = "";
-      fitsRef.current = {};
-      setLineFits({});
+      setFlowFit(1);
+      setFitDegraded(false);
+      window.setTimeout(measure, 120);
     };
     window.addEventListener("resize", onResize);
     return () => {
       disposed = true;
       cancelAnimationFrame(frame);
-      window.clearTimeout(timer);
       window.removeEventListener("resize", onResize);
     };
-  }, [currentPage, fontLoaded, lines]);
+  }, [currentPage, fontLoaded, segments, ayahs.length]);
 
-  const renderWord = (word, index) => {
-    const verseKey = getVerseKey(word);
+  const renderToken = (token, index) => {
+    const verseKey = getVerseKey(token);
     const isPlaying =
-      currentPlayingAyah?.surah === word.surah &&
-      currentPlayingAyah?.ayah === word.ayah;
-    const isActive = activeAyah === word.globalAyah;
+      currentPlayingAyah?.surah === token.surah &&
+      currentPlayingAyah?.ayah === token.ayah;
+    const isActive = activeAyah === token.globalAyah;
 
-    if (word.charType === "end") {
+    if (token.charType === "end") {
       return (
         <AyahMarker
           key={`${verseKey}:end:${index}`}
-          num={word.ayah}
+          num={token.ayah}
           isPlaying={isPlaying}
           className="qcm-ayah-marker"
           size="1.04em"
-          onClick={onToggleActive ? () => onToggleActive(word.globalAyah) : undefined}
+          onClick={onToggleActive ? () => onToggleActive(token.globalAyah) : undefined}
         />
       );
     }
 
     return (
       <span
-        key={`${verseKey}:${word.position || index}:warsh`}
+        key={`${verseKey}:${token.position || index}:warsh`}
         className={`qcm-word qcm-word--warsh${isPlaying ? " qcm-word--playing" : ""}${isActive ? " qcm-word--active" : ""}`}
-        data-surah-number={word.surah}
-        data-ayah-number={word.ayah}
-        data-ayah-global={word.globalAyah}
-        data-word-position={word.position}
+        data-surah-number={token.surah}
+        data-ayah-number={token.ayah}
+        data-ayah-global={token.globalAyah}
+        data-word-position={token.position}
         role="button"
         tabIndex={0}
         onClick={() => {
-          playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+          playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+            playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
           }
         }}
         style={{
@@ -257,7 +244,6 @@ export default function WarshPageRenderer({
           fontSize: '1em',
           lineHeight: 'inherit',
           letterSpacing: 0,
-          wordSpacing: 0,
           textRendering: 'optimizeLegibility',
           WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
           fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
@@ -265,25 +251,59 @@ export default function WarshPageRenderer({
           MozOsxFontSmoothing: 'grayscale',
           unicodeBidi: 'isolate',
           whiteSpace: 'nowrap',
-          marginInlineEnd: '0.035em',
         }}
       >
-        {normalizeArabicText(word.text)}
+        {normalizeArabicText(token.text)}
       </span>
     );
   };
 
+  let rowNumber = 0;
   return (
-    <MushafPageShell currentPage={currentPage} lang={lang} meta={meta}>
-      <MushafPageLines
-        fallbackFontFamily={fallbackFontFamily}
-        lineStyleFor={(lineNumber) => ({ "--qcm-line-fit": lineFits[lineNumber] || 1 })}
-        lines={lines}
-        linesRef={linesRef}
-        renderWord={renderWord}
-        riwaya={riwaya}
-        warsh
-      />
+    <MushafPageShell
+      currentPage={currentPage}
+      fontFailed={fitDegraded}
+      fontWarningText={fitDegraded ? t("quran.mushafDegradedNotice", lang) : undefined}
+      lang={lang}
+      meta={meta}
+    >
+      <div
+        ref={linesRef}
+        className="qcm-lines"
+        dir="rtl"
+        lang="ar"
+        data-warsh="true"
+        style={{ "--qcm-flow-fit": flowFit }}
+      >
+        {segments.map((segment, index) => {
+          if (segment.kind === "surah-header") {
+            rowNumber += 1;
+            return (
+              <SurahHeaderLine key={`h${index}`} surah={segment.surah} lineNumber={rowNumber} />
+            );
+          }
+          if (segment.kind === "basmala") {
+            rowNumber += 1;
+            return (
+              <BasmalaLine
+                key={`b${index}`}
+                surah={segment.surah}
+                lineNumber={rowNumber}
+                riwaya={riwaya}
+                fallbackFontFamily={fallbackFontFamily}
+              />
+            );
+          }
+          return (
+            <div key={`f${index}`} className="qcm-flow" data-flow-index={index}>
+              {segment.tokens.flatMap((token, tokenIndex) => [
+                renderToken(token, tokenIndex),
+                " ",
+              ])}
+            </div>
+          );
+        })}
+      </div>
     </MushafPageShell>
   );
 }
