@@ -5,9 +5,9 @@ import useArabicFontPreferences, {
   ARABIC_FONT_SIZE_MIN,
 } from "../hooks/useArabicFontPreferences";
 import {
+  getAyahMarkerFontFamily,
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
-  resolveFontFamily,
 } from "../data/fonts";
 import { cn } from "../lib/utils";
 
@@ -31,7 +31,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
     ? arabicFontFamily
     : availableFonts[0]?.id || "qpc-hafs";
   const markerPreview = getNativeAyahMarker(1, selectedFont, riwaya);
-  const markerFontFamily = resolveFontFamily(selectedFont, riwaya);
+  const markerFontFamily = getAyahMarkerFontFamily(selectedFont, riwaya);
 
   return (
     <div

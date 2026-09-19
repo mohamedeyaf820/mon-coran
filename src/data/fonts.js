@@ -152,8 +152,11 @@ const AYAH_MARKER_BY_FONT = {
   "qpc-indopak": { marker: "۝", digits: EXTENDED_ARABIC_INDIC_DIGITS },
   // Scheherazade and other Naskh fonts: U+06DD prefix with standard Arabic-Indic digits.
   "scheherazade-new": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
-  "amiri-quran": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
-  "noto-naskh-arabic": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
+  // Amiri Quran and Noto Naskh draw U+06DD as an empty or broken rosette that never
+  // composes the digits. Their markers are digits-only and shaped by the QPC Hafs calt
+  // rosette, forced on .native-ayah-marker via [data-quran-font] in riwaya-fonts.css.
+  "amiri-quran": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "noto-naskh-arabic": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // The locally hosted Warsh 10 face shapes the digit sequence as a rosette.
   "qpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // Warsh 10 also turns the digit sequence itself into the complete rosette.
@@ -259,6 +262,19 @@ export function normalizeFontId(id, riwaya = "hafs") {
 
 export function resolveFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
+  return FONT_MAP[normalizedId] || FONT_MAP[DEFAULT_FONT_ID];
+}
+
+// The family that actually shapes the verse-end marker. Amiri Quran and Noto
+// Naskh carry no composing rosette, so their digits-only markers are shaped by
+// the QPC Hafs calt rosette (mirrors the [data-quran-font] rule in riwaya-fonts.css).
+const QPC_SHAPED_MARKER_FONT_IDS = new Set(["amiri-quran", "noto-naskh-arabic"]);
+
+export function getAyahMarkerFontFamily(id, riwaya = "hafs") {
+  const normalizedId = normalizeFontId(id, riwaya);
+  if (riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS.has(normalizedId)) {
+    return FONT_MAP[DEFAULT_FONT_ID];
+  }
   return FONT_MAP[normalizedId] || FONT_MAP[DEFAULT_FONT_ID];
 }
 

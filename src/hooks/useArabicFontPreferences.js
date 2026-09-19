@@ -50,6 +50,10 @@ export default function useArabicFontPreferences() {
     async (nextFontFamily) => {
       const normalized = normalizeFontId(nextFontFamily, riwaya);
       await ensureFontLoaded(normalized);
+      if (normalized === "amiri-quran" || normalized === "noto-naskh-arabic") {
+        // Verse markers for these fonts are shaped by the QPC Hafs rosette.
+        await ensureFontLoaded("qpc-hafs");
+      }
       dispatch({ type: "SET_FONT_FAMILY", payload: normalized });
     },
     [dispatch, riwaya],

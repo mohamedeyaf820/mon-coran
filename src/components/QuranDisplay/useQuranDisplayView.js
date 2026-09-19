@@ -165,6 +165,7 @@ export default function useQuranDisplayView({
       element.style.setProperty("--quran-font-family", quranFontCss);
       element.dataset.qcf4Font = "false";
     }
+    element.dataset.quranFont = fontFamily;
 
     element
       .querySelectorAll(".verse-text, .mushaf-container, .quran-text, .qc-ayah-text-ar, .rd-arabic, .mushaf-verse, .cpv-verse, [lang='ar']:not(.mfp-content-area)")
