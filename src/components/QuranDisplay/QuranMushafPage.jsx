@@ -14,6 +14,7 @@ import {
   resolveFontFamily,
   stripEmbeddedAyahMarkers,
 } from "../../data/fonts";
+import { getBasmalaText } from "../../data/basmala";
 
 function decodeHtmlEntity(str) {
   if (!str) return "";
@@ -213,8 +214,6 @@ function groupWarshPageLines(ayahs) {
 
   return markSurahEndings(placeSurahOpenings(pageLines, { warsh: true }));
 }
-
-const BASMALA_TEXT = "بِسْمِ ٱللَّهِ ٱلرَّحْمَٰنِ ٱلرَّحِيمِ";
 
 function getSurahMeta(surah) {
   return SURAHS[Number(surah) - 1] || null;
@@ -637,7 +636,7 @@ export default function QuranMushafPage({
                     lang="ar"
                     style={{ fontFamily: fallbackFontFamily }}
                   >
-                    {BASMALA_TEXT}
+                    {getBasmalaText(riwaya)}
                   </span>
                 </div>
               );

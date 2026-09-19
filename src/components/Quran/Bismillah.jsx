@@ -1,5 +1,6 @@
 import React from "react";
 import { useAppLocale } from "../../context/AppContext";
+import { getBasmalaText } from "../../data/basmala";
 
 const BISMILLAH_TRANSLATIONS = {
   fr: "Au nom d'Allah, le Tout Miséricordieux, le Très Miséricordieux",
@@ -10,7 +11,7 @@ const BISMILLAH_TRANSLATIONS = {
 /**
  * Bismillah component renders the opening ornament.
  */
-const Bismillah = React.memo(function Bismillah() {
+const Bismillah = React.memo(function Bismillah({ riwaya }) {
   const { lang } = useAppLocale();
 
   return (
@@ -21,7 +22,7 @@ const Bismillah = React.memo(function Bismillah() {
           dir="rtl"
           style={{ fontFamily: "var(--qd-font-family, var(--font-quran, serif))" }}
         >
-          {"\u0628\u0650\u0633\u0652\u0645\u0650 \u0671\u0644\u0644\u0651\u064e\u0647\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0652\u0645\u064e\u0670\u0646\u0650 \u0671\u0644\u0631\u0651\u064e\u062d\u0650\u064a\u0645\u0650"}
+          {getBasmalaText(riwaya)}
         </span>
       </div>
       {lang !== "ar" && BISMILLAH_TRANSLATIONS[lang] && (

@@ -12,6 +12,7 @@ import { getSurah } from '../data/surahs';
 import { fetchQuranComText } from './quranComAPI';
 import { fetchWithTimeout } from './fetchWithTimeout';
 import { stripEmbeddedAyahMarkers } from '../data/fonts';
+import { WARSH_BASMALA } from '../data/basmala';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v6-s-';
@@ -558,7 +559,7 @@ export async function getWarshSurahFormatted(surahNum) {
 
   const bismillah = (surahNumber !== 9 && surahNumber !== 1)
     ? {
-      text: "بِسْمِ اِ۬للَّهِ اِ۬لرَّحْمَٰنِ اِ۬لرَّحِيمِ", // Warsh orthography for bismillah
+      text: WARSH_BASMALA,
       numberInSurah: 0,
       riwaya: 'warsh'
     }

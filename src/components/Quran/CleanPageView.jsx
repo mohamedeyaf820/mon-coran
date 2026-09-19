@@ -93,7 +93,7 @@ function CleanPageViewComponent({
                   className="mushaf-surah-header-inline w-full my-6 block pointer-events-none select-none"
                 >
                   <CleanPageSurahHeader surahMeta={sMeta} lang={lang} />
-                  {ayahSurahNum !== 9 && ayahSurahNum !== 1 && <Bismillah />}
+                  {ayahSurahNum !== 9 && ayahSurahNum !== 1 && <Bismillah riwaya={riwaya} />}
                 </div>,
               );
             }
