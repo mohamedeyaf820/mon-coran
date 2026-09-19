@@ -347,8 +347,8 @@ export function getNativeAyahMarker(value, fontId, riwaya = "hafs") {
  * (for example Scheherazade's U+06DD prefix) and then shaping it as QPC Hafs
  * creates two adjacent rosettes. Keep glyph and font source inseparable.
  */
-export function getUiAyahMarker(value) {
-  return getNativeAyahMarker(value, UI_AYAH_MARKER_FONT_ID, "hafs");
+export function getUiAyahMarker(value, fontId = UI_AYAH_MARKER_FONT_ID, riwaya = "hafs") {
+  return getNativeAyahMarker(value, fontId, riwaya);
 }
 
 export function stripEmbeddedAyahMarkers(text) {

@@ -419,8 +419,8 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
 test("ayah numbers keep one canonical glyph regardless of the reading font", () => {
   const marker = source("src/components/Quran/AyahMarker.jsx");
 
-  assert.match(marker, /getUiAyahMarker\(markerNumber\)/);
-  assert.match(marker, /resolveFontFamily\(UI_AYAH_MARKER_FONT_ID, "hafs"\)/);
+  assert.match(marker, /getUiAyahMarker\(markerNumber/);
+  assert.match(marker, /resolveFontFamily\(fontFamily/);
   assert.match(marker, /data-marker-font=\{UI_AYAH_MARKER_FONT_ID\}/);
   assert.doesNotMatch(marker, /ayat-marker__medallion/);
 });

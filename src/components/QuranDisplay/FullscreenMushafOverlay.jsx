@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ChevronLeft, ChevronRight, Minus, Pause, Play, Plus, Settings2, SkipBack, SkipForward, X } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -14,7 +14,25 @@ const MIN_ZOOM = 0.8;
 const MAX_ZOOM = 2.2;
 const ZOOM_STEP = 0.15;
 const ZOOM_STORAGE_KEY = "mushafplus-fullscreen-zoom";
+const TOTAL_PAGES = 604;
 const DARK_THEMES = new Set(["dark", "night-blue", "oled"]);
+const CHROME_HIDE_DELAY = 5500;
+
+// A Mushaf spread only shows two faces when there is real room for them and
+// the window is not portrait; otherwise a single leaf keeps its measure.
+function computeLayout(width, height) {
+  if (width < 1024) return "single";
+  if (height > width * 1.05) return "single";
+  return width >= 1150 ? "double" : "single";
+}
+
+// In the Madani Mushaf the first leaf is a right-hand page, so odd folios sit
+// on the right and even folios on the left. A spread pairs an odd page with the
+// next even page.
+function getSpread(page) {
+  const start = page % 2 === 1 ? page : page - 1;
+  return { right: Math.max(1, start), left: Math.min(TOTAL_PAGES, start + 1) };
+}
 
 function clampZoom(value) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
@@ -97,7 +115,10 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const swipeRef = useRef(null);
   const closeButtonRef = useRef(null);
   const turnRef = useRef(null);
+  const chromeTimerRef = useRef(0);
   const [zoom, setZoom] = useState(getInitialZoom);
+  const [layout, setLayout] = useState(() => (typeof window === "undefined" ? "single" : computeLayout(window.innerWidth, window.innerHeight)));
+  const [chromeVisible, setChromeVisible] = useState(true);
   const [pageCache, setPageCache] = useState(() => new Map(
     isPageScoped(ayahs, currentPage) ? [[currentPage, ayahs]] : [],
   ));
@@ -108,6 +129,51 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const currentJuz = ayahs[0]?.juz || getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const quranFontFamily = resolveFontFamily(state.fontFamily, riwaya);
   const hasAudioSession = Boolean(audioAyah || audioService.currentAyah || audioService.playlist.length || audioService.audio?.src);
+
+  const isDouble = layout === "double";
+  const spread = useMemo(() => getSpread(currentPage), [currentPage]);
+  const spreadPages = useMemo(
+    () => (isDouble && spread.right !== spread.left ? [spread.right, spread.left] : [currentPage]),
+    [currentPage, isDouble, spread.left, spread.right],
+  );
+
+  useEffect(() => {
+    const updateLayout = () => setLayout(computeLayout(window.innerWidth, window.innerHeight));
+    updateLayout();
+    window.addEventListener("resize", updateLayout);
+    window.addEventListener("orientationchange", updateLayout);
+    return () => {
+      window.removeEventListener("resize", updateLayout);
+      window.removeEventListener("orientationchange", updateLayout);
+    };
+  }, []);
+
+  // Chrome recedes after a few idle seconds so the leaf reads as a page, and
+  // returns on the next pointer, touch, wheel or key gesture.
+  const revealChrome = useCallback(() => {
+    setChromeVisible(true);
+    window.clearTimeout(chromeTimerRef.current);
+    chromeTimerRef.current = window.setTimeout(() => setChromeVisible(false), CHROME_HIDE_DELAY);
+  }, []);
+
+  useEffect(() => {
+    if (!fullPage) return undefined;
+    const onActivity = () => revealChrome();
+    window.addEventListener("pointermove", onActivity);
+    window.addEventListener("pointerdown", onActivity);
+    window.addEventListener("touchstart", onActivity, { passive: true });
+    window.addEventListener("keydown", onActivity);
+    window.addEventListener("wheel", onActivity, { passive: true });
+    revealChrome();
+    return () => {
+      window.removeEventListener("pointermove", onActivity);
+      window.removeEventListener("pointerdown", onActivity);
+      window.removeEventListener("touchstart", onActivity);
+      window.removeEventListener("keydown", onActivity);
+      window.removeEventListener("wheel", onActivity);
+      window.clearTimeout(chromeTimerRef.current);
+    };
+  }, [fullPage, revealChrome]);
 
   useEffect(() => {
     if (isPageScoped(ayahs, currentPage)) {
@@ -175,14 +241,24 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   }, [currentSurah, dispatch, isPageChanging, lang, riwaya, state.currentJuz, state.warshStrictMode]);
 
   const handlePrev = useCallback(() => {
+    if (isDouble) {
+      const target = Math.max(1, currentPage - 2);
+      if (target !== currentPage) navigateToPage(target, "prev");
+      return;
+    }
     if (currentPage <= 1) return;
     navigateToPage(currentPage - 1, "prev");
-  }, [currentPage, navigateToPage]);
+  }, [currentPage, isDouble, navigateToPage]);
 
   const handleNext = useCallback(() => {
+    if (isDouble) {
+      const target = Math.min(604, currentPage + 2);
+      if (target !== currentPage) navigateToPage(target, "next");
+      return;
+    }
     if (currentPage >= 604) return;
     navigateToPage(currentPage + 1, "next");
-  }, [currentPage, navigateToPage]);
+  }, [currentPage, isDouble, navigateToPage]);
 
   const handleOverlayKeyDown = useCallback((event) => {
     if (event.key === "Escape") { event.stopPropagation(); onClose(); return; }
@@ -257,7 +333,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   if (!fullPage || typeof document === "undefined") return null;
 
   const activePageAyahs = pageCache.get(currentPage) || (isPageScoped(ayahs, currentPage) ? ayahs : []);
-  const pageKind = currentPage <= 2 ? "opening" : "standard";
+  const pageKind = (isDouble ? spread.right : currentPage) <= 2 ? "opening" : "standard";
   const startPageAudio = () => { if (activePageAyahs[0]) onPlayAyah?.(activePageAyahs[0], activePageAyahs); };
   const audioProps = { audioAyah, hasSession: hasAudioSession, isPlaying, lang, onOpenPlayer, onStart: startPageAudio };
   const handleTouchStart = (event) => { if (event.touches.length === 1) swipeRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY, time: performance.now() }; };
@@ -277,7 +353,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   };
 
   return createPortal(
-    <div ref={overlayRef} className="mfp-portal-root" data-theme={theme} data-view="reading" data-riwaya={riwaya} dir={lang === "ar" ? "rtl" : "ltr"} style={{ "--qd-font-family": quranFontFamily, "--font-quran": quranFontFamily, "--font-quran-tajweed": quranFontFamily, ...getThemeOverlayStyle(theme) }} role="dialog" aria-modal="true" aria-label={`${t("quran.page", lang)} ${pageLabel}`} onKeyDown={handleOverlayKeyDown}>
+    <div ref={overlayRef} className={`mfp-portal-root${chromeVisible ? "" : " mfp-portal-root--zen"}`} data-theme={theme} data-layout={layout} data-view="reading" data-riwaya={riwaya} dir={lang === "ar" ? "rtl" : "ltr"} style={{ "--qd-font-family": quranFontFamily, "--font-quran": quranFontFamily, "--font-quran-tajweed": quranFontFamily, ...getThemeOverlayStyle(theme) }} role="dialog" aria-modal="true" aria-label={`${t("quran.page", lang)} ${pageLabel}`} onKeyDown={handleOverlayKeyDown}>
       <header className="mfp-header">
         <div className="mfp-header__identity">
           <button ref={closeButtonRef} type="button" className="mfp-icon-btn" onClick={onClose} aria-label={t("audio.close", lang)} title={`${t("audio.close", lang)} (Esc)`}><X size={18} aria-hidden="true" /></button>
@@ -293,8 +369,13 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
         </div>
       </header>
       <main ref={viewportRef} className="mfp-viewport" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onWheel={handleWheel}>
-        <div key={currentPage} className="mfp-book mfp-book--exact" data-page-kind={pageKind} data-turn={turnRef.current || undefined} style={{ "--mfp-zoom": zoom }}>
-          <QuranMushafPage activeAyah={null} ayahs={activePageAyahs} currentPage={currentPage} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} onToggleActive={() => {}} riwaya={riwaya} showTajwid={state.showTajwid} />
+        <div key={currentPage} className="mfp-book mfp-book--exact" data-page-kind={pageKind} data-layout={layout} data-turn={turnRef.current || undefined} style={{ "--mfp-zoom": zoom }}>
+          {spreadPages.map((pageNumber) => {
+            const pageAyahs = pageCache.get(pageNumber) || (isPageScoped(ayahs, pageNumber) ? ayahs : []);
+            return (
+              <QuranMushafPage key={pageNumber} activeAyah={null} ayahs={pageAyahs} currentPage={pageNumber} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} onToggleActive={() => {}} riwaya={riwaya} showTajwid={state.showTajwid} />
+            );
+          })}
         </div>
       </main>
       <button type="button" className="mfp-side-nav mfp-side-nav--next" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} aria-label={t("nav.nextPage", lang)} title={`${t("nav.nextPage", lang)} (←)`}><ChevronLeft size={22} /></button>

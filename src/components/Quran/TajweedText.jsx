@@ -1,7 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
-import { applyFontSigns, getReadableWaqfGlyph } from '../../utils/quranUtils';
+import { applyFontSigns, getReadableWaqfGlyph, normalizeQuranGlyphText } from '../../utils/quranUtils';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 import {
     applyTajweedHighlights,
@@ -588,7 +588,10 @@ function TajweedHighlightWords({
                 if (part.type !== 'text') continue;
                 const node = textNodes[textIndex];
                 textIndex += 1;
-                if (!node || node.data !== part.text || part.rules.length === 0) continue;
+                if (!node || part.rules.length === 0) continue;
+                const nodeText = normalizeQuranGlyphText(node.data);
+                const partText = normalizeQuranGlyphText(part.text);
+                if (nodeText !== partText) continue;
                 cleanups.push(applyTajweedHighlights(node, part.rules));
                 const list = entries.get(wordIndex) || [];
                 for (const rule of part.rules) list.push({ node, ...rule });

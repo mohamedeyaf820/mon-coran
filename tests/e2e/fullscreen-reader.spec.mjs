@@ -135,11 +135,11 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   const zoom = overlay.locator(".mfp-zoom-value");
   const plus = overlay.getByRole("button", { name: "Zoom avant" });
   await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
-  const baseFont = Number.parseFloat(await overlay.locator(".qcm-lines").evaluate((node) => getComputedStyle(node).fontSize));
+  const baseFont = Number.parseFloat(await overlay.locator(".qcm-lines").first().evaluate((node) => getComputedStyle(node).fontSize));
 
   await plus.click();
   await expect(zoom).toHaveText("115%");
-  const zoomedFont = Number.parseFloat(await overlay.locator(".qcm-lines").evaluate((node) => getComputedStyle(node).fontSize));
+  const zoomedFont = Number.parseFloat(await overlay.locator(".qcm-lines").first().evaluate((node) => getComputedStyle(node).fontSize));
   expect(zoomedFont).toBeGreaterThan(baseFont);
   const pageLabelBefore = await overlay.locator(".mfp-header__copy h2").textContent();
   await overlay.locator(".mfp-side-nav--next").click();
@@ -151,6 +151,20 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   await page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first().click();
   await expect(page.locator(".mfp-zoom-value")).toHaveText("115%");
   await page.locator(".mfp-zoom-value").click();
+
+  // A desktop spread is one open book: two same-size leaves sharing one
+  // scale, the lower folio on the right.
+  await expect(overlay.locator(".qcm-page")).toHaveCount(2);
+  expect(await overlay.evaluate((root) => root.dataset.layout)).toBe("double");
+  const leafBoxes = await overlay.locator(".qcm-page").evaluateAll((pages) => pages.map((page) => {
+    const box = page.getBoundingClientRect();
+    return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height };
+  }));
+  expect(leafBoxes).toHaveLength(2);
+  expect(leafBoxes[0].width).toBeCloseTo(leafBoxes[1].width, 0);
+  expect(leafBoxes[0].height).toBeCloseTo(leafBoxes[1].height, 0);
+  expect(leafBoxes[0].top).toBeCloseTo(leafBoxes[1].top, 0);
+  expect(leafBoxes[0].right).toBeGreaterThan(leafBoxes[1].right);
 
   for (const width of [280, 320, 360, 390, 414, 768, 1024, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: width < 600 ? 844 : 900 });

@@ -154,18 +154,30 @@ function groupWarshPageLines(ayahs) {
     }));
   }
 
-  const tokens = ayahs.flatMap((ayah) => {
+  // ── Warsh dataset carries per-ayah lineStart/lineEnd metadata ─────────
+  // When present, group words by their ACTUAL printed line numbers instead of
+  // running the 15-bin balancing algorithm. This preserves the physical
+  // line structure of the Warsh edition and eliminates the artificial
+  // "grid of words" artifact that the optical balancing created.
+  const linesByNumber = new Map();
+
+  ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
     const ayahNum = ayah.numberInSurah;
     const warshWords = getCleanWarshWords(ayah);
-    if (warshWords.length === 0) return [];
+    if (warshWords.length === 0) return;
+
     const lineStart = Math.max(1, Math.min(15, Number(ayah.lineStart) || 1));
     const lineEnd = Math.max(lineStart, Math.min(15, Number(ayah.lineEnd) || 15));
-    const wordTokens = warshWords.map((text, idx) => ({
-      minLine: idx === 0 ? lineStart : lineStart,
-      maxLine: idx === 0 ? lineStart : lineEnd,
-      weight: getWarshWordWeight(text),
-      word: {
+
+    // First word of the ayah starts on lineStart; subsequent words stay on
+    // lineStart until the lineEnd boundary is reached, then flow to lineEnd.
+    // This matches the printed Mushaf layout where an ayah may span multiple
+    // lines but always starts on a fresh line.
+    warshWords.forEach((text, idx) => {
+      const lineNumber = idx === 0 ? lineStart : (idx < warshWords.length - 1 ? lineStart : lineEnd);
+      if (!linesByNumber.has(lineNumber)) linesByNumber.set(lineNumber, []);
+      linesByNumber.get(lineNumber).push({
         charType: "word",
         globalAyah: ayah.number,
         surah,
@@ -173,24 +185,30 @@ function groupWarshPageLines(ayahs) {
         position: idx + 1,
         text,
         isWarsh: true,
-      },
-    }));
-    return [...wordTokens, {
-      minLine: lineEnd,
-      maxLine: lineEnd,
-      weight: 1.6,
-      word: { charType: "end", globalAyah: ayah.number, surah, ayah: ayahNum, isWarsh: true },
-    }];
-  });
-  const lines = balanceWarshPageTokens(tokens);
+      });
+    });
 
+    // End marker belongs on the last line of the ayah
+    if (!linesByNumber.has(lineEnd)) linesByNumber.set(lineEnd, []);
+    linesByNumber.get(lineEnd).push({
+      charType: "end",
+      globalAyah: ayah.number,
+      surah,
+      ayah: ayahNum,
+      isWarsh: true,
+    });
+  });
+
+  // Build the 15-line grid using actual line numbers from the dataset.
+  // Lines without any words remain empty slots (printed blank rows).
   const pageLines = Array.from({ length: 15 }, (_, index) => {
     const lineNumber = index + 1;
     return {
       lineNumber,
-      words: lines.get(lineNumber) || [],
+      words: linesByNumber.get(lineNumber) || [],
     };
   });
+
   return markSurahEndings(placeSurahOpenings(pageLines, { warsh: true }));
 }
 
@@ -204,14 +222,21 @@ function getSurahMeta(surah) {
 // fresh line under its title band and, except for Al-Fatiha (whose basmala is
 // verse 1) and At-Tawbah, the basmala: those slots come back as empty lines
 // above the first word, so this restores them the way the printed page reads.
+// A single Warsh page may carry several small surahs (Al-Ikhlas, Al-Falaq,
+// An-Nas) — every ayah-1 with an empty slot above receives its own header.
 function placeSurahOpenings(lines, { warsh = false } = {}) {
+  const processed = new Set();
   lines.forEach((line, index) => {
     const first = line.words[0];
     if (!first) return;
     if (Number(first.ayah) !== 1 || Number(first.position || 1) !== 1) return;
+    const surah = Number(first.surah);
+    const key = `${surah}:${index}`;
+    if (processed.has(key)) return;
+    processed.add(key);
+
     const above = lines[index - 1];
     if (!above || above.words.length > 0 || above.kind) return;
-    const surah = Number(first.surah);
     const above2 = lines[index - 2];
     const hasBasmalaLine =
       surah !== 9 && (surah !== 1 || warsh) && above2 && above2.words.length === 0 && !above2.kind;
@@ -290,9 +315,18 @@ function getPageMeta(ayahs, currentPage, lang, riwaya, isWarsh = riwaya === "war
   const hizb = first.hizb || "";
   const rub = first.rubElHizb || "";
   const page = lang === "ar" ? toAr(currentPage) : currentPage;
+  const surahMeta = getSurahMeta(first.surah?.number);
+  const surahName = surahMeta
+    ? lang === "ar"
+      ? surahMeta.ar
+      : lang === "en"
+        ? surahMeta.en
+        : surahMeta.fr
+    : first.surah?.name || "";
 
   return {
     page,
+    surahName,
     top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
     middle:
       lang === "ar"
@@ -317,7 +351,6 @@ export default function QuranMushafPage({
   showTajwid,
 }) {
   const version = showTajwid ? "v4" : "v2";
-  const fontLabel = version === "v4" ? "QCF V4 Tajweed" : "QCF V2";
   const pageFontFamily = getQcfPageFontFamily(currentPage, version);
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const isWarsh = riwaya === "warsh";
@@ -366,18 +399,42 @@ export default function QuranMushafPage({
     };
   }, [currentPage, fontFamily, isWarsh, version]);
 
+  const warshFitPassRef = useRef(0);
+  const warshFitKeyRef = useRef("");
+  const warshFitsRef = useRef({});
+  warshFitsRef.current = warshLineFits;
+
   useLayoutEffect(() => {
     if (!isWarsh || !linesRef.current) {
-      setWarshLineFits({});
+      if (Object.keys(warshFitsRef.current).length > 0) {
+        warshFitsRef.current = {};
+        setWarshLineFits({});
+      }
       return undefined;
     }
 
+    // A new page, font state or line set restarts the refinement budget; a
+    // fit update alone keeps refining until every row converges inside its
+    // box instead of stopping after a single pass that still overflows.
+    const inputKey = `${currentPage}|${fontLoaded}|${lines.length}`;
+    if (warshFitKeyRef.current !== inputKey) {
+      warshFitKeyRef.current = inputKey;
+      warshFitPassRef.current = 0;
+    }
+    if (warshFitPassRef.current >= 8) return undefined;
+
     let frame = 0;
+    let timer = 0;
+    let disposed = false;
+
     const measure = () => {
+      if (disposed || warshFitPassRef.current >= 8) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
+        if (disposed || !linesRef.current) return;
         const next = {};
-        linesRef.current?.querySelectorAll(".qcm-line").forEach((line) => {
+        let stable = true;
+        linesRef.current.querySelectorAll(".qcm-line").forEach((line) => {
           const children = [...line.children];
           if (children.length === 0) return;
           const lineRect = line.getBoundingClientRect();
@@ -387,30 +444,35 @@ export default function QuranMushafPage({
           const left = Math.min(...children.map((child) => child.getBoundingClientRect().left));
           const right = Math.max(...children.map((child) => child.getBoundingClientRect().right));
           const naturalWidth = Math.max(1, (right - left) / currentScale);
-          next[line.dataset.lineNumber] = Math.max(
-            0.55,
-            Math.min(1, (lineRect.width - 4) / naturalWidth),
-          );
+          const fit = Math.max(0.32, Math.min(1, (lineRect.width - 6) / naturalWidth));
+          const key = line.dataset.lineNumber;
+          next[key] = fit;
+          if (Math.abs((warshFitsRef.current[key] || 1) - fit) >= 0.004) stable = false;
         });
-        setWarshLineFits((current) => {
-          const keys = Object.keys(next);
-          const unchanged = keys.length === Object.keys(current).length
-            && keys.every((key) => Math.abs((current[key] || 1) - next[key]) < 0.005);
-          return unchanged ? current : next;
-        });
+        if (stable || disposed) return;
+        warshFitPassRef.current += 1;
+        setWarshLineFits(next);
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          if (!disposed) measure();
+        }, 120);
       });
     };
 
     measure();
-    const observer = typeof ResizeObserver === "function" ? new ResizeObserver(measure) : null;
-    observer?.observe(linesRef.current);
-    window.addEventListener("resize", measure);
-    return () => {
-      cancelAnimationFrame(frame);
-      observer?.disconnect();
-      window.removeEventListener("resize", measure);
+    const onResize = () => {
+      warshFitKeyRef.current = "";
+      warshFitsRef.current = {};
+      setWarshLineFits({});
     };
-  }, [fontLoaded, isWarsh, lines]);
+    window.addEventListener("resize", onResize);
+    return () => {
+      disposed = true;
+      cancelAnimationFrame(frame);
+      window.clearTimeout(timer);
+      window.removeEventListener("resize", onResize);
+    };
+  }, [currentPage, fontLoaded, isWarsh, lines]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);
@@ -454,8 +516,8 @@ export default function QuranMushafPage({
           }}
           style={{
             fontFamily: 'var(--font-quran)',
-            fontSize: 'var(--qd-font-size, 28px)',
-            lineHeight: 'var(--line-height-quran)',
+            fontSize: '1em',
+            lineHeight: 'inherit',
             letterSpacing: 0,
             wordSpacing: 0,
             textRendering: 'optimizeLegibility',
@@ -524,9 +586,14 @@ export default function QuranMushafPage({
         <span>{meta.sideB}</span>
       </div>
       <div className="qcm-page">
+        <span className="qcm-corner qcm-corner--tl" aria-hidden="true" />
+        <span className="qcm-corner qcm-corner--tr" aria-hidden="true" />
+        <span className="qcm-corner qcm-corner--bl" aria-hidden="true" />
+        <span className="qcm-corner qcm-corner--br" aria-hidden="true" />
         <header className="qcm-page-header">
-          <span className="text-[var(--text-muted)] text-[0.65rem] font-semibold">{meta.top}</span>
-          <strong className="text-[var(--text-primary)] text-[0.72rem] font-bold tracking-wide">{meta.middle}</strong>
+          <span className="qcm-page-header__meta">{meta.sideA}</span>
+          <strong className="qcm-page-header__name">{meta.surahName}</strong>
+          <span className="qcm-page-header__meta">{meta.top}</span>
         </header>
         <div ref={linesRef} className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
           {lines.map((line) => {
@@ -591,8 +658,9 @@ export default function QuranMushafPage({
           })}
         </div>
         <footer className="qcm-page-footer" aria-hidden="true">
-          <span>{meta.fontLabel}</span>
-          <span>{meta.page} / 604</span>
+          <span className="qcm-page-footer__label">{meta.fontLabel}</span>
+          <span className="qcm-page-folio">{meta.page}</span>
+          <span className="qcm-page-footer__label" />
         </footer>
       </div>
       <div className="qcm-edge qcm-edge--end">

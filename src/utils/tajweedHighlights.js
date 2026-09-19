@@ -50,6 +50,7 @@ function createRange(node, start, end) {
 }
 
 function clampRange(node, start, end) {
+  if (!node || typeof node.data !== "string") return [0, 0];
   const max = node.data.length;
   const safeStart = Math.max(0, Math.min(start, max));
   const safeEnd = Math.max(safeStart, Math.min(end, max));
@@ -68,13 +69,19 @@ export function applyTajweedHighlights(node, rules) {
     if (!rule?.ruleId) continue;
     const [start, end] = clampRange(node, rule.start, rule.end);
     if (end <= start) continue;
-    const range = createRange(node, start, end);
-    const highlight = getHighlight(HIGHLIGHT_PREFIX + rule.ruleId);
-    highlight.add(range);
-    added.push([highlight, range]);
+    try {
+      const range = createRange(node, start, end);
+      const highlight = getHighlight(HIGHLIGHT_PREFIX + rule.ruleId);
+      highlight.add(range);
+      added.push([highlight, range]);
+    } catch {
+      // Range creation can fail on detached nodes; skip this rule.
+    }
   }
   return () => {
-    for (const [highlight, range] of added) highlight.delete(range);
+    for (const [highlight, range] of added) {
+      try { highlight.delete(range); } catch {}
+    }
   };
 }
 

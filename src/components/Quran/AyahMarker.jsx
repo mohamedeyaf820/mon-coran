@@ -25,8 +25,8 @@ export const AyahMarker = React.memo(function AyahMarker({
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
-  const markerFontFamily = resolveFontFamily(UI_AYAH_MARKER_FONT_ID, "hafs");
-  const markerText = getUiAyahMarker(markerNumber);
+  const markerFontFamily = resolveFontFamily(fontFamily, riwaya || "hafs");
+  const markerText = getUiAyahMarker(markerNumber, fontFamily, riwaya || "hafs");
 
   return (
     <span
