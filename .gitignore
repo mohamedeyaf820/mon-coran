@@ -44,3 +44,6 @@ design-audit-2/
 
 # Local Netlify folder
 .netlify
+
+# Vercel CLI local state (device/session ids) — must never be tracked
+.vercel-cli-data/
