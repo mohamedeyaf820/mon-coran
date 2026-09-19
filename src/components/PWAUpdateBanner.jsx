@@ -55,7 +55,7 @@ export default function PWAUpdateBanner() {
       role="alert"
       aria-live="polite"
       style={{
-        position: 'fixed', bottom: 'var(--space-5)', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', bottom: 'calc(var(--space-5) + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)',
         zIndex: 9999, background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--r-lg)', padding: 'var(--space-2) var(--space-4)', display: 'flex',
         alignItems: 'center', gap: 'var(--space-3)', boxShadow: 'var(--shadow-md)',

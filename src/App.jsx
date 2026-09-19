@@ -17,6 +17,7 @@ import {
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import PWAUpdateBanner from "./components/PWAUpdateBanner";
+import InstallPrompt from "./components/InstallPrompt";
 import { runWhenIdle } from "./utils/idleUtils";
 import { isLowPerformanceDevice } from "./utils/networkPolicy";
 import { loadAudioService } from "./services/loadAudioService";
@@ -909,6 +910,7 @@ export default function App() {
         </ErrorBoundary>
       </div>
       <PWAUpdateBanner />
+      <InstallPrompt />
     </ErrorBoundary>
   );
 }

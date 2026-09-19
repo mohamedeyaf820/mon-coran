@@ -40,7 +40,7 @@
     }
   ],
   "orientation": "any",
-  "dir": "auto",
+  "dir": "ltr",
   "lang": "fr",
   "categories": ["books", "reference", "education"],
   "shortcuts": [

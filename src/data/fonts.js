@@ -107,10 +107,12 @@ export const FONT_MAP = {
     "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
+  // Scheherazade New (self-hosted) + Geeza Pro (iOS system) keep the page
+  // readable when the QPC Warsh woff2 fails to load on WebKit.
   "qpc-warsh":
-    "'QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
+    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Geeza Pro',serif",
   "kfgqpc-warsh":
-    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH',serif",
+    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Geeza Pro',serif",
   "scheherazade-new-warsh":
     "'Scheherazade New','Scheherazade','QPC Warsh',serif",
 };
