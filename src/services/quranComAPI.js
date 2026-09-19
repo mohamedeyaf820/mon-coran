@@ -338,7 +338,7 @@ function normalizeWord(word = {}, verse = {}) {
     lineV1: Number(word.line_v1) || null,
     lineV2: Number(word.line_v2) || null,
     page: Number(word.page_number || verse.page_number) || null,
-    text: word.text_qpc_hafs || word.text_uthmani || word.text_indopak || word.text,
+    text: word.text_uthmani || word.text_qpc_hafs || word.text_indopak || word.text,
     textUthmani: word.text_uthmani || "",
     textTajweed: word.text_uthmani_tajweed || "",
     textIndopak: word.text_indopak || "",
@@ -366,7 +366,7 @@ function normalizeVerse(verse = {}) {
     : [];
   const wordText = normalizedWords
     .filter((word) => word.charType === "word")
-    .map((word) => word.textQpcHafs || word.textUthmani || word.text)
+    .map((word) => word.textUthmani || word.text)
     .filter(Boolean)
     .join(" ");
   const text =

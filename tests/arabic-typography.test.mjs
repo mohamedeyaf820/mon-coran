@@ -223,6 +223,27 @@ test("Al-Mulk pause signs stay attached to the preceding Uthmani glyph", () => {
   }
 });
 
+test("font-locked Hafs payloads stay out of generic word chains", () => {
+  // Canonical rule (data/fonts.js header): text_uthmani is the shared text;
+  // text_qpc_hafs is only valid inside the qpc-hafs branch.
+  const word = {
+    textQpcHafs: "qpc-only-form",
+    textIndopak: "",
+    textUthmani: "",
+    text: "canonical-uthmani",
+  };
+  assert.equal(getQuranWordTextForFont(word, "qpc-hafs", "hafs"), "qpc-only-form");
+  assert.equal(getQuranWordTextForFont(word, "qpc-indopak", "hafs"), "canonical-uthmani");
+  assert.equal(getQuranWordTextForFont(word, "amiri-quran", "hafs"), "canonical-uthmani");
+
+  // A word carrying only the Mushaf-print form must not leak it into fonts
+  // that cannot draw it.
+  const qpcOnly = { textQpcHafs: "qpc-only-form" };
+  assert.equal(getQuranWordTextForFont(qpcOnly, "qpc-hafs", "hafs"), "qpc-only-form");
+  assert.equal(getQuranWordTextForFont(qpcOnly, "qpc-indopak", "hafs"), "");
+  assert.equal(getQuranWordTextForFont(qpcOnly, "scheherazade-new", "hafs"), "");
+});
+
 test("all supported embedded ayah marker forms collapse to one generated marker", () => {
   const verse = "اَ۫لْحَيُّ اُ۫لْقَيُّومُ";
   const payloads = [

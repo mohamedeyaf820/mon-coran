@@ -52,11 +52,14 @@ function normalizeRiwayaText(ayah, riwaya) {
     };
   }
 
+  // Canonical Hafs text is Unicode `text_uthmani` (already resolved into
+  // ayah.text by the API layer). Font-locked payloads like the nastaleeq or
+  // qpc-hafs variants stay in quranCom fields and are picked per font by
+  // getAyahTextForFont — never flattened into the shared text here.
   const hafsText =
-    ayah?.quranCom?.textQpcHafs ||
-    ayah?.quranCom?.textQpcNastaleeqHafs ||
-    ayah?.quranCom?.textUthmani ||
     ayah?.text ||
+    ayah?.quranCom?.textUthmani ||
+    ayah?.quranCom?.textQpcHafs ||
     "";
 
   return {

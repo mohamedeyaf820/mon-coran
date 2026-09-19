@@ -4,6 +4,19 @@
  * The app intentionally exposes only riwaya-safe Quran fonts.
  * Public choices are scoped by riwaya. QCF page fonts stay internal for
  * page/Mushaf rendering, so users cannot accidentally mix Hafs glyphs into Warsh.
+ *
+ * Hafs text canonicalization (single source of truth):
+ *  - `text_uthmani` is the canonical Unicode text. It is what the API layer
+ *    stores in `ayah.text`/`word.text` and what storage, search and every
+ *    non-QPC font render.
+ *  - `text_qpc_hafs` is a Mushaf-print variant consumed only through the
+ *    `qpc-hafs` branches below. It must never leak into generic fallback
+ *    chains or into the shared `.text` fields.
+ *  - Font-locked payloads (code_v1/code_v2 for QCF page fonts, indopak,
+ *    nastaleeq) are only valid inside their own branch.
+ *  - getAyahTextForFont/getQuranWordTextForFont are the only entry points
+ *    for picking display text; components must not hand-roll fallback
+ *    chains over the raw fields.
  */
 
 import { applyFontSigns, getFontSignVariant, normalizeQuranGlyphText } from "../utils/quranUtils.js";
@@ -275,7 +288,7 @@ export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
 
   if (normalizedId === "qpc-indopak") {
     return normalizeQuranGlyphText(
-      word.textIndopak || word.textUthmani || word.textQpcHafs || word.text || "",
+      word.textIndopak || word.textUthmani || word.text || "",
     );
   }
   if (normalizedId === "qpc-hafs") {
@@ -291,9 +304,7 @@ export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
       word.codeV2 || word.textUthmani || word.text || "",
     );
   }
-  return normalizeQuranGlyphText(
-    word.textUthmani || word.textQpcHafs || word.text || "",
-  );
+  return normalizeQuranGlyphText(word.textUthmani || word.text || "");
 }
 
 export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
