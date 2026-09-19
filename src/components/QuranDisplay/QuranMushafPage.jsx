@@ -7,8 +7,8 @@ import {
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
 import AyahMarker from "../Quran/AyahMarker";
+import MushafPageShell from "./MushafPageShell";
 import { playWordAudio } from "../../utils/wordAudio";
-import { sanitizeHtml } from "../../lib/security";
 import {
   getQuranWordTextForFont,
   resolveFontFamily,
@@ -42,9 +42,6 @@ function getLineNumber(word) {
   return Number.isFinite(lineNumber) && lineNumber > 0 ? lineNumber : null;
 }
 
-function isQuranWord(word) {
-  return !word?.charType || word.charType === "word";
-}
 
 // Normalize Arabic text to ensure proper diacritic rendering
 function normalizeArabicText(text) {
@@ -497,33 +494,18 @@ export default function QuranMushafPage({
   };
 
   return (
-    <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${currentPage}`}>
-      {fontFailed && !isWarsh && (
-        <div className="qcm-font-warning" role="alert">
-          <span>
-            {lang === "ar"
-              ? "تعذّر تحميل الخط — يُعرض النص بخط بديل"
-              : lang === "fr"
-                ? "Police non chargée — affichage en mode texte"
-                : "Font failed to load — showing text fallback"}
-          </span>
-        </div>
-      )}
-      <div className="qcm-edge qcm-edge--start">
-        <span>{meta.sideA}</span>
-        <span>{meta.sideB}</span>
-      </div>
-      <div className="qcm-page">
-        <span className="qcm-corner qcm-corner--tl" aria-hidden="true" />
-        <span className="qcm-corner qcm-corner--tr" aria-hidden="true" />
-        <span className="qcm-corner qcm-corner--bl" aria-hidden="true" />
-        <span className="qcm-corner qcm-corner--br" aria-hidden="true" />
-        <header className="qcm-page-header">
-          <span className="qcm-page-header__meta">{meta.sideA}</span>
-          <strong className="qcm-page-header__name">{meta.surahName}</strong>
-          <span className="qcm-page-header__meta">{meta.top}</span>
-        </header>
-        <div ref={linesRef} className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
+    <MushafPageShell
+      currentPage={currentPage}
+      fontFailed={fontFailed && !isWarsh}
+      fontWarningText={lang === "ar"
+        ? "تعذّر تحميل الخط — يُعرض النص بخط بديل"
+        : lang === "fr"
+          ? "Police non chargée — affichage en mode texte"
+          : "Font failed to load — showing text fallback"}
+      lang={lang}
+      meta={meta}
+    >
+      <div ref={linesRef} className="qcm-lines" dir="rtl" lang="ar" data-warsh={isWarsh ? "true" : undefined}>
           {lines.map((line) => {
             if (line.kind === "surah-header") {
               const surahMeta = getSurahMeta(line.surah);
@@ -584,17 +566,7 @@ export default function QuranMushafPage({
               </div>
             );
           })}
-        </div>
-        <footer className="qcm-page-footer" aria-hidden="true">
-          <span className="qcm-page-footer__label">{meta.fontLabel}</span>
-          <span className="qcm-page-folio">{meta.page}</span>
-          <span className="qcm-page-footer__label" />
-        </footer>
       </div>
-      <div className="qcm-edge qcm-edge--end">
-        <span>{meta.sideC || meta.sideB}</span>
-        <span>{meta.page}</span>
-      </div>
-    </section>
+    </MushafPageShell>
   );
 }
