@@ -104,15 +104,32 @@ export default function useQuranTranslations({
   }, [currentSurah, translations]);
 
   const getTranslationForAyah = useCallback(
-    (ayah) =>
-      translationMap.get(`global:${ayah.number}`) ||
-      translationMap.get(
-        getTranslationKeyForAyah(
-          ayah.surah?.number || currentSurah,
-          ayah.numberInSurah,
-        ),
-      ) ||
-      null,
+    (ayah) => {
+      const hafsNumbers = ayah?.hafsNumbers;
+      if (Array.isArray(hafsNumbers) && hafsNumbers.length > 0) {
+        const matched = [];
+        for (const hafsNumber of hafsNumbers) {
+          const found = translationMap.get(
+            getTranslationKeyForAyah(
+              ayah.surah?.number || currentSurah,
+              hafsNumber,
+            ),
+          );
+          if (found) matched.push(...found);
+        }
+        return matched.length ? matched : null;
+      }
+      return (
+        translationMap.get(`global:${ayah.number}`) ||
+        translationMap.get(
+          getTranslationKeyForAyah(
+            ayah.surah?.number || currentSurah,
+            ayah.numberInSurah,
+          ),
+        ) ||
+        null
+      );
+    },
     [currentSurah, translationMap],
   );
 

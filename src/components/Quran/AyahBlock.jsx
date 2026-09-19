@@ -64,8 +64,10 @@ function AyahBlockComponent({
 
   const handleBookmark = useCallback((e) => {
     e.stopPropagation();
-    addBookmark(surahNum, ayah.numberInSurah).catch(() => {});
-  }, [surahNum, ayah.numberInSurah]);
+    // Bookmarks are Hafs-keyed data; a Warsh ayah must persist its mapped
+    // Hafs number, not its own numberInSurah.
+    addBookmark(surahNum, ayah.hafsNumber ?? ayah.numberInSurah).catch(() => {});
+  }, [surahNum, ayah.hafsNumber, ayah.numberInSurah]);
 
   return (
     <div

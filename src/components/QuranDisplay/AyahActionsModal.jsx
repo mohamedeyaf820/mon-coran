@@ -23,6 +23,9 @@ export default function AyahActionsModal({
   const dialogRef = useRef(null);
   const titleId = `aam-title-${activeAyah}`;
   const verseNumber = ayahData?.numberInSurah ?? activeAyah;
+  // Bookmark/note persistence is Hafs-keyed; a Warsh ayah must write its
+  // mapped number while the header keeps showing what the reader sees.
+  const storageVerseNumber = ayahData?.hafsNumber ?? verseNumber;
   const modalTitle =
     lang === "fr"
       ? "Actions du verset"
@@ -113,7 +116,7 @@ export default function AyahActionsModal({
         <div className="ayah-actions-modal__body">
           <AyahActions
             surah={surah}
-            ayah={verseNumber}
+            ayah={storageVerseNumber}
             ayahData={ayahData}
             translations={translations}
           />

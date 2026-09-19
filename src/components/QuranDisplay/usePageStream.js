@@ -96,11 +96,25 @@ export default function usePageStream({
     return map;
   }, [translationsByPage]);
   const getTranslationForAyah = useCallback(
-    (ayah) =>
-      translationMap.get(`global:${ayah.number}`) ||
-      translationMap.get(getTranslationKeyForAyah(ayah.surah?.number || currentSurah, ayah.numberInSurah)) ||
-      fallbackGetTranslation?.(ayah) ||
-      null,
+    (ayah) => {
+      const hafsNumbers = ayah?.hafsNumbers;
+      if (Array.isArray(hafsNumbers) && hafsNumbers.length > 0) {
+        const matched = [];
+        for (const hafsNumber of hafsNumbers) {
+          const found = translationMap.get(
+            getTranslationKeyForAyah(ayah.surah?.number || currentSurah, hafsNumber),
+          );
+          if (found) matched.push(...found);
+        }
+        if (matched.length) return matched;
+      }
+      return (
+        translationMap.get(`global:${ayah.number}`) ||
+        translationMap.get(getTranslationKeyForAyah(ayah.surah?.number || currentSurah, ayah.numberInSurah)) ||
+        fallbackGetTranslation?.(ayah) ||
+        null
+      );
+    },
     [currentSurah, fallbackGetTranslation, translationMap],
   );
   const loadingRef = useRef(new Set());

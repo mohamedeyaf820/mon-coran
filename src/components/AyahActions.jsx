@@ -310,13 +310,20 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
       return;
     }
 
+    // `ayah` is the Hafs-keyed storage coordinate; per-ayah audio files are
+    // numbered by the reciter's own mushaf, so a Warsh reciter must get the
+    // displayed Warsh number, not the mapped Hafs one.
+    const audioAyah = riwaya === "warsh" ? (ayahData?.numberInSurah ?? ayah) : ayah;
+
     // Try to play from active playlist to ensure continuous play
     let idx = -1;
     if (Array.isArray(audioService.playlist)) {
       idx = audioService.playlist.findIndex(
         (p) =>
           Number(p.surah) === Number(surah) &&
-          (p.ayah === null || Number(p.ayah) === Number(ayah))
+          (p.ayah === null ||
+            Number(p.ayah) === Number(ayah) ||
+            Number(p.ayah) === Number(audioAyah))
       );
     }
 
@@ -335,7 +342,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
     const ayahInfo = {
       surah,
-      numberInSurah: ayah,
+      numberInSurah: audioAyah,
       number: ayahData.number,
     };
     const url = AudioService.buildUrl(
@@ -351,7 +358,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
       );
     }
 
-    audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : ayah }).catch(() => {
+    audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : audioAyah }).catch(() => {
       setAudioError(true);
       clearTimeout(audioErrTimerRef.current);
       audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);

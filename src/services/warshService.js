@@ -13,6 +13,7 @@ import { fetchQuranComText } from './quranComAPI';
 import { fetchWithTimeout } from './fetchWithTimeout';
 import { stripEmbeddedAyahMarkers } from '../data/fonts';
 import { WARSH_BASMALA } from '../data/basmala';
+import { warshToHafsNumbers, hafsToWarshNumbers } from '../data/warshHafsNumbering';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v6-s-';
@@ -311,10 +312,15 @@ async function fetchWarshSurahRows(surahNumber) {
  */
 function toWarshAyah(record) {
   const text = normalizeWarshAyahText(record?.text || '', record?.ayahNumber);
+  const hafsNumbers = warshToHafsNumbers(record?.surahNumber, record?.ayahNumber);
   return {
     number: null, // Global number fallback
-    warshNumber: null,
+    warshNumber: record?.ayahNumber ?? null,
     numberInSurah: record?.ayahNumber,
+    // Hafs (quran.com) numbering this Warsh ayah recites; never equal to
+    // numberInSurah by assumption — see data/warshHafsNumbering.js.
+    hafsNumbers: hafsNumbers?.length ? hafsNumbers : null,
+    hafsNumber: hafsNumbers?.[0] ?? null,
     text,
     warshWords: record?.words?.length ? record.words : splitWarshWords(text, record?.ayahNumber),
     surah: {
@@ -503,14 +509,20 @@ async function getWarshVersesByHafsScope(pathPrefix) {
   );
 
   const result = [];
+  const seenWarsh = new Set();
   for (const hafsAyah of hafsAyahs) {
     const surahNumber = Number(hafsAyah?.surah?.number);
     const ayahNumber = Number(hafsAyah?.numberInSurah);
     if (!surahNumber || !ayahNumber) continue;
 
-    const record = groupedRecords.get(surahNumber)?.get(ayahNumber);
-
-    if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
+    const warshNumbers = hafsToWarshNumbers(surahNumber, ayahNumber) || [];
+    for (const warshNumber of warshNumbers) {
+      const warshKey = `${surahNumber}:${warshNumber}`;
+      if (seenWarsh.has(warshKey)) continue;
+      seenWarsh.add(warshKey);
+      const record = groupedRecords.get(surahNumber)?.get(warshNumber);
+      if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
+    }
   }
 
   return {
