@@ -42,7 +42,7 @@ export default function CleanPageTranslationPanel({
             </span>
             <div className="cpv-translation-copy">
               {translations.map((translation, index) => (
-                <div key={index} className="cpv-translation-entry">
+                <div key={translation.edition?.identifier ?? index} className="cpv-translation-entry">
                   {translations.length > 1 ? (
                     <span className="cpv-translation-edition">
                       {translation.edition?.name || translation.edition?.identifier}

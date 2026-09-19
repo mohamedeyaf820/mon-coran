@@ -140,7 +140,7 @@ export default function HafsPageRenderer({
     const glyph = getWordGlyph(word, version);
     return (
       <span
-        key={`${verseKey}:${word.position || index}`}
+        key={`${verseKey}:${word.position ?? `x${index}`}`}
         className={`qcm-word${isPlaying ? " qcm-word--playing" : ""}${isActive ? " qcm-word--active" : ""}`}
         data-surah-number={word.surah}
         data-ayah-number={word.ayah}

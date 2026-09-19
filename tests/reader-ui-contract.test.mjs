@@ -74,7 +74,7 @@ test("surah information opens as an accessible responsive dossier", () => {
   assert.match(panel, /aria-expanded=\{expanded\}/);
   assert.doesNotMatch(panel, /sip-timeline/);
   assert.match(panel, /dossierBlocks\.map/);
-  assert.match(panel, /<h4 key=\{block\}>/);
+  assert.match(panel, /<h4 key=\{`h\$\{index\}:\$\{block\}`\}>/);
   assert.doesNotMatch(panel, /sip-header__ornament/);
   assert.match(modal, /createPortal\(modalContent, document\.body\)/);
   assert.match(modal, /aria-hidden="true"[\s\S]*?onClick=\{onClose\}/);
@@ -310,17 +310,26 @@ test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page contro
   assert.match(display, /onClose=\{\(\) => view\.setFullPage\(false\)\}/);
 });
 
-test("immersive Mushaf is edge-to-edge on mobile and theme-aware on desktop", () => {
-  const styles = source("src/styles/domains/reading-platform.css");
+test("immersive Mushaf is edge-to-edge and theme-aware through the portal sheet", () => {
+  const styles = source("src/styles/mushaf-book.css");
+  const polish = source("src/styles/experience-polish.css");
 
-  assert.match(styles, /@media \(max-width: 1024px\)[\s\S]*?width: 100vw;[\s\S]*?height: 100dvh/);
-  assert.match(styles, /\.mfp-viewport[\s\S]*?overflow: auto/);
-  assert.match(styles, /touch-action: pan-x pan-y/);
-  assert.match(styles, /\.mfp-page-container--immersive \.mfp-reader-bar/);
-  assert.match(styles, /data-theme="dark"\] \.mfp-page-sheet/);
+  // The overlay is a fixed, full-viewport portal sheet rendered on <body>.
+  assert.match(styles, /\.mfp-portal-root \{[\s\S]*?position: fixed;[\s\S]*?inset: 0;/);
+  // The page type scale measures the visual viewport with 100dvh.
+  assert.match(styles, /calc\(\(100dvh - var\(--mfp-chrome\)\) \/ 24\.8\)/);
+  // Its viewport scrolls the leaf while the chrome stays pinned.
+  assert.match(styles, /\.mfp-viewport \{[\s\S]*?overflow: auto/);
+  // Touch scrolling is delegated to the browser on the portal viewport.
+  assert.match(polish, /\.mfp-portal-root \.mfp-viewport[\s\S]*?touch-action: pan-y/);
+  // The printed paper is theme-aware, not only the light sheet.
+  assert.match(styles, /\.mfp-portal-root\[data-theme="dark"\][\s\S]*?--reader-page-paper/);
+  // The phone footer keeps content inside the device safe area.
   assert.match(styles, /env\(safe-area-inset-bottom\)/);
+  // Motion is honored for the leaf turn and the chrome fade.
   assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
 });
+
 
 test("surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech", () => {
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
@@ -493,8 +502,8 @@ test("Tajweed legend and Quran.com markup share the same eight rule families", (
 test("the visual system separates brand, gold, Warsh and transliteration roles", () => {
   const theme = source("src/styles/domains/themes4.css");
   const fonts = source("src/styles/riwaya-fonts.css");
-  const reader = source("src/styles/domains/reading-platform.css");
   const readingPolish = source("src/styles/reading-ux-refonte.css");
+  const mushafBook = source("src/styles/mushaf-book.css");
   const mushafPage = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
   const verseView = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
   const supplement = source("src/components/Quran/AyahBlockSupplement.jsx");
@@ -503,7 +512,11 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   assert.match(theme, /--gold: var\(--brand-gold, var\(--theme-accent\)\)/);
   assert.match(fonts, /--font-quran-warsh: "KFGQPC Warsh"/);
   assert.match(fonts, /font-synthesis: none/);
-  assert.match(reader, /\.qcm-word--warsh \{[\s\S]*?font-size: 1em !important;[\s\S]*?line-height: inherit !important;/);
+  // The portal rule keeps Warsh words at the line measure; the renderer
+  // repeats 1em/inherit inline so the per-line fit scale is never defeated.
+  assert.match(mushafBook, /\.qcm-word--warsh \{[\s\S]*?font-size: 1em;[\s\S]*?line-height: inherit;/);
+  assert.match(mushafPage, /fontSize: '1em'/);
+  assert.match(mushafPage, /lineHeight: 'inherit'/);
   assert.match(mushafPage, /wordSpacing: 0/);
   assert.match(mushafPage, /unicodeBidi: 'isolate'/);
   assert.match(mushafPage, /marginInlineEnd: '0\.035em'/);

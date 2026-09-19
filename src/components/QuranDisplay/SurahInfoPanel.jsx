@@ -56,10 +56,10 @@ export default function SurahInfoPanel({ surahNum, lang: langProp }) {
         {expanded && editorialInfo && (
           <div className="sip-dossier" id={detailsId}>
             <div className="sip-dossier__copy">
-              {dossierBlocks.map((block) =>
+              {dossierBlocks.map((block, index) =>
                 block.length < 72 && !/[.!?]$/.test(block)
-                  ? <h4 key={block}>{block}</h4>
-                  : <p key={block}>{block}</p>
+                  ? <h4 key={`h${index}:${block}`}>{block}</h4>
+                  : <p key={`p${index}:${block}`}>{block}</p>
               )}
             </div>
           </div>

@@ -295,19 +295,9 @@
    ─ More immersive, darker veil, page shadow
    ═══════════════════════════════════════════════════════════════ */
 
-.fullscreen-mushaf-overlay,
-[class*="fullscreen-overlay"],
-[class*="fullscreen-mushaf"] {
+[class*="fullscreen-overlay"] {
     background: rgba(8, 12, 20, 0.96) !important;
     backdrop-filter: blur(4px) !important;
-}
-
-.fullscreen-mushaf-overlay .mushaf-page-wrapper,
-[class*="fullscreen-mushaf"] .mushaf-page-wrapper {
-    box-shadow:
-        0 40px 100px rgba(0, 0, 0, 0.5),
-        0 8px 28px rgba(0, 0, 0, 0.3) !important;
-    border-radius: 8px !important;
 }
 
 /* ─── Verse marker size fix for the fullscreen portal ───────────
@@ -349,13 +339,6 @@
    are active in the portal. riwaya-fonts.css sets font-feature-settings only
    on .app-root descendants; since the portal is outside .app-root these must
    be declared here so rosette ligatures and diacritic placement work. */
-.mfp-portal-root .mfp-quran-flow,
-.mfp-portal-root .mfp-ayahs-flow {
-    font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1 !important;
-    font-kerning: normal !important;
-    text-rendering: optimizeLegibility !important;
-    font-synthesis: none !important;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    9. WAQF / VERSE-STOP MEDALLION
@@ -382,7 +365,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-
     font-size: 0.82em !important;
 }
 /* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
-html body #root .mfp-portal-root .native-ayah-marker > span[aria-hidden="true"],
 html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Scheherazade New', 'Geeza Pro', serif !important;
     font-size: 0.82em !important;
@@ -582,7 +564,6 @@ html body .mfp-portal-root [dir="rtl"] .quran-canonical-text > span,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text > span,
 html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
-html body .mfp-portal-root [dir="rtl"] .mfp-ayah > span,
 html body .mfp-portal-root [dir="rtl"] .verse-text,
 html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
 html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
@@ -597,7 +578,6 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
 html body .mfp-portal-root [dir="rtl"] .quran-canonical-text,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
 html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
-html body .mfp-portal-root [dir="rtl"] .mfp-ayah > span,
 html body .mfp-portal-root [dir="rtl"] .verse-text,
 html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
 html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
@@ -624,7 +604,6 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
 .mfp-portal-root .quran-tajwid-text,
 .mfp-portal-root .quran-tajwid-text > span,
 .mfp-portal-root .tajwid-rule-segment,
-.mfp-portal-root .mfp-ayah > span,
 .mfp-portal-root .verse-text,
 .mfp-portal-root .quran-arabic-text,
 .mfp-portal-root .qc-ayah-text-ar {
@@ -651,16 +630,8 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
 }
 
 /* Ensure mfp-quran-flow is a proper RTL block container for justification */
-.mfp-portal-root .mfp-quran-flow {
-    direction: rtl !important;
-    text-align: justify !important;
-    unicode-bidi: plaintext !important;
-}
 
 /* The inner aria-hidden span that holds word items must be inline too */
-.mfp-portal-root .mfp-quran-flow [aria-hidden="true"]:not(.mfp-page-meta):not(.mfp-page-folio *) {
-    display: inline !important;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    17. PERFORMANCE — GPU COMPOSITING & LAYOUT CONTAINMENT
@@ -680,21 +651,10 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
 }
 
 /* Layout containment per Mushaf page — prevents style recalc overflow */
-.mfp-portal-root .mfp-page-surface {
-    contain: layout style;
-}
 
 /* Replace non-GPU-compositable font-size transition with transform */
-.mfp-portal-root .mfp-page-sheet {
-    contain: layout style;
-}
 
 /* Reduce paint area for the Chrome overlays (navigation + player) */
-.mfp-portal-root .mfp-context-navigation,
-.mfp-portal-root .mfp-context-player {
-    will-change: opacity, transform;
-    contain: layout style paint;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    18. UX — FULLSCREEN OVERLAY IMPROVEMENTS
@@ -702,166 +662,32 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
    ═══════════════════════════════════════════════════════════════ */
 
 /* Background: deep, warm dark reading environment */
-.mfp-portal-root .mfp-overlay {
-    background: var(--reader-page-bg, #f5f0e8);
-}
-
-[data-theme="dark"] .mfp-portal-root .mfp-overlay {
-    background: #0d0f12;
-}
-
-[data-theme="sepia"] .mfp-portal-root .mfp-overlay {
-    background: #f3e8cf;
-}
 
 /* Context navigation pill: elevated glass, smooth reveal */
-.mfp-portal-root .mfp-context-navigation {
-    border: 1px solid color-mix(in srgb, var(--border, rgba(0,0,0,0.12)) 55%, transparent) !important;
-    box-shadow:
-        0 8px 32px rgba(0,0,0,0.18),
-        0 2px 8px rgba(0,0,0,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.08) !important;
-    backdrop-filter: blur(20px) saturate(140%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-    background: color-mix(in srgb, var(--bg-card, #fff) 88%, transparent) !important;
-}
-
-[data-theme="dark"] .mfp-portal-root .mfp-context-navigation {
-    background: color-mix(in srgb, #1a1f2e 90%, transparent) !important;
-    border-color: rgba(255,255,255,0.08) !important;
-}
 
 /* Context player pill: elevated glass */
-.mfp-portal-root .mfp-context-player {
-    border: 1px solid color-mix(in srgb, var(--border, rgba(0,0,0,0.12)) 55%, transparent) !important;
-    box-shadow:
-        0 8px 32px rgba(0,0,0,0.18),
-        0 2px 8px rgba(0,0,0,0.10),
-        inset 0 1px 0 rgba(255,255,255,0.06) !important;
-    backdrop-filter: blur(20px) saturate(140%) !important;
-    -webkit-backdrop-filter: blur(20px) saturate(140%) !important;
-    background: color-mix(in srgb, var(--bg-card, #fff) 88%, transparent) !important;
-}
 
 /* Floating page side navigation in Fullscreen overlay */
-.mfp-portal-root .mfp-floating-nav {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 20;
-    pointer-events: auto;
-}
-
-.mfp-portal-root .mfp-floating-nav--prev {
-    left: clamp(0.6rem, 2vw, 1.6rem);
-}
-
-.mfp-portal-root .mfp-floating-nav--next {
-    right: clamp(0.6rem, 2vw, 1.6rem);
-}
-
-@media (max-width: 640px) {
-    .mfp-portal-root .mfp-floating-nav {
-        display: none;
-    }
-}
 
 /* Playing ayah highlight — warm amber like a true mushaf marker */
-.mfp-portal-root .mfp-ayah--playing {
-    background: rgba(197, 160, 75, 0.14) !important;
-    box-shadow:
-        0 0 0 0.06em rgba(197, 160, 75, 0.12),
-        inset 0 -0.05em 0 rgba(197, 160, 75, 0.30) !important;
-    border-radius: 0.12em !important;
-}
-
-[data-theme="dark"] .mfp-portal-root .mfp-ayah--playing {
-    background: rgba(var(--primary-rgb, 197, 160, 75), 0.18) !important;
-}
 
 /* Page meta bar: subtle and elegant */
-.mfp-portal-root .mfp-page-meta {
-    opacity: 0.45;
-    font-size: 0.6rem;
-    letter-spacing: 0.06em;
-}
 
 /* Folio (page number at bottom) */
-.mfp-portal-root .mfp-page-folio strong {
-    opacity: 0.5;
-    font-size: 0.72rem;
-    letter-spacing: 0.04em;
-}
 
 /* Surah header break in fullscreen: more elegant divider */
-.mfp-portal-root .mfp-surah-break {
-    margin-block: 1.4em 0.8em;
-}
 
 /* Close button: more accessible, positioned clearly */
-.mfp-portal-root .mfp-context-navigation__close {
-    color: var(--text-secondary, #666) !important;
-    transition: color 120ms ease, background 120ms ease !important;
-}
-
-.mfp-portal-root .mfp-context-navigation__close:hover {
-    color: var(--text-primary, #000) !important;
-    background: color-mix(in srgb, currentColor 8%, transparent) !important;
-}
 
 /* Step buttons (prev/next surah): more prominent */
-.mfp-portal-root .mfp-context-navigation__step {
-    transition: all 120ms ease !important;
-}
-
-.mfp-portal-root .mfp-context-navigation__step:not(:disabled):hover {
-    background: rgba(var(--primary-rgb, 197, 160, 75), 0.12) !important;
-    color: var(--primary, #c5a04b) !important;
-}
 
 /* Player track info: better typography */
-.mfp-portal-root .mfp-context-player__track strong {
-    font-size: 0.82rem;
-    font-weight: 650;
-}
-
-.mfp-portal-root .mfp-context-player__track small {
-    font-size: 0.65rem;
-    opacity: 0.65;
-}
 
 /* Player toggle (play/pause): primary color, prominent */
-.mfp-portal-root .mfp-context-player__toggle {
-    background: var(--primary, #c5a04b) !important;
-    color: #fff !important;
-    border-radius: 50% !important;
-    width: 2.4rem !important;
-    height: 2.4rem !important;
-    box-shadow: 0 4px 12px rgba(var(--primary-rgb, 197, 160, 75), 0.35) !important;
-    transition: transform 100ms ease, box-shadow 100ms ease !important;
-}
-
-.mfp-portal-root .mfp-context-player__toggle:hover {
-    transform: scale(1.08) !important;
-    box-shadow: 0 6px 16px rgba(var(--primary-rgb, 197, 160, 75), 0.45) !important;
-}
 
 /* Hot zones: more opaque for better discoverability */
-.mfp-portal-root .mfp-context-hotzone {
-    opacity: 0 !important;
-    pointer-events: all !important;
-}
 
 /* Zoom status badge: more polished */
-.mfp-portal-root .mfp-zoom-status {
-    background: color-mix(in srgb, #000 72%, transparent) !important;
-    color: #fff !important;
-    border-radius: 6px !important;
-    font-size: 0.7rem !important;
-    font-weight: 600 !important;
-    padding: 0.25rem 0.55rem !important;
-    letter-spacing: 0.02em !important;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    19. TAJWEED RICH FLOATING TOOLTIP & HOVER PILL HIGHLIGHT
