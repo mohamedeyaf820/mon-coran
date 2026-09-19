@@ -35,6 +35,10 @@ test("the Warsh basmala stays verbatim from the project Warsh source", () => {
 
 test("mushaf page and continuous reader resolve basmala through the riwaya", () => {
   const page = readFileSync(
+    new URL("../src/components/QuranDisplay/MushafPageLines.jsx", import.meta.url),
+    "utf8"
+  );
+  const dispatcher = readFileSync(
     new URL("../src/components/QuranDisplay/QuranMushafPage.jsx", import.meta.url),
     "utf8"
   );
@@ -43,6 +47,7 @@ test("mushaf page and continuous reader resolve basmala through the riwaya", () 
     "utf8"
   );
   assert.equal(/BASMALA_TEXT/.test(page), false);
+  assert.equal(/BASMALA_TEXT/.test(dispatcher), false);
   assert.match(page, /\{getBasmalaText\(riwaya\)\}/);
   assert.match(bismillah, /\{getBasmalaText\(riwaya\)\}/);
 });

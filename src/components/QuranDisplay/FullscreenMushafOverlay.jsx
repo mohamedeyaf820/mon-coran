@@ -373,7 +373,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
           {spreadPages.map((pageNumber) => {
             const pageAyahs = pageCache.get(pageNumber) || (isPageScoped(ayahs, pageNumber) ? ayahs : []);
             return (
-              <QuranMushafPage key={pageNumber} activeAyah={null} ayahs={pageAyahs} currentPage={pageNumber} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} onToggleActive={() => {}} riwaya={riwaya} showTajwid={state.showTajwid} />
+              <QuranMushafPage key={pageNumber} activeAyah={null} ayahs={pageAyahs} currentPage={pageNumber} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} riwaya={riwaya} showTajwid={state.showTajwid} />
             );
           })}
         </div>

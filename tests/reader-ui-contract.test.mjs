@@ -211,6 +211,8 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   const display = source("src/components/QuranDisplay.jsx");
   const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
   const mushafPage = source("src/components/QuranDisplay/QuranMushafPage.jsx");
+  const composition = source("src/components/QuranDisplay/mushafPageComposition.js");
+  const pageLines = source("src/components/QuranDisplay/MushafPageLines.jsx");
   const book = source("src/styles/mushaf-book.css");
   const purgeConfig = source("scripts/cssPurgeConfig.mjs");
 
@@ -250,6 +252,10 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
 
   // The exact Madani page is set like print: measure and pitch from the type,
   // opening pages centred, title band and basmala on the empty lines.
+  // One printed-page contract is shared by both riwayas through
+  // MushafPageShell + MushafPageLines; QuranMushafPage only dispatches.
+  const hafsRenderer = source("src/components/QuranDisplay/HafsPageRenderer.jsx");
+  const warshRenderer = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
   assert.match(overlay, /<QuranMushafPage/);
   assert.match(overlay, /className="mfp-book mfp-book--exact"/);
   assert.doesNotMatch(overlay, /<CleanPageView/);
@@ -257,11 +263,17 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(book, /--mfp-line-measure: 16\.7em/);
   assert.match(book, /--mfp-line-pitch: 1\.62em/);
   assert.match(book, /\[data-page-kind="opening"\] \.qcm-line/);
-  assert.match(mushafPage, /placeSurahOpenings/);
-  assert.match(mushafPage, /markSurahEndings/);
-  assert.match(mushafPage, /qcm-line--surah-header/);
-  assert.match(mushafPage, /qcm-line--basmala/);
-  assert.match(mushafPage, /qcm-line--surah-end/);
+  assert.match(mushafPage, /HafsPageRenderer/);
+  assert.match(mushafPage, /WarshPageRenderer/);
+  assert.match(hafsRenderer, /MushafPageShell/);
+  assert.match(hafsRenderer, /MushafPageLines/);
+  assert.match(warshRenderer, /MushafPageShell/);
+  assert.match(warshRenderer, /MushafPageLines/);
+  assert.match(composition, /placeSurahOpenings/);
+  assert.match(composition, /markSurahEndings/);
+  assert.match(pageLines, /qcm-line--surah-header/);
+  assert.match(pageLines, /qcm-line--basmala/);
+  assert.match(pageLines, /qcm-line--surah-end/);
 
   // The page classes are composed in template strings: PurgeCSS must keep them.
   assert.match(purgeConfig, /\/\^qcm-\//);
@@ -388,7 +400,7 @@ test("continuous Mushaf text strips embedded markers before rendering its marker
 
 test("Warsh page data and fullscreen share one renderer with one marker owner", () => {
   const service = source("src/services/warshService.js");
-  const page = source("src/components/QuranDisplay/QuranMushafPage.jsx");
+  const page = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
   const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
   const fonts = source("src/data/fonts.js");
 
@@ -479,7 +491,7 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   const fonts = source("src/styles/riwaya-fonts.css");
   const reader = source("src/styles/domains/reading-platform.css");
   const readingPolish = source("src/styles/reading-ux-refonte.css");
-  const mushafPage = source("src/components/QuranDisplay/QuranMushafPage.jsx");
+  const mushafPage = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
   const verseView = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
   const supplement = source("src/components/Quran/AyahBlockSupplement.jsx");
 
