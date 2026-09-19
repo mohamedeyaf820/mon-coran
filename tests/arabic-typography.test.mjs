@@ -232,8 +232,6 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     `${verse} ۱`,
     `${verse} ﴿١﴾`,
     `${verse} ۝\u200f`,
-    `${verse} \uFC00`,
-    `${verse} \uFC17 \uFC17`,
   ];
 
   const fontMarkers = [
@@ -256,6 +254,18 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
       assert.equal(rendered, `${verse}\u202F${expectedMarker}`, fontFamily);
     }
   }
+
+  // Legacy Warsh page sources store ayah numbers as U+FC00 + (n - 1) glyphs.
+  // That range also contains genuine sacred ligatures, so the glyph is only
+  // stripped when the ayah number proves it is the marker.
+  for (const payload of [`${verse} \uFC00`, `${verse}\u00a0\uFC00`]) {
+    assert.equal(stripEmbeddedAyahMarkers(payload, { ayahNumber: 1 }), verse);
+    assert.equal(stripEmbeddedAyahMarkers(payload).endsWith("\uFC00"), true);
+  }
+  assert.equal(
+    stripEmbeddedAyahMarkers(`${verse} \uFC17 \uFC17`, { ayahNumber: 24 }),
+    verse
+  );
 
   assert.equal(appendNativeAyahMarker("", 1, "qpc-hafs", "hafs"), "");
 });

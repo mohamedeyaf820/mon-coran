@@ -154,23 +154,38 @@ const AYAH_MARKER_BY_FONT = {
 
 export const NATIVE_AYAH_MARKER_RE = /[\u06dd\u06de][\u0660-\u0669\u06f0-\u06f9\d]*/u;
 
-// Quran payloads do not all encode the end of an ayah in the same way. Some
-// include U+06DD/U+06DE, some only contain shaped Arabic-Indic digits, and a
-// few wrap the number in the ornamental Quran brackets. Strip every supported
-// *trailing* form before generating our single marker. Waqf signs (U+06D6 to
-// U+06DC) are deliberately excluded: they are meaningful recitation content.
+// The legacy Warsh page source stores ayah numbers as single presentation-
+// form glyphs: U+FC00 for ayah 1 through U+FD1C for ayah 285. Verified on the
+// full source: every ayah ends with exactly 0xFC00 + (numberInSurah - 1) and
+// the range never appears inside real words. That same range also hosts
+// genuine sacred ligatures, so a bare glyph is only ever removed when it is
+// proven to be the expected number for the ayah being cleaned.
+export const LEGACY_WARSH_MARKER_BASE = 0xfc00;
+export const LEGACY_WARSH_MAX_AYAH_NUMBER = 285;
+
+export function legacyWarshMarkerGlyph(ayahNumber) {
+  const value = Number(ayahNumber);
+  if (!Number.isInteger(value) || value < 1 || value > LEGACY_WARSH_MAX_AYAH_NUMBER) {
+    return null;
+  }
+  return String.fromCodePoint(LEGACY_WARSH_MARKER_BASE + value - 1);
+}
+
+const MARKER_DIGITS = "[\\u0660-\\u0669\\u06F0-\\u06F9\\d]";
 const INVISIBLE_SUFFIX = "[\\u061C\\u200B-\\u200F\\u202A-\\u202E\\u2066-\\u2069\\uFEFF]*";
-const AYAH_MARKER_SUFFIX_RE = new RegExp(
-  `(?:(?:\\s|&nbsp;)*(?:` +
-    `[\\u06DD\\u06DE\\u06E9]?[\\u0660-\\u0669\\u06F0-\\u06F9\\d]+|` +
-    `[\\uFD3E\\uFD3F][\\u0660-\\u0669\\u06F0-\\u06F9\\d]+[\\uFD3E\\uFD3F]|` +
-    // The legacy Warsh page source stores ayah numbers as custom-font
-    // presentation-form glyphs (U+FC00 for ayah 1 through U+FD1C for 285).
-    `[\\uFC00-\\uFD1C]|` +
-    `[\\u06DD\\u06DE]` +
-  `))+${INVISIBLE_SUFFIX}\\s*$`,
-  "u",
-);
+
+function buildAyahMarkerSuffixRe(legacyGlyph) {
+  const branches = [
+    `[\\u06DD\\u06DE\\u06E9]?${MARKER_DIGITS}+`,
+    `[\\uFD3E\\uFD3F]${MARKER_DIGITS}+[\\uFD3E\\uFD3F]`,
+    `[\\u06DD\\u06DE]`,
+  ];
+  if (legacyGlyph) branches.push(legacyGlyph.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"));
+  return new RegExp(
+    `(?:(?:\\s|&nbsp;)*(?:${branches.join("|")}))+${INVISIBLE_SUFFIX}\\s*$`,
+    "u",
+  );
+}
 
 export const UI_AYAH_MARKER_FONT_ID = "qpc-hafs";
 
@@ -351,10 +366,11 @@ export function getUiAyahMarker(value, fontId = UI_AYAH_MARKER_FONT_ID, riwaya =
   return getNativeAyahMarker(value, fontId, riwaya);
 }
 
-export function stripEmbeddedAyahMarkers(text) {
+export function stripEmbeddedAyahMarkers(text, options = {}) {
   const value = normalizeQuranGlyphText(text).trim();
   if (!value) return value;
-  return value.replace(AYAH_MARKER_SUFFIX_RE, "").trim();
+  const legacyGlyph = legacyWarshMarkerGlyph(options.ayahNumber);
+  return value.replace(buildAyahMarkerSuffixRe(legacyGlyph), "").trim();
 }
 
 export function appendNativeAyahMarker(
@@ -366,7 +382,7 @@ export function appendNativeAyahMarker(
 ) {
   const normalizedValue = normalizeQuranGlyphText(text).trim();
   if (!normalizedValue) return normalizedValue;
-  const cleanedValue = stripEmbeddedAyahMarkers(normalizedValue);
+  const cleanedValue = stripEmbeddedAyahMarkers(normalizedValue, { ayahNumber });
   if (!cleanedValue) {
     return includeMarker
       ? getNativeAyahMarker(ayahNumber, fontId, riwaya)

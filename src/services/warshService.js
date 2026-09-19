@@ -86,14 +86,14 @@ function normalizeWhitespace(text) {
   return normalized.trim();
 }
 
-function splitWarshWords(text) {
-  const normalized = normalizeWarshAyahText(text);
+function splitWarshWords(text, ayahNumber = null) {
+  const normalized = normalizeWarshAyahText(text, ayahNumber);
   // Split on whitespace but preserve the diacritics attached to words
   return normalized.split(/\s+/).filter(word => word.length > 0);
 }
 
-function normalizeWarshAyahText(text) {
-  return stripEmbeddedAyahMarkers(normalizeWhitespace(text));
+function normalizeWarshAyahText(text, ayahNumber = null) {
+  return stripEmbeddedAyahMarkers(normalizeWhitespace(text), { ayahNumber });
 }
 
 function getSurahNumberFromRaw(raw) {
@@ -274,7 +274,7 @@ function validateWarshRows(records, surahNumber) {
  */
 function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
   const ayahNumber = Number(raw?.aya_no ?? raw?.ayah_number ?? raw?.ayah ?? raw?.verse ?? fallbackAyahNumber);
-  const text = normalizeWarshAyahText(raw?.aya_text ?? raw?.text ?? raw?.ayah_text ?? raw?.verse_text ?? raw);
+  const text = normalizeWarshAyahText(raw?.aya_text ?? raw?.text ?? raw?.ayah_text ?? raw?.verse_text ?? raw, ayahNumber);
 
   if (!ayahNumber || !text) {
     return null;
@@ -286,7 +286,7 @@ function normalizeWarshRecord(raw, surahNumber, fallbackAyahNumber = null) {
     ayahNumber,
     text,
     rawText: text,
-    words: splitWarshWords(text),
+    words: splitWarshWords(text, ayahNumber),
     juz: null, // Not in source
     page: null, // Not in source
     pages: [],
@@ -309,13 +309,13 @@ async function fetchWarshSurahRows(surahNumber) {
  * Converts a normalized record to the final Ayah object.
  */
 function toWarshAyah(record) {
-  const text = normalizeWarshAyahText(record?.text || '');
+  const text = normalizeWarshAyahText(record?.text || '', record?.ayahNumber);
   return {
     number: null, // Global number fallback
     warshNumber: null,
     numberInSurah: record?.ayahNumber,
     text,
-    warshWords: record?.words?.length ? record.words : splitWarshWords(text),
+    warshWords: record?.words?.length ? record.words : splitWarshWords(text, record?.ayahNumber),
     surah: {
       number: record?.surahNumber,
       name: record?.surahNameAr,
@@ -630,8 +630,9 @@ export async function getWarshJuzVerses(juzNum) {
   const rows = indexed?.byJuz?.get(cacheKey) || [];
   if (rows.length > 0) {
     const ayahs = rows.map((ayah) => {
-      const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '');
-      const words = splitWarshWords(text);
+      const ayahNumber = Number(ayah.aya_no) || null;
+      const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '', ayahNumber);
+      const words = splitWarshWords(text, ayahNumber);
       return {
         text,
         warshWords: words,
@@ -688,8 +689,9 @@ export async function getWarshPageVerses(pageNum) {
   
   // Format compatible avec QuranMushafPage
   const formattedAyahs = pageAyahs.map(ayah => {
-    const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '');
-    const words = splitWarshWords(text);
+    const ayahNumber = Number(ayah.aya_no) || null;
+    const text = normalizeWarshAyahText(ayah.aya_text || ayah.text || '', ayahNumber);
+    const words = splitWarshWords(text, ayahNumber);
     
     return {
       text: text,

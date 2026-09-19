@@ -393,12 +393,16 @@ test("Warsh page data and fullscreen share one renderer with one marker owner", 
   const fonts = source("src/data/fonts.js");
 
   assert.match(service, /normalizeWarshAyahText/);
-  assert.match(service, /stripEmbeddedAyahMarkers\(normalizeWhitespace\(text\)\)/);
+  assert.match(service, /stripEmbeddedAyahMarkers\(normalizeWhitespace\(text\), \{ ayahNumber \}\)/);
   assert.match(page, /getCleanWarshWords/);
   assert.match(page, /charType: "end"/);
   assert.match(overlay, /<QuranMushafPage/);
   assert.doesNotMatch(overlay, /riwaya !== "warsh"/);
-  assert.equal(fonts.includes("[\\\\uFC00-\\\\uFD1C]"), true);
+  // Legacy Warsh number glyphs (U+FC00 + ayah - 1) are only stripped when the
+  // ayah number proves them; the raw presentation-form range is never matched.
+  assert.match(fonts, /LEGACY_WARSH_MARKER_BASE = 0xfc00/);
+  assert.match(fonts, /function legacyWarshMarkerGlyph/);
+  assert.equal(/\\uFC00-\\uFD1C/.test(fonts), false);
 });
 
 test("continuous Mushaf markers leave a readable gap before the next ayah", () => {

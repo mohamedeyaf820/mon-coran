@@ -63,7 +63,9 @@ function getCleanWarshWords(ayah) {
         .map((word) => typeof word === "string" ? word : word?.text || "")
         .join(" ")
     : ayah?.text || "";
-  return stripEmbeddedAyahMarkers(normalizeArabicText(source))
+  return stripEmbeddedAyahMarkers(normalizeArabicText(source), {
+    ayahNumber: ayah?.numberInSurah,
+  })
     .split(/\s+/u)
     .filter(Boolean);
 }
