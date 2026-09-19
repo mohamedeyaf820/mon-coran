@@ -484,6 +484,13 @@
   margin: 0;
 }
 
+/* The global button/[role="button"] reset must not clip page ink: v4
+   COLRv1 glyphs paint outside their em box (ascenders, superscripts). */
+#root .qcm-word,
+#root ~ .mfp-portal-root .mfp-book .qcm-word {
+  overflow: visible;
+}
+
 /* ─── ROOT CAUSE FIX ────────────────────────────────────────────────── */
 /* Words flow at natural glyph width. QCF page glyphs are cut so that a full
    Madani line fills the 16.7em measure at the computed font size.
