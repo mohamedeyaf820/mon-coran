@@ -97,7 +97,7 @@ export default function HafsPageRenderer({
 
   const lines = useMemo(() => groupPageLines(ayahs), [ayahs]);
   const meta = useMemo(
-    () => getPageMeta(ayahs, currentPage, lang, riwaya),
+    () => getPageMeta(ayahs, currentPage, lang),
     [ayahs, currentPage, lang, riwaya],
   );
 

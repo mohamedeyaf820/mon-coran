@@ -105,7 +105,7 @@ export default function WarshPageRenderer({
 
   const segments = useMemo(() => buildWarshSegments(ayahs), [ayahs]);
   const meta = useMemo(
-    () => getPageMeta(ayahs, currentPage, lang, riwaya),
+    () => getPageMeta(ayahs, currentPage, lang),
     [ayahs, currentPage, lang, riwaya],
   );
 

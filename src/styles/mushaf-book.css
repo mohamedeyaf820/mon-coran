@@ -42,7 +42,10 @@
 /* ── Overlay chrome (web toolbar replacement) ────────────────────────── */
 
 .mfp-header {
-  position: sticky;
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
   z-index: 30;
   display: flex;
   flex: 0 0 auto;
@@ -51,8 +54,13 @@
   gap: 0.75rem;
   min-width: 0;
   padding: max(0.5rem, env(safe-area-inset-top)) 1rem 0.5rem;
-  border-bottom: 1px solid var(--mfp-header-border);
-  background: var(--mfp-header-bg);
+  /* Floating scrim: the leaf reads to the very edge of the screen, and the
+     chrome recedes over it instead of cutting a solid bar out of the page. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--mfp-header-bg, #fff) 96%, transparent) 55%,
+    transparent
+  );
 }
 
 .mfp-header__identity,
@@ -115,10 +123,12 @@
 .mfp-zoom-value { min-width: 3.25rem; font-size: 0.7rem; font-weight: 750; font-variant-numeric: tabular-nums; }
 
 .mfp-viewport {
-  display: block;
+  display: flex;
   overflow: auto;
   flex: 1 1 auto;
-  padding: 1.5rem 1rem clamp(4rem, 6vh, 6rem);
+  /* The header floats over the sheet; this top room keeps a height-filled
+     leaf from sliding under the chrome pills. */
+  padding: 4rem 0.5rem clamp(1rem, 3vh, 2rem);
   overscroll-behavior: contain;
 }
 
@@ -213,7 +223,9 @@
 
 .mfp-portal-root .mfp-book {
   width: 100%;
-  margin-inline: auto;
+  /* margin auto in the flex viewport centers the leaf on both axes without
+     clipping the top when zoomed past the viewport. */
+  margin: auto;
 }
 
 /* Side gutters (juz, hizb) stay quiet: small caps in the margin like a
@@ -327,7 +339,7 @@
 }
 
 #root ~ .mfp-portal-root .qcm-page-footer {
-  justify-content: space-between;
+  justify-content: center;
   gap: 0.6rem;
   padding-inline: 0.2rem;
   margin-top: 1.1rem;
@@ -420,11 +432,26 @@
    viewport, and the shared --mfp-font keeps them at one scale. */
 .mfp-portal-root[data-layout="double"] {
   --mfp-cols: 2;
-  --mfp-hchrome: 320px;
+  --mfp-hchrome: 350px;
   --mfp-page-gutter: 2.5rem;
 }
 
 /* ─── Single-page layout (mobile / tablet portrait) ────────────────── */
+
+/* One leaf needs no side gutters: dropping them lets the type scale grow to
+   the true measure of the sheet instead of a gutter it never prints. */
+.mfp-portal-root[data-layout="single"] {
+  --mfp-hchrome: 92px;
+  --mfp-min-font: 15px;
+}
+
+#root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-edge {
+  display: none;
+}
+
+#root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-page-shell {
+  grid-template-columns: minmax(0, max-content);
+}
 
 .mfp-portal-root[data-layout="single"] .mfp-book--exact {
   display: flex;
@@ -523,11 +550,32 @@
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines {
   position: relative;
   top: 1.5em;
-  font-size: calc(var(--mfp-font) * 1.08);
+  /* The boost must stay under both viewport fits the clamp computed for the
+     unboosted sheet, or the opening leaf overflows a phone screen (width) or
+     pushes the footer past the fold on a tablet (height). */
+  font-size: min(
+    calc(var(--mfp-font) * 1.08),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 24.8)
+  );
+  font-size: min(
+    calc(var(--mfp-font) * 1.08),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 24.8)
+  );
 }
 
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-warsh="true"] {
-  font-size: calc(var(--mfp-font) * 1.04);
+  font-size: min(
+    calc(var(--mfp-font) * 1.04),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 24.8)
+  );
+  font-size: min(
+    calc(var(--mfp-font) * 1.04),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 24.8)
+  );
 }
 
 /* Surah title band: a thin double frame around the calligraphic name. */
@@ -596,8 +644,10 @@
 
 /* Narrow screens: no side gutters, the sheet takes the width. */
 @media (max-width: 640px) {
-  .mfp-portal-root {
-    --mfp-chrome: 230px;
+  /* Same attribute specificity as the single-layout rule above so these
+     phone values win over it (source order). */
+  .mfp-portal-root[data-layout="single"] {
+    --mfp-chrome: 150px;
     --mfp-hchrome: 44px;
     --mfp-min-font: 14px;
   }
@@ -625,7 +675,7 @@
   .mfp-zoom-fit { display: none; }
   .mfp-zoom-controls .mfp-icon-btn { min-width: 40px; }
   .mfp-side-nav { display: none; }
-  .mfp-viewport { padding: 0.75rem 0.35rem 5.5rem; }
+  .mfp-viewport { padding: 3.5rem 0.35rem 5.5rem; }
   .mfp-mobile-footer {
     position: sticky;
     z-index: 30;
@@ -761,13 +811,6 @@
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-
-#root ~ .mfp-portal-root .mfp-book .qcm-page-footer__label {
-  min-width: 3.5rem;
-  color: var(--reader-page-muted);
-  font-size: 0.66rem;
-  font-weight: 600;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-word {

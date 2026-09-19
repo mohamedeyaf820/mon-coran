@@ -67,7 +67,7 @@ export function markSurahEndings(lines) {
   return lines;
 }
 
-export function getPageMeta(ayahs, currentPage, lang, riwaya) {
+export function getPageMeta(ayahs, currentPage, lang) {
   const first = ayahs[0] || {};
   const last = ayahs[ayahs.length - 1] || first;
   const juz =
@@ -77,6 +77,9 @@ export function getPageMeta(ayahs, currentPage, lang, riwaya) {
   const hizb = first.hizb || "";
   const rub = first.rubElHizb || "";
   const page = lang === "ar" ? toAr(currentPage) : currentPage;
+  // The printed folio medallion always uses Arabic-Indic digits, the way the
+  // Madani Mushaf sets it, whatever the interface language.
+  const folio = toAr(currentPage);
   const surahMeta = getSurahMeta(first.surah?.number);
   const surahName = surahMeta
     ? lang === "ar"
@@ -88,6 +91,7 @@ export function getPageMeta(ayahs, currentPage, lang, riwaya) {
 
   return {
     page,
+    folio,
     surahName,
     top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
     middle:
@@ -97,13 +101,5 @@ export function getPageMeta(ayahs, currentPage, lang, riwaya) {
     sideA: `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}`,
     sideB: `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}`,
     sideC: rub ? `${lang === "ar" ? "ربع" : "Rubʿ"} ${lang === "ar" ? toAr(rub) : rub}` : "",
-    fontLabel:
-      riwaya === "warsh"
-        ? lang === "ar"
-          ? "رواية ورش"
-          : "Warsh"
-        : lang === "ar"
-          ? "رواية حفص"
-          : "Hafs",
   };
 }

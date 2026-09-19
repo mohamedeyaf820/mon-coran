@@ -39,14 +39,12 @@ export default function MushafPageShell({
         </header>
         {children}
         <footer className="qcm-page-footer" aria-hidden="true">
-          <span className="qcm-page-footer__label">{meta.fontLabel}</span>
-          <span className="qcm-page-folio">{meta.page}</span>
-          <span className="qcm-page-footer__label" />
+          <span className="qcm-page-folio">{meta.folio ?? meta.page}</span>
         </footer>
       </div>
       <div className="qcm-edge qcm-edge--end">
         <span>{meta.sideC || meta.sideB}</span>
-        <span>{meta.page}</span>
+        <span>{meta.folio ?? meta.page}</span>
       </div>
     </section>
   );
