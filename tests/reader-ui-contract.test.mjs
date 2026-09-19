@@ -519,6 +519,10 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   assert.match(mushafBook, /\.qcm-word--warsh \{[\s\S]*?font-size: 1em;[\s\S]*?line-height: inherit;/);
   assert.match(mushafBook, /\.qcm-flow \{[\s\S]*?text-align: justify;[\s\S]*?text-align-last: center;/);
   assert.match(mushafBook, /--qcm-flow-fit/);
+  // The printed frame sits behind the text: a positioned z-index:0 layer
+  // paints over static flow ink, and its paper inset-shadow would shear
+  // any glyph that overflows the line measure at a line end.
+  assert.match(mushafBook, /\.qcm-page::before \{[\s\S]*?z-index: -1;/);
   assert.match(mushafPage, /fontSize: '1em'/);
   assert.match(mushafPage, /lineHeight: 'inherit'/);
   assert.match(mushafPage, /unicodeBidi: 'isolate'/);

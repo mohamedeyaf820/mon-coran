@@ -246,7 +246,10 @@
 #root ~ .mfp-portal-root .qcm-page::before {
   content: "";
   position: absolute;
-  z-index: 0;
+  /* Behind the page text: Mushaf glyph ink overflows the line measure at
+     line ends, and a positioned z-index:0 layer paints over static text —
+     its paper inset-shadow would then shear the overflowing ink. */
+  z-index: -1;
   inset: 5px;
   border: var(--mfp-frame-inner) solid var(--mushaf-gold-soft);
   border-radius: 0.1rem;
