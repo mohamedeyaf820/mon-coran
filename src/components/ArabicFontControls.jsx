@@ -72,7 +72,6 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           onClick={() => setArabicFontSize(currentSize - 2)}
           disabled={currentSize <= ARABIC_FONT_SIZE_MIN}
           aria-label={labelFor(lang, "Réduire la taille arabe", "Decrease Arabic size", "تصغير الخط العربي")}
-          title="A-"
         >
           <Minus size={13} />
         </button>
@@ -95,7 +94,6 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           onClick={() => setArabicFontSize(currentSize + 2)}
           disabled={currentSize >= ARABIC_FONT_SIZE_MAX}
           aria-label={labelFor(lang, "Augmenter la taille arabe", "Increase Arabic size", "تكبير الخط العربي")}
-          title="A+"
         >
           <Plus size={13} />
         </button>

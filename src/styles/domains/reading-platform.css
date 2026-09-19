@@ -3803,6 +3803,9 @@ html body .app-root .native-ayah-marker::after {
     margin: 0 auto clamp(0.75rem, 1.6vw, 1.15rem);
     overflow: visible;
     position: relative;
+    /* backdrop-filter makes the deck a stacking context: without its own z-index
+       the popover stays trapped under the later-in-DOM mushaf page card. */
+    z-index: 40;
     border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--border));
     border-radius: 18px;
     background:
@@ -3939,16 +3942,57 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
     top: calc(100% + 0.55rem);
     right: 0;
     display: none;
-    width: min(23rem, calc(100vw - 1.5rem));
+    width: min(20rem, calc(100vw - 1.5rem));
     border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
     border-radius: 15px;
-    padding: 0.65rem;
+    padding: 0.7rem;
     background: var(--bg-card);
     box-shadow: 0 18px 46px rgba(7, 38, 27, 0.18);
 }
 
+.quran-display--platform .reader-control-deck .reader-typography-panel .arabic-font-controls {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.quran-display--platform .reader-control-deck .reader-typography-panel :is(.afc-font-group, .afc-size-group) {
+    width: 100%;
+    min-width: 0;
+}
+
+.quran-display--platform .reader-control-deck .reader-typography-panel .afc-select {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.quran-display--platform .reader-control-deck .reader-typography-panel .afc-range {
+    flex: 1 1 auto;
+    width: auto !important;
+    min-width: 0;
+}
+
 .quran-display--platform .reader-control-deck .reader-typography-panel--open {
     display: block;
+    animation: reader-typography-panel-in 0.16s ease-out;
+}
+
+@keyframes reader-typography-panel-in {
+    from {
+        opacity: 0;
+        transform: translateY(-0.35rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .quran-display--platform .reader-control-deck .reader-typography-panel--open {
+        animation: none;
+    }
 }
 
 .quran-display--platform .reader-control-deck .reader-context-card__progress {

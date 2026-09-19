@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import {
   BookOpen,
   Languages,
@@ -111,6 +111,30 @@ export default function ReadingToolbar({
     playHandler?.();
   };
 
+  const typographyRef = useRef(null);
+  const typographyTriggerRef = useRef(null);
+
+  useEffect(() => {
+    if (!showTypography) return undefined;
+    const handlePointerDown = (event) => {
+      if (!typographyRef.current?.contains(event.target)) {
+        set({ readerTypographyOpen: false });
+      }
+    };
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        set({ readerTypographyOpen: false });
+        typographyTriggerRef.current?.focus();
+      }
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [showTypography, set]);
+
   return (
     <div
       className={cn(
@@ -215,9 +239,10 @@ export default function ReadingToolbar({
           </button>
         ) : null}
 
-        <div className="relative">
+        <div className="relative" ref={typographyRef}>
           <button
             type="button"
+            ref={typographyTriggerRef}
             className={cn(
               "reader-typography-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
               showTypography
