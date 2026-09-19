@@ -1258,7 +1258,11 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   margin: 0 !important;
   padding: clamp(0.25rem, 0.7vw, 0.5rem) 0 !important;
   color: var(--text-quran, var(--text-primary)) !important;
-  line-height: 1.9 !important;
+  /* Floor at the historical 1.9; the per-face computed ratio may raise it
+     (large fonts need ink margin for madda/hamza). reader-premium.css used
+     to carry the same specificity with a lower value — import order decided
+     the winner. Keep the rule single. */
+  line-height: max(1.9, var(--quran-line-height, 1.9)) !important;
   text-align: right !important;
   text-wrap: pretty;
 }

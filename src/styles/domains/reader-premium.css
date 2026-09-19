@@ -502,11 +502,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card .qc-ayah-text-ar {
-    line-height: var(--quran-line-height, 1.76) !important;
-  }
-
-html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
     line-height: var(--quran-line-height, 1.64) !important;
   }

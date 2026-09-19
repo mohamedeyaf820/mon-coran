@@ -700,3 +700,13 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
     inset 0 0 0 5px rgba(200, 168, 75, 0.32),
     0 2px 8px rgba(0, 0, 0, 0.06) !important;
 }
+
+/* Ink guard (in-app flow, mirrors the portal rule in mushaf-book.css):
+   QCF/v4 glyphs paint outside their em box, and the global button/
+   [role="button"] reset clips overflow. Inside the page frame, verse and
+   line containers must never re-clip that ink — the frame padding already
+   provides the visual boundary. */
+.quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper
+  :is(.verse-text, .quran-arabic-text, .qcm-line, .qcm-word) {
+  overflow: visible;
+}

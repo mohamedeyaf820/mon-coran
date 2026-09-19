@@ -96,13 +96,19 @@ export default function useQuranDisplayView({
     const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
     const listMetric = (factor, minimum, maximum) =>
       `${Math.max(minimum, Math.min(maximum, readingFontSize * factor)).toFixed(2)}px`;
+    const rawLineHeight = getArabicReadingLineHeight({
+      displayMode,
+      fontFamily,
+      mushafLayout,
+      riwaya,
+    });
+    // At large list sizes the tight per-face ratios leave ~4 px of room for
+    // high harakat (madda, hamza) inside clipped verse containers; raise the
+    // floor instead of loosening every per-face ratio at small sizes.
     const quranLineHeight = String(
-      getArabicReadingLineHeight({
-        displayMode,
-        fontFamily,
-        mushafLayout,
-        riwaya,
-      }),
+      mushafLayout === "list" && readingFontSize >= 28 && rawLineHeight < 1.95
+        ? 1.95
+        : rawLineHeight,
     );
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);

@@ -87,7 +87,7 @@ async function expectCanonicalWaqfMark(page, riwaya) {
   expect(metrics.fontFamily).toContain(riwaya === "warsh" ? "Warsh" : "QPC Hafs");
 }
 
-async function expectCanonicalQuranFlow(locator, { maxLeading }) {
+async function expectCanonicalQuranFlow(locator, { maxLeading, minLeading = 1.6 }) {
   await expect(locator).toBeVisible();
   const metrics = await locator.evaluate((element) => {
     const style = window.getComputedStyle(element);
@@ -105,7 +105,7 @@ async function expectCanonicalQuranFlow(locator, { maxLeading }) {
   expect(metrics.direction).toBe("rtl");
   expect(["0px", "normal"]).toContain(metrics.letterSpacing);
   expect(["0px", "normal"]).toContain(metrics.wordSpacing);
-  expect(metrics.leading).toBeGreaterThanOrEqual(1.6);
+  expect(metrics.leading).toBeGreaterThanOrEqual(minLeading);
   expect(metrics.leading).toBeLessThanOrEqual(maxLeading);
   expect(metrics.text).not.toContain("\u25cc");
 }
@@ -259,7 +259,12 @@ for (const [riwaya, fonts] of Object.entries(FONT_MATRIX)) {
       await select.selectOption(fontId);
       const listText = page.locator(".qc-ayah-text-ar").first();
       await expectFontFamily(listText, family);
-      await expectCanonicalQuranFlow(listText, { maxLeading: 1.92 });
+      // Large list sizes floor at 1.95 so tall harakat keep ink margin; the
+      // ceiling stops any face from drifting back into loose-card territory.
+      await expectCanonicalQuranFlow(listText, {
+        minLeading: 1.94,
+        maxLeading: 2.02,
+      });
       await expectCanonicalWaqfMark(page, riwaya);
     }
 
