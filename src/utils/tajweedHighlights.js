@@ -17,9 +17,28 @@ export const TAJWEED_HOVER_HIGHLIGHT = "tajwid-hover";
 
 export function supportsTajweedHighlights() {
   if (typeof window === "undefined" || typeof CSS === "undefined") return false;
+  // WebKit paints Highlight ranges by re-shaping each sub-run of the text
+  // node: on Arabic the harakat and joined forms detach from their word
+  // (verified on iPhone Safari/Chrome with the QPC faces, any Safari >= 17.4
+  // that exposes the API). Keep WebKit on the word-level fallback, where
+  // colour precision is reduced but text integrity is not.
+  if (isWebkitEngine()) return false;
   return (
     typeof CSS.highlights !== "undefined" &&
     typeof globalThis.Highlight === "function"
+  );
+}
+
+function isWebkitEngine() {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent || "";
+  // Every browser on iOS is WebKit, whatever brand the UA carries.
+  if (/iPhone|iPad|iPod|CriOS|FxiOS/.test(ua)) return true;
+  // macOS Safari (and iPadOS desktop mode, which reports Macintosh).
+  return (
+    /Version\/[\d.]+/.test(ua) &&
+    /Safari\//.test(ua) &&
+    !/Chrome|Chromium|Edg|OPR|Firefox/.test(ua)
   );
 }
 
