@@ -1,6 +1,6 @@
 import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { ChevronLeft, ChevronRight, Minus, Pause, Play, Plus, Settings2, SkipBack, SkipForward, X } from "lucide-react";
+import { ArrowLeftRight, ChevronLeft, ChevronRight, Maximize, Minus, Pause, Play, Plus, Settings2, SkipBack, SkipForward, X } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { resolveFontFamily } from "../../data/fonts";
 import { getJuzForAyah } from "../../data/juz";
@@ -351,6 +351,22 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     event.preventDefault();
     setZoom((value) => clampZoom(value + (event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP)));
   };
+  // Fit changes only the type scale: the fifteen lines and their words are
+  // fixed by the printed page data, so the sheet shrinks or grows whole.
+  const applyFit = (mode) => {
+    const viewport = viewportRef.current;
+    const sheet = viewport?.querySelector(".mfp-book");
+    if (!viewport || !sheet) return;
+    setZoom((value) => {
+      const width = sheet.offsetWidth / value;
+      const height = sheet.offsetHeight / value;
+      if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return value;
+      const scale = mode === "width"
+        ? viewport.clientWidth / width
+        : Math.min(viewport.clientWidth / width, viewport.clientHeight / height);
+      return clampZoom(scale);
+    });
+  };
 
   return createPortal(
     <div ref={overlayRef} className={`mfp-portal-root${chromeVisible ? "" : " mfp-portal-root--zen"}`} data-theme={theme} data-layout={layout} data-view="reading" data-riwaya={riwaya} dir={lang === "ar" ? "rtl" : "ltr"} style={{ "--qd-font-family": quranFontFamily, "--font-quran": quranFontFamily, "--font-quran-tajweed": quranFontFamily, ...getThemeOverlayStyle(theme) }} role="dialog" aria-modal="true" aria-label={`${t("quran.page", lang)} ${pageLabel}`} onKeyDown={handleOverlayKeyDown}>
@@ -362,9 +378,11 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
         <div className="mfp-header__tools">
           <AudioControls {...audioProps} />
           <div className="mfp-zoom-controls" dir="ltr">
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label="Zoom arrière"><Minus size={16} /></button>
-            <button type="button" className="mfp-zoom-value" onClick={() => setZoom(1)} aria-label="Réinitialiser le zoom">{Math.round(zoom * 100)}%</button>
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value + ZOOM_STEP))} disabled={zoom >= MAX_ZOOM} aria-label="Zoom avant"><Plus size={16} /></button>
+            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>
+            <button type="button" className="mfp-zoom-value" onClick={() => setZoom(1)} aria-label={t("quran.zoomReset", lang)}>{Math.round(zoom * 100)}%</button>
+            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value + ZOOM_STEP))} disabled={zoom >= MAX_ZOOM} aria-label={t("quran.zoomIn", lang)}><Plus size={16} /></button>
+            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("page")} aria-label={t("quran.fitPage", lang)} title={t("quran.fitPage", lang)}><Maximize size={16} /></button>
+            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("width")} aria-label={t("quran.fitWidth", lang)} title={t("quran.fitWidth", lang)}><ArrowLeftRight size={16} /></button>
           </div>
         </div>
       </header>

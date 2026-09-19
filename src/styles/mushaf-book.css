@@ -567,6 +567,10 @@
 
   .mfp-header { padding-inline: 0.5rem; }
   .mfp-header__tools > .mfp-audio-controls { display: none; }
+  /* The phone header only carries close and the core zoom controls; the
+     sheet is already fitted by the type-scale calculation, and the
+     zoom-value reset returns to it. */
+  .mfp-zoom-fit { display: none; }
   .mfp-zoom-controls .mfp-icon-btn { min-width: 40px; }
   .mfp-side-nav { display: none; }
   .mfp-viewport { padding: 0.75rem 0.35rem 5.5rem; }

@@ -288,8 +288,10 @@ test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page contro
   assert.match(overlay, /aria-modal="true"/);
   assert.match(overlay, /document\.body\.style\.overflow = "hidden"/);
   assert.match(overlay, /aria-label=\{t\("audio\.close", lang\)\}/);
-  assert.match(overlay, /aria-label="Zoom arrière"/);
-  assert.match(overlay, /aria-label="Zoom avant"/);
+  assert.match(overlay, /aria-label=\{t\("quran\.zoomOut", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.zoomIn", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.fitPage", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.fitWidth", lang\)\}/);
   assert.match(overlay, /aria-label=\{t\("nav\.nextPage", lang\)\}/);
   assert.match(overlay, /aria-label=\{t\("nav\.prevPage", lang\)\}/);
   assert.match(overlay, /className="mfp-mobile-footer"/);

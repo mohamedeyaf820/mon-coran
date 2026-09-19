@@ -27,6 +27,8 @@ export default {
     prevPage: 'Previous page', nextPage: 'Next page',
     prevJuz: 'Previous Juz', nextJuz: 'Next Juz',
     sajda: 'Prostration', fullPageView: 'Full page view',
+    zoomIn: 'Zoom in', zoomOut: 'Zoom out', zoomReset: 'Reset zoom',
+    fitPage: 'Fit page', fitWidth: 'Fit width',
     loadMore: 'Load more ayahs', loading: 'Loading verses…', loadingAria: 'Loading verses…',
   },
   search: {

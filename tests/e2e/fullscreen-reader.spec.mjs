@@ -141,6 +141,26 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   await expect(zoom).toHaveText("115%");
   const zoomedFont = Number.parseFloat(await overlay.locator(".qcm-lines").first().evaluate((node) => getComputedStyle(node).fontSize));
   expect(zoomedFont).toBeGreaterThan(baseFont);
+
+  // Fit Page / Fit Width rescale the sheet without ever recomposing it:
+  // the fifteen lines keep exactly their words.
+  const composition = () => overlay.locator(".qcm-lines").first().evaluate((node) =>
+    [...node.querySelectorAll(".qcm-line")].map((line) => `${line.dataset.lineNumber}:${line.textContent}`),
+  );
+  const beforeFit = await composition();
+  await overlay.getByRole("button", { name: "Ajuster à la page" }).click();
+  const fitPageZoom = Number.parseInt(await zoom.textContent(), 10);
+  expect(fitPageZoom).toBeLessThan(115);
+  expect(fitPageZoom).toBeGreaterThanOrEqual(80);
+  expect(await composition()).toEqual(beforeFit);
+  await overlay.getByRole("button", { name: "Ajuster à la largeur" }).click();
+  expect(Number.parseInt(await zoom.textContent(), 10)).toBeLessThan(115);
+  expect(await composition()).toEqual(beforeFit);
+  await zoom.click();
+  await expect(zoom).toHaveText("100%");
+  await plus.click();
+  await expect(zoom).toHaveText("115%");
+
   const pageLabelBefore = await overlay.locator(".mfp-header__copy h2").textContent();
   await overlay.locator(".mfp-side-nav--next").click();
   await expect.poll(() => overlay.locator(".mfp-header__copy h2").textContent()).not.toBe(pageLabelBefore);

@@ -26,6 +26,8 @@ export default {
     prevPage: 'Page précédente', nextPage: 'Page suivante',
     prevJuz: 'Juz précédent', nextJuz: 'Juz suivant',
     sajda: 'Prosternation', fullPageView: 'Vue pleine page',
+    zoomIn: 'Zoom avant', zoomOut: 'Zoom arrière', zoomReset: 'Réinitialiser le zoom',
+    fitPage: 'Ajuster à la page', fitWidth: 'Ajuster à la largeur',
     loadMore: 'Charger plus de versets', loading: 'Chargement des versets…', loadingAria: 'Chargement des versets en cours…',
   },
   search: {

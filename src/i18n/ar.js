@@ -27,6 +27,8 @@ export default {
     prevPage: 'الصفحة السابقة', nextPage: 'الصفحة التالية',
     prevJuz: 'الجزء السابق', nextJuz: 'الجزء التالي',
     sajda: 'سجدة', fullPageView: 'عرض الصفحة الكاملة',
+    zoomIn: 'تكبير', zoomOut: 'تصغير', zoomReset: 'إعادة ضبط التكبير',
+    fitPage: 'ملاءمة الصفحة', fitWidth: 'ملاءمة العرض',
     loadMore: 'تحميل المزيد من الآيات', loading: 'جاري تحميل الآيات…', loadingAria: 'جاري تحميل الآيات…',
   },
   search: {
