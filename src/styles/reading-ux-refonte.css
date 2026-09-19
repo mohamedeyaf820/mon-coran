@@ -202,13 +202,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   box-shadow: var(--reader-card-shadow) !important;
 }
 
-html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-wrapper .cpv-translation-panel {
-  margin-top: clamp(0.7rem, 1.2vw, 1rem);
-  border-top: 1px solid var(--reader-page-rule, var(--border));
-  color: var(--reader-page-ink, var(--text-primary));
-  font-family: var(--font-ui);
-}
-
 @media (max-width: 640px) {
   .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
     min-height: 4.4rem;
@@ -235,63 +228,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
     width: 14px;
     height: 14px;
   }
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row {
-  display: grid;
-  grid-template-columns: 1.85rem minmax(0, 1fr);
-  align-items: start;
-  gap: 0.72rem;
-  padding: 0.72rem 0.35rem;
-  border-bottom: 1px solid var(--reader-page-rule, var(--border));
-  color: var(--reader-page-ink, var(--text-primary));
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row:last-child {
-  border-bottom: 0;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row.is-playing {
-  background: color-mix(in srgb, var(--primary) 6%, transparent 94%);
-  color: var(--reader-page-ink, var(--text-primary));
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-number {
-  display: grid;
-  width: 1.72rem;
-  height: 1.72rem;
-  place-items: center;
-  border: 1px solid var(--reader-page-rule, var(--border));
-  border-radius: 50%;
-  color: var(--reader-page-muted, var(--text-muted));
-  font-size: 0.68rem;
-  font-weight: 700;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-number.is-playing {
-  border-color: var(--primary);
-  background: var(--primary);
-  color: #fff;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-entry + .cpv-translation-entry {
-  margin-top: 0.55rem;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-edition {
-  display: block;
-  color: var(--reader-page-muted, var(--text-muted));
-  font-size: 0.62rem;
-  font-weight: 700;
-  text-transform: uppercase;
-}
-
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-text {
-  display: block;
-  color: inherit;
-  font-size: clamp(0.9rem, 0.86rem + 0.18vw, 1rem);
-  font-weight: 480;
-  line-height: 1.62;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .mode-nav {
@@ -372,18 +308,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .mushaf-page-w
   .app-root[data-view="reading"] .quran-display--platform .mode-nav {
     gap: 0.35rem !important;
     padding: 0.35rem !important;
-  }
-
-  .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row {
-    grid-template-columns: 1.65rem minmax(0, 1fr);
-    gap: 0.58rem;
-    padding: 0.68rem 0.08rem;
-  }
-
-  .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-number {
-    width: 1.55rem;
-    height: 1.55rem;
-    font-size: 0.62rem;
   }
 }
 

@@ -149,6 +149,10 @@ export function useKeyboardNavigation({
 
   const handleToggleTranslation = useCallback(() => {
     const { state: s } = latestRef.current;
+    // The printed Mushaf page has no translation band; keep the shortcut
+    // aligned with the disabled toolbar toggle instead of flipping a
+    // setting whose effect is invisible.
+    if (s.mushafLayout === "mushaf") return;
     set({ showTranslation: !s.showTranslation });
   }, [set]);
 

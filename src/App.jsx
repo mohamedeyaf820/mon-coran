@@ -209,6 +209,8 @@ export default function App() {
       riwaya: current.riwaya,
       reciter: current.reciter,
       warshStrictMode: current.warshStrictMode,
+      mushafLayout: current.mushafLayout,
+      showTranslation: current.showTranslation,
       translationLangs: current.translationLangs,
       searchOpen: current.searchOpen,
       settingsOpen: current.settingsOpen,

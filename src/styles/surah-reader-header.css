@@ -355,6 +355,16 @@
     color: var(--text-primary);
 }
 
+.srh-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.srh-toggle:disabled:hover {
+    background: transparent;
+    color: inherit;
+}
+
 .srh-vsep {
     width: 1px;
     height: 1.6rem;

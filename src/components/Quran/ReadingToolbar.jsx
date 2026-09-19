@@ -30,6 +30,12 @@ function toolbarLabelsFor(lang) {
     mushaf: labelFor(lang, "Mushaf", "Mushaf", "\u0627\u0644\u0645\u0635\u062d\u0641"),
     list: labelFor(lang, "Liste", "List", "\u0642\u0627\u0626\u0645\u0629"),
     translation: labelFor(lang, "Traduction", "Translation", "\u0627\u0644\u062a\u0631\u062c\u0645\u0629"),
+    translationMushafHint: labelFor(
+      lang,
+      "Traduction indisponible en mode Mushaf \u2014 passer en mode Liste",
+      "Translation is unavailable in Mushaf mode \u2014 switch to List mode",
+      "\u0627\u0644\u062a\u0631\u062c\u0645\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0641\u064a \u0648\u0636\u0639 \u0627\u0644\u0645\u0635\u062d\u0641 \u2014 \u0627\u0633\u062a\u062e\u062f\u0645 \u0648\u0636\u0639 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+    ),
     tajweed: labelFor(lang, "Tajweed", "Tajweed", "\u0627\u0644\u062a\u062c\u0648\u064a\u062f"),
     listen: labelFor(lang, "\u00c9couter", "Listen", "\u0627\u0633\u062a\u0645\u0627\u0639"),
     pause: labelFor(lang, "Pause", "Pause", "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a"),
@@ -155,19 +161,21 @@ export default function ReadingToolbar({
 
         <div className="hidden h-5 w-px bg-[var(--border)] sm:block" />
 
-        {/* Translation toggle */}
+        {/* Translation toggle — the printed Mushaf page has no translation
+            band, so the control is disabled here, not silently inert. */}
         <button
           type="button"
           className={cn(
-            "reader-toolbar-btn--translation flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+            "reader-toolbar-btn--translation flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50",
             showTranslation
               ? "border-[rgba(var(--primary-rgb),0.3)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-bold shadow-sm"
               : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
           )}
           onClick={() => set({ showTranslation: !showTranslation })}
+          disabled={mushafIsOn}
           aria-pressed={showTranslation}
           aria-label={labels.translation}
-          title={`${labels.translation} (T)`}
+          title={mushafIsOn ? labels.translationMushafHint : `${labels.translation} (T)`}
         >
           <Languages size={13} aria-hidden="true" />
           <span>{labels.translation}</span>

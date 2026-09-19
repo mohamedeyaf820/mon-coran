@@ -1,10 +1,8 @@
 import React, { useMemo } from "react";
 import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
-import CleanPageTranslationPanel from "./CleanPageTranslationPanel";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
-import AyahMarker from "./AyahMarker";
 
 function CleanPageViewComponent({
   ayahs,
@@ -16,8 +14,6 @@ function CleanPageViewComponent({
   surahNum,
   calibration,
   riwaya,
-  showTranslation,
-  getTranslation,
   showSurahHeader = true,
   activeAyah = null,
   getAyahToggleId = (ayah) => ayah.numberInSurah,
@@ -156,15 +152,6 @@ function CleanPageViewComponent({
         </span>
         <span />
       </div>
-      {showTranslation && getTranslation && ayahs.length > 0 ? (
-        <CleanPageTranslationPanel
-          ayahs={ayahs}
-          currentPlayingAyah={currentPlayingAyah}
-          getTranslation={getTranslation}
-          lang={lang}
-          surahNum={surahNum}
-        />
-      ) : null}
     </div>
   );
 }
@@ -180,8 +167,6 @@ function areCleanPageViewEqual(prev, next) {
     prev.surahNum === next.surahNum &&
     prev.calibration === next.calibration &&
     prev.riwaya === next.riwaya &&
-    prev.showTranslation === next.showTranslation &&
-    prev.getTranslation === next.getTranslation &&
     prev.showSurahHeader === next.showSurahHeader &&
     prev.activeAyah === next.activeAyah &&
     prev.getAyahToggleId === next.getAyahToggleId &&

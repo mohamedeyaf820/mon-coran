@@ -13,7 +13,6 @@ function VirtualizedMushafPages({
   currentAyah,
   currentPlayingAyah,
   fallbackSurah,
-  getTranslation,
   isQCF4,
   lang,
   mode = "surah",
@@ -23,7 +22,6 @@ function VirtualizedMushafPages({
   readingFontSize,
   riwaya,
   showTajwid,
-  showTranslation,
   showTransliteration,
 }) {
   const nodeRefs = useRef(new Map());
@@ -176,8 +174,6 @@ function VirtualizedMushafPages({
             surahNum={groupSurah}
             calibration={calibration}
             riwaya={riwaya}
-            showTranslation={showTranslation}
-            getTranslation={getTranslation}
             onAyahClick={onAyahClick}
             activeAyah={activeAyah}
             getAyahToggleId={getToggleId}

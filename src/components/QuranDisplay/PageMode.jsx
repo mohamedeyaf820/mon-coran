@@ -194,8 +194,6 @@ function PageMode({
                 surahNum={pageAyahs[0]?.surah?.number || pageAyahs[0]?.surah || currentSurah}
                 calibration={calibration}
                 riwaya={riwaya}
-                showTranslation={showTranslation}
-                getTranslation={stream.getTranslationForAyah}
                 onAyahClick={onToggleActive}
                 onPlayAyah={onPlayAyah}
                 activeAyah={activeAyah}

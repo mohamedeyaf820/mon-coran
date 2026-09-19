@@ -207,12 +207,6 @@
     font-weight: 700 !important;
 }
 
-/* Translation panel below mushaf page: cleaner */
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-translation-row.is-playing {
-    background: color-mix(in srgb, var(--primary) 7%, transparent) !important;
-    border-radius: 6px !important;
-}
-
 /* ═══════════════════════════════════════════════════════════════
    4. PAGE DIVIDER (PAGE N chip)
    ─ More polished separator between pages in list mode

@@ -547,3 +547,18 @@ test("the application-wide design system owns themes, surfaces and responsive fa
   assert.match(system, /@media \(max-width: 340px\)[\s\S]*?\.library-tabs small[\s\S]*?display: none/);
   assert.match(system, /@media \(prefers-reduced-motion: reduce\)/);
 });
+
+test("the printed Mushaf page carries no translation band and its controls say so", () => {
+  const cleanPage = source("src/components/Quran/CleanPageView.jsx");
+  assert.doesNotMatch(cleanPage, /TranslationPanel/);
+
+  const toolbar = source("src/components/Quran/ReadingToolbar.jsx");
+  assert.match(toolbar, /disabled=\{mushafIsOn\}/);
+  assert.match(toolbar, /translationMushafHint/);
+
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  assert.match(header, /disabled: mushafIsOn/);
+
+  const keys = source("src/hooks/useKeyboardNavigation.js");
+  assert.match(keys, /if \(s\.mushafLayout === "mushaf"\) return;/);
+});

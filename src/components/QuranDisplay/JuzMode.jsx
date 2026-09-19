@@ -95,7 +95,6 @@ function JuzMode({
             calibration={calibration}
             currentPlayingAyah={currentPlayingAyah}
             fallbackSurah={firstSurah}
-            getTranslation={getTranslationForAyah}
             isQCF4={isQCF4}
             lang={lang}
             mode="juz"
@@ -105,7 +104,6 @@ function JuzMode({
             readingFontSize={readingFontSize}
             riwaya={riwaya}
             showTajwid={showTajwid}
-            showTranslation={showTranslation}
             showTransliteration={showTransliteration}
           />
           <AyahActionsModal

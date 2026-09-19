@@ -69,7 +69,6 @@ function SurahMode({
             currentAyah={currentAyah}
             currentPlayingAyah={currentPlayingAyah}
             fallbackSurah={currentSurah}
-            getTranslation={getTranslationForAyah}
             isQCF4={isQCF4}
             lang={lang}
             mode="surah"
@@ -79,7 +78,6 @@ function SurahMode({
             readingFontSize={readingFontSize}
             riwaya={riwaya}
             showTajwid={showTajwid}
-            showTranslation={showTranslation}
             showTransliteration={showTransliteration}
           />
           <AyahActionsModal

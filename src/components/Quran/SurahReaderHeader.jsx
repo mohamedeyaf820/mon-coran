@@ -150,6 +150,12 @@ export default function SurahReaderHeader({
   ];
 
   /* ── Study toggles ── */
+  const translationMushafHint = lbl(
+    lang,
+    "Traduction indisponible en mode Mushaf \u2014 passer en mode Liste",
+    "Translation is unavailable in Mushaf mode \u2014 switch to List mode",
+    "\u0627\u0644\u062a\u0631\u062c\u0645\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0641\u064a \u0648\u0636\u0639 \u0627\u0644\u0645\u0635\u062d\u0641 \u2014 \u0627\u0633\u062a\u062e\u062f\u0645 \u0648\u0636\u0639 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
+  );
   const studyToggles = [
     {
       key: "translation",
@@ -158,6 +164,8 @@ export default function SurahReaderHeader({
       active: showTranslation,
       onClick: toggleTranslation,
       hidden: false,
+      disabled: mushafIsOn,
+      disabledHint: translationMushafHint,
     },
     {
       key: "tajweed",
@@ -407,9 +415,10 @@ export default function SurahReaderHeader({
               type="button"
               className={cn("srh-toggle", toggle.active && "srh-toggle--active")}
               onClick={toggle.onClick}
+              disabled={toggle.disabled}
               aria-pressed={toggle.active}
               aria-label={toggle.label}
-              title={toggle.label}
+              title={toggle.disabled ? toggle.disabledHint : toggle.label}
             >
               {toggle.icon}
               <span className="srh-toggle__label">{toggle.label}</span>

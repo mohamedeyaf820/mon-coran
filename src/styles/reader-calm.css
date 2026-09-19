@@ -463,11 +463,6 @@ html body #root .app-root[data-view="reading"] .page-stream :is(.cpv-container, 
   contain-intrinsic-size: auto !important;
 }
 
-#root .app-root[data-view="reading"] .page-stream .cpv-translation-panel {
-  content-visibility: visible !important;
-  contain-intrinsic-size: auto !important;
-}
-
 /* End of a surah inside the stream: a quiet boundary with one action, the
    way a reader expects to decide before moving to the next surah. */
 #root .app-root[data-view="reading"] .page-stream__end {
