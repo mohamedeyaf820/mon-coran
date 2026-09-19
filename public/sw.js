@@ -1,20 +1,29 @@
 // ─── MushafPlus Service Worker ──────────────────────────────────────────────
 // Stratégies de cache :
-//   • /fonts/        → Cache-First  (rarement modifiés)
+//   • /fonts/        → Cache-First  (fichiers versionnés, immuables)
+//   • verses.quran.foundation/fonts/ → Cache-First (polices de page QCF, cache dédié)
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
-//   • api.alquran.cloud & api.quran.com → Cache-First (texte immuable, navigation instantanée)
+//   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate (le cache répond
+//     instantanément, le réseau rafraîchit les traductions révisées en arrière-plan)
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
 const CACHE_NAME = "mushaf-plus-v20";
 const API_CACHE_NAME = "mushaf-plus-api-v6";
+const QCF_FONT_CACHE_NAME = "mushaf-plus-qcf-fonts-v1";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const CACHE_LIMITS = {
   [CACHE_NAME]: 300,
   [API_CACHE_NAME]: 200,
+  [QCF_FONT_CACHE_NAME]: 100,
 };
+// Revalidation throttle for the Quran API cache: a cached payload older than
+// this delay is refetched in the background. It keeps instant offline/return
+// navigation without re-downloading the same surah on every page change.
+const API_REVALIDATE_MIN_INTERVAL_MS = 5 * 60 * 1000;
+const apiRevalidatedAt = new Map();
 let claimClientsOnActivate = true;
 
 // Ressources de l'app shell à pré-cacher à l'installation
@@ -42,18 +51,33 @@ async function precacheAppShell() {
   const cache = await caches.open(CACHE_NAME);
   await precacheUrls(cache, ASSETS_TO_CACHE);
 
-  const indexResponse = await fetch("/index.html", { cache: "reload" });
-  if (!indexResponse.ok) {
-    throw new Error(`Unable to precache app shell: ${indexResponse.status}`);
+  // The entry document is parsed to discover the hashed chunks it loads. A
+  // failure must not abort the install: the shell manifest below, the
+  // CACHE_SHELL_URLS message from the page, and the runtime strategies all
+  // refill those entries on the next online visit.
+  const indexAssetUrls = [];
+  try {
+    const indexResponse = await fetch("/index.html", { cache: "reload" });
+    if (indexResponse.ok) {
+      const html = await indexResponse.clone().text();
+      await cache.put("/index.html", indexResponse);
+      indexAssetUrls.push(
+        ...Array.from(
+          html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
+          (match) => match[1],
+        ),
+      );
+    } else {
+      console.warn(
+        `[sw] /index.html precache skipped: ${indexResponse.status}`,
+      );
+    }
+  } catch (error) {
+    console.warn(
+      `[sw] /index.html precache skipped: ${error?.name || "network error"}`,
+    );
   }
 
-  const html = await indexResponse.clone().text();
-  await cache.put("/index.html", indexResponse);
-
-  const indexAssetUrls = Array.from(
-    html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
-    (match) => match[1],
-  );
   let shellAssetUrls = [];
   try {
     const shellManifestResponse = await fetch("/shell-assets.json", {
@@ -77,23 +101,42 @@ async function precacheAppShell() {
   await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
 }
 
+/**
+ * Precaches a batch of URLs without letting a single missing asset cost the
+ * whole installation. Every failure is collected and reported, the remaining
+ * URLs keep being cached, and the worker still reaches `activated` so the
+ * reader keeps the offline shell instead of silently staying on an old worker.
+ */
 async function precacheUrls(cache, urls, concurrency = 4) {
   let cursor = 0;
+  const failures = [];
   const workers = Array.from(
     { length: Math.min(concurrency, urls.length) },
     async () => {
       while (cursor < urls.length) {
         const url = urls[cursor];
         cursor += 1;
-        const response = await fetch(url, { cache: "reload" });
-        if (!response.ok) {
-          throw new Error(`Unable to precache ${url}: ${response.status}`);
+        try {
+          const response = await fetch(url, { cache: "reload" });
+          if (!response.ok) {
+            failures.push(`${url} (${response.status})`);
+            continue;
+          }
+          await cache.put(url, response);
+        } catch (error) {
+          failures.push(`${url} (${error?.name || "network error"})`);
         }
-        await cache.put(url, response);
       }
     },
   );
   await Promise.all(workers);
+  if (failures.length) {
+    console.warn(
+      `[sw] ${failures.length} precache miss(es), install continues:`,
+      failures.slice(0, 10).join(", "),
+    );
+  }
+  return failures;
 }
 
 // ─── Activation ───────────────────────────────────────────────────────────────
@@ -109,7 +152,8 @@ self.addEventListener("activate", (event) => {
             (key) =>
               key.startsWith("mushaf-plus") &&
               key !== CACHE_NAME &&
-              key !== API_CACHE_NAME,
+              key !== API_CACHE_NAME &&
+              key !== QCF_FONT_CACHE_NAME,
           )
           .map((key) => caches.delete(key)),
       );
@@ -141,6 +185,15 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(cacheFirst(event.request, CACHE_NAME));
     return;
   }
+  // Les polices de page QCF (Hafs) viennent du CDN verses.quran.foundation.
+  // Une fois une page ouverte, son glyphe reste disponible hors ligne.
+  if (
+    url.hostname === "verses.quran.foundation" &&
+    url.pathname.startsWith("/fonts/")
+  ) {
+    event.respondWith(cacheFirst(event.request, QCF_FONT_CACHE_NAME));
+    return;
+  }
 
   // ── 2. Assets hachés (/assets/) – Cache-First à longue durée ───────────────
   if (isSameOrigin && url.pathname.startsWith("/assets/")) {
@@ -157,13 +210,21 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // ── 4. API Coran – Cache-First ─────────────────────────────────────────────
-  // Quran verses and translations are immutable. Revalidating every cached
-  // response doubled the network traffic during surah/page changes and could
-  // compete with the foreground request on phones. The app-level IndexedDB
-  // cache still handles expiry and explicit repair/invalidation.
+  // ── 4. API Coran – Stale-While-Revalidate ──────────────────────────────────
+  // Le texte coranique est immuable, mais les traductions et tafsirs servis par
+  // ces hôtes sont révisés en amont : le cache-first les épinglait pour toujours.
+  // Le JSON en cache répond toujours instantanément (retour en arrière, hors
+  // ligne) pendant que le réseau le rafraîchit en arrière-plan, au plus une
+  // fois par API_REVALIDATE_MIN_INTERVAL_MS pour une même URL.
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(cacheFirst(event.request, API_CACHE_NAME));
+    event.respondWith(
+      staleWhileRevalidate(
+        event.request,
+        API_CACHE_NAME,
+        event,
+        API_REVALIDATE_MIN_INTERVAL_MS,
+      ),
+    );
     return;
   }
 
@@ -305,14 +366,6 @@ self.addEventListener("message", (event) => {
       break;
     }
 
-    // L'app demande au SW de mettre en cache des URLs supplémentaires
-    // (ex : sourates récemment lues)
-    case "CACHE_QURAN_URLS": {
-      const urls = Array.isArray(event.data.urls) ? event.data.urls : [];
-      event.waitUntil(cacheQuranUrls(urls));
-      break;
-    }
-
     // L'app demande l'invalidation du cache API (ex : après un repair)
     case "CLEAR_API_CACHE": {
       event.waitUntil(
@@ -422,22 +475,48 @@ async function cacheFirst(request, cacheName) {
 /**
  * Stale-While-Revalidate : retourne le cache immédiatement (si dispo)
  * et met à jour le cache en arrière-plan depuis le réseau.
+ *
+ * `revalidateAfterMs` borne la cadence de revalidation par URL : sans lui, un
+ * changement de sourate ou de page relancerait chaque requête déjà vue. Une
+ * entrée absente du cache interroge toujours le réseau.
  */
-async function staleWhileRevalidate(request, cacheName, event) {
+async function staleWhileRevalidate(
+  request,
+  cacheName,
+  event,
+  revalidateAfterMs = 0,
+) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
+  const now = Date.now();
+  const lastRevalidation = apiRevalidatedAt.get(request.url) || 0;
+  const throttled =
+    !!cached && revalidateAfterMs > 0 && now - lastRevalidation < revalidateAfterMs;
 
-  const networkPromise = fetchWithTimeout(request)
-    .then(async (response) => {
-      if (response?.ok) {
-        await putBounded(cache, request, response.clone(), cacheName);
+  let networkPromise = null;
+  if (!throttled) {
+    if (revalidateAfterMs > 0) {
+      apiRevalidatedAt.set(request.url, now);
+      if (apiRevalidatedAt.size > 300) {
+        for (const [url, at] of apiRevalidatedAt) {
+          if (now - at >= revalidateAfterMs) apiRevalidatedAt.delete(url);
+        }
       }
-      return response;
-    })
-    .catch(() => null);
+    }
+    networkPromise = fetchWithTimeout(request)
+      .then(async (response) => {
+        if (response?.ok) {
+          await putBounded(cache, request, response.clone(), cacheName);
+        }
+        return response;
+      })
+      .catch(() => null);
+  }
 
   if (cached) {
-    event?.waitUntil(networkPromise.then(() => undefined));
+    if (networkPromise) {
+      event?.waitUntil(networkPromise.then(() => undefined));
+    }
     return cached;
   }
   return (await networkPromise) || Response.error();

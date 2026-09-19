@@ -98,6 +98,68 @@ test("PWA: a visited surah keeps its Quran text offline", async ({ page, context
   await expect(firstAyah).toContainText(onlineText);
 });
 
+test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      showDuas: false,
+      sidebarOpen: false,
+      displayMode: "page",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "hafs",
+      showTajwid: false,
+      currentSurah: 2,
+      currentPage: 3,
+      currentJuz: 1,
+      lastPosition: { surah: 2, ayah: 1, page: 3, juz: 1 },
+    }));
+  });
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/page/3");
+  await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+
+  const trigger = page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first();
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
+
+  // The worker controls this fetch, so once the face is applied the
+  // cache-first rule has already written the response to the font cache.
+  const firstWord = page.locator(".mfp-portal-root .qcm-word").first();
+  await expect
+    .poll(() => firstWord.evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
+    .toContain("qcf-v2-p3");
+  const cached = await page.evaluate(async () => {
+    const cache = await caches.open("mushaf-plus-qcf-fonts-v1");
+    return Boolean(await cache.match("https://verses.quran.foundation/fonts/quran/hafs/v2/woff2/p3.woff2"));
+  });
+  expect(cached, "the page font was served through the service worker").toBe(true);
+
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".mfp-portal-root")).toBeHidden({ timeout: 30_000 });
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+  await page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first().click();
+  await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".mfp-portal-root .qcm-font-warning")).toHaveCount(0);
+  await expect
+    .poll(() => page.locator(".mfp-portal-root .qcm-word").first()
+      .evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
+    .toContain("qcf-v2-p3");
+});
+
 test("PWA: an explicitly downloaded recitation is served while offline", async ({
   page,
   context,

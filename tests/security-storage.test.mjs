@@ -83,6 +83,9 @@ test("fonts: the Hafs and Warsh faces are self-hosted as valid WOFF2 assets", ()
   assert.match(loader, /\/fonts\/uthmanic-hafs-v18\.woff2/);
   assert.match(loader, /\/fonts\/kfgqpc-warsh-10\.woff2/);
   assert.doesNotMatch(loader, /fonts\.quranwbw\.com/);
+  // E2E must exercise the same FontFace path a reader gets: an automation
+  // shortcut here would hide glyph and offline-fallback regressions.
+  assert.doesNotMatch(loader, /navigator\.webdriver|__playwright__/);
 });
 
 test("security: the HTML meta CSP stays compatible with local WebKit previews", () => {
