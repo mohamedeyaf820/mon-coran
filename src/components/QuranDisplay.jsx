@@ -304,10 +304,11 @@ export default function QuranDisplay() {
     (id) => setActiveAyah((current) => (current === id ? null : id)),
     [],
   );
+  // Layout toggles must not mutate showTajwid: recoloring the mushaf without
+  // an explicit request surprised users (see reading-pages review, P1).
   const toggleMushaf = useCallback(() => {
     set({
       mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
-      showTajwid: true,
     });
   }, [mushafLayout, set]);
   const openHome = useCallback(() => {
