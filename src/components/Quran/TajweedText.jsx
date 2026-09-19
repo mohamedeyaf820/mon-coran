@@ -479,8 +479,8 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                                     play(event);
                                 }
                             } : undefined}
-                            role={play ? "button" : undefined}
-                            tabIndex={play ? 0 : undefined}
+                            role={play || word.isMarker ? "button" : undefined}
+                            tabIndex={play || word.isMarker ? 0 : undefined}
                             aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                         >
                             {word.parts.map((part, partIndex) => part.type === "waqf"
@@ -720,8 +720,8 @@ function TajweedHighlightWords({
                                         }
                                     }
                                     : undefined}
-                                role={word.isMarker ? undefined : "button"}
-                                tabIndex={word.isMarker ? undefined : 0}
+                                role="button"
+                                tabIndex={0}
                                 aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >

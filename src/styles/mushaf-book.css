@@ -141,6 +141,15 @@
 .mfp-side-nav--prev { right: 0.75rem; }
 .mfp-side-nav:disabled { pointer-events: none; opacity: 0.2; }
 
+/* The global button:active { transform: scale(.96) } press effect replaces
+   this rule's centering translateY(-50%) outright, which would drop the
+   fixed button ~27px on mousedown — the same tap's pointerup then lands on
+   the page below and the page turn never registers. Re-state the centering
+   at higher specificity than that global rule. */
+#root ~ .mfp-portal-root .mfp-side-nav:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
 .mfp-mobile-footer { display: none !important; }
 
 .mfp-portal-root[data-theme="light"] {
@@ -189,6 +198,9 @@
   color: var(--reader-page-muted);
   font-size: 0.7rem;
   letter-spacing: 0.04em;
+  /* Side gutter (juz, hizb) labels are margin decoration: the fixed
+     side-nav arrows sit over these gutters and must receive the clicks. */
+  pointer-events: none;
   /* Juz / Hizb / Rubʿ labels sit at the outer margin of the spread. */
   display: flex;
   flex-direction: column;
@@ -710,6 +722,11 @@
   cursor: pointer;
   border-radius: 0.2em;
   transition: color 150ms ease, background-color 150ms ease;
+  /* The global <=1023px role="button" touch clamp must not size mushaf words:
+     they are glyph flow that scales with the per-line fit, and a fixed 44px
+     floor makes dense lines overflow the frame at every fit value. */
+  min-width: 0;
+  min-height: 0;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-word:hover,
@@ -728,6 +745,8 @@
   flex: 0 0 auto;
   margin-inline: 0.18em;
   transform: translateY(-0.02em);
+  min-width: 0;
+  min-height: 0;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-edge {
@@ -782,15 +801,21 @@
 }
 
 /* ── Zen mode: the chrome recedes while reading ────────────────────── */
-/* After a few idle seconds the header, side navigation and mobile footer
-   fade out; any pointer, key or touch brings them back. The page itself is
-   never hidden. */
+/* After a few idle seconds the header and mobile footer fade out; any
+   pointer, key or touch brings them back. The page itself is never hidden,
+   and the edge arrows keep working while faded (tap-the-edge = page turn). */
 
 .mfp-portal-root--zen .mfp-header,
-.mfp-portal-root--zen .mfp-side-nav,
 .mfp-portal-root--zen .mfp-mobile-footer {
   opacity: 0;
   pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+/* The arrows stay clickable while faded: a tap on the page edge is a page
+   turn in every immersive reader, and the same press reveals the chrome. */
+.mfp-portal-root--zen .mfp-side-nav {
+  opacity: 0;
   transition: opacity 320ms ease;
 }
 

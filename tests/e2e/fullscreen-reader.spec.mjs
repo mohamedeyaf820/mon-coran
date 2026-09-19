@@ -176,11 +176,12 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
         return box.left < -1 || box.right > innerWidth + 1 || box.top < -1 || box.bottom > innerHeight + 1;
       }).length;
       const words = [...root.querySelectorAll(".qcm-word")];
-      const pageBox = root.querySelector(".qcm-page")?.getBoundingClientRect();
-      const clippedWords = pageBox ? words.filter((word) => {
+      const clippedWords = words.filter((word) => {
+        const pageBox = word.closest(".qcm-page")?.getBoundingClientRect();
+        if (!pageBox) return true;
         const box = word.getBoundingClientRect();
         return box.left < pageBox.left - 2 || box.right > pageBox.right + 2;
-      }).length : 0;
+      }).length;
       return {
         clippedControls,
         clippedWords,

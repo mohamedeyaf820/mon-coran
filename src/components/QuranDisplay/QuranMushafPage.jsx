@@ -42,12 +42,6 @@ function getLineNumber(word) {
   return Number.isFinite(lineNumber) && lineNumber > 0 ? lineNumber : null;
 }
 
-function getSupportWords(ayah) {
-  if (Array.isArray(ayah?.words) && ayah.words.length > 0) return ayah.words;
-  if (Array.isArray(ayah?.hafsSupport?.words)) return ayah.hafsSupport.words;
-  return [];
-}
-
 function isQuranWord(word) {
   return !word?.charType || word.charType === "word";
 }
@@ -71,98 +65,23 @@ function getCleanWarshWords(ayah) {
     .filter(Boolean);
 }
 
-function getWarshWordWeight(text) {
-  const bases = normalizeArabicText(text)
-    .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, "");
-  return Math.max(1, Array.from(bases).length);
-}
-
-function balanceWarshPageTokens(tokens) {
-  if (tokens.length === 0) return new Map();
-  const firstLine = Math.min(...tokens.map((token) => token.minLine));
-  const lastLine = Math.max(...tokens.map((token) => token.maxLine));
-  const occupiedLineCount = Math.max(1, lastLine - firstLine + 1);
-  const targetWeight = tokens.reduce((sum, token) => sum + token.weight, 0) / occupiedLineCount;
-  const states = Array.from({ length: 16 }, () => new Map());
-  states[0].set(0, { cost: 0, previous: null });
-
-  for (let lineNumber = 1; lineNumber <= 15; lineNumber += 1) {
-    for (const [startIndex, state] of states[lineNumber - 1]) {
-      let lineWeight = 0;
-      for (let endIndex = startIndex; endIndex <= tokens.length; endIndex += 1) {
-        if (endIndex > startIndex) {
-          const token = tokens[endIndex - 1];
-          if (lineNumber < token.minLine || lineNumber > token.maxLine) break;
-          lineWeight += token.weight;
-        }
-        const isOccupiedLine = lineNumber >= firstLine && lineNumber <= lastLine;
-        const deviation = isOccupiedLine ? lineWeight - targetWeight : lineWeight;
-        const overflowPenalty = lineWeight > targetWeight * 1.12 ? 4 : 1;
-        const cost = state.cost + deviation * deviation * overflowPenalty;
-        const current = states[lineNumber].get(endIndex);
-        if (!current || cost < current.cost) {
-          states[lineNumber].set(endIndex, { cost, previous: startIndex });
-        }
-      }
-    }
-  }
-
-  if (!states[15].has(tokens.length)) return new Map();
-  const lines = new Map();
-  let endIndex = tokens.length;
-  for (let lineNumber = 15; lineNumber >= 1; lineNumber -= 1) {
-    const state = states[lineNumber].get(endIndex);
-    if (!state) return new Map();
-    if (endIndex > state.previous) {
-      lines.set(lineNumber, tokens.slice(state.previous, endIndex).map((token) => token.word));
-    }
-    endIndex = state.previous;
-  }
-  return lines;
-}
+// Words of a Warsh ayah flow across the printed lines the dataset records in
+// line_start/line_end (Madinah Mushaf, 15 lines per page). Those fields are
+// per-ayah, so multi-line ayahs distribute their words evenly inside their own
+// line range — the only layout claim the data supports. Ayahs missing the
+// metadata continue the flow from the previous line end instead of being
+// poured into a global grid.
+const WARSH_PAGE_LINES = 15;
+const WARSH_FALLBACK_WORDS_PER_LINE = 12;
 
 function groupWarshPageLines(ayahs) {
-  const hasLineMetadata = ayahs.some((ayah) => Number(ayah?.lineStart) || Number(ayah?.lineEnd));
-  if (!hasLineMetadata) {
-    const tokens = [];
-    ayahs.forEach((ayah) => {
-      const surah = ayah.surah?.number;
-      const ayahNum = ayah.numberInSurah;
-      const warshWords = getCleanWarshWords(ayah);
-
-      warshWords.forEach((text, index) => {
-        tokens.push({
-          charType: "word",
-          globalAyah: ayah.number,
-          surah,
-          ayah: ayahNum,
-          position: index + 1,
-          text,
-          isWarsh: true,
-        });
-      });
-      tokens.push({
-        charType: "end",
-        globalAyah: ayah.number,
-        surah,
-        ayah: ayahNum,
-        isWarsh: true,
-      });
-    });
-
-    const perLine = Math.max(1, Math.ceil(tokens.length / 15));
-    return Array.from({ length: 15 }, (_, index) => ({
-      lineNumber: index + 1,
-      words: tokens.slice(index * perLine, (index + 1) * perLine),
-    }));
-  }
-
-  // ── Warsh dataset carries per-ayah lineStart/lineEnd metadata ─────────
-  // When present, group words by their ACTUAL printed line numbers instead of
-  // running the 15-bin balancing algorithm. This preserves the physical
-  // line structure of the Warsh edition and eliminates the artificial
-  // "grid of words" artifact that the optical balancing created.
   const linesByNumber = new Map();
+  let cursor = 1;
+
+  const push = (lineNumber, token) => {
+    if (!linesByNumber.has(lineNumber)) linesByNumber.set(lineNumber, []);
+    linesByNumber.get(lineNumber).push(token);
+  };
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
@@ -170,17 +89,29 @@ function groupWarshPageLines(ayahs) {
     const warshWords = getCleanWarshWords(ayah);
     if (warshWords.length === 0) return;
 
-    const lineStart = Math.max(1, Math.min(15, Number(ayah.lineStart) || 1));
-    const lineEnd = Math.max(lineStart, Math.min(15, Number(ayah.lineEnd) || 15));
+    const metaStart = Number(ayah.lineStart) > 0 ? Number(ayah.lineStart) : null;
+    const metaEnd = Number(ayah.lineEnd) > 0 ? Number(ayah.lineEnd) : null;
+    const lineStart = Math.max(1, Math.min(WARSH_PAGE_LINES, metaStart ?? cursor));
+    const lineEnd = Math.max(
+      lineStart,
+      Math.min(
+        WARSH_PAGE_LINES,
+        metaEnd ??
+          lineStart + Math.ceil((warshWords.length + 1) / WARSH_FALLBACK_WORDS_PER_LINE) - 1,
+      ),
+    );
+    cursor = Math.min(WARSH_PAGE_LINES, lineEnd + 1);
 
-    // First word of the ayah starts on lineStart; subsequent words stay on
-    // lineStart until the lineEnd boundary is reached, then flow to lineEnd.
-    // This matches the printed Mushaf layout where an ayah may span multiple
-    // lines but always starts on a fresh line.
+    const lineCount = lineEnd - lineStart + 1;
+    const lastIndex = warshWords.length - 1;
     warshWords.forEach((text, idx) => {
-      const lineNumber = idx === 0 ? lineStart : (idx < warshWords.length - 1 ? lineStart : lineEnd);
-      if (!linesByNumber.has(lineNumber)) linesByNumber.set(lineNumber, []);
-      linesByNumber.get(lineNumber).push({
+      // Even flow inside the ayah's own lines; the last word and the end
+      // marker always close on lineEnd, as in the printed mushaf.
+      const lineNumber =
+        idx === lastIndex
+          ? lineEnd
+          : Math.min(lineEnd, lineStart + Math.floor((idx * lineCount) / warshWords.length));
+      push(lineNumber, {
         charType: "word",
         globalAyah: ayah.number,
         surah,
@@ -191,9 +122,7 @@ function groupWarshPageLines(ayahs) {
       });
     });
 
-    // End marker belongs on the last line of the ayah
-    if (!linesByNumber.has(lineEnd)) linesByNumber.set(lineEnd, []);
-    linesByNumber.get(lineEnd).push({
+    push(lineEnd, {
       charType: "end",
       globalAyah: ayah.number,
       surah,
@@ -202,15 +131,10 @@ function groupWarshPageLines(ayahs) {
     });
   });
 
-  // Build the 15-line grid using actual line numbers from the dataset.
-  // Lines without any words remain empty slots (printed blank rows).
-  const pageLines = Array.from({ length: 15 }, (_, index) => {
-    const lineNumber = index + 1;
-    return {
-      lineNumber,
-      words: linesByNumber.get(lineNumber) || [],
-    };
-  });
+  const pageLines = Array.from({ length: WARSH_PAGE_LINES }, (_, index) => ({
+    lineNumber: index + 1,
+    words: linesByNumber.get(index + 1) || [],
+  }));
 
   return markSurahEndings(placeSurahOpenings(pageLines, { warsh: true }));
 }
@@ -445,7 +369,10 @@ export default function QuranMushafPage({
           const left = Math.min(...children.map((child) => child.getBoundingClientRect().left));
           const right = Math.max(...children.map((child) => child.getBoundingClientRect().right));
           const naturalWidth = Math.max(1, (right - left) / currentScale);
-          const fit = Math.max(0.32, Math.min(1, (lineRect.width - 6) / naturalWidth));
+          // No readability floor: glyphs that cannot fit would spill outside
+          // the ornamental frame, which no printed mushaf ever allows. Small
+          // text stays inside; clipped text never would.
+          const fit = Math.max(0.05, Math.min(1, (lineRect.width - 6) / naturalWidth));
           const key = line.dataset.lineNumber;
           next[key] = fit;
           if (Math.abs((warshFitsRef.current[key] || 1) - fit) >= 0.004) stable = false;
