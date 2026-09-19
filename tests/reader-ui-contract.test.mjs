@@ -224,7 +224,7 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   // Neighbouring pages are cached ahead; a turn waits for its page payload
   // while the current leaf stays visible.
   assert.match(overlay, /preloadQuranDisplayData/);
-  assert.match(overlay, /currentPage - 2, currentPage - 1, currentPage, currentPage \+ 1, currentPage \+ 2/);
+  assert.match(overlay, /currentPage, currentPage \+ 1, currentPage - 1, currentPage \+ 2, currentPage - 2/);
   assert.match(overlay, /pageCacheRef\.current\.has\(targetPage\)/);
   assert.match(overlay, /navigateToPage\(currentPage \+ 1, "next"\)/);
   assert.match(overlay, /navigateToPage\(currentPage - 1, "prev"\)/);
@@ -242,9 +242,11 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(book, /\[data-turn="next"\]/);
   assert.match(book, /prefers-reduced-motion: no-preference/);
 
-  // Zoom changes the page's typographic measure so enlarged glyphs participate
-  // in scrolling instead of being visually scaled outside their layout box.
+  // Zoom scales the whole sheet (CSS zoom): frame, head, folio and markers
+  // grow with the words and the scroll bounds follow the layout box.
   assert.match(overlay, /style=\{\{ "--mfp-zoom": zoom \}\}/);
+  assert.match(book, /zoom: var\(--mfp-zoom, 1\)/);
+  assert.doesNotMatch(book, /var\(--mfp-font\) \* var\(--mfp-zoom/);
   assert.doesNotMatch(overlay, /transform: `scale/);
   assert.match(overlay, /const MAX_ZOOM = 2\.2/);
   assert.match(overlay, /ZOOM_STORAGE_KEY/);

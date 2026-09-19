@@ -141,6 +141,30 @@
 .mfp-side-nav--prev { right: 0.75rem; }
 .mfp-side-nav:disabled { pointer-events: none; opacity: 0.2; }
 
+/* Immediate turn feedback: while the next leaf loads, the pressed control
+   shows a small rotating ring instead of only dimming. */
+.mfp-side-nav[aria-busy="true"]::after,
+.mfp-mobile-pagination button[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(50% - 9px);
+  inset-inline-start: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border: 2px solid color-mix(in srgb, var(--mfp-btn-text) 35%, transparent);
+  border-top-color: var(--mfp-btn-text);
+  border-radius: 50%;
+  animation: mfp-spin 700ms linear infinite;
+}
+
+.mfp-mobile-pagination button {
+  position: relative;
+}
+
+@keyframes mfp-spin {
+  to { transform: rotate(360deg); }
+}
+
 /* The global button:active { transform: scale(.96) } press effect replaces
    this rule's centering translateY(-50%) outright, which would drop the
    fixed button ~27px on mousedown — the same tap's pointerup then lands on
@@ -381,6 +405,10 @@
   width: max-content;
   max-width: none;
   margin-inline: auto;
+  /* Whole-page zoom: the layout box itself is scaled, so frame, rosettes,
+     running head, folio and markers grow with the words and the viewport
+     scroll bounds stay correct. */
+  zoom: var(--mfp-zoom, 1);
 }
 
 /* ─── Double-page spread (desktop) ──────────────────────────────────── */
@@ -439,7 +467,7 @@
   width: var(--mfp-line-measure);
   max-width: 100%;
   margin-inline: auto;
-  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1));
+  font-size: var(--mfp-font);
   line-height: 1;
   min-height: 0;
   grid-template-rows: repeat(15, var(--mfp-line-pitch));
@@ -485,11 +513,11 @@
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines {
   position: relative;
   top: 1.5em;
-  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 1.08);
+  font-size: calc(var(--mfp-font) * 1.08);
 }
 
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-warsh="true"] {
-  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 1.04);
+  font-size: calc(var(--mfp-font) * 1.04);
 }
 
 /* Surah title band: a thin double frame around the calligraphic name. */
@@ -526,7 +554,7 @@
 /* Warsh: natural flow with subtle per-line fit scale (NOT space-between). */
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] {
   width: calc(var(--mfp-line-measure) / 0.96);
-  font-size: calc(var(--mfp-font) * var(--mfp-zoom, 1) * 0.96);
+  font-size: calc(var(--mfp-font) * 0.96);
   line-height: 1;
 }
 

@@ -135,12 +135,13 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   const zoom = overlay.locator(".mfp-zoom-value");
   const plus = overlay.getByRole("button", { name: "Zoom avant" });
   await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
-  const baseFont = Number.parseFloat(await overlay.locator(".qcm-lines").first().evaluate((node) => getComputedStyle(node).fontSize));
+  const sheetWidth = () => overlay.locator(".mfp-book").evaluate((node) => node.getBoundingClientRect().width);
+  const baseWidth = await sheetWidth();
 
   await plus.click();
   await expect(zoom).toHaveText("115%");
-  const zoomedFont = Number.parseFloat(await overlay.locator(".qcm-lines").first().evaluate((node) => getComputedStyle(node).fontSize));
-  expect(zoomedFont).toBeGreaterThan(baseFont);
+  // Whole-page zoom: the sheet's layout box itself grows, frame included.
+  expect(await sheetWidth()).toBeGreaterThan(baseWidth * 1.1);
 
   // Fit Page / Fit Width rescale the sheet without ever recomposing it:
   // the fifteen lines keep exactly their words.
@@ -150,11 +151,10 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   const beforeFit = await composition();
   await overlay.getByRole("button", { name: "Ajuster à la page" }).click();
   const fitPageZoom = Number.parseInt(await zoom.textContent(), 10);
-  expect(fitPageZoom).toBeLessThan(115);
-  expect(fitPageZoom).toBeGreaterThanOrEqual(80);
+  expect(Math.abs(fitPageZoom - 100)).toBeLessThanOrEqual(15);
   expect(await composition()).toEqual(beforeFit);
   await overlay.getByRole("button", { name: "Ajuster à la largeur" }).click();
-  expect(Number.parseInt(await zoom.textContent(), 10)).toBeLessThan(115);
+  expect(Math.abs(Number.parseInt(await zoom.textContent(), 10) - 100)).toBeLessThanOrEqual(15);
   expect(await composition()).toEqual(beforeFit);
   await zoom.click();
   await expect(zoom).toHaveText("100%");
@@ -212,4 +212,51 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
     expect(contract.clippedWords, `${width}px Arabic words`).toBe(0);
     expect(contract.canScrollX).toBe(true);
   }
+});
+
+test("whole-page zoom keeps the sheet inside the viewport and grows its scroll bounds", async ({ page }) => {
+  await openFullscreenReader(page, { width: 1280, height: 800 });
+  const overlay = page.locator(".mfp-portal-root");
+  const zoom = overlay.locator(".mfp-zoom-value");
+  const minus = overlay.getByRole("button", { name: "Zoom arrière" });
+  const plus = overlay.getByRole("button", { name: "Zoom avant" });
+  await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
+
+  const metrics = () => overlay.evaluate((root) => {
+    const viewport = root.querySelector(".mfp-viewport");
+    const sheet = root.querySelector(".mfp-book");
+    const words = [...root.querySelectorAll(".qcm-word")].filter((word) => {
+      const pageBox = word.closest(".qcm-page")?.getBoundingClientRect();
+      if (!pageBox) return true;
+      const box = word.getBoundingClientRect();
+      return box.left < pageBox.left - 2 || box.right > pageBox.right + 2;
+    }).length;
+    return {
+      sheetWidth: sheet.getBoundingClientRect().width,
+      scrollWidth: viewport.scrollWidth,
+      clientWidth: viewport.clientWidth,
+      clippedWords: words,
+    };
+  });
+
+  const full = await metrics();
+  await minus.click();
+  await minus.click();
+  await expect(zoom).toHaveText("75%");
+  const shrunk = await metrics();
+  expect(shrunk.sheetWidth).toBeLessThan(full.sheetWidth);
+  expect(shrunk.clippedWords).toBe(0);
+  expect(shrunk.scrollWidth).toBeLessThanOrEqual(shrunk.clientWidth + 1);
+
+  await zoom.click();
+  await expect(zoom).toHaveText("100%");
+  await plus.click();
+  await plus.click();
+  await plus.click();
+  await expect(zoom).toHaveText("145%");
+  const enlarged = await metrics();
+  expect(enlarged.sheetWidth).toBeGreaterThan(full.sheetWidth);
+  // The enlarged sheet must be reachable by scrolling, not cut off.
+  expect(enlarged.scrollWidth).toBeGreaterThan(enlarged.clientWidth);
+  expect(enlarged.clippedWords).toBe(0);
 });

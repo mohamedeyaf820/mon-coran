@@ -10,7 +10,7 @@ import audioService from "../../services/audioService";
 import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
-const MIN_ZOOM = 0.8;
+const MIN_ZOOM = 0.75;
 const MAX_ZOOM = 2.2;
 const ZOOM_STEP = 0.15;
 const ZOOM_STORAGE_KEY = "mushafplus-fullscreen-zoom";
@@ -189,20 +189,25 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   useEffect(() => {
     if (!fullPage) return undefined;
     let cancelled = false;
-    const neighbours = [currentPage - 2, currentPage - 1, currentPage, currentPage + 1, currentPage + 2]
+    // Current page first, then the neighbours in reading order: an uncached
+    // leaf must never wait behind a speculative prefetch of the next ones.
+    const neighbours = [currentPage, currentPage + 1, currentPage - 1, currentPage + 2, currentPage - 2]
       .filter((page) => page >= 1 && page <= 604 && !pageCacheRef.current.has(page));
-    Promise.all(neighbours.map(async (page) => {
-      const result = await preloadQuranDisplayData({ currentJuz: state.currentJuz, currentPage: page, currentSurah, displayMode: "page", lang, riwaya, warshStrictMode: state.warshStrictMode });
-      return [page, result.ayahs];
-    })).then((entries) => {
-      if (cancelled || !entries.length) return;
-      setPageCache((current) => {
-        const next = new Map(current);
-        entries.forEach(([page, pageAyahs]) => next.set(page, pageAyahs));
-        pageCacheRef.current = next;
-        return next;
-      });
-    }).catch(() => null);
+    (async () => {
+      for (const page of neighbours) {
+        try {
+          const result = await preloadQuranDisplayData({ currentJuz: state.currentJuz, currentPage: page, currentSurah, displayMode: "page", lang, riwaya, warshStrictMode: state.warshStrictMode });
+          if (cancelled) return;
+          setPageCache((current) => {
+            const next = new Map(current).set(page, result.ayahs);
+            pageCacheRef.current = next;
+            return next;
+          });
+        } catch {
+          if (cancelled) return;
+        }
+      }
+    })();
     return () => { cancelled = true; };
   }, [currentPage, currentSurah, fullPage, lang, riwaya, state.currentJuz, state.warshStrictMode]);
 
@@ -346,6 +351,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (elapsed > 700 || Math.abs(deltaX) < 45 || Math.abs(deltaX) < Math.abs(deltaY) * 1.2) return;
     if (deltaX > 0) handleNext(); else handlePrev();
   };
+  // Zoom scales the whole sheet (frame, head, folio and markers included)
+  // through CSS zoom, so enlarged pages grow the scroll area instead of
+  // spilling outside their layout box.
   const handleWheel = (event) => {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
@@ -357,15 +365,17 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     const viewport = viewportRef.current;
     const sheet = viewport?.querySelector(".mfp-book");
     if (!viewport || !sheet) return;
-    setZoom((value) => {
-      const width = sheet.offsetWidth / value;
-      const height = sheet.offsetHeight / value;
-      if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) return value;
-      const scale = mode === "width"
-        ? viewport.clientWidth / width
-        : Math.min(viewport.clientWidth / width, viewport.clientHeight / height);
-      return clampZoom(scale);
-    });
+    // With CSS zoom the sheet's offset box is already its unzoomed layout
+    // size; the viewport's own padding is not readable area.
+    const styles = window.getComputedStyle(viewport);
+    const availW = viewport.clientWidth - (Number.parseFloat(styles.paddingLeft) || 0) - (Number.parseFloat(styles.paddingRight) || 0);
+    const availH = viewport.clientHeight - (Number.parseFloat(styles.paddingTop) || 0) - (Number.parseFloat(styles.paddingBottom) || 0);
+    const { offsetWidth: width, offsetHeight: height } = sheet;
+    if (availW <= 0 || availH <= 0 || width <= 0 || height <= 0) return;
+    const scale = mode === "width"
+      ? availW / width
+      : Math.min(availW / width, availH / height);
+    setZoom((value) => clampZoom(scale || value));
   };
 
   return createPortal(
@@ -400,7 +410,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
       <button type="button" className="mfp-side-nav mfp-side-nav--prev" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} aria-label={t("nav.prevPage", lang)} title={`${t("nav.prevPage", lang)} (→)`}><ChevronRight size={22} /></button>
       <footer className="mfp-mobile-footer">
         <AudioControls compact {...audioProps} />
-        <div className="mfp-mobile-pagination" dir="ltr"><button type="button" className="mfp-icon-btn" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-label={t("nav.nextPage", lang)}><ChevronLeft size={20} /></button><strong>{pageLabel} / 604</strong><button type="button" className="mfp-icon-btn" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-label={t("nav.prevPage", lang)}><ChevronRight size={20} /></button></div>
+        <div className="mfp-mobile-pagination" dir="ltr"><button type="button" className="mfp-icon-btn" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} aria-label={t("nav.nextPage", lang)}><ChevronLeft size={20} /></button><strong>{pageLabel} / 604</strong><button type="button" className="mfp-icon-btn" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} aria-label={t("nav.prevPage", lang)}><ChevronRight size={20} /></button></div>
       </footer>
     </div>, document.body,
   );
