@@ -116,7 +116,7 @@ export default function SurahReaderHeader({
   const setMushafLayout = () => {
     if (mushafIsOn) return;
     if (onToggleMushaf) { onToggleMushaf(); return; }
-    set({ mushafLayout: "mushaf", showTajwid: true });
+    set({ mushafLayout: "mushaf" });
   };
   const setListLayout = () => {
     if (!mushafIsOn) return;

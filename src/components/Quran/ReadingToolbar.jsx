@@ -90,7 +90,6 @@ export default function ReadingToolbar({
     }
     set({
       mushafLayout: "mushaf",
-      showTajwid: true,
     });
   };
 

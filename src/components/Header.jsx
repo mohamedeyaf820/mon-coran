@@ -152,11 +152,7 @@ export default function Header({ immersiveHidden = false }) {
     });
   };
   const selectReadingLayout = (layout) => {
-    set(
-      layout === "mushaf"
-        ? { mushafLayout: "mushaf", showTajwid: true }
-        : { mushafLayout: "list" },
-    );
+    set({ mushafLayout: layout });
   };
   const cycleTheme = () => {
     const themes = ["light", "sepia", "dark"];
