@@ -2,9 +2,9 @@ import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "
 import { getJuzForAyah } from "../../data/juz";
 import { t } from "../../i18n";
 import { getSurah, toAr } from "../../data/surahs";
-import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import AyahActionsModal from "./AyahActionsModal";
+import QuranMushafPage from "./QuranMushafPage";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import usePageStream from "./usePageStream";
 import { useApp } from "../../context/AppContext";
@@ -21,12 +21,12 @@ function PageMode({
   currentSurah,
   fontFamily: _fontFamily,
   getTranslationForAyah,
-  isQCF4,
+  isQCF4: _isQCF4,
   lang,
   mushafLayout,
   onNextPage,
   onOpenFullscreen,
-  onPlayAyah,
+  onPlayAyah: _onPlayAyah,
   onPlaySurah,
   onPrevPage,
   onToggleActive,
@@ -87,6 +87,24 @@ function PageMode({
     translationLangs: state.translationLangs,
     warshStrictMode: state.warshStrictMode,
   });
+  // The print engine draws with per-page QCF glyph fonts. Seed data may carry
+  // only glyph codes, so a sheet stays blank until its font resolves: start
+  // the load the moment a page enters the stream window (the loader dedupes
+  // with the renderer's own request).
+  useEffect(() => {
+    if (mushafLayout !== "mushaf") return undefined;
+    let active = true;
+    const numbers = stream.pages.map(({ page }) => page).join(",");
+    import("../../services/fontLoader").then(({ ensureQcfPageFontLoaded }) => {
+      if (!active) return;
+      numbers.split(",").forEach((page) => {
+        if (page) ensureQcfPageFontLoaded(Number(page), showTajwid ? "v4" : "v2");
+      });
+    });
+    return () => {
+      active = false;
+    };
+  }, [mushafLayout, showTajwid, stream.pages]);
   const streamPages = useMemo(
     () =>
       stream.pages.map(({ page, ayahs: pageAyahs }) => {
@@ -134,7 +152,7 @@ function PageMode({
   const handleMushafDoubleClick = useCallback(
     (event) => {
       if (mushafLayout !== "mushaf") return;
-      if (!event.target.closest(".mushaf-page-wrapper")) return;
+      if (!event.target.closest(".qcm-page-shell")) return;
       if (event.target.closest("button, a, input, select, textarea, [role='button']")) return;
       onOpenFullscreen?.();
     },
@@ -187,22 +205,16 @@ function PageMode({
             aria-label={`${pageWord} ${lang === "ar" ? toAr(page) : page}`}
           >
             {mushafLayout === "mushaf" ? (
-              <CleanPageView
-                ayahs={pageAyahs}
-                lang={lang}
-                fontSize={readingFontSize}
-                isQCF4={isQCF4}
-                showTajwid={showTajwid}
-                currentPlayingAyah={currentPlayingAyah}
-                surahNum={pageAyahs[0]?.surah?.number || pageAyahs[0]?.surah || currentSurah}
-                calibration={calibration}
-                riwaya={riwaya}
-                onAyahClick={onToggleActive}
-                onPlayAyah={onPlayAyah}
+              <QuranMushafPage
                 activeAyah={activeAyah}
-                getAyahToggleId={(ayah) => ayah.number}
-                showSurahHeader={true}
-                showTransliteration={showTransliteration}
+                ayahs={pageAyahs}
+                currentPage={page}
+                currentPlayingAyah={currentPlayingAyah}
+                fontFamily={state.fontFamily}
+                lang={lang}
+                onToggleActive={onToggleActive}
+                riwaya={riwaya}
+                showTajwid={showTajwid}
               />
             ) : (
               <QCVerseByVerseView
