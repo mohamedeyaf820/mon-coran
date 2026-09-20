@@ -37,6 +37,7 @@ export default function usePageStream({
   fallbackGetTranslation,
   lang,
   onVisiblePage,
+  repaginationKey,
   riwaya,
   showTranslation = false,
   translationLangs,
@@ -154,6 +155,67 @@ export default function usePageStream({
     });
   }, [ayahs, currentPage]);
 
+  // A layout or riwaya switch re-paginates every sheet: pages still loaded
+  // above the one being read would keep anchoring the viewport to content the
+  // new pagination no longer places there, so the window restarts at the
+  // current page and the reader is repositioned onto its top. The alignment
+  // keeps re-asserting while the new layout (and its fonts) resize under it,
+  // and yields the moment the reader takes over with a gesture of their own.
+  const prevRepaginationRef = useRef(repaginationKey);
+  const repagAlignRef = useRef(false);
+  const currentPageRef = useRef(currentPage);
+  currentPageRef.current = currentPage;
+  useEffect(() => {
+    if (prevRepaginationRef.current === repaginationKey) return undefined;
+    prevRepaginationRef.current = repaginationKey;
+    const page = currentPageRef.current;
+    setWindow((current) => {
+      if (current.start >= page) return current;
+      if (!current.pages.has(page)) return current;
+      const pages = new Map(current.pages);
+      for (let p = current.start; p < page; p += 1) pages.delete(p);
+      return { start: page, end: current.end, pages };
+    });
+    repagAlignRef.current = true;
+    const cancelAlign = () => {
+      repagAlignRef.current = false;
+    };
+    let frame = 0;
+    let stable = 0;
+    let attempts = 0;
+    const align = () => {
+      frame = 0;
+      if (!repagAlignRef.current) return;
+      const root = rootRef.current;
+      const scroller = root && findScrollParent(root);
+      const section = root?.querySelector(`[data-stream-page="${currentPageRef.current}"]`);
+      if (!scroller || !section) {
+        if (++attempts > 120) cancelAlign();
+        else frame = window.requestAnimationFrame(align);
+        return;
+      }
+      const offset = section.getBoundingClientRect().top - scroller.getBoundingClientRect().top;
+      if (Math.abs(offset) > 1) {
+        scroller.scrollTo({ top: Math.max(0, scroller.scrollTop + Math.round(offset)), behavior: "auto" });
+        stable = 0;
+      } else {
+        stable += 1;
+      }
+      attempts += 1;
+      if (stable >= 3 || attempts > 240) cancelAlign();
+      else frame = window.requestAnimationFrame(align);
+    };
+    frame = window.requestAnimationFrame(align);
+    window.addEventListener("wheel", cancelAlign, { once: true, passive: true });
+    window.addEventListener("touchstart", cancelAlign, { once: true, passive: true });
+    return () => {
+      cancelAlign();
+      if (frame) window.cancelAnimationFrame(frame);
+      window.removeEventListener("wheel", cancelAlign);
+      window.removeEventListener("touchstart", cancelAlign);
+    };
+  }, [repaginationKey]);
+
   const fetchPage = useCallback(
     (page) =>
       preloadQuranDisplayData({
@@ -267,6 +329,9 @@ export default function usePageStream({
     const pending = pendingAdjustRef.current;
     if (!pending) return;
     pendingAdjustRef.current = null;
+    // While a repagination alignment owns the viewport, its anchors are
+    // stale: restoring them would yank the reader off the page top.
+    if (repagAlignRef.current) return;
     const section = rootRef.current?.querySelector(`[data-stream-page="${pending.page}"]`);
     if (!section) return;
     const delta = section.getBoundingClientRect().top - pending.top;
@@ -301,7 +366,8 @@ export default function usePageStream({
       const top = scroller.scrollTop;
       const movingUp = top < lastTop;
       lastTop = top;
-      if (!movingUp) return;
+      // The alignment's own upward jumps are not the reader scrolling back.
+      if (!movingUp || repagAlignRef.current) return;
       const rootTop = root.getBoundingClientRect().top;
       if (rootTop > -500) loadPrevious();
     };
@@ -320,6 +386,9 @@ export default function usePageStream({
     let frame = 0;
     const measure = () => {
       frame = 0;
+      // During a repagination alignment the transient heights are noise:
+      // the page being read is the one the alignment is pinning.
+      if (repagAlignRef.current) return;
       const middle = window.innerHeight / 2;
       const sections = root.querySelectorAll("[data-stream-page]");
       for (const section of sections) {

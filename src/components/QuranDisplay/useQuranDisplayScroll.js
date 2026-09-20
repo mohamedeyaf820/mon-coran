@@ -12,6 +12,7 @@ export default function useQuranDisplayScroll({
   getScrollContainer,
   mushafLayout,
   pageNavigationSource = "navigate",
+  riwaya,
 }) {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const followRetryTimerRef = useRef(null);
@@ -103,6 +104,25 @@ export default function useQuranDisplayScroll({
     if (displayMode === "page" && pageNavigationSource === "scroll") return;
     getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
   }, [currentJuz, currentPage, currentSurah, displayMode, getScrollContainer, pageNavigationSource]);
+
+  // A layout or riwaya switch re-paginates the text: the old pixel position
+  // means nothing in the new sheet, so reset even mid-stream, where the
+  // scroll-source guard above deliberately never fires. The continuous page
+  // stream repositions itself onto the page being read (usePageStream);
+  // surah and juz content has no page anchor, so the top of the sheet is it.
+  const repaginationRef = useRef(null);
+  useEffect(() => {
+    const key = `${mushafLayout}:${riwaya}`;
+    if (repaginationRef.current === null) {
+      repaginationRef.current = key;
+      return;
+    }
+    if (repaginationRef.current === key) return;
+    repaginationRef.current = key;
+    if (displayMode !== "page") {
+      getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }, [displayMode, getScrollContainer, mushafLayout, riwaya]);
 
   useEffect(() => {
     if (
