@@ -7,6 +7,7 @@ import { getJuzForAyah } from "../../data/juz";
 import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 import audioService from "../../services/audioService";
+import AyahActionsModal from "./AyahActionsModal";
 import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
@@ -108,7 +109,7 @@ function AudioControls({ audioAyah, compact = false, hasSession, isPlaying, lang
   );
 }
 
-function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAyah, currentSurah, fullPage, lang, onClose, onOpenPlayer, onPlayAyah, returnFocusRef, riwaya, isPlaying, audioAyah }) {
+function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAyah, currentSurah, fullPage, getTranslationForAyah, lang, onClose, onOpenPlayer, onPlayAyah, returnFocusRef, riwaya, isPlaying, audioAyah }) {
   const { state, dispatch } = useApp();
   const overlayRef = useRef(null);
   const viewportRef = useRef(null);
@@ -124,6 +125,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   ));
   const pageCacheRef = useRef(pageCache);
   const [isPageChanging, setIsPageChanging] = useState(false);
+  // Verse whose end-marker was tapped: fullscreen had no way to reach the
+  // action sheet, so marker taps now open it locally instead of doing nothing.
+  const [actionsAyah, setActionsAyah] = useState(null);
   const theme = state.theme || "light";
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
   const currentJuz = ayahs[0]?.juz || getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
@@ -245,6 +249,12 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     }
   }, [currentSurah, dispatch, isPageChanging, lang, riwaya, state.currentJuz, state.warshStrictMode]);
 
+  // The action sheet belongs to a verse on the leaf that was turned to; any
+  // page change removes that verse from the screen.
+  useEffect(() => {
+    setActionsAyah(null);
+  }, [currentPage]);
+
   const handlePrev = useCallback(() => {
     if (isDouble) {
       const target = Math.max(1, currentPage - 2);
@@ -266,7 +276,14 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   }, [currentPage, isDouble, navigateToPage]);
 
   const handleOverlayKeyDown = useCallback((event) => {
-    if (event.key === "Escape") { event.stopPropagation(); onClose(); return; }
+    if (event.key === "Escape") {
+      // With the sheet open, its own document listener owns Escape; consuming
+      // it here would close the whole overlay when focus sits on a marker.
+      if (actionsAyah != null) return;
+      event.stopPropagation();
+      onClose();
+      return;
+    }
     if (event.key === " " && !isInteractiveTarget(event.target) && hasAudioSession) { event.preventDefault(); audioService.toggle(); return; }
     if (isInteractiveTarget(event.target)) return;
     if (event.key === "ArrowLeft") { handleNext(); return; }
@@ -274,7 +291,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (event.key === "+" || event.key === "=") { setZoom((value) => clampZoom(value + ZOOM_STEP)); return; }
     if (event.key === "-") { setZoom((value) => clampZoom(value - ZOOM_STEP)); return; }
     if (event.key === "0") setZoom(1);
-  }, [handleNext, handlePrev, hasAudioSession, onClose]);
+  }, [actionsAyah, handleNext, handlePrev, hasAudioSession, onClose]);
 
   useEffect(() => {
     if (!fullPage) return undefined;
@@ -338,6 +355,11 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   if (!fullPage || typeof document === "undefined") return null;
 
   const activePageAyahs = pageCache.get(currentPage) || (isPageScoped(ayahs, currentPage) ? ayahs : []);
+  const actionsAyahData = actionsAyah == null
+    ? null
+    : spreadPages
+        .flatMap((page) => pageCache.get(page) || (isPageScoped(ayahs, page) ? ayahs : []))
+        .find((ayah) => Number(ayah?.number) === actionsAyah) || null;
   const pageKind = (isDouble ? spread.right : currentPage) <= 2 ? "opening" : "standard";
   const startPageAudio = () => { if (activePageAyahs[0]) onPlayAyah?.(activePageAyahs[0], activePageAyahs); };
   const audioProps = { audioAyah, hasSession: hasAudioSession, isPlaying, lang, onOpenPlayer, onStart: startPageAudio };
@@ -401,7 +423,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
           {spreadPages.map((pageNumber) => {
             const pageAyahs = pageCache.get(pageNumber) || (isPageScoped(ayahs, pageNumber) ? ayahs : []);
             return (
-              <QuranMushafPage key={pageNumber} activeAyah={null} ayahs={pageAyahs} currentPage={pageNumber} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} riwaya={riwaya} showTajwid={state.showTajwid} />
+              <QuranMushafPage key={pageNumber} activeAyah={actionsAyah} ayahs={pageAyahs} currentPage={pageNumber} currentPlayingAyah={currentPlayingAyah} fontFamily={state.fontFamily} lang={lang} onToggleActive={(globalAyah) => setActionsAyah((current) => (current === globalAyah ? null : globalAyah))} riwaya={riwaya} showTajwid={state.showTajwid} />
             );
           })}
         </div>
@@ -412,6 +434,16 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
         <AudioControls compact {...audioProps} />
         <div className="mfp-mobile-pagination" dir="ltr"><button type="button" className="mfp-icon-btn" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} aria-label={t("nav.nextPage", lang)}><ChevronLeft size={20} /></button><strong>{pageLabel} / 604</strong><button type="button" className="mfp-icon-btn" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} aria-label={t("nav.prevPage", lang)}><ChevronRight size={20} /></button></div>
       </footer>
+      <AyahActionsModal
+        activeAyah={actionsAyah}
+        className="ayah-actions-modal--fullscreen"
+        onClose={() => setActionsAyah(null)}
+        portalToBody
+        quietBackdrop
+        surah={actionsAyahData?.surah?.number || currentSurah}
+        ayahData={actionsAyahData}
+        translations={actionsAyahData ? getTranslationForAyah?.(actionsAyahData) || [] : []}
+      />
     </div>, document.body,
   );
 }
