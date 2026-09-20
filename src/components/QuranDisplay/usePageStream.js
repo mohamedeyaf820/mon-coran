@@ -2,6 +2,8 @@ import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } fr
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 import { getSurahAyahCount } from "../../data/surahs";
 import { getPageTranslation } from "../../services/quranAPI";
+import { t } from "../../i18n";
+import { toast } from "../../lib/utils";
 import { getTranslationKeyForAyah } from "./displayHelpers";
 
 const LAST_PAGE = 604;
@@ -118,6 +120,9 @@ export default function usePageStream({
     [currentSurah, fallbackGetTranslation, translationMap],
   );
   const loadingRef = useRef(new Set());
+  // A page that already announced its failure: scrolling back and forth must
+  // not repeat the same offline toast.
+  const failedStreamRef = useRef(new Set());
   const rootRef = useRef(null);
   // Anchor used to keep the viewport still when content changes above it:
   // the first page that stays in the window and its position before the
@@ -174,6 +179,17 @@ export default function usePageStream({
     window_.end < LAST_PAGE;
   const pausedAtSurah = endsSurah && continuedPast !== window_.end;
 
+  // An unreachable leaf must not look like the end of the Quran: say once per
+  // page that the stream stopped for a network reason, keep the retry live.
+  const announceStreamFailure = useCallback(
+    (page) => {
+      if (failedStreamRef.current.has(page)) return;
+      failedStreamRef.current.add(page);
+      toast(t("errors.network", lang), "error");
+    },
+    [lang],
+  );
+
   const loadNext = useCallback(() => {
     const page = window_.end + 1;
     if (page > LAST_PAGE || loadingRef.current.has(page)) return;
@@ -181,7 +197,11 @@ export default function usePageStream({
     loadingRef.current.add(page);
     fetchPage(page)
       .then((pageAyahs) => {
-        if (!pageAyahs.length) return;
+        if (!pageAyahs.length) {
+          announceStreamFailure(page);
+          return;
+        }
+        failedStreamRef.current.delete(page);
         setWindow((current) => {
           if (page !== current.end + 1) return current;
           const pages = new Map(current.pages);
@@ -197,9 +217,11 @@ export default function usePageStream({
           return { start, end: page, pages };
         });
       })
-      .catch(() => null)
+      .catch(() => {
+        announceStreamFailure(page);
+      })
       .finally(() => loadingRef.current.delete(page));
-  }, [fetchPage, pausedAtSurah, window_.end]);
+  }, [announceStreamFailure, fetchPage, pausedAtSurah, window_.end]);
 
   const continueStream = useCallback(() => {
     setContinuedPast(window_.end);
@@ -215,7 +237,11 @@ export default function usePageStream({
     loadingRef.current.add(page);
     fetchPage(page)
       .then((pageAyahs) => {
-        if (!pageAyahs.length) return;
+        if (!pageAyahs.length) {
+          announceStreamFailure(page);
+          return;
+        }
+        failedStreamRef.current.delete(page);
         setWindow((current) => {
           if (page !== current.start - 1) return current;
           anchorOn(current.start);
@@ -230,9 +256,11 @@ export default function usePageStream({
           return { start: page, end, pages };
         });
       })
-      .catch(() => null)
+      .catch(() => {
+        announceStreamFailure(page);
+      })
       .finally(() => loadingRef.current.delete(page));
-  }, [fetchPage, window_.start]);
+  }, [announceStreamFailure, fetchPage, window_.start]);
 
   // Keep the reader's viewport still when content changes above it.
   useLayoutEffect(() => {
