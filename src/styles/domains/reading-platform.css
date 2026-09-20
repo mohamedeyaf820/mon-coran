@@ -2463,7 +2463,7 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
     }
 
     .app-root .qc-reader-toolbar button {
-        min-height: 40px;
+        min-height: 44px;
         padding: 0.5rem 0.75rem;
         font-size: 0.8rem;
     }
@@ -4047,7 +4047,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
 @media (max-width: 480px) {
     .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes button,
     .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities button {
-        height: 32px;
+        height: 44px;
         padding-inline: 0.5rem;
         font-size: 0.72rem;
     }

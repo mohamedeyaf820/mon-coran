@@ -211,6 +211,7 @@ export default function QuranDisplay() {
     getScrollContainer: view.getScrollContainer,
     mushafLayout,
     pageNavigationSource: state.pageNavigationSource,
+    riwaya,
   });
   const prepareReadingTarget = useCallback(
     (mode, value) =>

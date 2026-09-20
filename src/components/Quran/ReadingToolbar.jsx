@@ -153,7 +153,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
+              "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               mushafIsOn
                 ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
@@ -168,7 +168,7 @@ export default function ReadingToolbar({
           <button
             type="button"
             className={cn(
-              "flex h-8 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
+              "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               !mushafIsOn
                 ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
@@ -189,7 +189,7 @@ export default function ReadingToolbar({
         <button
           type="button"
           className={cn(
-            "reader-toolbar-btn--translation flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50",
+            "reader-toolbar-btn--translation flex h-11 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all disabled:cursor-not-allowed disabled:opacity-50",
             showTranslation
               ? "border-[rgba(var(--primary-rgb),0.3)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-bold shadow-sm"
               : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -208,7 +208,7 @@ export default function ReadingToolbar({
         <button
           type="button"
           className={cn(
-            "reader-toolbar-btn--tajweed flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+            "reader-toolbar-btn--tajweed flex h-11 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
             showTajwid
               ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold shadow-sm"
               : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -228,7 +228,7 @@ export default function ReadingToolbar({
         {onOpenFullscreen ? (
           <button
             type="button"
-            className="reader-fullscreen-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-600/30 bg-emerald-600/10 px-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-600/20 hover:border-emerald-600/50 shadow-sm"
+            className="reader-fullscreen-trigger flex h-11 cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-600/30 bg-emerald-600/10 px-2.5 text-xs font-bold text-emerald-700 dark:text-emerald-300 transition-all hover:bg-emerald-600/20 hover:border-emerald-600/50 shadow-sm"
             onClick={onOpenFullscreen}
             aria-label={labels.fullscreen}
             title={`${labels.fullscreen} (F)`}
@@ -243,7 +243,7 @@ export default function ReadingToolbar({
             type="button"
             ref={typographyTriggerRef}
             className={cn(
-              "reader-typography-trigger flex h-8 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
+              "reader-typography-trigger flex h-11 cursor-pointer items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all",
               showTypography
                 ? "border-[rgba(var(--primary-rgb),0.3)] bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] font-bold shadow-sm"
                 : "border-[var(--border)] bg-[var(--bg-card)] text-[var(--text-secondary)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text-primary)]",
@@ -273,7 +273,7 @@ export default function ReadingToolbar({
             onClick={handlePrimaryPlay}
             disabled={isPreparing}
             className={cn(
-              "reader-toolbar-btn--primary btn-play-surah flex h-8 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-3.5 text-xs font-bold text-white shadow-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50",
+              "reader-toolbar-btn--primary btn-play-surah flex h-11 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-3.5 text-xs font-bold text-white shadow-sm transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-50",
               isPlayingThisContext
                 ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/20"
                 : "bg-[var(--primary)] hover:brightness-110 shadow-[rgba(var(--primary-rgb),0.25)]",

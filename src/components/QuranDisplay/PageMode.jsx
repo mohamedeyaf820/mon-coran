@@ -81,6 +81,7 @@ function PageMode({
     fallbackGetTranslation: getTranslationForAyah,
     lang,
     onVisiblePage,
+    repaginationKey: `${mushafLayout}:${riwaya}`,
     riwaya,
     showTranslation,
     translationLangs: state.translationLangs,
