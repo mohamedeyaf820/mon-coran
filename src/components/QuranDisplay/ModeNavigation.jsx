@@ -21,7 +21,7 @@ export default function ModeNavigation({
   return (
     <nav
       className={cn("reader-mode-nav", className)}
-      aria-label={lang === "fr" ? "Navigation de lecture" : "Reading navigation"}
+      aria-label={lang === "ar" ? "تنقل القراءة" : lang === "fr" ? "Navigation de lecture" : "Reading navigation"}
     >
       <button
         type="button"

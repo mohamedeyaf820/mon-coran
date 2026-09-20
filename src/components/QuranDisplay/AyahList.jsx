@@ -55,7 +55,9 @@ function AyahList({
     !showTransliteration;
 
   const playingAnnouncement = currentPlayingAyah
-    ? `${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+    ? lang === "ar"
+      ? `الآية ${toAr(currentPlayingAyah.surah)}:${toAr(currentPlayingAyah.ayah)}`
+      : `${lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
     : "";
 
   // Always-mounted live region — removing/adding it resets the AT announcement queue.

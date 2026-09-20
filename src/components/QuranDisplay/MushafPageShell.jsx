@@ -1,4 +1,5 @@
 import React from "react";
+import { toAr } from "../../data/surahs";
 
 /**
  * MushafPageShell — the printed-page frame shared by every Mushaf surface
@@ -17,7 +18,7 @@ export default function MushafPageShell({
   meta,
 }) {
   return (
-    <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${currentPage}`}>
+    <section className="qcm-page-shell" aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${lang === "ar" ? toAr(currentPage) : currentPage}`}>
       {fontFailed && fontWarningText && (
         <div className="qcm-font-warning" role="alert">
           <span>{fontWarningText}</span>

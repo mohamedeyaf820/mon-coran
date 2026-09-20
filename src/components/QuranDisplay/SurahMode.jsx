@@ -1,6 +1,6 @@
 import React, { memo } from "react";
 import { t } from "../../i18n";
-import { getSurah } from "../../data/surahs";
+import { getSurah, toAr } from "../../data/surahs";
 import SurahReaderHeader from "../Quran/SurahReaderHeader";
 import TajweedLegend from "../Quran/TajweedLegend";
 import AyahActionsModal from "./AyahActionsModal";
@@ -123,10 +123,15 @@ function SurahMode({
           surahMeta ? (
             <div className="mode-nav-current">
               <strong>
-                {lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en}
+                {lang === "ar"
+                  ? surahMeta.ar
+                  : lang === "fr"
+                    ? surahMeta.fr || surahMeta.en
+                    : surahMeta.en}
               </strong>
               <span>
-                {surahMeta.ayahs} {t("quran.ayahs", lang)}
+                {lang === "ar" ? toAr(surahMeta.ayahs) : surahMeta.ayahs}{" "}
+                {t("quran.ayahs", lang)}
               </span>
             </div>
           ) : null

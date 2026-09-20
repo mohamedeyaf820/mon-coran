@@ -129,7 +129,8 @@ function AyahBlockComponent({
           )}
           aria-hidden="true"
         >
-          {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} {surahNum}:{ayah.numberInSurah}
+          {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"}{" "}
+          {lang === "ar" ? `${toAr(surahNum)}:${toAr(ayah.numberInSurah)}` : `${surahNum}:${ayah.numberInSurah}`}
         </div>
         <button
           type="button"

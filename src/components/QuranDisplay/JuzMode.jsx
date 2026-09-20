@@ -63,7 +63,7 @@ function JuzMode({
       >
         <ReaderContextCard
           kind="juz"
-          label={t("sidebar.juz", lang)}
+          label={t("settings.juzMode", lang)}
           value={lang === "ar" ? toAr(currentJuz) : currentJuz}
           numericValue={currentJuz}
           total={30}
@@ -80,7 +80,7 @@ function JuzMode({
 
         <ReadingToolbar
           onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
-          playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
+          playLabel={lang === "ar" ? undefined : lang === "fr" ? "Écouter le juz" : "Listen juz"}
           preparingSurah={preparingSurah}
           surahNum={firstSurah}
           onToggleMushaf={onToggleMushaf}
@@ -144,7 +144,8 @@ function JuzMode({
         onNext={onNextJuz}
         centerContent={
           <span className={classes.pageIndicatorClass}>
-            {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
+            {t("settings.juzMode", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} /{" "}
+            {lang === "ar" ? toAr(30) : 30}
           </span>
         }
         lang={lang}

@@ -96,10 +96,12 @@ export function getPageMeta(ayahs, currentPage, lang) {
     top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
     middle:
       lang === "ar"
-        ? `سورة ${first.surah?.number || ""} · ${first.numberInSurah || ""}‏–‏${last.numberInSurah || ""}`
+        ? first.surah?.number
+          ? `سورة ${toAr(first.surah.number)} · ${toAr(first.numberInSurah || "")}‏–‏${toAr(last.numberInSurah || "")}`
+          : ""
         : `Surah ${first.surah?.number || ""} · ${first.numberInSurah || ""}–${last.numberInSurah || ""}`,
-    sideA: `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}`,
-    sideB: `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}`,
+    sideA: juz ? `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}` : "",
+    sideB: hizb ? `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}` : "",
     sideC: rub ? `${lang === "ar" ? "ربع" : "Rubʿ"} ${lang === "ar" ? toAr(rub) : rub}` : "",
   };
 }

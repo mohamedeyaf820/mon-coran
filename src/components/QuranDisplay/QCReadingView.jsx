@@ -3,6 +3,7 @@ import { cn } from "../../lib/utils";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 import { t } from "../../i18n";
+import { toAr } from "../../data/surahs";
 
 const BASMALA = "\uFDFD";
 
@@ -17,7 +18,7 @@ function PageSeparator({ page, lang }) {
     <div className="relative flex items-center justify-center gap-4 my-2 select-none" aria-hidden="true">
       <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.12)]" />
       <span className="text-[0.6rem] font-semibold text-[var(--text-muted)] tracking-wide uppercase px-2">
-        {lang === "ar" ? "صفحة" : "P."} {page}
+        {lang === "ar" ? "صفحة" : "P."} {lang === "ar" ? toAr(page) : page}
       </span>
       <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[rgba(var(--primary-rgb),0.12)]" />
     </div>
@@ -188,7 +189,11 @@ export default function QCReadingView({
                   data-ayah-global={ayah.number}
                   role="button"
                   tabIndex={0}
-                  aria-label={`${lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
+                  aria-label={
+                    lang === "ar"
+                      ? `${t("quran.ayah", lang)} ${toAr(ayah.numberInSurah)}`
+                      : `${lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`
+                  }
                   aria-current={isPlaying ? "true" : undefined}
                   onClick={() => onToggleActive?.(toggleId)}
                   onKeyDown={(e) => {

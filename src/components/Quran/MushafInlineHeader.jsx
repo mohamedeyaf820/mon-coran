@@ -22,18 +22,20 @@ export default function MushafInlineHeader({
   return (
     <>
       <div className="mp-header" dir="rtl">
-        <div className="mp-header-side">
-          <span className="mp-header-label">{lang === "ar" ? "\u062c\u0632\u0621" : "Juz"}</span>
-          <span className="mp-header-value">
-            {lang === "ar" ? toAr(juzNum) : juzNum}
-            {juzNumEnd !== juzNum ? (
-              <span className="mp-header-value-end">
-                {" - "}
-                {lang === "ar" ? toAr(juzNumEnd) : juzNumEnd}
-              </span>
-            ) : null}
-          </span>
-        </div>
+        {juzNum ? (
+          <div className="mp-header-side">
+            <span className="mp-header-label">{lang === "ar" ? "\u062c\u0632\u0621" : "Juz"}</span>
+            <span className="mp-header-value">
+              {lang === "ar" ? toAr(juzNum) : juzNum}
+              {juzNumEnd !== juzNum ? (
+                <span className="mp-header-value-end">
+                  {" - "}
+                  {lang === "ar" ? toAr(juzNumEnd) : juzNumEnd}
+                </span>
+              ) : null}
+            </span>
+          </div>
+        ) : null}
         <div className="mp-header-center">
           <span className="mp-ornament" aria-hidden="true">
             {"\ufd3e"}

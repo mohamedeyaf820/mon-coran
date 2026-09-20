@@ -106,7 +106,9 @@ function PageMode({
   );
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
   const pageWord = lang === "fr" ? "Page" : lang === "ar" ? "صفحة" : "Page";
-  const contextSecondary = `${t("sidebar.juz", lang)} ${currentJuz || "—"}`;
+  const contextSecondary = currentJuz
+    ? `${t("settings.juzMode", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz}`
+    : null;
 
   const touchStartX = useRef(null);
 
@@ -163,7 +165,7 @@ function PageMode({
         />
         <ReadingToolbar
           onPlay={onPlaySurah}
-          playLabel={lang === "fr" ? "Écouter la page" : "Listen page"}
+          playLabel={lang === "ar" ? undefined : lang === "fr" ? "Écouter la page" : "Listen page"}
           preparingSurah={preparingSurah}
           surahNum={pageTopSurah || currentSurah}
           onToggleMushaf={onToggleMushaf}
