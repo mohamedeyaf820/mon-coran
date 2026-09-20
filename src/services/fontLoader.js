@@ -36,12 +36,12 @@ const FONT_SOURCES = {
   },
   "qpc-warsh": {
     family: "QPC Warsh",
-    url: "/fonts/kfgqpc-warsh-10.woff2",
+    url: "/fonts/kfgqpc-warsh-21.woff2",
     format: "woff2",
   },
   "kfgqpc-warsh": {
     family: "KFGQPC Warsh",
-    url: "/fonts/kfgqpc-warsh-10.woff2",
+    url: "/fonts/kfgqpc-warsh-21.woff2",
     format: "woff2",
   },
 };

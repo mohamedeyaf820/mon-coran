@@ -315,7 +315,7 @@ body {
 
 @font-face {
     font-family: "QPC Warsh";
-    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
+    src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: block;
@@ -339,7 +339,7 @@ body {
 
 @font-face {
     font-family: "KFGQPC Warsh";
-    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
+    src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: block;
@@ -347,7 +347,7 @@ body {
 
 @font-face {
     font-family: "KFGQPC Uthmanic Script WARSH";
-    src: url("/fonts/kfgqpc-warsh-10.woff2") format("woff2");
+    src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: block;

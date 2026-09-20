@@ -36,7 +36,7 @@ const ASSETS_TO_CACHE = [
   "/data/editorial-copy.json",
   // The reading faces are needed on every route once offline.
   "/fonts/uthmanic-hafs-v18.woff2",
-  "/fonts/kfgqpc-warsh-10.woff2",
+  "/fonts/kfgqpc-warsh-21.woff2",
   "/fonts/scheherazade-new-400.woff2",
   "/fonts/sura_names.woff2",
 ];
