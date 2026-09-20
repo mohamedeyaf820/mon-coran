@@ -14,6 +14,7 @@ import {
   useAppSelector,
 } from "../context/AppContext";
 import { t } from "../i18n";
+import { toast } from "../lib/utils";
 import { ensureReciterForRiwaya, isSurahOnlyReciter } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import Footer from "./Footer";
@@ -112,7 +113,6 @@ export default function QuranDisplay() {
     error,
     fetchData,
     isWarshFallback,
-    setError,
   } =
     useQuranDisplayData({
       currentAyah,
@@ -174,6 +174,13 @@ export default function QuranDisplay() {
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
   }, [displayMode, reciterId, riwaya, view.userSyncOffsetMs]);
+  // Audio failures and Quran-text failures are different outages: the first
+  // must not hide the ayahs behind the data-error screen (whose retry reloads
+  // text that was never the problem).
+  const [audioError, setAudioError] = useState(null);
+  useEffect(() => {
+    if (audioError) toast(audioError, "error");
+  }, [audioError]);
   const { playAyah, playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
     {
       ayahs,
@@ -188,7 +195,7 @@ export default function QuranDisplay() {
       reciter,
       riwaya,
       set,
-      setError,
+      setError: setAudioError,
       warshStrictMode,
     },
   );
