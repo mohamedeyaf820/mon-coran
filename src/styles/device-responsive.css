@@ -1969,3 +1969,22 @@ html body #root#root :is(
   font-size: max(0.66rem, 10px) !important;
 }
 
+/* The reciter card gave its text column only 73.5px at 280px (card 233.4px
+   minus a 39.8px avatar and the 44+44px action pair), so "Arabie Saoudite"
+   rendered 42 of 79px. Below 360px the actions drop under the name and align
+   to the inline end, which returns the full measure to the meta line. This
+   rule lives here because deferredStyles.js loads this file last: the same
+   specificity in home-audio-ux-refonte.css lost to the
+   `grid-template-columns: minmax(0, 1fr) auto` pairs in experience-polish.css
+   (<=430px) and in this file (<=640px). */
+@media (max-width: 360px) {
+  html body .app-root[data-view="home"] .reciter-card {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root[data-view="home"] .reciter-card__actions {
+    justify-self: end;
+    padding: 0 !important;
+    border-inline-start: 0 !important;
+  }
+}
