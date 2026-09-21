@@ -212,13 +212,16 @@ html body .app-root[data-view="home"] .reciter-card__actions {
 }
 
 html body .app-root[data-view="home"] .reciter-card__favorite {
-  width: 2.55rem !important;
-  min-width: 2.55rem !important;
-  min-height: 2.55rem !important;
+  /* Plancher 44 px partout : la racine est à 15 px, un rem « ~2.6rem » ne fait
+     que 36-40 px et plusieurs fichiers se disputent ces boutons. */
+  width: max(2.55rem, 44px) !important;
+  min-width: max(2.55rem, 44px) !important;
+  min-height: max(2.55rem, 44px) !important;
 }
 
 html body .app-root[data-view="home"] .reciter-card__listen {
-  min-height: 2.55rem !important;
+  min-width: max(2.55rem, 44px) !important;
+  min-height: max(2.55rem, 44px) !important;
   padding-inline: 0.72rem;
   border-radius: 0.75rem;
   box-shadow: 0 7px 16px color-mix(in srgb, var(--primary) 19%, transparent);
@@ -1133,7 +1136,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-nav.quran-nav .mode-nav-current span {
-  font-size: clamp(0.65rem, 1.6vw, 0.72rem) !important;
+  font-size: clamp(max(0.66rem, 10px), 1.6vw, 0.72rem) !important;
   /* 12px bold caption on the tinted pill needs primary ink for 4.5:1. */
   color: var(--text-primary) !important;
   white-space: normal !important;
@@ -1229,9 +1232,9 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
   }
 
   html body .app-root[data-view="home"] .reciter-card__actions :is(button, a) {
-    width: 2.4rem !important;
-    min-width: 2.4rem !important;
-    min-height: 2.4rem !important;
+    width: max(2.4rem, 44px) !important;
+    min-width: max(2.4rem, 44px) !important;
+    min-height: max(2.4rem, 44px) !important;
     padding: 0;
   }
 }

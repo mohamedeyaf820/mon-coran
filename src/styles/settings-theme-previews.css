@@ -80,7 +80,7 @@
   overflow: hidden;
   color: var(--theme-text);
   font-family: var(--font-quran, serif);
-  font-size: clamp(0.62rem, 1.15vw, 0.82rem);
+  font-size: clamp(max(0.66rem, 10px), 1.15vw, 0.82rem);
   font-weight: 650;
   line-height: 1.25;
   text-align: end;
@@ -144,7 +144,7 @@
   border-radius: 999px;
   background: color-mix(in srgb, var(--theme-primary) 7%, var(--theme-bg) 93%);
   color: var(--theme-primary);
-  font-size: 0.52rem;
+  font-size: max(0.62rem, 10px);
   font-weight: 750;
   letter-spacing: 0.04em;
   line-height: 1.2;
@@ -165,10 +165,6 @@
   .settings-theme-preview__page {
     inset: 1.28rem 0.42rem 0.38rem;
     padding: 0.3rem 0.38rem;
-  }
-
-  .settings-theme-preview__arabic {
-    font-size: 0.58rem;
   }
 
   .settings-theme-tile__heading {

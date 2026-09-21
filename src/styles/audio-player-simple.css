@@ -925,7 +925,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
   .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
     margin-top: .08rem;
-    font-size: .56rem !important;
+    font-size: max(.62rem, 10px) !important;
   }
 
   .app-root .audio-player-simple .simple-player__play--compact {

@@ -111,7 +111,7 @@
 .mfp-audio-toggle { border-radius: 50% !important; background: var(--mfp-btn-text) !important; color: var(--mfp-btn-bg) !important; }
 .mfp-audio-track { display: flex; min-width: 3.75rem; max-width: 7rem; flex-direction: column; padding-inline: 0.25rem; color: var(--mfp-btn-text); }
 .mfp-audio-track strong { overflow: hidden; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
-.mfp-audio-track small { margin-top: 0.15rem; opacity: 0.62; font-size: 0.6rem; }
+.mfp-audio-track small { margin-top: 0.15rem; opacity: 0.62; font-size: max(0.66rem, 10px); }
 
 .mfp-zoom-controls {
   gap: 0.1rem;

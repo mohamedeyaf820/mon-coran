@@ -330,7 +330,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 @media (max-width: 480px) {
   .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
     white-space: normal !important;
-    font-size: clamp(0.65rem, 2.5vw, 0.75rem) !important;
+    font-size: clamp(max(0.66rem, 10px), 2.5vw, 0.75rem) !important;
   }
 }
 
