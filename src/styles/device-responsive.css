@@ -491,6 +491,16 @@ html body .settings-drawer__title {
   letter-spacing: 0;
 }
 
+/* The Audio tab's first-visit dot is drawn at `-right-1 -top-1`, i.e. 4px
+   outside the button box, while the base reset in tailwind.css clips every
+   `button`/`[role="button"]`/`.btn` with `overflow: hidden`. Above 640px the
+   dot therefore painted as a shaved corner instead of a circle; the (max-width:
+   640px) toolbar block already un-clips it for the scroll-snap row, so extend
+   the same allowance to every width. Nothing in these tabs relies on clipping. */
+html body .app-root[data-view="home"] .home-content-toolbar [role="tab"] {
+  overflow: visible;
+}
+
 @media (max-width: 640px) {
   html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"] {
     overscroll-behavior-inline: contain;
