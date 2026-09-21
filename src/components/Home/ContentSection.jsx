@@ -647,10 +647,10 @@ export default function ContentSection({
 
       {/* ── Compact audio utilities ── */}
       {activeTab === "audio" && resumeState && (
-        <div className="flex flex-col items-stretch gap-2 rounded-2xl border border-primary/15 bg-bg-card/70 p-2.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+        <div className="flex flex-col items-stretch gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--primary)_15%,transparent_85%)] bg-[color-mix(in_srgb,var(--bg-card)_70%,transparent)] p-2.5 shadow-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           <button
             type="button"
-            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-primary/20 bg-primary/8 px-3.5 text-[0.78rem] font-semibold text-primary transition-colors hover:bg-primary/14"
+            className="inline-flex min-h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--primary)_20%,transparent_80%)] bg-[color-mix(in_srgb,var(--primary)_8%,transparent_92%)] px-3.5 text-[0.78rem] font-semibold text-[var(--primary)] transition-colors hover:bg-[color-mix(in_srgb,var(--primary)_14%,transparent_86%)]"
             onClick={resumeListening}
           >
             <Play size={12} fill="currentColor" aria-hidden="true" />
@@ -661,7 +661,7 @@ export default function ContentSection({
                   ? "استئناف الاستماع"
                   : "Resume listening"}
             </span>
-            <span className="rounded-full bg-bg-card/80 px-1.5 py-0.5 text-[0.65rem] text-text-muted">
+            <span className="rounded-full bg-[var(--bg-card)] px-1.5 py-0.5 text-[0.65rem] text-[var(--text-secondary)]">
               {surahName(resumeState.surah, lang)}
             </span>
           </button>
@@ -671,7 +671,7 @@ export default function ContentSection({
       {/* ── Historique d'écoute récent ─────────────────────────────────── */}
       {activeTab === "audio" && listeningHistory && listeningHistory.length > 0 && (
         <div className="flex flex-wrap items-center gap-2 px-0.5">
-          <span className="text-[0.62rem] font-semibold uppercase tracking-wide text-text-muted/60">
+          <span className="text-[0.62rem] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
             {lang === "fr" ? "Récemment écouté" : lang === "ar" ? "المستمع مؤخراً" : "Recently played"}
           </span>
           {listeningHistory.map((entry, idx) => {
@@ -682,7 +682,7 @@ export default function ContentSection({
               <button
                 key={`${entry.reciterId}-${entry.surah}-${idx}`}
                 type="button"
-                className="inline-flex items-center gap-1.5 rounded-full border border-primary/15 bg-bg-card/60 px-2.5 py-1 text-[0.67rem] font-semibold text-text-secondary transition-colors hover:border-primary/30 hover:bg-primary/8 hover:text-primary"
+                className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--primary)_15%,transparent_85%)] bg-[color-mix(in_srgb,var(--bg-card)_60%,transparent)] px-2.5 py-1 text-[0.67rem] font-semibold text-[var(--text-secondary)] transition-colors hover:border-[color-mix(in_srgb,var(--primary)_30%,transparent_70%)] hover:bg-[color-mix(in_srgb,var(--primary)_8%,transparent_92%)] hover:text-[var(--primary)]"
                 onClick={() => {
                   const found = Object.values(AVAILABLE_RECITERS).flat().find((r) => r.id === entry.reciterId);
                   if (found && typeof playReciterRadio === "function") playReciterRadio(found);
@@ -690,7 +690,7 @@ export default function ContentSection({
               >
                 <Play size={9} fill="currentColor" aria-hidden="true" />
                 {reciterLabel}
-                <span className="rounded-full bg-primary/10 px-1 text-[0.6rem] text-primary/70">
+                <span className="rounded-full bg-[color-mix(in_srgb,var(--primary)_10%,transparent_90%)] px-1 text-[0.6rem] text-[var(--primary)]">
                   {surahName(entry.surah, lang)}
                 </span>
               </button>
