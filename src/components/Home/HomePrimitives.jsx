@@ -167,8 +167,8 @@ export const SurahCard = memo(function SurahCard({
               className={cn(
                 "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
                 surah.type === "Meccan"
-                  ? "bg-gold/10 text-gold"
-                  : "bg-primary/10 text-primary",
+                  ? "bg-[var(--gold-tint)] text-[var(--gold)]"
+                  : "bg-[color-mix(in_srgb,var(--primary)_10%,transparent_90%)] text-[var(--primary)]",
               )}
             >
               {typeLabel}
@@ -268,8 +268,8 @@ export const SurahCard = memo(function SurahCard({
             className={cn(
               "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
               isMeccan
-                ? "bg-gold/10 text-gold"
-                : "bg-primary/10 text-primary",
+                ? "bg-[var(--gold-tint)] text-[var(--gold)]"
+                : "bg-[color-mix(in_srgb,var(--primary)_10%,transparent_90%)] text-[var(--primary)]",
             )}
           >
             {isMeccan

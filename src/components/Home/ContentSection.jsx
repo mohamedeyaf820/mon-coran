@@ -285,7 +285,7 @@ export default function ContentSection({
           </div>
           <span className="home-collection-heading__eyebrow inline-flex items-center gap-1.5">
             <span
-              className="inline-block w-1.5 h-1.5 rounded-full bg-primary"
+              className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--primary)]"
               aria-hidden="true"
             />
             {activeCollectionCount} {activeCollectionLabel}
