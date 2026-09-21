@@ -1,11 +1,18 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
+  ensureFontLoaded,
   ensureQcfPageFontLoaded,
   getQcfPageFontFamily,
 } from "../../services/fontLoader";
-import { getQuranWordTextForFont, resolveFontFamily } from "../../data/fonts";
+import {
+  getQuranWordTextForFont,
+  normalizeFontId,
+  resolveFontFamily,
+} from "../../data/fonts";
+import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
-import AyahMarker from "../Quran/AyahMarker";
+import MushafAyahMarker from "./MushafAyahMarker";
+import MushafFlowPage, { buildFlowSegments } from "./MushafFlowPage";
 import MushafPageLines from "./MushafPageLines";
 import MushafPageShell from "./MushafPageShell";
 import {
@@ -29,6 +36,8 @@ function decodeHtmlEntity(str) {
 
 function getWordGlyph(word, version) {
   if (version === "v1") return word.codeV1 || word.codeV2 || "";
+  // The coloured v4 face is the COLRv1 cut of the same page font: it is read
+  // with the code_v2 glyphs, only the file differs.
   return word.codeV2 || word.codeV1 || "";
 }
 
@@ -78,6 +87,25 @@ function groupPageLines(ayahs) {
   return markSurahEndings(placeSurahOpenings(pageLines));
 }
 
+// The printed sheet is cut with per-page QCF glyph fonts; "QPC Uthmani Hafs"
+// is that face, so it keeps the Madani page geometry. Every other Hafs face is
+// a proportional web font and prints the page as continuous flow text instead.
+const PAGE_GLYPH_FONT_IDS = new Set([
+  "qpc-hafs",
+  "qcf-v1",
+  "qcf-v2",
+  "qcf-v4-tajweed",
+  "mushaf-tajweed",
+]);
+
+function getHafsFlowWords(ayah, fontFamily, riwaya) {
+  const words = Array.isArray(ayah?.words) ? ayah.words : [];
+  return words
+    .filter((word) => (word.charType || word.charTypeName || word.char_type_name) !== "end")
+    .map((word) => getQuranWordTextForFont(word, fontFamily, riwaya))
+    .filter(Boolean);
+}
+
 export default function HafsPageRenderer({
   activeAyah,
   ayahs,
@@ -89,33 +117,71 @@ export default function HafsPageRenderer({
   riwaya,
   showTajwid,
 }) {
-  const version = showTajwid ? "v4" : "v2";
-  const pageFontFamily = getQcfPageFontFamily(currentPage, version);
+  // Tajweed switches the sheet to the coloured COLRv1 cut of the same page
+  // font. Not every page has a v4 file, so the plain face stays as the
+  // fallback rather than failing the sheet.
+  const [resolvedVersion, setResolvedVersion] = useState("v2");
+  const requestedVersion = showTajwid ? "v4" : "v2";
+  const usesPageGlyphs = PAGE_GLYPH_FONT_IDS.has(normalizeFontId(fontFamily, riwaya));
+  const pageFontFamily = getQcfPageFontFamily(currentPage, resolvedVersion);
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
 
   const lines = useMemo(() => groupPageLines(ayahs), [ayahs]);
+  const flowSegments = useMemo(
+    () =>
+      usesPageGlyphs
+        ? []
+        : buildFlowSegments(ayahs, {
+            getWords: (ayah) => getHafsFlowWords(ayah, fontFamily, riwaya),
+            riwaya: "hafs",
+            showTajwid,
+          }),
+    [ayahs, fontFamily, riwaya, showTajwid, usesPageGlyphs],
+  );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
     [ayahs, currentPage, lang, riwaya],
   );
 
   useEffect(() => {
+    if (usesPageGlyphs) return undefined;
     let cancelled = false;
     setFontLoaded(false);
-    setFontFailed(false);
-    ensureQcfPageFontLoaded(currentPage, version).then((result) => {
-      if (!cancelled) {
-        const loaded = Boolean(result.loaded || result.cached);
-        setFontLoaded(loaded);
-        setFontFailed(!loaded);
-      }
+    ensureFontLoaded(normalizeFontId(fontFamily, riwaya)).then((result) => {
+      if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
     });
     return () => {
       cancelled = true;
     };
-  }, [currentPage, version]);
+  }, [fontFamily, riwaya, usesPageGlyphs]);
+
+  useEffect(() => {
+    if (!usesPageGlyphs) return undefined;
+    let cancelled = false;
+    setFontLoaded(false);
+    setFontFailed(false);
+    ensureQcfPageFontLoaded(currentPage, requestedVersion).then((result) => {
+      if (cancelled) return;
+      const loaded = Boolean(result.loaded || result.cached);
+      if (requestedVersion === "v4" && !loaded) {
+        return ensureQcfPageFontLoaded(currentPage, "v2").then((plain) => {
+          if (cancelled) return;
+          const plainLoaded = Boolean(plain.loaded || plain.cached);
+          setResolvedVersion("v2");
+          setFontLoaded(plainLoaded);
+          setFontFailed(!plainLoaded);
+        });
+      }
+      setResolvedVersion(requestedVersion);
+      setFontLoaded(loaded);
+      setFontFailed(!loaded);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [currentPage, requestedVersion, usesPageGlyphs]);
 
   const renderWord = (word, index) => {
     const verseKey = getVerseKey(word);
@@ -125,19 +191,19 @@ export default function HafsPageRenderer({
     const isActive = activeAyah === word.globalAyah;
 
     if (word.charType === "end") {
+      const juzOpening = getJuzOpeningAtAyah(word.surah, word.ayah);
       return (
-        <AyahMarker
+        <MushafAyahMarker
           key={`${verseKey}:end:${index}`}
           num={word.ayah}
           isPlaying={isPlaying}
-          className="qcm-ayah-marker"
-          size="1.04em"
+          juz={Boolean(juzOpening)}
           onClick={onToggleActive ? () => onToggleActive(word.globalAyah) : undefined}
         />
       );
     }
 
-    const glyph = getWordGlyph(word, version);
+    const glyph = getWordGlyph(word, resolvedVersion);
     return (
       <span
         key={`${verseKey}:${word.position ?? `x${index}`}`}
@@ -170,6 +236,24 @@ export default function HafsPageRenderer({
     );
   };
 
+  if (!usesPageGlyphs) {
+    return (
+      <MushafFlowPage
+        activeAyah={activeAyah}
+        currentPage={currentPage}
+        currentPlayingAyah={currentPlayingAyah}
+        fallbackFontFamily={fallbackFontFamily}
+        fitSignal={`${fontLoaded}|${fontFamily}|${showTajwid ? "t" : "-"}`}
+        lang={lang}
+        meta={meta}
+        onToggleActive={onToggleActive}
+        riwaya={riwaya}
+        segments={flowSegments}
+        showTajwid={showTajwid}
+      />
+    );
+  }
+
   return (
     <MushafPageShell
       currentPage={currentPage}
@@ -187,6 +271,7 @@ export default function HafsPageRenderer({
         lines={lines}
         renderWord={renderWord}
         riwaya={riwaya}
+        tajweed={showTajwid}
       />
     </MushafPageShell>
   );

@@ -21,6 +21,7 @@ function PageMode({
   currentSurah,
   fontFamily: _fontFamily,
   getTranslationForAyah,
+  getTransliterationForAyah,
   isQCF4: _isQCF4,
   lang,
   mushafLayout,
@@ -40,7 +41,6 @@ function PageMode({
   showTranslation,
   showTransliteration,
   surahGroups: _surahGroups,
-  theme: _theme,
 }) {
   const prevPageRef = useRef(currentPage);
   const [turnClass, setTurnClass] = useState("");
@@ -90,15 +90,17 @@ function PageMode({
   // The print engine draws with per-page QCF glyph fonts. Seed data may carry
   // only glyph codes, so a sheet stays blank until its font resolves: start
   // the load the moment a page enters the stream window (the loader dedupes
-  // with the renderer's own request).
+  // with the renderer's own request). Tajweed switches the whole stream to the
+  // coloured v4 cut, so the prefetch must follow the same version.
   useEffect(() => {
     if (mushafLayout !== "mushaf") return undefined;
     let active = true;
     const numbers = stream.pages.map(({ page }) => page).join(",");
+    const version = showTajwid ? "v4" : "v2";
     import("../../services/fontLoader").then(({ ensureQcfPageFontLoaded }) => {
       if (!active) return;
       numbers.split(",").forEach((page) => {
-        if (page) ensureQcfPageFontLoaded(Number(page), showTajwid ? "v4" : "v2");
+        if (page) ensureQcfPageFontLoaded(Number(page), version);
       });
     });
     return () => {
@@ -223,6 +225,7 @@ function PageMode({
                 activeAyah={activeAyah}
                 lang={lang}
                 getTranslationForAyah={stream.getTranslationForAyah}
+                getTransliterationForAyah={getTransliterationForAyah}
                 showTajwid={showTajwid}
                 showTranslation={showTranslation}
                 showTransliteration={showTransliteration}

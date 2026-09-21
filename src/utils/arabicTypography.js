@@ -1,7 +1,10 @@
 export const ARABIC_FONT_SIZE_MIN = 12;
 export const ARABIC_FONT_SIZE_MAX = 96;
+// The neutral size the responsive tiers measure their delta from: a reset
+// returns the reader to this, not to a device-specific pixel value.
+export const DEFAULT_ARABIC_FONT_SIZE = 25;
 
-export function clampArabicFontSize(value, fallback = 25) {
+export function clampArabicFontSize(value, fallback = DEFAULT_ARABIC_FONT_SIZE) {
   const numeric = Number(value);
   if (!Number.isFinite(numeric)) return fallback;
   return Math.max(
@@ -55,8 +58,10 @@ export function getResponsiveArabicFontSize({
 
 /**
  * Keep Quran lines visually connected without clipping tall Arabic marks.
- * Nastaleeq and Warsh faces need a little more breathing room than Naskh
- * faces, but none of the continuous-reader fonts need the legacy 2.48 ratio.
+ * Measured glyph ink for the continuous-mushaf faces (harakat ascenders plus
+ * descenders) reaches ~1.8em, so the mushaf layout leads at 2.2 — the value
+ * verified against rendered pages on main (da2c50a, e54a65b). List mode keeps
+ * tighter per-face ratios.
  */
 export function getArabicReadingLineHeight({
   displayMode = "surah",
@@ -72,24 +77,28 @@ export function getArabicReadingLineHeight({
   // specific value makes the same ayah jump when the reader changes mode.
   void displayMode;
 
+  if (isContinuousMushaf) {
+    return 2.2;
+  }
+
   if (normalizedFont.includes("indopak")) {
-    return isContinuousMushaf ? 1.76 : 1.9;
+    return 1.9;
   }
 
   if (riwaya === "warsh") {
-    return isContinuousMushaf ? 1.72 : 1.82;
+    return 1.82;
   }
 
   if (normalizedFont.includes("scheherazade")) {
-    return isContinuousMushaf ? 1.72 : 1.84;
+    return 1.84;
   }
 
   if (
     normalizedFont.includes("amiri") ||
     normalizedFont.includes("noto-naskh")
   ) {
-    return isContinuousMushaf ? 1.68 : 1.78;
+    return 1.78;
   }
 
-  return isContinuousMushaf ? 1.64 : 1.76;
+  return 1.76;
 }

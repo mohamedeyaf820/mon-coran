@@ -1,5 +1,5 @@
 import React from "react";
-import { Minus, Plus, Type } from "lucide-react";
+import { Minus, Plus, RotateCcw, Type } from "lucide-react";
 import useArabicFontPreferences, {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
@@ -9,6 +9,7 @@ import {
   getFontOptionsForRiwaya,
   getNativeAyahMarker,
 } from "../data/fonts";
+import { DEFAULT_ARABIC_FONT_SIZE } from "../utils/arabicTypography";
 import { cn } from "../lib/utils";
 
 function labelFor(lang, fr, en, ar = en) {
@@ -97,6 +98,17 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
         >
           <Plus size={13} />
         </button>
+        {currentSize !== DEFAULT_ARABIC_FONT_SIZE && (
+          <button
+            type="button"
+            className="afc-size-reset"
+            onClick={() => setArabicFontSize(DEFAULT_ARABIC_FONT_SIZE)}
+            aria-label={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
+            title={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
+          >
+            <RotateCcw size={13} />
+          </button>
+        )}
       </div>
     </div>
   );

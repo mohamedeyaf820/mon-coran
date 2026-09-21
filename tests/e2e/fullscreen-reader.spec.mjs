@@ -108,16 +108,35 @@ test("Warsh fullscreen prints one continuous justified flow filling 15 lines", a
   expect(typography.align).toBe("justify");
   expect(typography.lastAlign).toBe("center");
 
-  // The fit loop drives the type size until the openings plus the wrapped
-  // body fill exactly the fifteen printed lines of the Madani sheet.
-  await expect.poll(() => lines.evaluate((element) => {
+  // The fit loop drives the type size until the openings plus the wrapped body
+  // fill the fifteen printed lines of the Madani sheet. On a phone that would
+  // put the type under 15 px, so the loop stops at the legibility floor and the
+  // sheet runs longer than fifteen lines instead — it never prints micro-glyphs,
+  // and it says so in the quiet caption.
+  const rowReport = () => lines.evaluate((element) => {
     const openingRows = element.querySelectorAll(".qcm-line").length;
     const flowRows = [...element.querySelectorAll(".qcm-flow")].reduce((total, flow) => {
       const pitch = Number.parseFloat(getComputedStyle(flow).lineHeight) || 1;
       return total + Math.round(flow.offsetHeight / pitch);
     }, 0);
-    return openingRows + flowRows;
-  }), null, { timeout: 15_000 }).toBe(15);
+    const word = element.querySelector(".qcm-word--warsh");
+    return {
+      rows: openingRows + flowRows,
+      fontPx: Number.parseFloat(getComputedStyle(word).fontSize),
+      notice: !!element.closest(".qcm-page-shell")?.querySelector(".qcm-font-warning"),
+    };
+  });
+  await expect.poll(async () => {
+    const { rows, fontPx } = await rowReport();
+    return rows >= 15 && fontPx >= 15 ? "settled" : `rows=${rows} fontPx=${fontPx.toFixed(1)}`;
+  }, null, { timeout: 15_000 }).toBe("settled");
+  const { rows, fontPx, notice } = await rowReport();
+  if (rows > 15) {
+    expect(fontPx).toBeGreaterThanOrEqual(15);
+    expect(notice).toBe(true);
+  } else {
+    expect(rows).toBe(15);
+  }
   await expect.poll(() => overlay.evaluate((root) => {
     const pageBox = root.querySelector(".qcm-page").getBoundingClientRect();
     return [...root.querySelectorAll(".qcm-word, .qcm-ayah-marker")].filter((word) => {
@@ -171,17 +190,34 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   expect(await sheetWidth()).toBeGreaterThan(baseWidth * 1.1);
 
   // Fit Page / Fit Width rescale the sheet without ever recomposing it:
-  // the fifteen lines keep exactly their words.
+  // the fifteen lines keep exactly their words. What they must guarantee is
+  // that the fitted sheet actually fits the reading area — "fit" can legitimately
+  // zoom a short page above 100%, so the contract is containment, not 100%.
+  // Fit Width only bounds the measure; the leaf may run past the height and
+  // scroll, exactly as a PDF viewer's page-width mode does.
   const composition = () => overlay.locator(".qcm-lines").first().evaluate((node) =>
     [...node.querySelectorAll(".qcm-line")].map((line) => `${line.dataset.lineNumber}:${line.textContent}`),
   );
+  const sheetBox = () => overlay.evaluate((root) => {
+    const viewport = root.querySelector(".mfp-viewport").getBoundingClientRect();
+    const sheet = root.querySelector(".mfp-book").getBoundingClientRect();
+    return {
+      fitsWidth: sheet.width <= viewport.width + 2,
+      fitsHeight: sheet.height <= viewport.height + 2,
+    };
+  });
   const beforeFit = await composition();
   await overlay.getByRole("button", { name: "Ajuster à la page" }).click();
   const fitPageZoom = Number.parseInt(await zoom.textContent(), 10);
-  expect(Math.abs(fitPageZoom - 100)).toBeLessThanOrEqual(15);
+  expect(fitPageZoom).toBeGreaterThanOrEqual(75);
+  expect(fitPageZoom).toBeLessThanOrEqual(220);
+  await expect.poll(() => sheetBox().then((b) => b.fitsWidth && b.fitsHeight)).toBe(true);
   expect(await composition()).toEqual(beforeFit);
   await overlay.getByRole("button", { name: "Ajuster à la largeur" }).click();
-  expect(Math.abs(Number.parseInt(await zoom.textContent(), 10) - 100)).toBeLessThanOrEqual(15);
+  const fitWidthZoom = Number.parseInt(await zoom.textContent(), 10);
+  expect(fitWidthZoom).toBeGreaterThanOrEqual(75);
+  expect(fitWidthZoom).toBeLessThanOrEqual(220);
+  await expect.poll(() => sheetBox().then((b) => b.fitsWidth)).toBe(true);
   expect(await composition()).toEqual(beforeFit);
   await zoom.click();
   await expect(zoom).toHaveText("100%");

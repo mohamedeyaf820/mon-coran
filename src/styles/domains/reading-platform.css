@@ -627,7 +627,7 @@
 }
 
 .app-root .verse-context-modal {
-    z-index: 430;
+    z-index: calc(var(--z-player) + 20);
 }
 
 .app-root .verse-context-modal__panel {
@@ -1117,7 +1117,7 @@ html body .app-root .quran-display--platform .cpv-container {
 }
 
 .app-root .mp-audio-player--mobile {
-    z-index: var(--z-player, 400) !important;
+    z-index: var(--z-player, 410) !important;
 }
 
 .app-root .mp-audio-player--mobile:not(.mp-audio-player--mobile-full) {
@@ -1431,7 +1431,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     height: 100%;
     border-radius: 0 999px 999px 0;
     background: linear-gradient(90deg, var(--primary), color-mix(in srgb, var(--primary) 72%, #d4a820));
-    box-shadow: 0 0 12px rgba(var(--primary-rgb), 0.35);
     transition: width 90ms linear;
 }
 
@@ -1492,6 +1491,31 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 
 .afc-size-btn:disabled {
     opacity: 0.35;
+}
+
+/* Reset only appears once the reader has moved off the neutral size, so it
+   never competes with the two steppers at rest. */
+.afc-size-reset {
+    display: inline-flex;
+    width: 1.75rem;
+    height: 1.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 9px;
+    color: var(--text-secondary);
+}
+
+.afc-size-reset:hover {
+    background: var(--bg-card);
+    color: var(--primary);
+}
+
+@media (pointer: coarse) {
+    .afc-size-group :is(.afc-size-btn, .afc-size-reset) {
+        width: max(2.75rem, 44px);
+        height: max(2.75rem, 44px);
+    }
 }
 
 .afc-range {
@@ -2629,7 +2653,7 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
 
 
     .app-root .mp-audio-player--mobile {
-        z-index: var(--z-player, 400) !important;
+        z-index: var(--z-player, 410) !important;
     }
 
 
@@ -4079,7 +4103,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
 
 body.mfp-open > .ayah-actions-modal--fullscreen,
 body.mfp-open > .audio-player-modal--simple {
-    z-index: 3400 !important;
+    z-index: calc(var(--z-fullscreen) + 400) !important;
 }
 
 body.mfp-open > .audio-player-modal--simple {

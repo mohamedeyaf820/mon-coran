@@ -2,13 +2,13 @@ import React from 'react';
 import { getReadableWaqfGlyph } from '../../utils/quranUtils';
 
 const TAJWID_FALLBACK_COLORS = {
-    ghunna: '#26b55d', idgham: '#26b55d', ikhfa: '#26b55d', iqlab: '#26b55d',
-    qalqala: '#00deff', madd: '#e30000', 'madd-normal': '#ffc1e0',
-    'madd-separated': '#ff8e3b', 'madd-connected': '#ff5e8e',
-    'lam-shamsiyya': '#999999', tafkhim: '#3c84d5', silent: '#999999',
-    naql: '#ff8e3b', tashil: '#26b55d', ibdal: '#ff8e3b',
-    'madd-badal': '#ff8e3b', 'sila-kubra': '#ff8e3b', 'tarqiq-ra': '#26b55d',
-    'idgham-warsh': '#999999',
+    ghunna: '#08a300', idgham: '#8c8c8c', ikhfa: '#08a300', iqlab: '#08a300',
+    qalqala: '#0091f0', madd: '#b50000', 'madd-normal': '#ad8500',
+    'madd-separated': '#e06c00', 'madd-connected': '#f40000',
+    'lam-shamsiyya': '#8c8c8c', tafkhim: '#3f48e6', silent: '#8c8c8c',
+    naql: '#e06c00', tashil: '#08a300', ibdal: '#e06c00',
+    'madd-badal': '#e06c00', 'sila-kubra': '#f40000', 'tarqiq-ra': '#8c8c8c',
+    'idgham-warsh': '#8c8c8c',
 };
 
 const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;

@@ -1,5 +1,5 @@
 import React from "react";
-import { getSurahLigature } from "../../data/surahs";
+import { toAr } from "../../data/surahs";
 import { getBasmalaText } from "../../data/basmala";
 import { getSurahMeta } from "./mushafPageComposition";
 
@@ -9,8 +9,17 @@ import { getSurahMeta } from "./mushafPageComposition";
  * differs, so the caller supplies renderWord and (for Warsh) a per-line
  * fit style.
  */
+/**
+ * The surah band is the page's one piece of non-Quran furniture, and readers
+ * must be able to *read* it: the band carries the plain Arabic name ("سورة
+ * الحاقة") plus its number in a small gilded rosette, the way the Madani
+ * print closes the band. The old "surahnames" ligature set the name from a
+ * Latin digit code ("069"); at phone sizes it read as unreadable ornament,
+ * so it is no longer part of the band.
+ */
 export function SurahHeaderLine({ surah, lineNumber }) {
   const surahMeta = getSurahMeta(surah);
+  const name = surahMeta?.ar || surah;
   return (
     <div
       className="qcm-line qcm-line--surah-header"
@@ -20,15 +29,13 @@ export function SurahHeaderLine({ surah, lineNumber }) {
         className="qcm-surah-title"
         role="heading"
         aria-level={2}
-        aria-label={`سورة ${surahMeta?.ar || surah}`}
+        aria-label={`سورة ${name}`}
       >
-        <span
-          className="qcm-surah-title__name font-surah-names"
-          dir="ltr"
-          lang="en"
-          aria-hidden="true"
-        >
-          {getSurahLigature(surah)}
+        <span className="qcm-surah-title__name" dir="rtl" lang="ar">
+          سورة {name}
+        </span>
+        <span className="qcm-surah-title__num" dir="rtl" aria-hidden="true">
+          {toAr(Number(surah))}
         </span>
       </span>
     </div>
@@ -59,6 +66,7 @@ export default function MushafPageLines({
   linesRef,
   renderWord,
   riwaya,
+  tajweed = false,
   warsh = false,
 }) {
   return (
@@ -68,6 +76,7 @@ export default function MushafPageLines({
       dir="rtl"
       lang="ar"
       data-warsh={warsh ? "true" : undefined}
+      data-tajweed={tajweed ? "on" : undefined}
     >
       {lines.map((line) => {
         if (line.kind === "surah-header") {
