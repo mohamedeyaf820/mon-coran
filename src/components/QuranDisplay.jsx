@@ -380,7 +380,7 @@ export default function QuranDisplay() {
 
   if (error)
     return (
-      <div className="reader-data-state mx-auto my-4 flex min-h-[18rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-border bg-bg-card p-6 text-center shadow-sm sm:min-h-[20rem] sm:p-8">
+      <div className="reader-data-state mx-auto my-4 flex min-h-[18rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 text-center shadow-sm sm:min-h-[20rem] sm:p-8">
         <Icon
           name={isNetworkFailure ? "wifi-slash" : "circle-exclamation"}
           size={30}
@@ -388,7 +388,7 @@ export default function QuranDisplay() {
         />
         {isNetworkFailure ? (
           <>
-            <p className="text-lg text-text-main font-medium mb-3">
+            <p className="text-lg text-[var(--theme-text)] font-medium mb-3">
               {lang === "fr"
                 ? "Impossible de charger les données : vérifiez votre connexion internet et réessayez."
                 : lang === "ar"
@@ -397,17 +397,17 @@ export default function QuranDisplay() {
             </p>
           </>
         ) : (
-          <p className="text-lg text-text-main mb-8">{error}</p>
+          <p className="text-lg text-[var(--theme-text)] mb-8">{error}</p>
         )}
         <div className="reader-data-state__actions flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <button
-            className="px-6 py-3 rounded-xl bg-primary text-primary-fg font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
+            className="px-6 py-3 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
             onClick={fetchData}
           >
             {t("errors.retry", lang)}
           </button>
           <button
-            className="px-6 py-3 rounded-xl border border-border bg-bg-secondary text-text-primary font-medium hover:bg-bg-tertiary active:scale-95 transition-all"
+            className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
             onClick={openHome}
           >
             {lang === "fr"
@@ -424,20 +424,20 @@ export default function QuranDisplay() {
     );
   if (!loading && ayahs.length === 0)
     return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-bg-card/90 m-4 rounded-3xl shadow-xl border border-white/10 max-w-2xl mx-auto">
-        <Icon name="book-open" size={30} className="mb-5 text-primary/70" />
-        <p className="text-lg text-text-main font-medium mb-8">
+      <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] m-4 rounded-3xl shadow-xl border border-[var(--border)] max-w-2xl mx-auto">
+        <Icon name="book-open" size={30} className="mb-5 text-[color-mix(in_srgb,var(--primary)_70%,transparent)]" />
+        <p className="text-lg text-[var(--theme-text)] font-medium mb-8">
           {t("errors.emptyData", lang)}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
           <button
-            className="px-6 py-3 rounded-xl bg-primary text-primary-fg font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
+            className="px-6 py-3 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
             onClick={fetchData}
           >
             {t("errors.retry", lang)}
           </button>
           <button
-            className="px-6 py-3 rounded-xl border border-border bg-bg-secondary text-text-primary font-medium hover:bg-bg-tertiary active:scale-95 transition-all"
+            className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
             onClick={openHome}
           >
             {lang === "fr"
