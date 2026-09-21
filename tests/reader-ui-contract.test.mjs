@@ -141,7 +141,16 @@ test("mobile reader shell follows the Tajweed card and keeps an explicit home lo
   assert.match(header, /mp-header__home-badge/);
   assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0(?:\s*!important)?/);
   assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0(?:\s*!important)?/);
-  assert.match(styles, /@media \(max-width: 380px\)[\s\S]*?--mp-header-control: 40px/);
+  const tinyBlock =
+    styles
+      .split("@media (max-width: 380px)")
+      .find((chunk) => chunk.includes("--mp-header-control")) ?? "";
+  assert.match(tinyBlock, /--mp-header-control: max\(2\.75rem, 44px\)/);
+  assert.doesNotMatch(
+    tinyBlock,
+    /--mp-header-control: (?:[1-3][0-9]|4[0-3])px/,
+    "tiny-phone header controls must not fall below the 44px touch floor",
+  );
   assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
 });
 
