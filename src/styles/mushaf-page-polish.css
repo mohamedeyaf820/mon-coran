@@ -263,7 +263,8 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-surah-name-tr {
   margin-top: 0.32rem;
   color: #d8c9a7 !important;
-  font-size: 0.54rem;
+  /* Rem-only scales fell to 8.1px on a phone (root is 15px while reading). */
+  font-size: clamp(max(0.62rem, 10px), 0.6rem + 0.12vw, 0.72rem);
   letter-spacing: 0.18em;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.24);
 }
@@ -575,7 +576,9 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   margin-top: 0.2rem !important;
   color: var(--reader-page-muted, var(--text-muted)) !important;
   font-family: var(--font-ui, sans-serif) !important;
-  font-size: clamp(0.48rem, 0.4rem + 0.15vw, 0.6rem) !important;
+  /* Measured 7.2px on a phone: the reading root font-size is 15px, so this
+     rem-only clamp fell under the app's 10px legibility floor. */
+  font-size: clamp(max(0.62rem, 10px), 0.6rem + 0.12vw, 0.72rem) !important;
   font-weight: 800 !important;
   letter-spacing: 0.16em !important;
   text-shadow: none;

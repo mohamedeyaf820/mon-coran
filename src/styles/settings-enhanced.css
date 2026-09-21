@@ -1720,6 +1720,18 @@ html[data-theme="dark"] .settings-drawer {
   }
 }
 
+/* Four columns leave ~56-66px per tab on a narrow phone, which is shorter than
+   "Confidentialité" at the 10px floor: the label ellipsised and the tab became
+   unreadable. Two rows give every label its natural width; the sheet already
+   scrolls its body, so the extra strip height costs nothing reachable. */
+@media (max-width: 340px) {
+  .settings-qurancom .settings-drawer__tabs {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+}
+
 .settings-font-picker {
   display: grid !important;
   grid-template-columns: auto minmax(0, 1fr) !important;
