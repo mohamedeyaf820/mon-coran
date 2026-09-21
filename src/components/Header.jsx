@@ -635,7 +635,7 @@ export default function Header({ immersiveHidden = false }) {
                 <PopoverContent
                   align="center"
                   sideOffset={10}
-                  className="z-[300] w-64 rounded-2xl border border-border bg-bg-primary p-0 shadow-xl"
+                  className="z-[300] w-64 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-0 shadow-xl"
                 >
                   <form
                     onSubmit={handleGoTo}
