@@ -84,10 +84,13 @@
   line-height: 1.6;
 }
 
+/* The footer's small print carries the Quran verse translation and its
+   reference. The root font-size is fluid (15-17px), so the rem-only scales
+   below drifted to 8.4-9.2px on a phone; each one now carries a pixel floor. */
 .mp-footer-v2__verse-translation {
   overflow: hidden;
   color: var(--text-muted);
-  font-size: clamp(0.61rem, 0.9vw, 0.72rem);
+  font-size: clamp(max(0.66rem, 10px), 0.9vw, 0.78rem);
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -103,7 +106,7 @@
   border-radius: 999px;
   color: color-mix(in srgb, var(--primary) 82%, var(--text-muted));
   background: color-mix(in srgb, var(--primary) 5%, var(--bg-card));
-  font-size: 0.58rem;
+  font-size: max(0.62rem, 10px);
   font-weight: 760;
   white-space: nowrap;
 }
@@ -125,6 +128,10 @@
   justify-content: center;
   flex-direction: column;
   gap: 0.18rem;
+  /* The global `button` padding reserves 1rem on each side, which leaves a
+     22px content box in a 55px grid column and truncates "Rechercher". The
+     4-column grid and its gap already separate the buttons. */
+  padding-inline: 0;
   border: 1px solid transparent;
   border-radius: 0.72rem;
   color: var(--text-muted);
@@ -159,7 +166,11 @@
   max-width: 100%;
   overflow: hidden;
   color: inherit;
-  font-size: 0.58rem;
+  /* The root font-size is fluid (15-17px), so a bare rem value drifts below
+     what a phone can read: 0.58rem measured 7.8px at 280px. State the floor in
+     pixels next to the rem so it rises with the root instead of falling under
+     it. */
+  font-size: max(0.62rem, 10px);
   font-weight: 680;
   line-height: 1.1;
   text-overflow: ellipsis;
@@ -183,7 +194,7 @@
 
 .mp-footer-v2__directory-copy span {
   color: var(--primary);
-  font-size: 0.56rem;
+  font-size: max(0.62rem, 10px);
   font-weight: 820;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -213,7 +224,7 @@
   border: 1px solid transparent;
   border-radius: 0.58rem;
   color: var(--text-muted);
-  font-size: 0.61rem;
+  font-size: max(0.62rem, 10px);
   font-weight: 650;
   white-space: nowrap;
   transition: 160ms ease;
@@ -241,7 +252,7 @@
 .mp-footer-v2__credit,
 .mp-footer-v2__privacy {
   color: var(--text-muted);
-  font-size: 0.58rem;
+  font-size: max(0.62rem, 10px);
   line-height: 1.35;
 }
 
@@ -257,7 +268,7 @@
 .mp-footer-v2__brand {
   justify-self: end;
   color: var(--primary);
-  font-size: 0.66rem;
+  font-size: max(0.66rem, 10px);
   font-weight: 820;
 }
 
@@ -294,7 +305,6 @@ html[data-theme="sepia"] .mp-footer-v2__shell {
   }
 
   .mp-footer-v2__verse-text { font-size: clamp(1rem, 4vw, 1.2rem); }
-  .mp-footer-v2__verse-translation { font-size: 0.6rem; }
 
   .mp-footer-v2__directory {
     align-items: flex-start;
@@ -329,7 +339,6 @@ html[data-theme="sepia"] .mp-footer-v2__shell {
   .mp-footer-v2__shell { border-radius: 0.85rem; }
   .mp-footer-v2__verse { padding: 0.65rem 0.55rem; }
   .mp-footer-v2__verse-translation { white-space: normal; }
-  .mp-footer-v2__nav-label { font-size: 0.52rem; }
   .mp-footer-v2__directory { padding-inline: 0.55rem; }
   .mp-footer-v2__credit { display: none; }
   .mp-footer-v2__bottom { display: flex; justify-content: flex-end; }

@@ -555,7 +555,7 @@ html body .settings-drawer__title {
   html body .app-root[data-view="home"] .reciter-card__meta {
     gap: 0.24rem;
     margin-top: 0.2rem;
-    font-size: 0.6rem !important;
+    font-size: max(0.68rem, 10px) !important;
   }
 
   html body .app-root[data-view="home"] .reciter-card__listen span {
@@ -802,7 +802,7 @@ html body .app-root > .mp-header .mp-header__riwaya-toggle span {
 
 html body .app-root > .mp-header .mp-header__nav {
   display: grid !important;
-  grid-template-columns: 42px minmax(9rem, 11.5rem) 42px !important;
+  grid-template-columns: max(2.75rem, 44px) minmax(9rem, 11.5rem) max(2.75rem, 44px) !important;
   width: max-content !important;
   max-width: 100% !important;
   min-width: 0 !important;
@@ -815,10 +815,10 @@ html body .app-root > .mp-header .mp-header__nav {
 }
 
 html body .app-root > .mp-header .mp-header__nav-arrow {
-  width: 42px !important;
-  min-width: 42px !important;
-  height: 42px !important;
-  min-height: 42px !important;
+  width: max(2.75rem, 44px) !important;
+  min-width: max(2.75rem, 44px) !important;
+  height: max(2.75rem, 44px) !important;
+  min-height: max(2.75rem, 44px) !important;
   border-radius: 0.8rem;
   background: transparent !important;
 }
@@ -827,9 +827,9 @@ html body .app-root > .mp-header .mp-header__title-btn {
   width: 100% !important;
   max-width: none !important;
   min-width: 0 !important;
-  height: 42px !important;
-  max-height: 42px !important;
-  min-height: 42px !important;
+  height: max(2.75rem, 44px) !important;
+  max-height: max(2.75rem, 44px) !important;
+  min-height: max(2.75rem, 44px) !important;
   justify-content: center !important;
   padding: 0.2rem 0.5rem;
   border-radius: 0.9rem;
@@ -858,6 +858,23 @@ html body .app-root > .mp-header .mp-header__title-cycle-viewport {
 html body .app-root > .mp-header .mp-header__title-sub-track {
   width: 100% !important;
   min-height: 104px !important;
+}
+
+/* Phones: replace the rotating title cycle with the static compact lockup. */
+@media (max-width: 640px) {
+  html body .app-root > .mp-header .mp-header__title-cycle-viewport {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-stack {
+    height: auto !important;
+    max-height: none !important;
+    line-height: 1.1 !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__title-compact {
+    display: flex;
+  }
 }
 
 html body .app-root > .mp-header .mp-header__title-sub {
@@ -923,14 +940,15 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 40px minmax(7rem, min(26vw, 10.5rem)) 40px !important;
+    grid-template-columns: max(2.75rem, 44px) minmax(7rem, min(26vw, 10.5rem))
+      max(2.75rem, 44px) !important;
   }
 }
 
 /* Compact tablets and split-screen iPads still need phone-like density. */
 @media (min-width: 641px) and (max-width: 720px) {
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 38px;
+    --mp-header-control: max(2.75rem, 44px);
     --mp-header-icon: 0.78rem;
     min-height: 54px !important;
     height: 54px !important;
@@ -942,23 +960,24 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 34px minmax(7rem, min(22vw, 9rem)) 34px !important;
+    grid-template-columns: max(2.75rem, 44px) minmax(6.5rem, min(20vw, 8.5rem))
+      max(2.75rem, 44px) !important;
     width: auto !important;
     gap: 0.16rem;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 34px !important;
-    min-width: 34px !important;
-    height: 38px !important;
-    min-height: 38px !important;
+    width: max(2.75rem, 44px) !important;
+    min-width: max(2.75rem, 44px) !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
     border-radius: 0.65rem;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
+    max-height: max(2.75rem, 44px) !important;
     padding-inline: 0.35rem;
   }
 
@@ -997,7 +1016,7 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 40px;
+    --mp-header-control: max(2.75rem, 44px);
     --mp-header-icon: 0.78rem;
     min-height: 52px !important;
     height: 52px !important;
@@ -1006,7 +1025,11 @@ html body .app-root > .mp-header
       max(0.35rem, env(safe-area-inset-right));
     gap: 0.18rem;
     display: grid !important;
-    grid-template-columns: 80px minmax(0, 1fr) 80px !important;
+    /* `auto`, not a fixed width: outside the reader the actions group holds both
+       the riwaya pill and the More menu, which is wider than any fixed column
+       that fits a 320px phone. A fixed column then overlaps the centre instead
+       of shrinking it. */
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
   }
 
   html body .app-root > .mp-header .mp-header__brand-row,
@@ -1067,7 +1090,7 @@ html body .app-root > .mp-header
 
   html body .app-root > .mp-header .mp-header__nav {
     display: grid !important;
-    grid-template-columns: 34px minmax(0, 1fr) 34px !important;
+    grid-template-columns: max(2.75rem, 44px) minmax(0, 1fr) max(2.75rem, 44px) !important;
     width: min(100%, 12.75rem) !important;
     gap: 0.2rem;
     padding: 0;
@@ -1075,19 +1098,19 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 34px !important;
-    min-width: 34px !important;
-    height: 40px !important;
-    min-height: 40px !important;
+    width: max(2.75rem, 44px) !important;
+    min-width: max(2.75rem, 44px) !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
     border-radius: 0.65rem;
     border: 1px solid color-mix(in srgb, var(--primary) 13%, var(--border));
     background: color-mix(in srgb, var(--bg-card) 96%, transparent) !important;
   }
 
   html body .app-root > .mp-header .mp-header__title-btn {
-    height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
+    max-height: max(2.75rem, 44px) !important;
     padding-inline: 0.35rem;
   }
 
@@ -1126,9 +1149,18 @@ html body .app-root > .mp-header
 
 @media (max-width: 380px) {
   html body .app-root > .mp-header .mp-header__bar {
-    --mp-header-control: 38px;
+    --mp-header-control: max(2.75rem, 44px);
     --mp-header-icon: 0.72rem;
-    grid-template-columns: 76px minmax(0, 1fr) 76px !important;
+    /* Symmetric side tracks keep the surah nav optically centred. They are
+       content-sized with a 44px floor, not `1fr`: a flex track hoards whatever
+       slack the row leaves, which at 320px gave the 32px logo and the 44px More
+       button 90px each and squeezed the title down to an unreadable 22px. */
+    grid-template-columns: minmax(44px, max-content) minmax(0, 1fr)
+      minmax(44px, max-content) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    justify-content: flex-end;
   }
 
   html body .app-root > .mp-header .mp-header__riwaya-toggle {
@@ -1137,12 +1169,12 @@ html body .app-root > .mp-header
   }
 
   html body .app-root > .mp-header .mp-header__nav {
-    grid-template-columns: 32px minmax(0, 1fr) 32px !important;
+    grid-template-columns: max(2.75rem, 44px) minmax(0, 1fr) max(2.75rem, 44px) !important;
   }
 
   html body .app-root > .mp-header .mp-header__nav-arrow {
-    width: 32px !important;
-    min-width: 32px !important;
+    width: max(2.75rem, 44px) !important;
+    min-width: max(2.75rem, 44px) !important;
   }
 }
 
@@ -1161,6 +1193,26 @@ html body .app-root > .mp-header
 }
 
 @media (max-width: 320px) {
+  /* Prev/next surah belongs to the reader. On Duas and the 404 view the same
+     arrows leave the current page, and at this width they cost the title its
+     last legible pixels. */
+  html body .app-root:not([data-view="reading"]) > .mp-header
+    .mp-header__nav-arrow {
+    display: none !important;
+  }
+
+  /* The nav grid reserves a track per arrow; with them gone the title would
+     land in the 44px first track instead of the flexible middle one. */
+  html body .app-root:not([data-view="reading"]) > .mp-header
+    .mp-header__nav {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root:not([data-view="reading"]) > .mp-header
+    .mp-header__title-btn {
+    width: 100% !important;
+  }
+
   html body .app-root[data-view="reading"] .srh-controls {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1.12fr) !important;
     gap: 0.25rem;
@@ -1404,12 +1456,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 }
 
-@media (max-width: 380px) {
-  html body .app-root[data-view="reading"] > .mp-header .mp-header__bar {
-    grid-template-columns: 76px minmax(0, 1fr) 76px !important;
-  }
-}
-
 /* Home surah library — mobile editorial rows. */
 @media (max-width: 700px) {
   html[data-theme="dark"] .hp-card--list[data-stype="meccan"] .hp-card-type {
@@ -1424,7 +1470,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   .app-root[data-view="home"] .hp-card--list {
     display: grid !important;
-    grid-template: minmax(1.9rem, auto) minmax(2.45rem, auto) / 2.35rem minmax(0, 1fr) 3.35rem !important;
+    grid-template: minmax(1.9rem, auto) minmax(2.45rem, auto) / 2.35rem minmax(0, 1fr) max(3.35rem, 44px) !important;
     gap: 0.16rem 0.68rem;
     min-height: 5.65rem !important;
     padding: 0.65rem 0.72rem;
@@ -1504,10 +1550,10 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     position: relative !important;
     inset: auto !important;
     grid-area: 2 / 3 !important;
-    width: 2.55rem !important;
-    min-width: 2.55rem !important;
-    height: 2.55rem !important;
-    min-height: 2.55rem !important;
+    width: max(2.75rem, 44px) !important;
+    min-width: max(2.75rem, 44px) !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
     margin: 0;
     justify-self: end !important;
     background: var(--primary) !important;
@@ -1517,20 +1563,13 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 @media (max-width: 340px) {
   .app-root[data-view="home"] .hp-card--list {
-    grid-template-columns: 2.1rem minmax(0, 1fr) 2.75rem !important;
+    grid-template-columns: 2.1rem minmax(0, 1fr) max(2.75rem, 44px) !important;
     gap: 0.12rem 0.48rem;
     padding: 0.58rem;
   }
 
   .app-root[data-view="home"] .hp-card--list .hp-card-meta--page {
     display: none !important;
-  }
-
-  .app-root[data-view="home"] .hp-card--list .hp-card-play {
-    width: 2.3rem !important;
-    min-width: 2.3rem !important;
-    height: 2.3rem !important;
-    min-height: 2.3rem !important;
   }
 }
 
@@ -1547,22 +1586,35 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__bar {
-    grid-template-columns: 80px minmax(0, 1fr) 80px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__actions {
-    width: 40px;
-    min-width: 40px !important;
+    width: auto;
+    min-width: 0 !important;
+  }
+
+  /* The reader keeps two 44px controls on the left (menu + home) and only the
+     More menu on the right. A transparent leading spacer makes the right
+     cluster the same width as the left one, so the symmetric `auto` grid
+     tracks keep the surah nav optically centred without insetting More from
+     the edge. */
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__actions::before {
+    content: "";
+    flex: 0 0 var(--mp-header-control);
+    min-width: var(--mp-header-control);
+    pointer-events: none;
   }
 }
 
 @media (max-width: 360px) {
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__bar {
-    --mp-header-control: 38px;
+    --mp-header-control: max(2.75rem, 44px);
     --mp-header-icon: 0.7rem;
-    grid-template-columns: 78px minmax(0, 1fr) 78px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
     min-height: 50px !important;
     height: 50px !important;
     max-height: 50px !important;
@@ -1578,31 +1630,38 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__actions {
-    width: 38px;
-    min-width: 38px !important;
+    width: auto;
+    min-width: 0 !important;
+  }
+
+  /* Below 360px the optical-centring spacer spends 44px of the title's budget
+     on symmetry. A legible surah name outranks a perfectly centred nav. */
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__actions::before {
+    content: none;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__nav {
-    grid-template-columns: 29px minmax(0, 1fr) 29px !important;
-    width: min(100%, 10.4rem) !important;
+    grid-template-columns: max(2.75rem, 44px) minmax(0, 1fr) max(2.75rem, 44px) !important;
+    width: 100% !important;
     gap: 0.12rem;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__nav-arrow {
-    width: 29px !important;
-    min-width: 29px !important;
-    height: 38px !important;
-    min-height: 38px !important;
-    border-radius: 0.55rem;
+    width: max(2.75rem, 44px) !important;
+    min-width: max(2.75rem, 44px) !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
+    border-radius: 0.68rem;
   }
 
   html body #root .app-root.app-root[data-view="reading"] > .mp-header
     .mp-header__title-btn {
-    height: 38px !important;
-    min-height: 38px !important;
-    max-height: 38px !important;
+    height: max(2.75rem, 44px) !important;
+    min-height: max(2.75rem, 44px) !important;
+    max-height: max(2.75rem, 44px) !important;
     padding-inline: 0.2rem;
     border-radius: 0.68rem;
     box-shadow: none;
@@ -1799,3 +1858,114 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     height: 0.78rem !important;
   }
 }
+
+/* Touch-target floor, measured at the real root size.
+   The interface root computes to 15-17px, so a rem-authored control lands
+   below its nominal size: `h-11` measures 43.2px and `2.65rem` measures
+   39.8px. Enumerating class names does not converge - the measured sweep found
+   dozens of sub-44px pressables carrying only utility classes - so the floor is
+   stated once, in pixels, for every interactive element. `#root#root` doubles
+   the one ID every owner rule already carries, so the floor wins the
+   `!important` property war it is in; the prefix stops at `#root` because the
+   library, settings, search and reciter views render outside `.app-root` and a
+   floor that requires it silently misses them. */
+html body #root#root :is(
+    button,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="checkbox"],
+    [role="switch"],
+    [role="menuitem"],
+    [role="option"],
+    [role="link"],
+    a[href],
+    select,
+    textarea,
+    input:not([type="hidden"], [type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"])
+  ) {
+  min-height: max(2.75rem, 44px) !important;
+}
+
+/* Quran text surfaces take the floor back. Their word- and marker-level targets
+   are glyph-sized on purpose (WCAG 2.5.5 exempts targets inline in text), and a
+   44px box per word would break Mushaf line justification. This has to carry the
+   same doubled ID as the floor and stay below it in the file to win. */
+html body #root#root :is(
+    .qcm-line,
+    .qcm-word,
+    .qcm-ayah-marker,
+    .ayah-text,
+    .quran-text,
+    .word-item,
+    .quran-word-item,
+    .native-ayah-marker,
+    [data-word-index],
+    [data-word-position]
+  )
+  :is(button, [role="button"], [role="link"], a[href], summary) {
+  min-height: 0 !important;
+}
+
+/* The modal shell portals its content straight into `body` (ui/modal.jsx), so
+   those overlays sit outside `#root` and the rule above cannot reach them. The
+   doubled `:root` pseudo-class keeps this floor above the class-level
+   `!important` min-heights the overlays author for themselves. */
+html:root:root body > * :is(
+    button,
+    summary,
+    [role="button"],
+    [role="tab"],
+    [role="checkbox"],
+    [role="switch"],
+    [role="menuitem"],
+    [role="option"],
+    [role="link"],
+    a[href],
+    select,
+    textarea,
+    input:not([type="hidden"], [type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"])
+  ) {
+  min-height: max(2.75rem, 44px) !important;
+}
+
+/* Icon-only controls are square: a 44px height with a 36-42px width leaves the
+   glyph target narrower than it is tall. Text buttons keep their own width. */
+html body #root#root :is(
+    .srh-play-btn,
+    .srh-info-btn,
+    .srh-fullscreen-btn,
+    .hp-card-play,
+    .search-pro__close,
+    .search-pro__submit,
+    .search-pro__voice-btn,
+    .library-close,
+    .reader-mode-nav__button,
+    .dua-open-btn-v5,
+    .home-resume-panel__secondary,
+    .mp-header__home-summary
+  ),
+  html:root:root body > * :is(
+    .search-pro__close,
+    .search-pro__submit,
+    .search-pro__voice-btn,
+    .library-close
+  ) {
+  min-width: max(2.75rem, 44px) !important;
+}
+
+/* Tailwind arbitrary text sizes are rem-authored, and this interface sets the
+   root fluidly (15px at 280px up to 17px at 1920px), so `text-[0.6rem]`
+   measures 9px on a phone and stays under 10px everywhere. The measured sweep
+   found the remaining offenders in components whose files are mid-edit
+   elsewhere, so the floor is stated here rather than in their class lists.
+   `~=` matches one whole class token, which keeps `text-[9.5px]` and the
+   named `text-xs` scale out of reach. */
+html body #root#root :is(
+  [class~="text-[0.6rem]"],
+  [class~="text-[0.64rem]"],
+  [class~="text-[0.65rem]"]
+) {
+  font-size: max(0.66rem, 10px) !important;
+}
+

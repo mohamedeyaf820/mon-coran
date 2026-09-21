@@ -1709,7 +1709,7 @@ html[data-theme="dark"] .settings-drawer {
     display: block !important;
     max-width: 100% !important;
     color: inherit !important;
-    font-size: 0.58rem !important;
+    font-size: max(0.62rem, 10px) !important;
     font-weight: 650 !important;
     line-height: 1.1 !important;
     text-align: center !important;
@@ -1787,7 +1787,7 @@ html[data-theme="dark"] .settings-drawer {
   }
 
   .settings-theme-tile__copy small {
-    font-size: 0.58rem !important;
+    font-size: max(0.62rem, 10px) !important;
   }
 }
 
