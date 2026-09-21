@@ -27,7 +27,7 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
 
       <div className="recitation-row__copy">
         <div className="recitation-row__title">
-          {label}
+          <span className="recitation-row__name">{label}</span>
           <span
             className={`recitation-row__type${isMeccan ? " recitation-row__type--meccan" : " recitation-row__type--medinan"}`}
             aria-label={isMeccan ? (lang === "ar" ? "مكية" : "Meccan") : (lang === "ar" ? "مدنية" : "Medinan")}
