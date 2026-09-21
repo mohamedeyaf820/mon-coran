@@ -1180,7 +1180,9 @@
 }
 
 .settings-segmented {
-  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr)) !important;
+  /* Same track floor as the rule above: this later duplicate is the one that
+     wins the cascade, so both must carry the longest language label. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 5.5rem), 1fr)) !important;
   padding: 0.2rem !important;
   border: 1px solid var(--border) !important;
   border-radius: 10px !important;

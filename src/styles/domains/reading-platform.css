@@ -3758,11 +3758,14 @@ html body .app-root .native-ayah-marker::after {
     .reader-typography-panel .afc-range {
         width: 100%;
     }
+}
 
-    /* The nav is prev | current | next on one row: at 280-414px each label had
-       32-91px for "Sourate précédente", so it ellipsised mid-word. The chevron
-       and the centre indicator already carry the meaning, and the button keeps
-       its aria-label, so the text retires and the target becomes a 44px square. */
+/* The nav is prev | current | next on one row: measured 280-440px, each label
+   had 32-97px for "Sourate précédente", so it ellipsised mid-word (67px lost at
+   280px, 3px at 440px). The chevron and the centre indicator already carry the
+   meaning, and the button keeps its aria-label, so the text retires across the
+   whole band and the target becomes a 44px square. */
+@media (max-width: 480px) {
     .quran-display--platform .reader-mode-nav__button {
         min-width: max(2.75rem, 44px);
         padding-inline: 0.55rem;
