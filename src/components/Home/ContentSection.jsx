@@ -409,7 +409,7 @@ export default function ContentSection({
               </label>
             )}
             {!isCompactLayout && (activeTab === "surah" || activeTab === "juz") && (
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-bg-secondary border border-border/50 shadow-sm">
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] shadow-sm">
                 <button
                   type="button"
                   className={cn(
@@ -704,7 +704,7 @@ export default function ContentSection({
         <div className="mt-6 flex justify-center">
           <button
             ref={loadMoreRef}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-bg-secondary text-text-primary font-bold transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-bg-tertiary"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-[var(--bg-secondary)] text-[var(--text-primary)] font-bold transition-[transform,background-color] hover:-translate-y-0.5 hover:bg-[var(--bg-tertiary)]"
             onClick={loadMoreSurahs}
           >
             <ArrowDown size={14} />
