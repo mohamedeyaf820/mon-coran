@@ -3759,8 +3759,17 @@ html body .app-root .native-ayah-marker::after {
         width: 100%;
     }
 
-    .quran-display--platform .reader-mode-nav__button span {
-        max-width: 24vw;
+    /* The nav is prev | current | next on one row: at 280-414px each label had
+       32-91px for "Sourate précédente", so it ellipsised mid-word. The chevron
+       and the centre indicator already carry the meaning, and the button keeps
+       its aria-label, so the text retires and the target becomes a 44px square. */
+    .quran-display--platform .reader-mode-nav__button {
+        min-width: max(2.75rem, 44px);
+        padding-inline: 0.55rem;
+    }
+
+    .quran-display--platform .reader-mode-nav__button > span {
+        display: none;
     }
 }
 

@@ -440,7 +440,9 @@
 }
 
 .settings-segmented {
-  grid-template-columns: repeat(auto-fit, minmax(4rem, 1fr)) !important;
+  /* 4rem tracks fitted three language names on a 280px screen and cut 9px off
+     "Français"; the minimum now carries the longest label instead. */
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 5.5rem), 1fr)) !important;
   padding: 0.2rem;
   border: 1px solid var(--border);
   border-radius: 10px;
