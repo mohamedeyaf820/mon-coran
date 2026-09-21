@@ -42,7 +42,7 @@ test("legacy Warsh corpus: markers attach in every whitespace form", () => {
 });
 
 test("presentation forms are content unless they are the proven ayah number", () => {
-  const [surah, ayah, body] = legacyAyahs.find(([, a]) => a === 1) || [1, 1, "بِسْمِ ٱللَّهِ"];
+  const [, ayah, body] = legacyAyahs.find(([, a]) => a === 1) || [1, 1, "بِسْمِ ٱللَّهِ"];
   const wrongGlyph = String.fromCodePoint(0xfc00 + 5);
   assert.notEqual(wrongGlyph, legacyWarshMarkerGlyph(ayah));
   assert.equal(

@@ -388,39 +388,6 @@ self.addEventListener("message", (event) => {
   }
 });
 
-/**
- * Met en cache une liste d'URLs API de façon asynchrone (best effort).
- * Utilisée par l'app pour mettre en cache les sourates récemment visitées.
- */
-async function cacheQuranUrls(urls) {
-  if (!urls.length) return;
-  try {
-    const apiCache = await caches.open(API_CACHE_NAME);
-    await Promise.allSettled(
-      urls
-        .filter((u) => {
-          try {
-            const parsed = new URL(u);
-            return parsed.hostname === "api.alquran.cloud" || parsed.hostname === "api.quran.com";
-          } catch {
-            return false;
-          }
-        })
-        .map(async (url) => {
-          const existing = await apiCache.match(url);
-          if (existing) return; // Déjà en cache, inutile de re-télécharger
-          const res = await fetch(url, {
-            headers: { Accept: "application/json" },
-          });
-          if (res.ok) await putBounded(apiCache, url, res, API_CACHE_NAME);
-        }),
-    );
-    await trimCache(apiCache, CACHE_LIMITS[API_CACHE_NAME]);
-  } catch {
-    // Silencieux – le cache API n'est pas critique
-  }
-}
-
 // ─── Stratégies de cache ──────────────────────────────────────────────────────
 
 /**
