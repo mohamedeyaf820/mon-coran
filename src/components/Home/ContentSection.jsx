@@ -354,10 +354,10 @@ export default function ContentSection({
             {lang === "ar" ? "الصوتيات" : lang === "en" ? "Audio" : "Audio"}
             {showAudioDiscovery && activeTab !== "audio" && (
               <span
-                className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-primary"
+                className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--primary)]"
                 aria-hidden="true"
               >
-                <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-75" />
+                <span className="absolute inset-0 animate-ping rounded-full bg-[var(--primary)] opacity-75" />
               </span>
             )}
           </button>
