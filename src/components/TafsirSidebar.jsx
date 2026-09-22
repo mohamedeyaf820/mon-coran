@@ -137,6 +137,10 @@ export default function TafsirSidebar() {
   const verse = tafsirSidebarVerse || {};
   const surahNumber = Number(verse.surah);
   const ayahNumber = Number(verse.ayah);
+  // `ayah` is the Hafs coordinate every tafsir resource is keyed on. In Warsh
+  // the reader shows a different number for the same verse, so the title quotes
+  // the displayed one and only the Quran.com attribution keeps the Hafs one.
+  const displayAyahNumber = Number(verse.displayAyah) || ayahNumber;
   const surahInfo = useMemo(() => getSurah(surahNumber), [surahNumber]);
   const selectedOption =
     TAFSIR_OPTIONS.find((o) => o.key === selectedTafsirKey) ||
@@ -269,7 +273,7 @@ export default function TafsirSidebar() {
                   id="tafsir-sidebar-title"
                   className="truncate text-lg font-black leading-tight"
                 >
-                  {surahDisplayName} {surahNumber}:{ayahNumber}
+                  {surahDisplayName} {surahNumber}:{displayAyahNumber}
                 </h2>
                 <p className="mt-1 text-sm text-[var(--text-secondary)]">
                   {t("tafsir.subtitle", lang)}

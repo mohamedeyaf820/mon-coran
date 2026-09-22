@@ -497,7 +497,13 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     } else {
       set({
         tafsirSidebarOpen: true,
-        tafsirSidebarVerse: { surah: Number(surah), ayah: Number(ayah) }
+        // `ayah` is the Hafs coordinate the tafsir resources are keyed on; the
+        // title has to quote the verse the reader is actually looking at.
+        tafsirSidebarVerse: {
+          surah: Number(surah),
+          ayah: Number(ayah),
+          displayAyah: Number(ayahData?.numberInSurah ?? ayah),
+        }
       });
     }
   };
