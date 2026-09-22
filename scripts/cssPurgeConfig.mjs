@@ -70,5 +70,10 @@ export const CSS_SAFELIST = {
 };
 
 export function extractCssSelectors(content) {
-  return content.match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
+  // Rolldown keeps JSX template literals with backticks, so a class written as
+  // `btn${on ? " is-on" : ""}` reaches this extractor glued to its interpolation
+  // (`btn${on`) and PurgeCSS drops the rule for a class that is very much alive —
+  // in production only, which is why the dev server never shows it. Split the
+  // interpolation out before tokenising.
+  return content.replace(/[{}$]/g, " ").match(/[^<>"'`\s]*[^<>"'`\s:]/g) || [];
 }

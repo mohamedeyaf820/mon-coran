@@ -145,6 +145,29 @@ async function purgeCSS() {
       pattern:
         /\.cpv-ayah-marker[^{}]*\{[^{}]*margin-inline:\s*[^;}]+/i,
     },
+    // The reciter sheet's action row. These classes are written as
+    // `btn${cond ? " is-x" : ""}`, which the minifier emits with backticks; the
+    // extractor used to hand PurgeCSS `btn${cond` instead of `btn`, so the rules
+    // disappeared in production only and the surah title collapsed to 0px under
+    // the download button. They must never be droppable again.
+    {
+      label: "offline download action stays icon-sized",
+      pattern:
+        /\.recitation-action-btn--download[^{}(]*\{[^{}]*min-width:\s*44px/i,
+    },
+    {
+      label: "offline download action hides its long label",
+      pattern:
+        /\.recitation-action-btn--download\s+\.recitation-action-btn__label[^{}]*\{[^{}]*display:\s*none/i,
+    },
+    {
+      label: "surah revelation-type badge",
+      pattern: /\.recitation-row__type[^{}]*\{[^{}]*\}/i,
+    },
+    {
+      label: "whole-mushaf download card primary action",
+      pattern: /\.full-quran-download__primary[^{}]*\{[^{}]*\}/i,
+    },
 
   ];
   const missingReaderRules = requiredReaderRules.filter(
