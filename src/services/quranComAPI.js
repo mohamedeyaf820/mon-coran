@@ -92,8 +92,11 @@ const WORD_FIELDS = [
   "grammar",
 ].join(",");
 
+// Verified live: 131 is not in /resources/translations, and asking for it
+// returns verses with no translation body at all - a 200 that paints nothing.
+// 20 is Saheeh International, the English edition served as `en.sahih`.
 const TRANSLATION_RESOURCE_IDS = {
-  en: 131,
+  en: 20,
   fr: 136,
 };
 
@@ -579,6 +582,13 @@ async function fetchQuranComTranslationPath(path, resourceId, lang, meta, signal
       }
     );
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
+  }
+
+  // A dead resource id answers with verses that carry no translation body.
+  // Passed through, that reads as "this surah has no translation".
+  const hasBody = verses.some((verse) => verse?.translations?.length);
+  if (verses.length && !hasBody) {
+    throw new Error(`Quran.com returned no ${lang} translation body`);
   }
 
   return { ...normalizeTranslationCollection(verses, lang), number: meta?.number || null };

@@ -66,7 +66,10 @@
         <link rel="dns-prefetch" href="https://static.qurancdn.com" />
         <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
-        <link rel="preload" as="image" type="image/webp" href="/logo-ui.webp" fetchpriority="high" />
+        <!-- The logo is drawn by the header and the splash screen, but it is a
+             38px mark: at high priority it raced the two preloaded fonts below,
+             which are what actually gate the first Quran glyph. -->
+        <link rel="preload" as="image" type="image/webp" href="/logo-ui.webp" />
         <!--
           Only the two faces a cold boot actually paints are preloaded: the Hafs Quran
           face and the calligraphic surah-name face (home cards, reader and mushaf

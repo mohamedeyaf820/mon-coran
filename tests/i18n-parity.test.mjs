@@ -55,3 +55,26 @@ test("new accessibility labels resolve without falling back to their keys", () =
     }
   }
 });
+
+// A language name is written in the language it names ("Français" in Arabic too),
+// and the product name has no Arabic form. Everything else an Arabic reader sees
+// has to be Arabic: nine of these strings shipped as English sentences, one of
+// them with a literal "[AR]" placeholder left in the copy.
+const ARABIC_AUTONYMS = new Set([
+  "app.name",
+  "search.voiceLang.fr",
+  "search.voiceLang.en",
+  "search.voiceLangFull.fr",
+  "search.voiceLangFull.en",
+]);
+
+test("every Arabic value is written in Arabic", () => {
+  for (const [key, value] of flattened.ar) {
+    if (typeof value !== "string" || ARABIC_AUTONYMS.has(key)) continue;
+    assert.match(
+      value,
+      /[؀-۽]/,
+      `ar.${key} is shown to Arabic readers but holds no Arabic script: ${value}`,
+    );
+  }
+});
