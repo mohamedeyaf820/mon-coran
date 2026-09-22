@@ -27,6 +27,7 @@ import QURAN_DUAS from "../data/duas";
 import { getJuzForAyah } from "../data/juz";
 import {
   containsArabic,
+  findSurahByName,
   parseSearchReference,
   sanitizeSearchQuery,
 } from "../utils/searchIntelligence";
@@ -91,6 +92,15 @@ export default function SearchModal() {
 
   // "36", "2:10", "sourate 36", "juz 5", "٢:١٠" ask for a position, not a word.
   const reference = useMemo(() => parseSearchReference(query), [query]);
+
+  // Naming a surah is the other way to ask for a position, and it is not a word
+  // search the reader should have to win: the verses that mention "la vache" are
+  // rarely the point. The jump sits above the results instead of replacing them.
+  const namedSurah = useMemo(
+    () => (reference ? null : findSurahByName(query)),
+    [query, reference],
+  );
+  const jumpTarget = reference || (namedSurah ? { kind: "surah", surah: namedSurah.n, ayah: 1 } : null);
 
   // The recogniser hears one language per session, so this is a user choice,
   // not a guess from the text already typed: dictating an Arabic Quran word into
@@ -177,8 +187,12 @@ export default function SearchModal() {
               prepareSearchQuery(sanitized, translationLanguage),
             ),
           );
+          // The Arabic index holds Quranic script: a Latin candidate can only
+          // come back empty from it, and each empty candidate costs one request
+          // per edition. Only the transliterated forms are worth sending.
+          const arabicCandidates = primary.candidates.filter(containsArabic);
           const attempts = await Promise.allSettled([
-            runCandidates(primary.candidates, (candidate) =>
+            runCandidates(arabicCandidates, (candidate) =>
               search(candidate, riwaya, null, ctrl.signal),
             ),
             ...translationPlans.map((plan, index) =>
@@ -316,8 +330,8 @@ export default function SearchModal() {
   const handleInputKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
-      if (reference) {
-        goToReference(reference);
+      if (jumpTarget) {
+        goToReference(jumpTarget);
         return;
       }
       handleSearch();
@@ -337,26 +351,27 @@ export default function SearchModal() {
   const activeResultCount = filteredResults.length + visibleDuaResults.length;
 
   const referenceDisplay = useMemo(() => {
-    if (!reference) return null;
+    if (!jumpTarget) return null;
     const digit = (value) => (lang === "ar" ? toAr(value) : String(value));
     const key =
-      reference.kind === "juz"
+      jumpTarget.kind === "juz"
         ? "goToJuz"
-        : reference.kind === "surah"
+        : jumpTarget.kind === "surah"
           ? "goToSurah"
           : "goToAyah";
     const position =
-      reference.kind === "ayah"
-        ? `${digit(reference.surah)}:${digit(reference.ayah)}`
-        : digit(reference.kind === "juz" ? reference.juz : reference.surah);
-    const surahMeta = reference.kind === "juz" ? null : getSurah(reference.surah);
+      jumpTarget.kind === "ayah"
+        ? `${digit(jumpTarget.surah)}:${digit(jumpTarget.ayah)}`
+        : digit(jumpTarget.kind === "juz" ? jumpTarget.juz : jumpTarget.surah);
+    const surahMeta =
+      jumpTarget.kind === "juz" ? null : getSurah(jumpTarget.surah);
     return {
       label: t(`search.${key}`, lang).replace("{n}", position),
       translatedName:
         surahMeta && (lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en),
       arabicName: surahMeta?.ar,
     };
-  }, [reference, lang]);
+  }, [jumpTarget, lang]);
 
   return (
     <Dialog.Root
@@ -569,12 +584,12 @@ export default function SearchModal() {
                     aria-atomic="false"
                     aria-label={t("search.resultsAria", lang)}
                   >
-                    {reference && !loading && referenceDisplay && (
+                    {jumpTarget && !loading && referenceDisplay && (
                       <button
                         type="button"
                         data-testid="search-reference"
                         className="search-pro__reference"
-                        onClick={() => goToReference(reference)}
+                        onClick={() => goToReference(jumpTarget)}
                       >
                         <span className="search-pro__reference-mark" aria-hidden="true">
                           <ArrowRight size={16} />
@@ -626,7 +641,7 @@ export default function SearchModal() {
                       </div>
                     )}
 
-                    {activeResultCount === 0 && !loading && query && !error && !reference && (
+                    {activeResultCount === 0 && !loading && query && !error && !jumpTarget && (
                       <div className="search-pro__no-results">
                         <Search size={16} />
                         <strong>{t("search.noResults", lang)}</strong>

@@ -5,8 +5,11 @@ import {
   prepareSearchQuery,
   terminateSearchWorker,
 } from "../src/services/searchWorkerService.js";
+import SURAHS from "../src/data/surahs.js";
 import {
+  buildSearchCandidates,
   filterSurahDirectory,
+  findSurahByName,
   foldSearchText,
   parseSearchReference,
   toLatinDigits,
@@ -103,4 +106,65 @@ test("every surah search box resolves the same query to the same surahs", () => 
   assert.deepEqual(numbers("Al-Fatihah"), [1]);
   assert.deepEqual(numbers("Baqarah"), [2]);
   assert.deepEqual(numbers("zzzq"), []);
+});
+
+test("naming a surah resolves to that surah in every supported spelling", () => {
+  const named = (query) => findSurahByName(query)?.n ?? null;
+
+  assert.equal(named("La Vache"), 2);
+  assert.equal(named("vache"), 2, "the stored name carries an article");
+  assert.equal(named("sourate La Vache"), 2);
+  assert.equal(named("Al-Baqara"), 2);
+  assert.equal(named("Baqara"), 2);
+  assert.equal(named("الفاتحة"), 1);
+  assert.equal(named("Fatiha"), 1);
+  assert.equal(named("Ya Sin"), 36);
+  assert.equal(named("rahman"), 55);
+  assert.equal(named("\u0633\u0648\u0631\u0629 \u0627\u0644\u0625\u062e\u0644\u0627\u0635"), 112);
+  assert.equal(named("\u0627\u0644\u0628\u0642\u0631\u0647"), 2, "typed without the round ta marbuta");
+});
+
+test("naming a surah reaches every surah in at least one language", () => {
+  const missed = SURAHS.filter((surah) => {
+    const forms = [surah.ar, surah.en, surah.fr];
+    return !forms.some((name) => findSurahByName(name)?.n === surah.n);
+  });
+  assert.deepEqual(missed, []);
+
+  // The two exceptions are known and honest: 1 and 94 share the French name
+  // "L'Ouverture", and 38/50 are named by a single letter too short to tell
+  // apart from a keystroke.
+  assert.deepEqual(
+    SURAHS.filter((s) => findSurahByName(s.fr)?.n !== s.n).map((s) => s.n),
+    [1, 94],
+  );
+  assert.deepEqual(
+    SURAHS.filter((s) => findSurahByName(s.ar)?.n !== s.n).map((s) => s.n),
+    [38, 50],
+  );
+  assert.equal(findSurahByName("Saad")?.n, 38);
+  assert.equal(findSurahByName("Qaf")?.n, 50);
+});
+
+test("a query that is not a surah name stays a word search", () => {
+  assert.equal(findSurahByName("mis\u00E9ricorde"), null);
+  assert.equal(findSurahByName("\u0628\u0642\u0631\u0629")?.n, 2, "a cow is also the surah");
+  assert.equal(findSurahByName("36"), null, "a number is a reference, not a name");
+  assert.equal(findSurahByName("a"), null);
+  assert.equal(findSurahByName(""), null);
+  assert.equal(
+    findSurahByName("L'Ouverture"),
+    null,
+    "two surahs carry this name: guessing would send the reader to the wrong one",
+  );
+});
+
+test("a long query stops widening once the shortened phrase means less", () => {
+  const candidates = buildSearchCandidates("Ain solde rien du tout de ma vie", "fr");
+
+  // Each candidate is a request to the search API, and a query that matches
+  // nothing pays for all of them.
+  assert.equal(candidates.length, 5);
+  assert.equal(candidates[0], "Ain solde rien du tout de ma vie");
+  assert.equal(candidates.at(-1), "Ain solde");
 });

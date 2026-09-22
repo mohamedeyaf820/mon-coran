@@ -86,6 +86,83 @@ export function filterSurahDirectory(query = "") {
   ).map(({ surah }) => surah);
 }
 
+const SURAH_NAME_KEYWORD_RE =
+  /^(?:surah|sura|sourate|surate|\u0633\u0648\u0631\u0629|\u0633\u0648\u0631\u0647)\s+/i;
+const LATIN_NAME_ARTICLES = [
+  "al", "a", "az", "as", "ad", "ar", "ash", "au", "aw", "an", "the",
+];
+const FRENCH_NAME_ARTICLES = [
+  "la", "le", "les", "l", "un", "une", "des", "du",
+];
+const ARABIC_DEFIMATE = "ال";
+
+function nameScript(value) {
+  if (/^\p{Script=Arabic}+$/u.test(value)) return "arabic";
+  if (/\p{Script=Arabic}/u.test(value)) return "mixed";
+  return "latin";
+}
+
+/**
+ * Names are stored with an article in three languages ("Al-Baqara", "La Vache",
+ * "البقرة") while readers type the bare word, so each name is indexed both with
+ * and without its article. An apostrophe is a word boundary here, not a letter.
+ */
+function foldSurahName(value) {
+  return foldSearchText(value)
+    .replace(/['’]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function stripNameArticle(folded, script) {
+  const articles =
+    script === "latin"
+      ? [...LATIN_NAME_ARTICLES, ...FRENCH_NAME_ARTICLES]
+      : LATIN_NAME_ARTICLES;
+  const words = folded.split(" ");
+  if (words.length > 1 && articles.includes(words[0])) {
+    return words.slice(1).join(" ");
+  }
+  if (script !== "latin" && folded.startsWith(ARABIC_DEFIMATE) && folded.length > 3) {
+    return folded.slice(ARABIC_DEFIMATE.length);
+  }
+  return folded;
+}
+
+const SURAH_NAME_INDEX = (() => {
+  const index = new Map();
+  for (const surah of SURAHS) {
+    for (const name of [surah.ar, surah.en, surah.fr]) {
+      const folded = foldSurahName(name);
+      const keys = new Set([folded, stripNameArticle(folded, nameScript(name))]);
+      for (const key of keys) {
+        if (!index.has(key)) index.set(key, new Set());
+        index.get(key).add(surah.n);
+      }
+    }
+  }
+  return index;
+})();
+
+/**
+ * The reader's other way to name a place in the mushaf: type the surah itself
+ * ("البقرة", "vache", "sourate La Vache", "Fatiha"). Returns the surah only when
+ * the query is exactly one surah name, so a word search keeps its verses;
+ * "L'Ouverture" belongs to two surahs in this data and returns null rather than
+ * guessing.
+ */
+export function findSurahByName(rawQuery = "") {
+  const folded = foldSurahName(
+    String(rawQuery || "").replace(SURAH_NAME_KEYWORD_RE, "").trim(),
+  );
+  if (folded.length < 2 || /^\d+$/.test(folded)) return null;
+  const script = nameScript(folded);
+  const matches =
+    SURAH_NAME_INDEX.get(folded) ||
+    SURAH_NAME_INDEX.get(stripNameArticle(folded, script));
+  return matches && matches.size === 1 ? getSurah([...matches][0]) : null;
+}
+
 export function sanitizeVoiceTranscript(transcript = "") {
   const cleaned = transcript
     .normalize("NFKC")
@@ -104,7 +181,13 @@ function pushCandidate(target, value) {
   if (cleaned.length >= 2) target.push(cleaned);
 }
 
-function addPrefixCandidates(target, value, maxWords = 8) {
+// Each candidate is a request to the search API, and a query that matches
+// nothing walks all of them. Long dictated sentences therefore stop being
+// narrowed after this many words: the shorter prefixes that follow carry no
+// more meaning than the fifth one already did.
+const MAX_PHRASE_CANDIDATES = 5;
+
+function addPrefixCandidates(target, value, maxWords = MAX_PHRASE_CANDIDATES) {
   const words = value.split(/\s+/).filter(Boolean);
   for (let count = Math.min(maxWords, words.length); count >= 2; count -= 1) {
     pushCandidate(target, words.slice(0, count).join(" "));
@@ -123,13 +206,13 @@ export function buildSearchCandidates(rawQuery = "", mode = "arabic") {
   pushCandidate(candidates, base);
 
   if (mode === "fr" || mode === "en") {
-    addPrefixCandidates(candidates, base, 10);
+    addPrefixCandidates(candidates, base);
     return [...new Set(candidates)];
   }
 
   const normalizedArabic = normalizeArabicSearchText(base);
   pushCandidate(candidates, normalizedArabic);
-  addPrefixCandidates(candidates, normalizedArabic, 8);
+  addPrefixCandidates(candidates, normalizedArabic);
 
   if (!containsArabic(base) || mode === "phonetic") {
     const transliterated = latinToArabic(base);
@@ -137,7 +220,7 @@ export function buildSearchCandidates(rawQuery = "", mode = "arabic") {
       const normalizedTransliterated = normalizeArabicSearchText(transliterated);
       pushCandidate(candidates, transliterated);
       pushCandidate(candidates, normalizedTransliterated);
-      addPrefixCandidates(candidates, normalizedTransliterated, 8);
+      addPrefixCandidates(candidates, normalizedTransliterated);
     }
   }
 

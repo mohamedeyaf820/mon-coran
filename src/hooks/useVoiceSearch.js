@@ -34,6 +34,9 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
   const transcriptReceivedRef = useRef(false);
   const heardRef = useRef(false);
   const interimTextRef = useRef("");
+  const intentionalStopRef = useRef(false);
+  const restartRef = useRef(false);
+  const toggleRef = useRef(null);
   const onTranscriptRef = useRef(onTranscript);
   const onInterimRef = useRef(onInterim);
   const [status, setStatus] = useState("idle");
@@ -49,7 +52,8 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
 
   const clearError = useCallback(() => setErrorCode(null), []);
 
-  const stop = useCallback(() => {
+  const stop = useCallback((options) => {
+    intentionalStopRef.current = options?.intentional === true;
     const recognition = recognitionRef.current;
     if (!recognition) return;
     // Stopping during the permission/start phase can throw on Safari.
@@ -62,7 +66,7 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
 
   const toggle = useCallback(() => {
     if (recognitionRef.current) {
-      stop();
+      stop({ intentional: true });
       return;
     }
 
@@ -92,6 +96,7 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
       return;
     }
     recognition.lang = language;
+    recognition.sessionLanguage = language;
     recognition.continuous = false;
     // Interim results are what make the mic feel alive: without them the user
     // speaks and sees nothing until the session closes.
@@ -101,6 +106,8 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
     transcriptReceivedRef.current = false;
     heardRef.current = false;
     interimTextRef.current = "";
+    intentionalStopRef.current = false;
+    restartRef.current = false;
     setErrorCode(null);
     setStatus("starting");
 
@@ -158,15 +165,31 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
     };
     recognition.onend = () => {
       if (!isCurrent()) return;
+      const restart = restartRef.current;
+      restartRef.current = false;
       // Mobile implementations sometimes close the session without ever
       // marking the last chunk final. Searching the words the user already saw
       // beats reporting a dictation that produced nothing.
-      if (!transcriptReceivedRef.current && heardRef.current && interimTextRef.current) {
+      if (
+        !transcriptReceivedRef.current &&
+        !restart &&
+        heardRef.current &&
+        interimTextRef.current
+      ) {
         onTranscriptRef.current?.(interimTextRef.current);
-      } else if (!transcriptReceivedRef.current) {
+      } else if (
+        !transcriptReceivedRef.current &&
+        !restart &&
+        !intentionalStopRef.current
+      ) {
+        // An explicit tap on the microphone is the user ending the dictation,
+        // not a failure to hear them.
         setErrorCode((current) => current || "noSpeech");
       }
       release();
+      // The recogniser fixes its language when the session starts, so a
+      // language chosen mid-dictation only takes effect in a new session.
+      if (restart) toggleRef.current?.();
     };
 
     recognitionRef.current = recognition;
@@ -177,6 +200,21 @@ export default function useVoiceSearch({ language, onTranscript, onInterim }) {
       setErrorCode(error?.name === "NotAllowedError" ? "permissionDenied" : "failed");
     }
   }, [language, stop]);
+
+  useEffect(() => {
+    toggleRef.current = toggle;
+  });
+
+  useEffect(() => {
+    const recognition = recognitionRef.current;
+    if (!recognition || recognition.sessionLanguage === language) return;
+    restartRef.current = true;
+    try {
+      recognition.stop();
+    } catch {
+      recognition.onend?.();
+    }
+  }, [language]);
 
   useEffect(
     () => () => {

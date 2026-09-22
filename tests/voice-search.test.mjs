@@ -66,3 +66,31 @@ test("search modal exposes an accessible voice control and live feedback", () =>
   );
   assert.match(hook, /interimResults\s*=\s*true/);
 });
+
+test("the recogniser follows a language chosen while it is already listening", () => {
+  const hook = fs.readFileSync(
+    new URL("../src/hooks/useVoiceSearch.js", import.meta.url),
+    "utf8",
+  );
+
+  // A SpeechRecognition session fixes its language at start(), so the only way
+  // to honour a mid-dictation change is to open a new session.
+  assert.match(hook, /recognition\.sessionLanguage = language/);
+  assert.match(hook, /if \(!recognition \|\| recognition\.sessionLanguage === language\) return/);
+  assert.match(hook, /restartRef\.current = true/);
+  assert.match(hook, /if \(restart\) toggleRef\.current\?\.\(\)/);
+  assert.match(hook, /toggleRef\.current = toggle/);
+  // The interim text belongs to the language being left, not the one coming.
+  assert.match(hook, /!transcriptReceivedRef\.current &&[\s\S]*?!restart &&[\s\S]*?heardRef\.current &&[\s\S]*?interimTextRef\.current/);
+});
+
+test("stopping the microphone by hand is not reported as a failure to hear", () => {
+  const hook = fs.readFileSync(
+    new URL("../src/hooks/useVoiceSearch.js", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(hook, /stop\(\{ intentional: true \}\)/);
+  assert.match(hook, /intentionalStopRef\.current = options\?\.intentional === true/);
+  assert.match(hook, /!intentionalStopRef\.current/);
+});
