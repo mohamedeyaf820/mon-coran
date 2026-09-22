@@ -5,7 +5,11 @@
 
 import { AudioService } from "./audioService.js";
 import SURAHS from "../data/surahs.js";
-import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist.js";
+import {
+  buildAudioPlaylistForSurah,
+  buildSurahAudioPlaylist,
+  expandAyahsToAudioFiles,
+} from "../utils/audioPlaylist.js";
 import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
 import { filterAyahAudioGaps } from "../data/audioAvailability.js";
 import {
@@ -26,6 +30,7 @@ export const OFFLINE_DOWNLOADS_CHANGED_EVENT = "mushafplus-offline-downloads-cha
 export const OFFLINE_FULL_QURAN_PROGRESS_EVENT = "mushafplus-full-quran-download-progress";
 const activeDownloads = new Map();
 const activeFullQuranDownloads = new Map();
+const FILE_COUNT_CACHE = new Map();
 
 function loadProgress() {
   return readLocalStorageWithSchema(PROGRESS_KEY, downloadProgressMapSchema, {});
@@ -69,8 +74,22 @@ function buildFullQuranKey(reciterId = "unknown", riwaya = "hafs") {
   return `${riwaya}:${reciterId || "unknown"}`;
 }
 
-function expectedItemCountForSurah(surahMeta, isSurahStream, riwaya = "hafs") {
-  return isSurahStream ? 1 : surahAyahCount(surahMeta, riwaya);
+function expectedItemCountForSurah(surahMeta, isSurahStream, riwaya = "hafs", cdnType = "everyayah") {
+  if (isSurahStream) return 1;
+  // The download counts files, not verses, and for a Hafs-keyed CDN the two
+  // spaces differ: a Warsh surah can show more verses than the CDN has files
+  // (two verses inside one mp3) or fewer (one verse split over two mp3s). Using
+  // the same normalised list the downloader walks keeps the progress bar able to
+  // reach 100 %.
+  const number = Number(surahMeta?.n || surahMeta?.number) || 0;
+  const key = `${riwaya}:${cdnType}:${number}`;
+  if (!FILE_COUNT_CACHE.has(key)) {
+    FILE_COUNT_CACHE.set(
+      key,
+      expandAyahsToAudioFiles(buildSurahAudioPlaylist(number, riwaya), cdnType).length,
+    );
+  }
+  return FILE_COUNT_CACHE.get(key);
 }
 
 function dispatchFullQuranProgress(detail) {
@@ -140,7 +159,11 @@ async function buildDownloadAudioItems(normalized) {
               getSurahGlobalStart(normalized.surahNum)) + index,
         }),
       );
-  return filterAyahAudioGaps(items, normalized.cdnType, normalized.reciterCdn);
+  // Same file list the player builds: for a Hafs-keyed CDN a Warsh surah has
+  // more verses than files, and expanding is what keeps the offline copy from
+  // fetching one verse twice and another never.
+  const normalizedItems = expandAyahsToAudioFiles(items, normalized.cdnType);
+  return filterAyahAudioGaps(normalizedItems, normalized.cdnType, normalized.reciterCdn);
 }
 
 function getAudioUrlCandidates({ item, normalized }) {
@@ -213,7 +236,7 @@ export function getFullQuranDownloadSummary(reciter, riwaya = "hafs") {
   let failedItems = 0;
 
   for (const surah of SURAHS) {
-    const expectedItems = expectedItemCountForSurah(surah, isSurahStream, riwaya);
+    const expectedItems = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
     const entry = progress[buildProgressKey({
       surahNum: surah.n,
       reciterId,
@@ -229,7 +252,7 @@ export function getFullQuranDownloadSummary(reciter, riwaya = "hafs") {
   }
 
   const totalItems = SURAHS.reduce(
-    (total, surah) => total + expectedItemCountForSurah(surah, isSurahStream, riwaya),
+    (total, surah) => total + expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType),
     0,
   );
   const remainingItems = Math.max(0, totalItems - downloadedItems);
@@ -520,7 +543,7 @@ export async function downloadFullQuranForReciter(
       reciterId: reciter.id,
       riwaya,
     })];
-    const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya);
+    const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
     downloadedBySurah.set(
       surah.n,
       entry?.status === "done"
@@ -579,7 +602,7 @@ export async function downloadFullQuranForReciter(
       nextIndex += 1;
       if (index >= pendingSurahs.length) return;
       const surah = pendingSurahs[index];
-      const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya);
+      const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
       const result = await downloadSurahForReciter(
         { surahMeta: surah, reciter, riwaya, signal: controller.signal },
         (done, total, meta) => {

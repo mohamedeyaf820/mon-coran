@@ -17,11 +17,14 @@ import { hafsNumbersForAyah } from "../../constants/warshSource";
 function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map(), riwaya = "hafs") {
   return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => {
     const surahNumber = ayah.surah?.number || currentSurah;
-    const hafsNumber = hafsNumbersForAyah(ayah, riwaya)?.[0] ?? null;
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya) ?? [];
+    const hafsNumber = hafsNumbers[0] ?? null;
     return {
       surah: surahNumber,
       numberInSurah: ayah.numberInSurah,
       hafsNumber,
+      hafsNumbers,
+      riwaya,
       number: ayah.number,
       text: ayah.text,
       quranComAudioTiming:

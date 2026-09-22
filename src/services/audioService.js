@@ -11,6 +11,7 @@ import {
 } from "../utils/surahStreamSync.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
+import { expandAyahsToAudioFiles } from "../utils/audioPlaylist.js";
 import { observeNativePlayback, preparePlaybackSession } from "./audioSession.js";
 import {
   buildLatencyKey,
@@ -180,7 +181,10 @@ class AudioService {
   loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah") {
     ayahs = filterAyahAudioGaps(ayahs, cdnType, reciterCdn);
     this._playlistSourceAyahs = ayahs.map((ayah) => ({ ...ayah }));
-    const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
+    const preparedAyahs = AudioService.normalizePlaylistAyahs(
+      expandAyahsToAudioFiles(ayahs, cdnType),
+      cdnType,
+    );
     const nextSignature = AudioService.buildPlaylistSignature(
       preparedAyahs,
       reciterCdn,

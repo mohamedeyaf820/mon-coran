@@ -99,28 +99,44 @@ test("complete Quran downloads merge progress from concurrent workers", async ()
   assert.equal(cachedResponses.size, 114);
 });
 
-test("a Warsh surah is counted with the Warsh denominator", async () => {
-  storedValues.clear();
-  cachedResponses.clear();
-  const reciter = getReciter("warsh_yassin", "warsh");
-  // Al-Ma'ida: 120 Hafs verses, 122 Warsh verses.
-  const surahMeta = SURAHS.find((surah) => surah.n === 5);
-  assert.equal(surahMeta.ayahs, 120);
+test("a Warsh download caches exactly the files the Warsh player asks for", async () => {
+  const { AudioService } = await import("../src/services/audioService.js");
+  const { buildSurahAudioPlaylist, expandAyahsToAudioFiles } = await import("../src/utils/audioPlaylist.js");
 
-  const status = await downloadSurahForReciter({
-    surahMeta,
-    reciter,
-    riwaya: "warsh",
-  });
-  const entry = JSON.parse(
-    localStorage.getItem("mushaf_offline_progress_v2"),
-  )[`warsh:${reciter.id}:5`];
+  for (const surahNumber of [2, 5]) {
+    storedValues.clear();
+    cachedResponses.clear();
+    const reciter = getReciter("warsh_yassin", "warsh");
+    const surahMeta = SURAHS.find((surah) => surah.n === surahNumber);
 
-  assert.equal(status, "done");
-  assert.equal(entry.total, getSurahVerseCountByRiwaya(5, "warsh"));
-  assert.equal(entry.downloaded, entry.total);
-  // The extra Warsh verses share their Hafs file, so fewer URLs are stored.
-  assert.equal(cachedResponses.size, 120);
+    const status = await downloadSurahForReciter({
+      surahMeta,
+      reciter,
+      riwaya: "warsh",
+    });
+    const entry = JSON.parse(
+      localStorage.getItem("mushaf_offline_progress_v2"),
+    )[`warsh:${reciter.id}:${surahNumber}`];
+
+    assert.equal(status, "done", `surah ${surahNumber}`);
+    // Al-Ma'ida shows 122 Warsh verses over 120 files; Al-Baqara shows 285 over
+    // 286. The denominator is what the downloader actually fetches.
+    const playerUrls = new Set(
+      expandAyahsToAudioFiles(buildSurahAudioPlaylist(surahNumber, "warsh"), "everyayah").map((item) => AudioService.buildUrl(reciter.cdn, item, "everyayah")),
+    );
+    assert.equal(entry.total, playerUrls.size, `surah ${surahNumber} file count`);
+    assert.equal(entry.downloaded, entry.total, "the bar reaches 100 %");
+    for (const url of playerUrls) {
+      assert.ok(cachedResponses.has(url), `${url} must be cached for offline play`);
+    }
+    // Hafs verses outnumbering files, and files outnumbering verses, are both
+    // covered: nothing is fetched twice and nothing is missed.
+    assert.equal(
+      playerUrls.size,
+      new Set([...playerUrls].map((url) => url.split("/").pop())).size,
+    );
+  }
+  assert.ok(getSurahVerseCountByRiwaya(5, "warsh") > 120, "Al-Ma'ida still shows 122 verses");
 });
 
 test("a lost connection parks the surah instead of failing every verse", async () => {

@@ -21,6 +21,7 @@ import {
   isWarshVerifiedReciter,
 } from "../data/reciters";
 import { getSurah } from "../data/surahs";
+import { hafsNumbersForAyah } from "../constants/warshSource";
 import {
   addAyahToPlaylist,
   getAllPlaylists,
@@ -305,10 +306,12 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
       return;
     }
 
-    // `ayah` is the Hafs-keyed storage coordinate; per-ayah audio files are
-    // numbered by the reciter's own mushaf, so a Warsh reciter must get the
-    // displayed Warsh number, not the mapped Hafs one.
+    // `ayah` is the Hafs-keyed storage coordinate and `numberInSurah` the verse
+    // as the reader shows it. buildUrl picks the file key per CDN: EveryAyah and
+    // the Quran.com CDN cut their mp3s at the Hafs verse stops, so a Warsh verse
+    // must ask for the Hafs verse it recites; QuranPedia follows the riwaya.
     const audioAyah = riwaya === "warsh" ? (ayahData?.numberInSurah ?? ayah) : ayah;
+    const hafsFileKey = hafsNumbersForAyah({ surah, numberInSurah: audioAyah }, riwaya)?.[0] ?? null;
 
     // Try to play from active playlist to ensure continuous play
     let idx = -1;
@@ -338,6 +341,8 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     const ayahInfo = {
       surah,
       numberInSurah: audioAyah,
+      hafsNumber: hafsFileKey,
+      riwaya,
       number: ayahData.number,
     };
     const url = AudioService.buildUrl(
