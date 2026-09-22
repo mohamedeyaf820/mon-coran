@@ -8,7 +8,8 @@ const SCREEN_BUDGETS = [
   { file: "src/components/SettingsModal.jsx", maxKB: 44 },
   { file: "src/components/LibraryModal.jsx", maxKB: 24 },
   { file: "src/components/AyahActions.jsx", maxKB: 90 },
-  { file: "src/services/audioService.js", maxKB: 45 },
+  // 46 after the A-B marking entry point and the provider-gap report (2026-09-22).
+  { file: "src/services/audioService.js", maxKB: 46 },
   { file: "src/context/AppContext.jsx", maxKB: 34 },
   { file: "src/services/quranAPI.js", maxKB: 29 },
   { file: "src/services/quranComAPI.js", maxKB: 20 },

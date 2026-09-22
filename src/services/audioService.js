@@ -11,7 +11,7 @@ import {
 } from "../utils/surahStreamSync.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
-import { expandAyahsToAudioFiles } from "../utils/audioPlaylist.js";
+import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
 import { observeNativePlayback, preparePlaybackSession } from "./audioSession.js";
 import {
   buildLatencyKey,
@@ -281,17 +281,10 @@ class AudioService {
       : -1;
 
     this.playlistIndex = preservedIndex >= 0 ? preservedIndex : -1;
-    // A-B repeat marks positions inside one recitation list. Another surah,
-    // another riwaya, or a different verse count renumbers those positions.
-    const keepsVerseSet =
-      previousPlaylist.length > 0 &&
-      previousPlaylist.length === this.playlist.length &&
-      previousPlaylist.every(
-        (item, index) =>
-          item.surah === this.playlist[index].surah &&
-          item.ayah === this.playlist[index].ayah,
-      );
-    if (!keepsVerseSet) this.clearAbRepeat();
+    // An A-B range marks positions in one list: another surah renumbers them.
+    if (!keepsSameAudioVerseSet(previousPlaylist, this.playlist)) {
+      this.clearAbRepeat();
+    }
     if (preservedIndex >= 0) {
       this.currentAyah = this.playlist[preservedIndex];
     }
@@ -507,7 +500,6 @@ class AudioService {
     this.isPlaying = false;
     this.playlist = [];
     this.playlistIndex = -1;
-    this.playlistGapCount = 0;
     this._playlistSignature = "";
     this._playlistIndexByAyahKey.clear();
     this._playlistSourceAyahs = [];
@@ -562,17 +554,11 @@ class AudioService {
     if (offsetSec > 0) this.seek(offsetSec);
   }
 
-  /**
-   * Where a verse sits in the loaded playlist, or -1 when the provider does not
-   * serve it and the entry was filtered out.
-   */
+  /** Where a verse sits in the loaded playlist, or -1 if it was filtered out. */
   indexOfAyah(surah, ayah) {
-    const idx = this._playlistIndexByAyahKey.get(`${surah}:${ayah}`);
-    if (typeof idx === "number") return idx;
-    if (AudioService.isSurahStreamCdn(this._currentCdnType)) {
-      return this._playlistIndexByAyahKey.get(`${surah}:surah`) ?? -1;
-    }
-    return -1;
+    const stream = AudioService.isSurahStreamCdn(this._currentCdnType);
+    return this._playlistIndexByAyahKey.get(`${surah}:${ayah}`)
+      ?? (stream ? this._playlistIndexByAyahKey.get(`${surah}:surah`) : undefined) ?? -1;
   }
 
   /**

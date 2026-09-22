@@ -133,6 +133,17 @@ export async function buildAudioPlaylistForSurahs(surahNums = [], riwaya = "hafs
 }
 
 /**
+ * Whether two playlists recite the same verses in the same order. An A-B range
+ * marks positions, so it only survives a rebuild that keeps those positions.
+ */
+export function keepsSameAudioVerseSet(previous, next) {
+  if (!previous?.length || previous.length !== next?.length) return false;
+  return previous.every(
+    (item, index) => item.surah === next[index].surah && item.ayah === next[index].ayah,
+  );
+}
+
+/**
  * Re-key a playlist onto the audio files the CDN actually serves.
  *
  * EveryAyah and the Quran.com CDN cut their mp3s at the Hafs verse stops, while a
