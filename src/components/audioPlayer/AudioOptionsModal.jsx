@@ -10,6 +10,7 @@ export default function AudioOptionsModal(props) {
   const {
     abRepeatActive,
     audioSpeed,
+    canSetAbRepeat,
     closeOptionsModal,
     currentReciters,
     cycleSpeed,
@@ -18,6 +19,7 @@ export default function AudioOptionsModal(props) {
     favoriteReciters,
     handleApplyEqPreset,
     handleClearAbRepeat,
+    handleSetAbPoint,
     handleSetTartilMode,
     handleReciterSelect,
     handleVolumeChange,
@@ -158,11 +160,13 @@ export default function AudioOptionsModal(props) {
               className={activeMobileTab === "settings" ? "is-active" : ""}
               abRepeatActive={abRepeatActive}
               audioSpeed={audioSpeed}
+              canSetAbRepeat={canSetAbRepeat}
               closeOptionsModal={closeOptionsModal}
               cycleSpeed={cycleSpeed}
               eqPreset={eqPreset}
               handleApplyEqPreset={handleApplyEqPreset}
               handleClearAbRepeat={handleClearAbRepeat}
+              handleSetAbPoint={handleSetAbPoint}
               handleSetTartilMode={handleSetTartilMode}
               tartilMode={tartilMode}
               handleVolumeChange={handleVolumeChange}

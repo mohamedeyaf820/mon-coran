@@ -96,6 +96,7 @@ export default function AudioPlayer() {
   const [eqPreset, setEqPreset] = useState("flat");
   const [tartilMode, setTartilMode] = useState(false);
   const [abRepeatActive, setAbRepeatActive] = useState(false);
+  const [canSetAbRepeat, setCanSetAbRepeat] = useState(false);
 
   /* Fermeture / refs stables pour callbacks */
   const [closed, setClosed] = useState(false);
@@ -623,6 +624,27 @@ export default function AudioPlayer() {
     setAbRepeatActive(false);
   }, []);
 
+  // The range is marked from where the recitation stands: press A on the verse
+  // to start from, let it recite, then press B on the verse to stop at. The
+  // service loops on playlist indices, so this only works with a loaded list.
+  const handleSetAbPoint = useCallback((point) => {
+    const index = audioService.playlistIndex;
+    if (!Number.isInteger(index) || index < 0) {
+      setCanSetAbRepeat(false);
+      return;
+    }
+    const { abRepeatStart, abRepeatEnd } = audioService;
+    if (point === "a") {
+      audioService.setAbRepeat(index, abRepeatEnd >= index ? abRepeatEnd : -1);
+    } else {
+      const start = abRepeatStart >= 0 ? abRepeatStart : index;
+      audioService.setAbRepeat(start, Math.max(start, index));
+    }
+    setAbRepeatActive(
+      audioService.abRepeatStart >= 0 && audioService.abRepeatEnd >= 0,
+    );
+  }, []);
+
   const toggleMinimized = useCallback(() => {
     setOptionsModalOpen(false);
     setMinimized((prev) => !prev);
@@ -634,6 +656,13 @@ export default function AudioPlayer() {
   }, []);
 
   useEffect(() => {
+    if (!optionsModalOpen) return;
+    setCanSetAbRepeat(
+      audioService.playlistIndex >= 0 && audioService.playlist.length > 0,
+    );
+    setAbRepeatActive(
+      audioService.abRepeatStart >= 0 && audioService.abRepeatEnd >= 0,
+    );
     const root = document.querySelector(".app-root");
     if (!root) return;
     if (optionsModalOpen) {
@@ -957,12 +986,14 @@ export default function AudioPlayer() {
     <AudioOptionsModal
       abRepeatActive={abRepeatActive}
       audioSpeed={audioSpeed}
+      canSetAbRepeat={canSetAbRepeat}
       closeOptionsModal={closeOptionsModal}
       currentReciters={currentReciters}
       cycleSpeed={cycleSpeed}
       eqPreset={eqPreset}
       handleApplyEqPreset={handleApplyEqPreset}
       handleClearAbRepeat={handleClearAbRepeat}
+      handleSetAbPoint={handleSetAbPoint}
       handleSetTartilMode={handleSetTartilMode}
       tartilMode={tartilMode}
       filteredReciters={filteredReciters}

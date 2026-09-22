@@ -127,12 +127,22 @@ function makeLabels(lang) {
           : "Active \u2014 repeating a verse range",
     abRepeatInactive:
       lang === "fr"
-        ? "Inactif \u2014 d\u00e9finissez la plage depuis le lecteur"
+        ? "Inactif \u2014 choisissez les points A et B pendant la r\u00e9citation"
         : lang === "ar"
-          ? "\u063a\u064a\u0631 \u0646\u0634\u0637 \u2014 \u062d\u062f\u062f \u0627\u0644\u0646\u0637\u0627\u0642 \u0645\u0646 \u0627\u0644\u0642\u0627\u0631\u0626"
-          : "Inactive \u2014 set range from the reader",
+          ? "\u063a\u064a\u0631 \u0646\u0634\u0637 \u2014 \u062d\u062f\u062f \u0627\u0644\u0646\u0642\u0637\u062a\u064a\u0646 \u0623 \u0648 \u0628 \u0623\u0646\u0627\u0621 \u0627\u0644\u062a\u0644\u0627\u0648\u0629"
+          : "Inactive \u2014 choose points A and B during recitation",
+    abRepeatNeedsPlayback:
+      lang === "fr"
+        ? "Lancez la r\u00e9citation pour d\u00e9finir les points A et B."
+        : lang === "ar"
+          ? "\u0627\u0628\u062f\u0623 \u0627\u0644\u062a\u0644\u0627\u0648\u0629 \u0644\u062d\u062f\u064a\u062f \u0627\u0644\u0646\u0642\u0637\u062a\u064a\u0646"
+          : "Start the recitation to set points A and B.",
     abRepeatClear:
       lang === "fr" ? "Effacer A-B" : lang === "ar" ? "\u0645\u0633\u062d \u0623-\u0628" : "Clear A-B",
+    abRepeatFrom:
+      lang === "fr" ? "D\u00e9part A" : lang === "ar" ? "\u0628\u062f\u0627\u064a\u0629 \u0623" : "Start A",
+    abRepeatTo:
+      lang === "fr" ? "Fin B" : lang === "ar" ? "\u0646\u0647\u0627\u064a\u0629 \u0628" : "End B",
   };
 }
 
@@ -140,12 +150,14 @@ export default function PlaybackSettingsPanel(props) {
   const {
     abRepeatActive,
     audioSpeed,
+    canSetAbRepeat,
     className,
     closeOptionsModal,
     cycleSpeed,
     eqPreset,
     handleApplyEqPreset,
     handleClearAbRepeat,
+    handleSetAbPoint,
     handleSetTartilMode,
     handleVolumeChange,
     isMobile,
@@ -392,8 +404,36 @@ export default function PlaybackSettingsPanel(props) {
           )}
         </div>
         <p className={cn(playerFadedTextClass, "mt-1 text-[0.62rem] leading-relaxed")}>
-          {abRepeatActive ? labels.abRepeatActive : labels.abRepeatInactive}
+          {abRepeatActive
+            ? labels.abRepeatActive
+            : canSetAbRepeat
+              ? labels.abRepeatInactive
+              : labels.abRepeatNeedsPlayback}
         </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleSetAbPoint("a")}
+            disabled={!canSetAbRepeat}
+            className={cn(
+              playerOptionPillClass(false),
+              "text-[0.65rem] disabled:cursor-not-allowed disabled:opacity-45",
+            )}
+          >
+            {labels.abRepeatFrom}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSetAbPoint("b")}
+            disabled={!canSetAbRepeat}
+            className={cn(
+              playerOptionPillClass(false),
+              "text-[0.65rem] disabled:cursor-not-allowed disabled:opacity-45",
+            )}
+          >
+            {labels.abRepeatTo}
+          </button>
+        </div>
       </div>
 
       <div className="audio-settings-actions flex flex-wrap items-center gap-2 pb-1">

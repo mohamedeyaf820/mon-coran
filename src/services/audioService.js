@@ -225,6 +225,7 @@ class AudioService {
     this.surahCurrentCycle = 1;
 
     const previousCurrent = this.currentAyah;
+    const previousPlaylist = this.playlist;
     const wasPlaying = this.isPlaying;
     const previousSrc = this.audio.src;
     this._playlistSignature = nextSignature;
@@ -277,6 +278,17 @@ class AudioService {
       : -1;
 
     this.playlistIndex = preservedIndex >= 0 ? preservedIndex : -1;
+    // A-B repeat marks positions inside one recitation list. Another surah,
+    // another riwaya, or a different verse count renumbers those positions.
+    const keepsVerseSet =
+      previousPlaylist.length > 0 &&
+      previousPlaylist.length === this.playlist.length &&
+      previousPlaylist.every(
+        (item, index) =>
+          item.surah === this.playlist[index].surah &&
+          item.ayah === this.playlist[index].ayah,
+      );
+    if (!keepsVerseSet) this.clearAbRepeat();
     if (preservedIndex >= 0) {
       this.currentAyah = this.playlist[preservedIndex];
     }
