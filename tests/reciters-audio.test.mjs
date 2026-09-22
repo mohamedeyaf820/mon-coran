@@ -9,19 +9,25 @@ import {
   getReciterBio,
   getReciterCountryLabel,
   getReciterPhoto,
-  getReciterPhotoFocus,
+  getReciterPortraitSource,
   getReciterProfileSource,
   getReciterSourceInfo,
   getReciterVisual,
   getRecitersByRiwaya,
+  getSourcePhotoFocus,
   isWarshVerifiedReciter,
   validateReciterAudioConfig,
   validateReciterProfile,
 } from "../src/data/reciters.js";
 
+import { RECITER_PORTRAITS } from "../src/data/reciterPortraits.js";
+
 const RESEARCHED_PROFILES = JSON.parse(
   readFileSync(new URL("../public/data/reciter-profiles.json", import.meta.url), "utf8"),
 );
+
+// The only third parties the app is willing to credit for a reciter's face.
+const PORTRAIT_PROVIDERS = ["Quran.com", "Assabile", "Way2Quran"];
 
 // Hafs is limited to the two sources the app can play per ayah from: the
 // Quran.com CDN (their API) and EveryAyah.
@@ -108,17 +114,18 @@ const REMOVED_RECITER_IDS = [
   ...RETIRED_WARSH_SURAH_STREAM_IDS,
 ];
 
-// Reciters whose portrait is curated: everything except the QuranPedia and
-// MP3Quran voices with no verifiable portrait.
-const AVATAR_ONLY_IDS = [
-  "warsh_dagous",
-  "warsh_rachid_belalaya",
-  "saad_almoqren",
-];
+// Reciters whose portrait is curated: everything except the QuranPedia voice
+// with no photograph of him anywhere in the sources the app trusts.
+const AVATAR_ONLY_IDS = ["warsh_dagous"];
 
 function allReciters() {
   return [...getRecitersByRiwaya("hafs"), ...getRecitersByRiwaya("warsh")];
 }
+
+// The third-party file a portrait was fetched from, as opposed to the local WebP
+// the app actually serves (getReciterPhoto).
+const sourcePhoto = (reciterOrId) =>
+  RECITER_PHOTOS_MAP[typeof reciterOrId === "string" ? reciterOrId : reciterOrId.id];
 
 test("reciters: Hafs and Warsh catalogues are complete", () => {
   for (const id of EXPECTED_HAFS_IDS) {
@@ -204,7 +211,8 @@ test("reciters: ids are unique and metadata is compatible with the player", () =
     assert.ok(visual.photo || visual.avatar?.initials, reciter.id);
     assert.equal(Boolean(visual.attribution), Boolean(visual.photo), reciter.id);
     assert.match(visual.focalPoint, /^\d+% \d+%$/, reciter.id);
-    assert.equal(visual.focalPoint, getReciterPhotoFocus(reciter, visual.photo), reciter.id);
+    // The build already squared a local file around the face, so the UI centres it.
+    if (RECITER_PORTRAITS[reciter.id]) assert.equal(visual.focalPoint, "50% 50%", reciter.id);
     const bio = getReciterBio(reciter, "fr");
     assert.ok(bio.length > 20, `bio too short for ${reciter.id}`);
   }
@@ -231,16 +239,16 @@ test("reciters: every catalogue entry has a visual and localized biography", () 
   }
 });
 
-test("reciters: curated portrait URLs replace every known text thumbnail", () => {
+test("reciters: curated portraits cover the catalogue and ship as local files", () => {
   const withPhotos = allReciters().filter(
     (reciter) => !AVATAR_ONLY_IDS.includes(reciter.id),
   );
-  assert.equal(withPhotos.length, 49);
-  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 49);
+  assert.equal(withPhotos.length, 51);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 51);
 
   for (const reciter of withPhotos) {
     assert.equal(getReciterVisual(reciter).type, "photo", reciter.id);
-    assert.match(getReciterPhoto(reciter), /^https:\/\//, reciter.id);
+    assert.equal(getReciterPhoto(reciter), `/images/reciters/${reciter.id}.webp`, reciter.id);
   }
 
   for (const id of AVATAR_ONLY_IDS) {
@@ -252,22 +260,53 @@ test("reciters: curated portrait URLs replace every known text thumbnail", () =>
     portraits,
     /\/200x256\/(?:ibrahim-al-dossari|rachid-belalia)\.(?:png|jpe?g)/,
   );
-  assert.doesNotMatch(portraits, /media\.way2quran\.com|i\.pinimg\.com/);
+  // Assabile's name cards and Pinterest are not sources for a face the app shows.
+  assert.doesNotMatch(portraits, /assabile\.com\/media\/person\/default\.png|i\.pinimg\.com/);
 });
 
-test("reciters: portrait attribution matches the actual image host", () => {
-  const expectedHostByProvider = {
-    Assabile: "www.assabile.com",
-    "Quran.com": "static.qurancdn.com",
-    Way2Quran: "storage.googleapis.com",
+test("reciters: the generated local portrait set is complete, dated and attributed", () => {
+  assert.deepEqual(Object.keys(RECITER_PORTRAITS).sort(), Object.keys(RECITER_PHOTOS_MAP).sort());
+
+  for (const [id, entry] of Object.entries(RECITER_PORTRAITS)) {
+    assert.equal(entry.src, `/images/reciters/${id}.webp`, id);
+    const provenance = getReciterPortraitSource(id);
+    assert.ok(PORTRAIT_PROVIDERS.includes(entry.provider), `${id}: ${entry.provider}`);
+    assert.equal(entry.provider, provenance.provider, id);
+    assert.equal(entry.sourcePage, provenance.url, `${id}: stale attribution, rerun npm run images:reciters`);
+    assert.match(entry.sourcePage, /^https:\/\//, id);
+    assert.equal(entry.sourceUrl, RECITER_PHOTOS_MAP[id], id);
+
+    const bytes = readFileSync(new URL(`../public${entry.src}`, import.meta.url));
+    assert.equal(bytes.subarray(0, 4).toString("latin1"), "RIFF", id);
+    assert.equal(bytes.subarray(8, 12).toString("latin1"), "WEBP", id);
+    assert.equal(bytes.byteLength, entry.bytes, `${id}: manifest size drift, rerun npm run images:reciters`);
+    // The avatars render at 45-96px; a 256px WebP never needs more than a few tens of kB.
+    assert.ok(entry.bytes < 40_000, `${id}: ${entry.bytes} bytes`);
+  }
+
+  // The build squares each remote file around this anchor, so the hand-checked
+  // off-centre framings must survive a rebuild.
+  for (const id of ["ar.husary", "husary_muallim", "warsh_hussary", "abdullaah_matrood"]) {
+    assert.match(getSourcePhotoFocus(id), /^50% 2\d%$|^50% 3\d%$/, id);
+  }
+  assert.equal(getSourcePhotoFocus("ar.alafasy"), "50% 32%");
+});
+
+test("reciters: portrait attribution names the provider that hosts the source file", () => {
+  const expectedHostsByProvider = {
+    Assabile: ["www.assabile.com"],
+    "Quran.com": ["static.qurancdn.com"],
+    // Approved for the two Maghribi Warsh voices whose only verifiable portrait is
+    // on the reciter page that names them; Assabile serves a name card instead.
+    Way2Quran: ["storage.googleapis.com", "media.way2quran.com"],
   };
 
   for (const reciter of allReciters()) {
     const visual = getReciterVisual(reciter);
     if (visual.type !== "photo") continue;
-    assert.equal(
-      new URL(visual.photo).hostname,
-      expectedHostByProvider[visual.attribution.provider],
+    const sourceUrl = RECITER_PHOTOS_MAP[reciter.id];
+    assert.ok(
+      expectedHostsByProvider[visual.attribution.provider].includes(new URL(sourceUrl).hostname),
       `${reciter.id}: portrait source mismatch`,
     );
     assert.match(visual.attribution.url, /^https:\/\//, reciter.id);
@@ -355,7 +394,8 @@ test("reciters: attributed portraits and biography sources are wired", () => {
   ];
 
   for (const id of knownPhotoIds) {
-    assert.match(getReciterPhoto(id), /^https:\/\/static\.qurancdn\.com\/images\/reciters\//);
+    assert.match(sourcePhoto(id), /^https:\/\/static\.qurancdn\.com\/images\/reciters\//);
+    assert.equal(getReciterPhoto(id), `/images/reciters/${id}.webp`);
   }
 
   for (const id of EXPECTED_WARSH_IDS) {
@@ -364,7 +404,7 @@ test("reciters: attributed portraits and biography sources are wired", () => {
     assert.ok(researchedProfile.bio.fr.length > 150, id);
     assert.equal(researchedProfile.bioSource.url.startsWith("https://"), true, id);
     if (AVATAR_ONLY_IDS.includes(id)) continue;
-    assert.match(getReciterPhoto(id), /^https:\/\//, id);
+    assert.match(sourcePhoto(id), /^https:\/\//, id);
     assert.match(getReciterVisual(reciter).attribution.url, /^https:\/\//, id);
   }
 
@@ -392,23 +432,37 @@ test("reciters: attributed portraits and biography sources are wired", () => {
 
   for (const id of researchedHafsPortraitIds) {
     const reciter = getReciter(id, "hafs");
-    assert.match(getReciterPhoto(id), /^https:\/\/www\.assabile\.com\/media\/person\//, id);
+    assert.match(sourcePhoto(id), /^https:\/\/www\.assabile\.com\/media\/person\//, id);
     assert.equal(getReciterVisual(reciter).attribution.provider, "Assabile", id);
     assert.match(getReciterProfileSource(id).url, /^https:\/\/www\.assabile\.com\//, id);
   }
 
   const matrood = getReciter("abdullaah_matrood", "hafs");
   assert.match(
-    getReciterPhoto(matrood),
+    sourcePhoto(matrood),
     /^https:\/\/www\.assabile\.com\/media\/photo\/full_size\/abdallah-matroud-582\.jpg$/,
   );
   assert.equal(getReciterVisual(matrood).attribution.provider, "Assabile");
   assert.equal(RESEARCHED_PROFILES.abdullaah_matrood.portraitStatus, "verified");
 
   const ibrahim = getReciter("warsh_ibrahim_aldosari", "warsh");
-  assert.match(getReciterPhoto(ibrahim), /^https:\/\/storage\.googleapis\.com\//);
+  assert.match(sourcePhoto(ibrahim), /^https:\/\/storage\.googleapis\.com\//);
   assert.equal(getReciterVisual(ibrahim).attribution.provider, "Way2Quran");
   assert.equal(RESEARCHED_PROFILES.warsh_ibrahim_aldosari.portraitStatus, "verified");
+
+  // The two Maghribi voices whose only photograph lives on Way2Quran, accepted over
+  // Assabile's name card. They are the whole exception to the Way2Quran hot-link ban.
+  const way2quranIds = ["saad_almoqren", "warsh_rachid_belalaya"];
+  for (const id of way2quranIds) {
+    assert.match(sourcePhoto(id), /^https:\/\/media\.way2quran\.com\/imgs\//, id);
+    assert.equal(getReciterVisual(getReciter(id)).attribution.provider, "Way2Quran", id);
+    assert.equal(RESEARCHED_PROFILES[id].portraitStatus, "verified", id);
+  }
+  const otherPhotos = Object.keys(RECITER_PHOTOS_MAP).filter((id) => !way2quranIds.includes(id));
+  // media.way2quran.com is the narrow exception: those two files and no others.
+  for (const id of otherPhotos) {
+    assert.doesNotMatch(RECITER_PHOTOS_MAP[id], /^https:\/\/media\.way2quran\.com\//, id);
+  }
 
   assert.equal(getReciterVisual(getReciter("ar.husary")).attribution.provider, "Quran.com");
   assert.equal(getReciterCountryLabel("KSA", "fr"), "Arabie saoudite");

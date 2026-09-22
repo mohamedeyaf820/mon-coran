@@ -23,6 +23,9 @@ currentAyah_matches*.txt
 template_currentAyah*.txt
 scratch/
 
+# Downloaded originals for scripts/build-reciter-images.mjs — never shipped.
+.cache/
+
 # Backend cache
 server/.cache/
 

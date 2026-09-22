@@ -8,6 +8,8 @@
  *   - 'mp3quran-surah' → {cdn}{SSS}.mp3 whole-surah streams (legacy, no catalog entry)
  */
 
+import { RECITER_PORTRAITS } from "./reciterPortraits.js";
+
 const SUPPLEMENTAL_HAFS_RECITERS = [
   {
     id: "abu_bakr_ash_shaatree",
@@ -658,9 +660,14 @@ const QURAN_RECITER_IMAGE_BASE = "https://static.qurancdn.com/images/reciters/";
 const quranPhoto = (path) => `${QURAN_RECITER_IMAGE_BASE}${path}`;
 const ASSABILE_IMAGE_BASE = "https://www.assabile.com/media/person/280x219/";
 const assabilePhoto = (path) => `${ASSABILE_IMAGE_BASE}${path}`;
+const WAY2QURAN_IMAGE_BASE = "https://media.way2quran.com/imgs/";
+const way2quranPhoto = (path) => `${WAY2QURAN_IMAGE_BASE}${path}`;
 
-// Curated portrait URLs must identify the same reciter as their attributed
-// profile. The UI keeps a deterministic initials avatar as a network fallback.
+// The third-party file each portrait was fetched from. scripts/build-reciter-images.mjs
+// turns every entry here into a local 256px WebP under public/images/reciters/ and
+// records its provenance in reciterPortraits.js, which is what the UI actually loads.
+// A curated URL must identify the same reciter as its attributed profile; the initials
+// avatar remains as the fallback when a local file is missing.
 export const RECITER_PHOTOS_MAP = {
   "ar.alafasy": quranPhoto("6/mishary-rashid-alafasy-profile.jpeg"),
   "ar.abdulbasitmurattal": quranPhoto("1/abdelbasset-profile.jpeg"),
@@ -720,6 +727,12 @@ export const RECITER_PHOTOS_MAP = {
   // real photograph rather than the name card Assabile uses for the Warsh
   // reciters it has no picture of.
   warsh_mohamed_abdulkarim: assabilePhoto("muhammad-abdulkareem.png"),
+  // Way2Quran keeps the only verifiable portraits of these two: the reciter page
+  // names him in the h1 and embeds this exact file. Assabile has no photograph of
+  // either man — it serves a grey name card — and Quran.com does not cover Maghribi
+  // Warsh reciters, so this is the sourced face rather than a guess.
+  saad_almoqren: way2quranPhoto("saad-almqren.jpg"),
+  warsh_rachid_belalaya: way2quranPhoto("rasheed-bel-alia.jpg"),
 };
 
 const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
@@ -769,6 +782,14 @@ const RECITER_PHOTO_SOURCES = Object.freeze({
   warsh_mohamed_abdulkarim: Object.freeze({
     provider: "Assabile",
     url: "https://www.assabile.com/muhammad-abdulkareem-50/muhammad-abdulkareem.htm",
+  }),
+  saad_almoqren: Object.freeze({
+    provider: "Way2Quran",
+    url: "https://way2quran.com/ar/reciters/saad-almqren",
+  }),
+  warsh_rachid_belalaya: Object.freeze({
+    provider: "Way2Quran",
+    url: "https://way2quran.com/ar/reciters/rasheed-bel-alia",
   }),
 });
 
@@ -864,9 +885,14 @@ export function getReciterPhoto(reciterOrId) {
       ? reciterOrId
       : String(reciterOrId?.id || "");
   if (!id) return null;
+  const local = RECITER_PORTRAITS[id];
+  if (local) return local.src;
   return RECITER_PHOTOS_MAP[id] || null;
 }
 
+// Where the face sits inside the remote file. scripts/build-reciter-images.mjs uses
+// this to square the source; once the portrait is local the crop is baked in, so the
+// UI centres it.
 const RECITER_PHOTO_FOCUS = Object.freeze({
   "ar.husary": "50% 30%",
   husary_muallim: "50% 30%",
@@ -875,39 +901,61 @@ const RECITER_PHOTO_FOCUS = Object.freeze({
   abdullaah_matrood: "50% 24%",
 });
 
-export function getReciterPhotoFocus(reciterOrId, photo = null) {
+const focusForSourceUrl = (url) => {
+  if (url.includes("/200x256/")) return "50% 22%";
+  if (url.includes("/280x219/")) return "50% 28%";
+  if (url.includes("static.qurancdn.com")) return "50% 32%";
+  return "50% 28%";
+};
+
+export function getSourcePhotoFocus(reciterOrId) {
   const id =
     typeof reciterOrId === "string"
       ? reciterOrId
       : String(reciterOrId?.id || "");
-  if (RECITER_PHOTO_FOCUS[id]) return RECITER_PHOTO_FOCUS[id];
+  return (
+    RECITER_PHOTO_FOCUS[id] || focusForSourceUrl(RECITER_PHOTOS_MAP[id] || "")
+  );
+}
 
-  const source = photo || getReciterPhoto(reciterOrId) || "";
-  if (source.includes("/200x256/")) return "50% 22%";
-  if (source.includes("/280x219/")) return "50% 28%";
-  if (source.includes("static.qurancdn.com")) return "50% 32%";
-  return "50% 28%";
+export function getReciterPhotoFocus(reciterOrId) {
+  const id =
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
+  // A local portrait is already squared around the face.
+  if (RECITER_PORTRAITS[id]) return "50% 50%";
+  return getSourcePhotoFocus(id);
+}
+
+// Who hosts the file behind a portrait, derived from the catalogue rather than from
+// the generated manifest: the local WebP records this, so rebuilding can never
+// inherit an attribution that a later edit to the maps has invalidated.
+export function getReciterPortraitSource(reciterOrId) {
+  const id =
+    typeof reciterOrId === "string"
+      ? reciterOrId
+      : String(reciterOrId?.id || "");
+  const photo = RECITER_PHOTOS_MAP[id];
+  if (!photo) return null;
+  const explicit = RECITER_PHOTO_SOURCES[id];
+  if (explicit) return { provider: explicit.provider, url: explicit.url };
+  if (photo.includes("assabile.com")) {
+    return {
+      provider: "Assabile",
+      url: RECITER_PROFILE_SOURCES[id] || "https://www.assabile.com/",
+    };
+  }
+  return { provider: "Quran.com", url: "https://quran.com/reciters" };
 }
 
 export function getReciterVisual(reciter) {
   const photo = getReciterPhoto(reciter);
-  const explicitSource = RECITER_PHOTO_SOURCES[reciter?.id];
-  const defaultSource = photo?.includes("assabile.com")
-    ? {
-        provider: "Assabile",
-        url:
-          RECITER_PROFILE_SOURCES[reciter?.id] ||
-          "https://www.assabile.com/",
-      }
-    : {
-        provider: "Quran.com",
-        url: "https://quran.com/reciters",
-      };
-  const attribution = explicitSource || defaultSource;
+  const attribution = getReciterPortraitSource(reciter?.id);
   return {
     type: photo ? "photo" : "avatar",
     photo,
-    focalPoint: getReciterPhotoFocus(reciter, photo),
+    focalPoint: getReciterPhotoFocus(reciter),
     avatar: getReciterAvatar(reciter),
     attribution: photo
       ? {

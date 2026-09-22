@@ -38,7 +38,8 @@
     "audit:warsh:audio": "node scripts/audit-warsh-audio.mjs",
     "audit:warsh:tajweed": "node scripts/verify-warsh-tajweed.mjs",
     "audit:warsh": "npm run audit:warsh:tajweed && npm run audit:warsh:audio",
-    "audit:reciters": "node scripts/audit-reciter-audio.mjs"
+    "audit:reciters": "node scripts/audit-reciter-audio.mjs",
+    "images:reciters": "node scripts/build-reciter-images.mjs"
   },
   "dependencies": {
     "@radix-ui/react-dialog": "^1.1.23",

@@ -75,10 +75,12 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("'unsafe-eval'"), false);
   assert.equal(csp.includes("ia800304.us.archive.org"), false);
   assert.equal(csp.includes("ws://localhost"), false);
-  assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/storage\.googleapis\.com/);
+  // Reciter portraits are the app's own files (public/images/reciters), so no third
+  // party is allowed to see an image request or a referrer from this origin.
+  assert.equal(csp.includes("img-src 'self' data: blob:;"), true);
+  assert.doesNotMatch(csp, /img-src[^;]*(assabile|qurancdn|static\.quran\.com|way2quran|pinimg|suratmp3|surahquran|wikimedia)/);
   assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
-  assert.doesNotMatch(csp, /img-src[^;]*(suratmp3\.com|surahquran\.com|wikimedia\.org)/);
+  assert.doesNotMatch(csp, /suratmp3\.com|surahquran\.com|wikimedia\.org/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
   assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);

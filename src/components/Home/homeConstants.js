@@ -562,27 +562,6 @@ export const TYPE_INFO = {
   Medinan: { fr: "Médinoise", en: "Medinan", ar: "مدنية" },
 };
 
-/* ─── Articles de blog (données de démonstration) ────────────────────────── */
-/* ─── Photos des récitateurs ─────────────────────────────────────────────── */
-export const RECITER_PHOTOS = {
-  "ar.alafasy":            "https://static.quran.com/images/reciters/7/mishary-rashid-alafasy.png",
-  "ar.abdulbasitmurattal": "https://static.quran.com/images/reciters/1/abdul-basit.png",
-  "ar.abdulbasitmujawwad": "https://static.quran.com/images/reciters/1/abdul-basit.png",
-  "ar.husary":             "https://static.quran.com/images/reciters/10/mahmoud-khalil-al-husary.png",
-  "ar.minshawi":           "https://static.quran.com/images/reciters/12/muhammad-siddiq-al-minshawi.png",
-  "ar.minshawimujawwad":   "https://static.quran.com/images/reciters/12/muhammad-siddiq-al-minshawi.png",
-  "ar.saoodshuraym":       "https://static.quran.com/images/reciters/8/saud-ash-shuraym.png",
-  "ar.abdurrahmaansudais": "https://static.quran.com/images/reciters/3/abdur-rahman-as-sudais.png",
-  "ahmed_ajmy":            "https://static.quran.com/images/reciters/5/ahmed-al-ajamy.png",
-  "maher_almuaiqly":       "https://static.quran.com/images/reciters/11/maher-al-muaiqly.png",
-  "yasser_dossari_hafs":   "https://static.quran.com/images/reciters/14/yasser-ad-dussary.png",
-  "nasser_alqatami":       "https://static.quran.com/images/reciters/13/nasser-al-qatami.png",
-  "ali_jabir":             "https://static.quran.com/images/reciters/2/ali-jaber.png",
-  "hudhaify":              "https://static.quran.com/images/reciters/4/ali-al-hudhaify.png",
-  "muhammad_ayyoub":       "https://static.quran.com/images/reciters/9/muhammad-ayyoub.png",
-  "fares_abbad":           "https://static.quran.com/images/reciters/6/fares-abbad.png",
-};
-
 /* ─── Fonctions utilitaires ──────────────────────────────────────────────── */
 
 /** Normalise les apostrophes et espaces dans un nom de sourate latin. */
@@ -600,12 +579,6 @@ export function getDailyVerseIndex(date = new Date()) {
   const start     = new Date(date.getFullYear(), 0, 0);
   const dayOfYear = Math.floor((date - start) / 86400000);
   return dayOfYear % DAILY_VERSES.length;
-}
-
-/** Retourne la photo d'un récitateur, avec fallback avatar. */
-export function getReciterPhoto(id) {
-  if (RECITER_PHOTOS[id]) return RECITER_PHOTOS[id];
-  return `https://ui-avatars.com/api/?name=${id}&background=105a30&color=fff&size=128&bold=true`;
 }
 
 /**
