@@ -283,7 +283,6 @@ html body .app-root[data-view="home"] .reciter-card__copy {
      toolbar wraps instead of hiding an action the reader can reach nowhere. */
   html body .app-root[data-view="reading"] .qc-list-card__foot {
     gap: 0.1rem 0.2rem;
-    margin-top: 0.5rem;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
@@ -1273,19 +1272,20 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   border-bottom: 0 !important;
 }
 
-/* The toolbar closes the verse: reference, play, bookmark and the options menu
-   stay one group at the reading edge — spread across the column they read as
-   four unrelated controls instead of one answer for one verse. */
+/* The verse opens with its chrome, the way Quran.com orders a reading row:
+   reference, listen and bookmark at the reading start, the overflow menu at
+   the far end of the same bar, and the Quran given the whole measure below it.
+   Both groups stay unwrapped so one bar answers for one verse. */
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .qc-list-card__foot {
   display: flex;
   min-height: 44px;
   align-items: center;
-  justify-content: flex-start !important;
+  justify-content: space-between !important;
   flex-wrap: wrap;
   gap: 0.1rem 0.2rem;
-  margin-top: clamp(0.5rem, 1.2vw, 0.85rem) !important;
-  margin-bottom: 0 !important;
+  margin-top: 0 !important;
+  margin-bottom: clamp(0.2rem, 0.9vw, 0.5rem) !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
@@ -1336,19 +1336,11 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
      to carry the same specificity with a lower value — import order decided
      the winner. Keep the rule single. */
   line-height: max(1.9, var(--quran-line-height, 1.9)) !important;
+  /* RTL ink keeps its right edge in a French/English page too: Quran.com
+     aligns the verse the same way in every locale. Sharing the left edge with
+     the translation instead left the row reading as three disconnected parts. */
   text-align: right !important;
   text-wrap: pretty;
-}
-
-/* In the French/English reader the Arabic must share the left edge with its
-   transliteration and translation; a verse reads as three disconnected
-   fragments when the Arabic is pinned to the opposite edge of a wide column.
-   `match-parent` cannot express this because the Arabic keeps direction:rtl for
-   correct bidi, and `[dir=…]` selectors are dropped by the production CSS
-   build, so the card carries the reading direction as a data attribute. */
-html body #root .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card[data-verse-dir="ltr"] .qc-ayah-text-ar {
-  text-align: left !important;
 }
 
 /* A verse is one group: the three lines stay close together and only the

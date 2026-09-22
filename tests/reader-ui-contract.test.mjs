@@ -160,13 +160,17 @@ test("verse reference and primary actions keep one production-safe row", () => {
 
   assert.match(view, /className="qc-list-card__start"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
   assert.match(view, /className="qc-list-card__end"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
-  // The toolbar closes the verse instead of opening it: the Quran text keeps
-  // the first line of the row, the way Quran.com orders a reading verse.
-  assert.match(view, /className="qc-ayah-text-ar[\s\S]*?className="qc-list-card__foot/);
+  // Quran.com opens a verse with its chrome: the bar of reference and actions
+  // comes first and the Quran keeps the whole measure below it.
+  assert.match(view, /className="qc-list-card__foot[\s\S]*?className="qc-ayah-text-ar/);
   // The stream is a reading column, not a framed panel.
   assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*width: min\(100%, 56rem\)/);
   assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*box-shadow: none/);
-  assert.match(styles, /\.qc-list-card__foot \{[^}]*justify-content: flex-start !important/);
+  assert.match(styles, /\.qc-list-card__foot \{[^}]*justify-content: space-between !important/);
+  // The Arabic is RTL ink: it keeps its right edge in the French and English
+  // reader too, and no locale may pull it back to the left.
+  assert.match(styles, /\.qc-ayah-text-ar \{[^}]*text-align: right !important/);
+  assert.doesNotMatch(styles, /\[data-verse-dir="ltr"\][^{]*\{[^}]*text-align: left/);
   assert.match(styles, /@media \(max-width: 320px\)[\s\S]*?\.srh-controls[\s\S]*?minmax\(0, 1\.12fr\)/);
   assert.match(styles, /:is\(\.srh-pill, \.srh-toggle\) svg[\s\S]*?display: none !important/);
 });
