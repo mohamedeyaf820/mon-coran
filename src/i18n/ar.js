@@ -123,7 +123,6 @@ export default {
     mushaf: 'مصحف',
     list: 'قائمة',
     translationToggle: 'ترجمة',
-    translationMushafHint: 'الترجمة غير متاحة في وضع المصحف — استخدم وضع القائمة',
     tajweedToggle: 'تجويد',
     description: 'اقرأ واستمع إلى سورة {name} — تفسير، تلاوة.',
     immersive: 'قراءة بملء الشاشة',

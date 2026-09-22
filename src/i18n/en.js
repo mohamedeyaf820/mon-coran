@@ -123,7 +123,6 @@ export default {
     mushaf: 'Mushaf',
     list: 'List',
     translationToggle: 'Translation',
-    translationMushafHint: 'Translation is unavailable in Mushaf mode — switch to List mode',
     tajweedToggle: 'Tajweed',
     description: 'Read and listen to Surah {name} — translation, tafsir, audio recitation.',
     immersive: 'Immersive reading',

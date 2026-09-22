@@ -149,7 +149,6 @@ export default function SurahReaderHeader({
   ];
 
   /* ── Study toggles ── */
-  const translationMushafHint = t("reader.translationMushafHint", lang);
   const studyToggles = [
     {
       key: "translation",
@@ -157,9 +156,10 @@ export default function SurahReaderHeader({
       label: t("reader.translationToggle", lang),
       active: showTranslation,
       onClick: toggleTranslation,
-      hidden: false,
-      disabled: mushafIsOn,
-      disabledHint: translationMushafHint,
+      // A printed mushaf page carries no translation, so the control has no
+      // state to show there: a disabled button only teaches the reader to
+      // ignore the row.
+      hidden: mushafIsOn,
     },
     {
       key: "tajweed",
