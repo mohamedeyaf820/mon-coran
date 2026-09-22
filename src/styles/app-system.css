@@ -696,6 +696,9 @@ html body .app-root {
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(21rem, 0.92fr);
+  /* Each panel keeps its own height: stretching the resume card to match the
+     day list put a dead band between the library row and the call to action. */
+  align-items: start;
   gap: clamp(0.75rem, 1.4vw, 1rem);
   min-width: 0;
 }
@@ -814,17 +817,16 @@ html body .app-root {
   border-radius: 0.55rem;
 }
 
+/* One composition at every width, the one the phone shows: the greeting, the
+   riwaya, the promise, then the answer to "where was I?" directly under it and
+   the library row under that. The old two-column body pushed the reading
+   target into a right-hand panel behind a hairline, which separated the verse
+   from the sentence it continues and left a dead band in a wide card. */
 .app-root[data-view="home"] .home-resume-panel__body {
-  display: grid;
+  display: flex;
   flex: 1;
-  grid-template-columns: minmax(0, 1fr) minmax(10rem, 0.62fr);
-  grid-template-areas:
-    "eyebrow target"
-    "title target"
-    "library library";
-  align-content: center;
-  align-items: end;
-  column-gap: clamp(1rem, 2.4vw, 1.75rem);
+  flex-direction: column;
+  align-items: stretch;
   max-width: none;
   padding-block: clamp(0.8rem, 1.5vw, 1.25rem);
 }
@@ -860,18 +862,20 @@ html body .app-root {
   grid-area: target;
   display: flex;
   min-width: 0;
-  align-items: flex-end;
-  align-self: center;
+  align-items: flex-start;
   flex-direction: column;
-  gap: 0.4rem;
-  margin: 0;
-  padding-inline-start: clamp(0.75rem, 1.8vw, 1.25rem);
-  border-inline-start: 1px solid rgba(255, 255, 255, 0.17);
+  gap: 0.2rem;
+  margin: 0.55rem 0 0;
+  padding-inline-start: 0;
+  border-inline-start: 0;
   color: rgba(255, 255, 255, 0.78);
-  text-align: end;
+  text-align: start;
 }
 
+/* The card is about the next verse, not about a caption announcing it; the
+   phone has never shown the label and the wide card does not need it either. */
 .app-root[data-view="home"] .home-resume-panel__target-label {
+  display: none;
   color: rgba(255, 255, 255, 0.56);
   font-size: max(0.66rem, 10px);
   font-weight: 760;
@@ -883,7 +887,7 @@ html body .app-root {
   display: flex;
   min-width: 0;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
