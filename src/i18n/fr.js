@@ -297,6 +297,11 @@ export default {
     networkLoading: 'Chargement audio...',
     networkStalled: 'Connexion instable',
     noConnection: 'Pas de connexion : la récitation n’a pas pu charger.',
+    gapSkipped: {
+      one: '{count} verset de cette liste est indisponible avec ce récitateur : il sera sauté.',
+      other: '{count} versets de cette liste sont indisponibles avec ce récitateur : ils seront sautés.',
+    },
+    verseUnavailable: 'Ce verset n’est pas disponible avec ce récitateur.',
     tabsAria: 'Catégories des réglages audio',
     playbackTab: 'Lecture',
   },

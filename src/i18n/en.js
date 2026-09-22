@@ -298,6 +298,11 @@ export default {
     networkLoading: 'Loading audio...',
     networkStalled: 'Unstable connection',
     noConnection: 'No connection: the recitation could not load.',
+    gapSkipped: {
+      one: '{count} verse in this list is not available with this reciter and will be skipped.',
+      other: '{count} verses in this list are not available with this reciter and will be skipped.',
+    },
+    verseUnavailable: 'This verse is not available with this reciter.',
     tabsAria: 'Audio settings categories',
     playbackTab: 'Playback',
   },

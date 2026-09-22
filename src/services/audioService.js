@@ -49,6 +49,7 @@ class AudioService {
     this.playlist = []; // array of { surah, ayah, url }
     this._playlistSourceAyahs = [];
     this.playlistIndex = -1;
+    this.playlistGapCount = 0;
     this.isPlaying = false;
     this._loadTimeout = null;
     this._cancelPendingLoad = null;
@@ -179,7 +180,9 @@ class AudioService {
   /* ── Playlist Management ───────────────────── */
 
   loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah") {
-    ayahs = filterAyahAudioGaps(ayahs, cdnType, reciterCdn);
+    const requestedAyahs = Array.isArray(ayahs) ? ayahs : [];
+    ayahs = filterAyahAudioGaps(requestedAyahs, cdnType, reciterCdn);
+    this.playlistGapCount = Math.max(0, requestedAyahs.length - ayahs.length);
     this._playlistSourceAyahs = ayahs.map((ayah) => ({ ...ayah }));
     const preparedAyahs = AudioService.normalizePlaylistAyahs(
       expandAyahsToAudioFiles(ayahs, cdnType),
@@ -504,6 +507,7 @@ class AudioService {
     this.isPlaying = false;
     this.playlist = [];
     this.playlistIndex = -1;
+    this.playlistGapCount = 0;
     this._playlistSignature = "";
     this._playlistIndexByAyahKey.clear();
     this._playlistSourceAyahs = [];
@@ -556,6 +560,19 @@ class AudioService {
     if (index < 0 || index >= this.playlist.length) return;
     await this._loadAndPlay(index);
     if (offsetSec > 0) this.seek(offsetSec);
+  }
+
+  /**
+   * Where a verse sits in the loaded playlist, or -1 when the provider does not
+   * serve it and the entry was filtered out.
+   */
+  indexOfAyah(surah, ayah) {
+    const idx = this._playlistIndexByAyahKey.get(`${surah}:${ayah}`);
+    if (typeof idx === "number") return idx;
+    if (AudioService.isSurahStreamCdn(this._currentCdnType)) {
+      return this._playlistIndexByAyahKey.get(`${surah}:surah`) ?? -1;
+    }
+    return -1;
   }
 
   /**

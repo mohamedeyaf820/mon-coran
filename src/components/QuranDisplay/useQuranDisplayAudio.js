@@ -13,6 +13,7 @@ import {
 } from "../../utils/audioNavigationScope";
 import { buildSurahAudioPlaylist } from "../../utils/audioPlaylist";
 import { hafsNumbersForAyah } from "../../constants/warshSource";
+import { toast } from "../../lib/utils";
 
 function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map(), riwaya = "hafs") {
   return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => {
@@ -55,6 +56,25 @@ export default function useQuranDisplayAudio({
   const continuousAutoPlayRef = useRef(false);
   const playbackNavigationRef = useRef(null);
   const activePlaylistScopeRef = useRef(null);
+  const gapsAnnouncedRef = useRef("");
+
+  // QuranPedia does not serve every verse of every set, and the missing files
+  // are dropped so recitation keeps flowing. Without a word about it the
+  // recitation simply stops short, so say it once per loaded list.
+  const announcePlaylistGaps = useCallback(
+    (reciterCdn) => {
+      const count = audioService.playlistGapCount;
+      if (count <= 0) {
+        gapsAnnouncedRef.current = "";
+        return;
+      }
+      const key = `${reciterCdn}:${count}`;
+      if (gapsAnnouncedRef.current === key) return;
+      gapsAnnouncedRef.current = key;
+      toast(t("audio.gapSkipped", lang, count), "warning");
+    },
+    [lang],
+  );
   const readingScopeKey = useMemo(
     () =>
       getReadingAudioScopeKey({
@@ -140,6 +160,7 @@ export default function useQuranDisplayAudio({
       currentReciter.cdn,
       currentReciter.cdnType || "everyayah",
     );
+    announcePlaylistGaps(currentReciter.cdn);
     activePlaylistScopeRef.current = readingScopeKey;
 
     if (continuousAutoPlayRef.current && continuousPlay) {
@@ -147,6 +168,7 @@ export default function useQuranDisplayAudio({
       audioService.play();
     }
   }, [
+    announcePlaylistGaps,
     audioPlaylistKey,
     audioTimingMap,
     ayahs,
@@ -206,9 +228,11 @@ export default function useQuranDisplayAudio({
       currentReciter.cdn,
       currentReciter.cdnType || "everyayah",
     );
+    announcePlaylistGaps(currentReciter.cdn);
     activePlaylistScopeRef.current = readingScopeKey;
     audioService.play();
   }, [
+    announcePlaylistGaps,
     audioTimingMap,
     ayahs,
     currentSurah,
@@ -242,9 +266,19 @@ export default function useQuranDisplayAudio({
       currentReciter.cdn,
       currentReciter.cdnType || "everyayah",
     );
+    announcePlaylistGaps(currentReciter.cdn);
     activePlaylistScopeRef.current = readingScopeKey;
+    // Filtering moves verses up: re-resolve the tapped one inside the loaded list.
+    const targetIndex =
+      audioService.playlistGapCount > 0
+        ? audioService.indexOfAyah(ayahSurah, Number(targetAyah.numberInSurah))
+        : index;
+    if (targetIndex < 0) {
+      setError(t("audio.verseUnavailable", lang));
+      return;
+    }
     try {
-      await audioService.loadAndPlay(index);
+      await audioService.loadAndPlay(targetIndex);
     } catch {
       setError(
         lang === "fr"
@@ -253,6 +287,7 @@ export default function useQuranDisplayAudio({
       );
     }
   }, [
+    announcePlaylistGaps,
     audioTimingMap,
     ayahs,
     currentSurah,
@@ -296,6 +331,7 @@ export default function useQuranDisplayAudio({
         currentReciter.cdn,
         currentReciter.cdnType || "everyayah",
       );
+      announcePlaylistGaps(currentReciter.cdn);
       activePlaylistScopeRef.current =
         displayMode === "surah" && surahNumber === currentSurah
           ? readingScopeKey
@@ -311,6 +347,7 @@ export default function useQuranDisplayAudio({
       setPreparingSurah(null);
     }
   }, [
+    announcePlaylistGaps,
     currentSurah,
     displayMode,
     lang,
