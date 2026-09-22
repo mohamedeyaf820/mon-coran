@@ -1148,7 +1148,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: 24.3em;
+  min-height: calc(15 * var(--mfp-line-pitch));
 }
 
 .quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] .qcm-flow {
@@ -1164,7 +1164,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 }
 
 /* The continuous leaf is the reading column, so the stream must not hold it to
-   the list mode's 1040px measure; the body's own 25em cap keeps the line
+   the list mode's 1040px measure; the body's own em cap keeps the line
    readable on ultrawide screens. */
 .app-main .quran-mode-pane--mushaf {
   max-width: none;
@@ -1172,18 +1172,21 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 
 /* Flow sheets (Warsh, and Hafs printed with a proportional face): one
    continuous body that takes the reading width, the way Quran.com sets a
-   page. The body size comes from that width — a 25em measure — so a wide
-   screen prints a few long lines. On a phone the 25em measure would drive the
-   type under what the printed folio prints there, so the floor holds it at the
-   18 px the fifteen-line sheet already reached, and the leaf simply runs
-   longer. No line count is imposed: the leaf is as tall as its text. */
+   page. The body size comes from that width — a 34em measure, the length a
+   Madani line holds — so a wide screen prints full lines instead of four
+   words stretched across the column. On a phone the measure would drive the
+   type under what the printed folio prints there, so the floor holds it at
+   16 px and the leaf simply runs longer. No line count is imposed: the leaf
+   is as tall as its text, and the row pitch tightens to 1.5em so the page
+   reads dense, not airy. */
 .quran-mode-pane--mushaf .qcm-lines[data-flow="true"] {
   --qcm-page-lines: 0;
+  --mfp-line-pitch: 1.5em;
   display: block;
   width: 100%;
-  max-width: 25em;
+  max-width: 34em;
   margin-inline: auto;
-  font-size: calc(clamp(18px, (100cqi - 3rem) / 25, 72px) * var(--qcm-mushaf-scale, 1));
+  font-size: calc(clamp(16px, (100cqi - 3rem) / 34, 72px) * var(--qcm-mushaf-scale, 1));
   line-height: var(--mfp-line-pitch);
 }
 
@@ -1283,6 +1286,59 @@ html body .app-root .quran-mode-pane--mushaf .qcm-line
   min-width: 0;
   min-height: 0;
   overflow: visible;
+}
+
+/* The khatam of a proportional sheet is drawn by the reader's own face: the
+   verse digits shape the medallion through the font's calt ligature, exactly
+   as the mode liste prints them, so the marker follows the selected font and
+   scales with the body. It must not be sized as an icon — the global touch
+   clamp would paint a ~14 px rosette inside a 44 px box and tear the line
+   apart around it. The 44 px hit area stays, as a non-layout pseudo-element. */
+.quran-mode-pane--mushaf .qcm-ayah-marker--glyph.qcm-ayah-marker--glyph,
+#root ~ .mfp-portal-root .mfp-book .qcm-ayah-marker--glyph.qcm-ayah-marker--glyph {
+  position: relative;
+  display: inline;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  margin-inline: 0.05em 0.28em !important;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  font-size: 0.94em;
+  line-height: 1 !important;
+  color: var(--mushaf-gold-deep);
+  cursor: pointer;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+}
+
+.quran-mode-pane--mushaf .qcm-ayah-marker--glyph::before,
+#root ~ .mfp-portal-root .mfp-book .qcm-ayah-marker--glyph::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 44px;
+  height: 44px;
+  transform: translate(-50%, -50%);
+}
+
+.quran-mode-pane--mushaf .qcm-ayah-marker--glyph.qcm-ayah-marker--juz,
+#root ~ .mfp-portal-root .mfp-book .qcm-ayah-marker--glyph.qcm-ayah-marker--juz {
+  color: var(--mushaf-gold);
+  font-size: 1.06em;
+}
+
+.quran-mode-pane--mushaf .qcm-ayah-marker--glyph.is-playing,
+#root ~ .mfp-portal-root .mfp-book .qcm-ayah-marker--glyph.is-playing {
+  color: var(--primary);
+}
+
+.quran-mode-pane--mushaf .qcm-ayah-marker--glyph:focus-visible,
+#root ~ .mfp-portal-root .mfp-book .qcm-ayah-marker--glyph:focus-visible {
+  outline: 2px solid var(--mushaf-gold-mid);
+  outline-offset: 2px;
+  border-radius: 0.2em;
 }
 
 /* The khatam rosette — shared by the inline sheet and the fullscreen portal

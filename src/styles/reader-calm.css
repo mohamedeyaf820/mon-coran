@@ -146,9 +146,10 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-vers
   border-bottom: 0 !important;
 }
 
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot {
   min-height: 0 !important;
-  margin-bottom: 0.2rem !important;
+  margin-top: 0.4rem !important;
+  margin-bottom: 0 !important;
   padding-bottom: 0 !important;
   border-bottom: 0 !important;
 }
@@ -173,22 +174,22 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
 }
 
 /* Ghost icon buttons: same size, no box until they are needed. */
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button {
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
   border-color: transparent !important;
   background: transparent !important;
   box-shadow: none !important;
   color: var(--text-muted) !important;
 }
 
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button:hover,
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button:focus-visible {
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button:hover,
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button:focus-visible {
   background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07)) !important;
   color: var(--text-primary) !important;
 }
 
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button[aria-pressed="true"],
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button.is-active,
-html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button.is-on {
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button[aria-pressed="true"],
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.is-active,
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.is-on {
   background: var(--reader-active, rgba(var(--primary-rgb), 0.12)) !important;
   color: var(--primary) !important;
 }
@@ -196,16 +197,16 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
 /* With a pointer, actions step back until the reader reaches for them.
    Touch devices keep them fully visible: there is no hover to reveal them. */
 @media (hover: hover) and (pointer: fine) {
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button {
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
     opacity: 0.62;
     transition: opacity 160ms ease, background-color 160ms ease, color 160ms ease;
   }
 
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card:hover .qc-list-card__top .ayah-actions button,
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card:focus-within .qc-list-card__top .ayah-actions button,
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button[aria-pressed="true"],
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button.is-active,
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button.is-on {
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card:hover .qc-list-card__foot .ayah-actions button,
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card:focus-within .qc-list-card__foot .ayah-actions button,
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button[aria-pressed="true"],
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.is-active,
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.is-on {
     opacity: 1;
   }
 }
@@ -235,7 +236,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button {
+  html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
     transition: none;
   }
 }

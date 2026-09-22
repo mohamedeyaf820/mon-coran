@@ -828,7 +828,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.
   box-shadow: inset 3px 0 var(--primary), 0 10px 26px color-mix(in srgb, var(--primary) 11%, transparent);
 }
 
-html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
+html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot {
   min-height: 2.5rem !important;
   margin-bottom: clamp(0.65rem, 1.8vw, 1rem);
   padding-bottom: 0.55rem;
@@ -836,7 +836,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card_
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference,
-html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button {
+html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
   min-width: 2.4rem !important;
   width: auto !important;
   height: 2.4rem !important;
@@ -947,12 +947,12 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
     border-radius: 0.85rem;
   }
 
-  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot {
     min-height: 2.2rem !important;
   }
 
   html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference,
-  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top .ayah-actions button {
+  html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
     min-width: 2.2rem !important;
     height: 2.2rem !important;
     min-height: 2.2rem !important;

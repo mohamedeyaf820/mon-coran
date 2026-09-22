@@ -860,6 +860,10 @@
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-flow="true"] {
   display: block;
   width: var(--mfp-line-measure);
+  /* The fit loop never inflates a short page to fifteen lines, so the block
+     reserves the rest of the grid as blank paper: both leaves of one spread
+     keep the printed page height instead of ending where their ink does. */
+  min-height: calc(15 * var(--mfp-line-pitch));
   font-size: var(--mfp-font);
   line-height: var(--mfp-line-pitch);
 }

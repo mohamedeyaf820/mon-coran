@@ -140,66 +140,18 @@ const QCVerseCard = memo(function QCVerseCard({
         isPlaying && "is-playing",
         isActive && "is-active",
         isPlaying
-          ? "bg-[rgba(var(--primary-rgb),0.05)] border-l-[3px] border-l-[var(--primary)]"
+          ? "bg-[rgba(var(--primary-rgb),0.05)]"
           : isActive
             ? "bg-[rgba(var(--primary-rgb),0.03)]"
             : "hover:bg-[var(--bg-secondary)]",
       )}
     >
-      {/* Card Header: verse number + actions */}
-      <div className="qc-list-card__top select-none">
-        <div
-          className="qc-list-card__start"
-          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
-        >
-          <button
-            type="button"
-            onClick={handleClick}
-            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${ayah.numberInSurah}`}
-            aria-expanded={isActive}
-            className={cn(
-              "qc-list-card__reference",
-              isPlaying && "is-playing",
-              isActive && "is-active",
-            )}
-          >
-            {referenceLabel ?? `${surahNum}:${ayah.numberInSurah}`}
-          </button>
-          <QCVerseActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-            translations={translations}
-            lang={lang}
-            layout="qcom-header-left"
-          />
-        </div>
-        <div
-          className="qc-list-card__end"
-          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
-        >
-          <QCVerseActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-            translations={translations}
-            lang={lang}
-            layout="qcom-header-right"
-          />
-        </div>
-      </div>
-
-      {/* Arabic text */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div
           dir="rtl"
           lang="ar"
           className="qc-ayah-text-ar text-right font-[var(--qd-font-family,var(--font-quran,'Amiri Quran'))] text-[var(--text-quran,var(--text-primary))] [-webkit-font-smoothing:antialiased] [text-rendering:optimizeLegibility]"
-          style={{
-            fontSize:
-              "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
-            lineHeight: "var(--quran-line-height, 2.15)",
-          }}
+          style={{ fontSize: "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))" }}
           aria-label={`${
             lang === "fr"
               ? "Texte arabe du verset"
@@ -255,7 +207,51 @@ const QCVerseCard = memo(function QCVerseCard({
                 )}
           </div>
         ) : null}
+      </div>
 
+      {/* The verse answers after it has been read: reference and actions close
+          the block, the way Quran.com puts its toolbar under the translation.
+          The reference opens the full action sheet, so it stays a button. */}
+      <div className="qc-list-card__foot select-none">
+        <div
+          className="qc-list-card__start"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
+          <button
+            type="button"
+            onClick={handleClick}
+            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${ayah.numberInSurah}`}
+            aria-expanded={isActive}
+            className={cn(
+              "qc-list-card__reference",
+              isPlaying && "is-playing",
+              isActive && "is-active",
+            )}
+          >
+            {referenceLabel ?? `${surahNum}:${ayah.numberInSurah}`}
+          </button>
+          <QCVerseActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+            translations={translations}
+            lang={lang}
+            layout="qcom-header-left"
+          />
+        </div>
+        <div
+          className="qc-list-card__end"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
+          <QCVerseActions
+            surah={surahNum}
+            ayah={ayah.numberInSurah}
+            ayahData={ayah}
+            translations={translations}
+            lang={lang}
+            layout="qcom-header-right"
+          />
+        </div>
       </div>
     </article>
   );

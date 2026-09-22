@@ -160,6 +160,13 @@ test("verse reference and primary actions keep one production-safe row", () => {
 
   assert.match(view, /className="qc-list-card__start"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
   assert.match(view, /className="qc-list-card__end"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
+  // The toolbar closes the verse instead of opening it: the Quran text keeps
+  // the first line of the row, the way Quran.com orders a reading verse.
+  assert.match(view, /className="qc-ayah-text-ar[\s\S]*?className="qc-list-card__foot/);
+  // The stream is a reading column, not a framed panel.
+  assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*width: min\(100%, 56rem\)/);
+  assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*box-shadow: none/);
+  assert.match(styles, /\.qc-list-card__foot \{[^}]*justify-content: flex-start !important/);
   assert.match(styles, /@media \(max-width: 320px\)[\s\S]*?\.srh-controls[\s\S]*?minmax\(0, 1\.12fr\)/);
   assert.match(styles, /:is\(\.srh-pill, \.srh-toggle\) svg[\s\S]*?display: none !important/);
 });
@@ -330,16 +337,27 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   );
 
   // The Mushaf page flows like Quran.com sets one: the leaf takes the reading
-  // column and the body comes from that width (a 25em measure), so a wide
-  // screen prints a few long lines and a phone lands back near fifteen. Only
-  // the explicit Madani-page id keeps the cut glyph sheet.
+  // column and the body comes from that width (a 34em measure, the length a
+  // Madani line holds), so a wide screen prints full lines instead of four
+  // words stretched across the column. Only the explicit Madani-page id keeps
+  // the cut glyph sheet.
   assert.match(
     sheetStyles,
-    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(18px, \(100cqi - 3rem\) \/ 25, 72px\)/,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(16px, \(100cqi - 3rem\) \/ 34, 72px\)/,
   );
-  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 25em/);
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 34em/);
   assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--qcm-page-lines: 0/);
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--mfp-line-pitch: 1\.5em/);
   assert.match(flowRenderer, /getPropertyValue\("--qcm-page-lines"\)/);
+
+  // A proportional sheet prints the verse divider with the reader's own face:
+  // the marker is the font's khatam, sized in em, and the 44 px touch area is
+  // a non-layout pseudo-element so the medallion never tears the line apart.
+  const markerComponent = source("src/components/QuranDisplay/MushafAyahMarker.jsx");
+  assert.match(markerComponent, /getUiAyahMarker\(num, fontFamily, riwaya\)/);
+  assert.match(markerComponent, /getAyahMarkerFontFamily\(fontFamily, riwaya\)/);
+  assert.match(sheetStyles, /\.qcm-ayah-marker--glyph[^{]*\{\s*position: relative;\s*display: inline;/);
+  assert.match(sheetStyles, /\.qcm-ayah-marker--glyph::before[^{]*\{[^}]*width: 44px;[^}]*height: 44px;/);
   assert.doesNotMatch(
     hafsRenderer,
     /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-hafs"/,

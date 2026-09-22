@@ -1935,7 +1935,7 @@ html
     );
 }
 
-html body .app-root .quran-display--platform .qc-list-card__top {
+html body .app-root .quran-display--platform .qc-list-card__foot {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -2161,7 +2161,7 @@ html[data-theme="dark"]
         padding: 1.15rem 0.85rem 1.35rem;
     }
 
-    html body .app-root .quran-display--platform .qc-list-card__top {
+    html body .app-root .quran-display--platform .qc-list-card__foot {
         align-items: flex-start !important;
         gap: 0.65rem;
     }

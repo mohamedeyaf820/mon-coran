@@ -129,45 +129,28 @@ html body .app-root :is(
   line-height: 1.45 !important;
 }
 
+/* The verse toolbar sits under the translation and stays quiet: the icons
+   carry the state (the component gilds play, bookmark and copy themselves), so
+   the sheet only fixes the shape and the 44 px target. */
 html body .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-actions button {
-  width: var(--mp-verse) !important;
-  min-width: var(--mp-verse) !important;
-  height: var(--mp-verse) !important;
-  min-height: var(--mp-verse) !important;
+  .qc-list-card__foot .ayah-actions button {
+  width: var(--mp-device-touch) !important;
+  min-width: var(--mp-device-touch) !important;
+  height: var(--mp-device-touch) !important;
+  min-height: var(--mp-device-touch) !important;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border) 76%);
-  background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
-  color: color-mix(in srgb, var(--text-primary) 84%, var(--primary) 16%) !important;
-  opacity: 1;
-  visibility: visible;
+  border: 0;
+  border-radius: 999px;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-actions button svg {
+  .qc-list-card__foot .ayah-actions button svg {
   flex: 0 0 0.75rem !important;
   width: 0.75rem !important;
   min-width: 0.75rem !important;
   height: 0.75rem !important;
   color: currentColor !important;
   stroke: currentColor !important;
-  opacity: 1;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-actions button:hover {
-  border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%);
-  background: var(--primary) !important;
-  color: #fff !important;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card:is(.is-playing, .is-active) .ayah-action--play,
-html body .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-action--bookmark.text-\[var\(--primary\)\] {
-  border-color: var(--primary);
-  background: var(--primary) !important;
-  color: #fff !important;
 }
 
 html,
@@ -296,26 +279,11 @@ html body .app-root[data-view="home"] .reciter-card__copy {
     font-size: clamp(18px, var(--qd-reading-font-size, 42px), 30px) !important;
   }
 
-  html body .app-root[data-view="reading"] .qc-list-card__top {
-    min-height: var(--mp-verse);
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    gap: 0.4rem;
-    margin-bottom: 0.25rem;
-  }
-
-  html body .app-root[data-view="reading"] .qc-list-card__start {
-    flex-wrap: nowrap !important;
-  }
-
-  html body .app-root[data-view="reading"] .qc-list-card__end {
-    flex: 0 0 auto !important;
-    max-width: none !important;
-    overflow: visible;
-  }
-
-  html body .app-root[data-view="reading"] .qc-list-card__top :is(.ayah-action--copy, .ayah-action--share, .ayah-action--note) {
-    display: none !important;
+  /* Five 44 px targets do not fit beside the reference on a narrow phone: the
+     toolbar wraps instead of hiding an action the reader can reach nowhere. */
+  html body .app-root[data-view="reading"] .qc-list-card__foot {
+    gap: 0.1rem 0.2rem;
+    margin-top: 0.5rem;
   }
 
   html body .app-root[data-view="reading"] .qc-list-card .qc-ayah-text-ar {
@@ -1251,7 +1219,7 @@ html body .app-root > .mp-header
     display: none !important;
   }
 
-  html body .app-root[data-view="reading"] .qc-list-card__top {
+  html body .app-root[data-view="reading"] .qc-list-card__foot {
     gap: 0.25rem;
   }
 
@@ -1269,17 +1237,19 @@ html body .app-root > .mp-header
 
 /* Canonical reader finish: calm list rows and non-disruptive Quranic waqf.
    Keep this at the end of the deferred responsive sheet so legacy reader
-   variants cannot turn the stop signs or ayah rows back into large cards. */
+   variants cannot turn the stop signs or ayah rows back into large cards.
+   The stream is a reading column, not a panel: no frame, no shadow, and a
+   measure short enough that one verse stays one thought. */
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .qc-verse-by-verse-view {
-  width: min(100%, 64rem) !important;
-  max-width: 64rem !important;
+  width: min(100%, 56rem) !important;
+  max-width: 56rem !important;
   padding: 0 0 calc(var(--player-h, 0px) + 2rem) !important;
-  border: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
-  border-radius: 1rem;
-  background: color-mix(in srgb, var(--bg-card) 92%, transparent);
-  box-shadow: 0 12px 32px color-mix(in srgb, #000 6%, transparent);
-  overflow: clip;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
@@ -1303,19 +1273,36 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   border-bottom: 0 !important;
 }
 
+/* The toolbar closes the verse: reference, play, bookmark and the options menu
+   stay one group at the reading edge — spread across the column they read as
+   four unrelated controls instead of one answer for one verse. */
 html body #root .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top {
+  .qc-list-card__foot {
+  display: flex;
   min-height: 44px;
-  margin-bottom: clamp(0.35rem, 0.8vw, 0.65rem) !important;
+  align-items: center;
+  justify-content: flex-start !important;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.2rem;
+  margin-top: clamp(0.5rem, 1.2vw, 0.85rem) !important;
+  margin-bottom: 0 !important;
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-actions button {
+  .qc-list-card__foot :is(.qc-list-card__start, .qc-list-card__end) {
+  flex: 0 0 auto;
+  flex-wrap: nowrap !important;
+  gap: 0.1rem 0.2rem;
+  margin-inline-start: 0 !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform
+  .qc-list-card__foot .ayah-actions button {
   width: 44px !important;
   min-width: 44px !important;
   height: 44px !important;
   min-height: 44px !important;
-  border-radius: 0.72rem !important;
+  border-radius: 999px !important;
 }
 
 /* The reference is a text target ("2:253"), not an icon: a 44px square with no
@@ -1332,7 +1319,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 }
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
-  .qc-list-card__top .ayah-actions button svg {
+  .qc-list-card__foot .ayah-actions button svg {
   width: 0.82rem !important;
   height: 0.82rem !important;
 }
@@ -1858,7 +1845,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top {
+    .qc-list-card__foot {
     min-height: 44px !important;
     gap: 0.35rem !important;
     margin-bottom: 0.38rem !important;
@@ -1873,7 +1860,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top .ayah-actions button {
+    .qc-list-card__foot .ayah-actions button {
     padding: 0 !important;
     border-radius: 0.62rem !important;
   }
@@ -1885,7 +1872,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top .ayah-actions button svg {
+    .qc-list-card__foot .ayah-actions button svg {
     width: 0.72rem !important;
     height: 0.72rem !important;
     stroke-width: 1.8;
@@ -1934,7 +1921,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top {
+    .qc-list-card__foot {
     gap: 0.22rem !important;
   }
 
@@ -1947,7 +1934,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 @media (min-width: 641px) and (max-width: 1024px) {
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    .qc-list-card__top .ayah-actions button svg {
+    .qc-list-card__foot .ayah-actions button svg {
     width: 0.78rem !important;
     height: 0.78rem !important;
   }

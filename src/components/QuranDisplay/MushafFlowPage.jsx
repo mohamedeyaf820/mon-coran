@@ -86,6 +86,7 @@ export default function MushafFlowPage({
   currentPlayingAyah,
   fallbackFontFamily,
   fitSignal,
+  fontFamily,
   lang,
   meta,
   onToggleActive,
@@ -201,6 +202,8 @@ export default function MushafFlowPage({
           num={token.ayah}
           isPlaying={isPlaying}
           juz={Boolean(juzOpening)}
+          fontFamily={fontFamily}
+          riwaya={riwaya}
           onClick={onToggleActive ? () => onToggleActive(token.globalAyah) : undefined}
         />
       );

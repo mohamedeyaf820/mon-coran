@@ -103,7 +103,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   padding-inline-start: calc(clamp(0.65rem, 1.4vw, 1rem) - 3px) !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot {
   display: flex !important;
   align-items: center !important;
   justify-content: space-between !important;
@@ -291,7 +291,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
     contain-intrinsic-size: 1px 200px;
   }
 
-  .app-root[data-view="reading"] .quran-display--platform .qc-list-card__top {
+  .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot {
     align-items: center !important;
   }
 

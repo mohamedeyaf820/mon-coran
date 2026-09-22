@@ -1009,7 +1009,7 @@ test("small phone: verse actions and search stay usable inside the viewport", as
   expect(reference?.height || 0).toBeLessThanOrEqual(44.1);
 
   const visibleActionSizes = await page
-    .locator(".qc-list-card__top .ayah-actions button")
+    .locator(".qc-list-card__foot .ayah-actions button")
     .evaluateAll((buttons) =>
       buttons
         .filter((button) => button.getClientRects().length > 0)

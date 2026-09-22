@@ -235,10 +235,39 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   await expect(page.locator(".mfp-zoom-value")).toHaveText("115%");
   await page.locator(".mfp-zoom-value").click();
 
-  // A desktop spread is one open book: two same-size leaves sharing one
-  // scale, the lower folio on the right.
   await expect(overlay.locator(".qcm-page")).toHaveCount(2);
   expect(await overlay.evaluate((root) => root.dataset.layout)).toBe("double");
+  // A desktop spread is one open book: two same-size leaves sharing one
+  // scale, the lower folio on the right. Each leaf re-runs its line-fit when
+  // it mounts and again when the reciter font resolves, which resizes the
+  // block, so the two agree only after the last pass. Three identical
+  // readings a third of a second apart is that settled state.
+  const leafState = () =>
+    overlay.locator(".qcm-page").evaluateAll((pages) => {
+      if (pages.length < 2) return "unbounded";
+      const boxes = pages.map((page) => page.getBoundingClientRect());
+      const spread =
+        Math.max(...boxes.map((b) => b.width)) -
+          Math.min(...boxes.map((b) => b.width)) +
+        Math.max(...boxes.map((b) => b.height)) -
+          Math.min(...boxes.map((b) => b.height));
+      const fits = pages
+        .map((page) =>
+          getComputedStyle(page.querySelector(".qcm-lines")).getPropertyValue("--qcm-flow-fit"),
+        )
+        .join("|");
+      return `${spread.toFixed(2)}@${fits}`;
+    });
+  await expect
+    .poll(async () => {
+      const first = await leafState();
+      await page.waitForTimeout(350);
+      const second = await leafState();
+      await page.waitForTimeout(350);
+      const third = await leafState();
+      return first === second && second === third && Number.parseFloat(first) < 1;
+    }, { timeout: 20_000 })
+    .toBe(true);
   const leafBoxes = await overlay.locator(".qcm-page").evaluateAll((pages) => pages.map((page) => {
     const box = page.getBoundingClientRect();
     return { left: box.left, right: box.right, top: box.top, bottom: box.bottom, width: box.width, height: box.height };

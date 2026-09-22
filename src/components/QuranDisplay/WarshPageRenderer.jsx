@@ -65,6 +65,7 @@ export default function WarshPageRenderer({
       currentPlayingAyah={currentPlayingAyah}
       fallbackFontFamily={fallbackFontFamily}
       fitSignal={`${fontLoaded}|${fontFamily}|${showTajwid ? "t" : "-"}`}
+      fontFamily={fontFamily}
       lang={lang}
       meta={meta}
       onToggleActive={onToggleActive}
