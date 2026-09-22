@@ -118,12 +118,14 @@ export const FONT_MAP = {
     "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
-  // Scheherazade New (self-hosted) + Geeza Pro (iOS system) keep the page
-  // readable when the QPC Warsh woff2 fails to load on WebKit.
+  // Scheherazade New (self-hosted) + Noto Naskh Arabic (self-hosted, full Warsh
+  // coverage) keep the page readable when the QPC Warsh woff2 fails to load on
+  // WebKit. Geeza Pro used to sit here: an Apple-only system font, so the same
+  // failure rendered a different typeface on iPhone and Android.
   "qpc-warsh":
-    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Geeza Pro',serif",
+    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Noto Naskh Arabic',serif",
   "kfgqpc-warsh":
-    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Geeza Pro',serif",
+    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Noto Naskh Arabic',serif",
   "scheherazade-new-warsh":
     "'Scheherazade New','Scheherazade','QPC Warsh',serif",
 };

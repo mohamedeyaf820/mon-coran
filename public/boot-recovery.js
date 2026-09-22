@@ -16,6 +16,30 @@
     if (quranFonts.sheet) activate();
   }
 
+  // The Warsh Quran face is declared font-display: block, so a reader who has it
+  // selected sees no Arabic at all until the 90 kB file lands. Preloading it on
+  // every boot would tax each first visit with glyphs no Hafs route draws, so it is
+  // injected only for the one setting that paints with it.
+  function preloadWarshFace() {
+    var stored;
+    try {
+      stored = JSON.parse(localStorage.getItem("mushaf-plus-settings") || "null");
+    } catch (_) {
+      return;
+    }
+    if (!stored || stored.riwaya !== "warsh") return;
+    // Scheherazade is the one Warsh choice already declared with font-display: swap.
+    if (stored.fontFamily === "scheherazade-new-warsh") return;
+
+    var link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "font";
+    link.type = "font/woff2";
+    link.href = "/fonts/kfgqpc-warsh-21.woff2";
+    link.crossOrigin = "anonymous";
+    document.head.appendChild(link);
+  }
+
   function hasAlreadyRetried() {
     try {
       return sessionStorage.getItem(KEY) === "1";
@@ -120,5 +144,6 @@
     }, 3500);
   });
 
+  preloadWarshFace();
   activateDeferredStyles();
 })();

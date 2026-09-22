@@ -2125,18 +2125,18 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
 }
 
 :root {
-    --quran-font-family: var(--qd-font-family, var(--font-quran, var(--font-quran-hafs, "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Geeza Pro", serif)));
+    --quran-font-family: var(--qd-font-family, var(--font-quran, var(--font-quran-hafs, "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif)));
     --quran-font-size: clamp(26px, 5.5vw, 42px);
     --quran-line-height: 2.8;
     --quran-text-rendering: optimizeLegibility;
 }
 
 .app-root .quran-display--hafs {
-    --quran-font-family: var(--qd-font-family, var(--font-quran-hafs, "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Geeza Pro", serif));
+    --quran-font-family: var(--qd-font-family, var(--font-quran-hafs, "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", serif));
 }
 
 .app-root .quran-display--warsh {
-    --quran-font-family: var(--qd-font-family, var(--font-quran-warsh, "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Geeza Pro", serif));
+    --quran-font-family: var(--qd-font-family, var(--font-quran-warsh, "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic", serif));
 }
 
 .app-root .quran-display--platform :is(.verse-text, .quran-text, .rd-arabic, .mushaf-container),
