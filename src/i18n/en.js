@@ -297,6 +297,7 @@ export default {
     reciterSwitchFailed: 'Instant reciter switch failed.',
     networkLoading: 'Loading audio...',
     networkStalled: 'Unstable connection',
+    noConnection: 'No connection: the recitation could not load.',
     tabsAria: 'Audio settings categories',
     playbackTab: 'Playback',
   },

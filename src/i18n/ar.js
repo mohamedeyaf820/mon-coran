@@ -296,6 +296,7 @@ export default {
     reciterSwitchFailed: 'تعذر تبديل القارئ فوريا.',
     networkLoading: 'جار تحميل الصوت...',
     networkStalled: 'اتصال غير مستقر',
+    noConnection: 'لا يوجد اتصال، تعذر تحميل التلاوة',
     tabsAria: 'فئات إعدادات الصوت',
     playbackTab: 'التشغيل',
   },

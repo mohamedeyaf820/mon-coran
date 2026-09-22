@@ -197,6 +197,11 @@ export default function AudioPlayer() {
     autoFailoverBusyRef.current = true;
     try {
       for (const candidate of finalCandidates) {
+        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+          // Stop walking the catalogue: the next failure is the device, not
+          // the voice, and marking it would cool down a healthy reciter.
+          return false;
+        }
         failedRecitersRef.current.add(candidate.id);
         reciterSwitchingIdRef.current = candidate.id;
         setReciterSwitchingId(candidate.id);
@@ -350,6 +355,17 @@ export default function AudioPlayer() {
       }
       if (error?.name === "NotAllowedError") {
         setAudioError(t("audio.playbackBlocked", lang));
+        return;
+      }
+      // A dropped connection fails every voice at once. Penalising all 44 of
+      // them for one blip leaves nothing to play when the network returns, so
+      // an offline failure is reported as what it is and changes no score.
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        setAudioError(t("audio.noConnection", lang));
+        audioErrorTimerRef.current = setTimeout(() => {
+          setAudioError(null);
+          audioErrorTimerRef.current = null;
+        }, 5000);
         return;
       }
       markReciterUnavailable(reciter, error);

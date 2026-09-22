@@ -296,6 +296,7 @@ export default {
     reciterSwitchFailed: 'Le changement instantané du récitateur a échoué.',
     networkLoading: 'Chargement audio...',
     networkStalled: 'Connexion instable',
+    noConnection: 'Pas de connexion : la récitation n’a pas pu charger.',
     tabsAria: 'Catégories des réglages audio',
     playbackTab: 'Lecture',
   },
