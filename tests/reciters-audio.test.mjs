@@ -43,6 +43,7 @@ const EXPECTED_HAFS_IDS = [
   "ar.husary",
   "ar.minshawi",
   "ar.minshawimujawwad",
+  "ar.minshawi_muallim",
   "ar.saoodshuraym",
   "abdullaah_matrood",
   "abdullaah_basfar",
@@ -138,9 +139,9 @@ test("reciters: Hafs and Warsh catalogues are complete", () => {
     assert.ok(getReciter(id, "warsh"), `missing Warsh reciter: ${id}`);
   }
 
-  assert.equal(getRecitersByRiwaya("hafs").length, 45);
+  assert.equal(getRecitersByRiwaya("hafs").length, 46);
   assert.equal(getRecitersByRiwaya("warsh").length, 8);
-  assert.equal(allReciters().length, 53);
+  assert.equal(allReciters().length, 54);
 });
 
 test("reciters: removed voices no longer resolve", () => {
@@ -286,13 +287,13 @@ test("reciters: style counts stay within the riwaya the hub lists", () => {
       );
     }
   }
-  // Al-Husary's teaching recitation is the one Muallim voice; tagging it back
-  // as murattal silently kills the chip.
+  // The Muallim chip is the only route to these two teaching recitations; if a
+  // re-tag silently puts them back under murattal, the chip dies with them.
   assert.deepEqual(
     getRecitersByRiwaya("hafs")
       .filter((r) => r.style === "muallim")
       .map((r) => r.id),
-    ["husary_muallim"],
+    ["ar.minshawi_muallim", "husary_muallim"],
   );
 });
 
@@ -313,8 +314,8 @@ test("reciters: curated portraits cover the catalogue and ship as local files", 
   const withPhotos = allReciters().filter(
     (reciter) => !AVATAR_ONLY_IDS.includes(reciter.id),
   );
-  assert.equal(withPhotos.length, 52);
-  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 52);
+  assert.equal(withPhotos.length, 53);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 53);
 
   for (const reciter of withPhotos) {
     assert.equal(getReciterVisual(reciter).type, "photo", reciter.id);
@@ -401,6 +402,7 @@ test("reciters: requested voices are discoverable through common spellings", () 
         [
           "ar.minshawi",
           "ar.minshawimujawwad",
+          "ar.minshawi_muallim",
           "hudhaify",
           "muhammad_ayyoub",
         ].includes(reciter.id),
@@ -410,6 +412,7 @@ test("reciters: requested voices are discoverable through common spellings", () 
 
   assert.deepEqual(Object.keys(requested).sort(), [
     "ar.minshawi",
+    "ar.minshawi_muallim",
     "ar.minshawimujawwad",
     "hudhaify",
     "muhammad_ayyoub",
@@ -417,6 +420,7 @@ test("reciters: requested voices are discoverable through common spellings", () 
   assert.ok(requested.hudhaify.searchAliases.includes("Houzaifi"));
   assert.ok(requested.muhammad_ayyoub.searchAliases.includes("Mohamed Ayoub"));
   assert.ok(requested["ar.minshawi"].searchAliases.includes("Menchaoui"));
+  assert.ok(requested["ar.minshawi_muallim"].searchAliases.includes("Muallim"));
 });
 
 // The hub searches the folded names and aliases as substrings, so a hyphen in
@@ -451,7 +455,7 @@ test("reciters: the hub finds each voice under the spellings readers type", () =
 });
 
 test("reciters: every biography exposes a reviewed HTTPS source", () => {
-  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 53);
+  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 54);
 
   for (const [id, profile] of Object.entries(RESEARCHED_PROFILES)) {
     assert.match(profile.bioSource?.url || "", /^https:\/\//, id);

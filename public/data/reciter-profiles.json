@@ -151,6 +151,18 @@
     },
     "reviewedAt": "2026-08-01"
   },
+  "ar.minshawi_muallim": {
+    "bio": {
+      "fr": "Récitation pédagogique de Muhammad Siddiq Al-Minshawi (1920–1969), récitateur égyptien né à Al-Mansha, dans le gouvernorat de Sohag. EveryAyah la publie sous le nom de « Teacher » : le rythme y est nettement plus lent que son muṣḥaf murattal, ce qui se prête à l’écoute verset par verset.",
+      "en": "Teaching recitation of Muhammad Siddiq Al-Minshawi (1920–1969), the Egyptian reciter born in Al-Mansha, Sohag Governorate. EveryAyah publishes it as the “Teacher” mushaf: its pace is markedly slower than his murattal, which suits verse-by-verse listening.",
+      "ar": "تلاوة تعليمية لمحمد صديق المنشاوي (1920–1969)، القارئ المصري المولود في المنشأة بمحافظة سوهاج. تنشرها EveryAyah باسم «Teacher» بإيقاع أبطأ بوضوح من مصحفه المرتل، مما يناسب الاستماع آية بآية."
+    },
+    "bioSource": {
+      "provider": "Assabile",
+      "url": "https://www.assabile.com/mohamed-siddiq-el-minshawi-3/mohamed-siddiq-el-minshawi.htm"
+    },
+    "reviewedAt": "2026-09-22"
+  },
   "ar.saoodshuraym": {
     "bio": {
       "fr": "Saud Al-Shuraym, né à Riyad en 1966, est un imam, juriste et récitateur saoudien. Diplômé de l’Université Imam Muhammad ibn Saud puis de l’Institut supérieur de la magistrature, il a été nommé imam et khatib de la Mosquée sacrée de La Mecque en 1992.",

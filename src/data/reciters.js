@@ -353,6 +353,33 @@ const RECITERS = {
       country: "Egypt",
     },
     {
+      id: "ar.minshawi_muallim",
+      name: "المنشاوي (معلم)",
+      nameEn: "Al-Minshawi (Muallim)",
+      nameFr: "Al-Minshawi (Muallim)",
+      // EveryAyah ships this folder as "Minshawy Teacher". Measured against his
+      // murattal on the same verses, each file runs ~1.9x longer with no silence
+      // inside it: a slowed instructional recitation, not a pause-and-repeat
+      // exercise, so the bio must not promise repetition the audio does not carry.
+      style: "muallim",
+      searchAliases: [
+        "Minshawi",
+        "Minshawy",
+        "Minshawwi",
+        "Menshawi",
+        "Manshawi",
+        "Menchaoui",
+        "Muallim",
+        "Moualim",
+        "Teacher",
+        "المنشاوي",
+      ],
+      cataloguePriority: 11,
+      cdn: "Minshawy_Teacher_128kbps",
+      cdnType: "everyayah",
+      country: "Egypt",
+    },
+    {
       id: "ar.saoodshuraym",
       name: "سعود الشريم",
       nameEn: "Saud ash-Shuraym",
@@ -699,6 +726,7 @@ export const RECITER_PHOTOS_MAP = {
   husary_mujawwad_hafs: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
   "ar.minshawi": quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
   "ar.minshawimujawwad": quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
+  "ar.minshawi_muallim": quranPhoto("7/mohamed-siddiq-el-minshawi-profile.jpeg"),
   "ar.saoodshuraym": quranPhoto("8/saoud-shuraim-profile.jpeg"),
   abu_bakr_ash_shaatree: quranPhoto("3/abu-bakr-al-shatri-pofile.jpeg"),
   hani_rifai: quranPhoto("4/hani-ar-rifai-profile.jpeg"),
