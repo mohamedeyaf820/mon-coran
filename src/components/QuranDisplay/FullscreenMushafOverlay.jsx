@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import { ArrowLeftRight, ChevronLeft, ChevronRight, Maximize, Minus, Pause, Play, Plus, Settings2, SkipBack, SkipForward, X } from "lucide-react";
 import { useApp } from "../../context/AppContext";
 import { resolveFontFamily } from "../../data/fonts";
+import { DEFAULT_ARABIC_FONT_SIZE, clampArabicFontSize } from "../../utils/arabicTypography";
 import { getJuzForAyah } from "../../data/juz";
 import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
@@ -117,7 +118,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const closeButtonRef = useRef(null);
   const turnRef = useRef(null);
   const chromeTimerRef = useRef(0);
-  const [zoom, setZoom] = useState(getInitialZoom);
+  const [zoomDelta, setZoomDelta] = useState(getInitialZoom);
   const [layout, setLayout] = useState(() => (typeof window === "undefined" ? "single" : computeLayout(window.innerWidth, window.innerHeight)));
   const [chromeVisible, setChromeVisible] = useState(true);
   const [pageCache, setPageCache] = useState(() => new Map(
@@ -132,6 +133,11 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const pageLabel = lang === "ar" ? toAr(currentPage) : currentPage;
   const currentJuz = ayahs[0]?.juz || getJuzForAyah(ayahs[0]?.surah?.number, ayahs[0]?.numberInSurah);
   const quranFontFamily = resolveFontFamily(state.fontFamily, riwaya);
+  // The reader's own size is what 100 % means in the book: a 40 px preference
+  // opens the leaf at 160 % of the viewport-fitted page. The ± controls stay a
+  // delta on top of it, so their reset returns to the reader's size, not to 25 px.
+  const sizeScale = clampArabicFontSize(state.quranFontSize) / DEFAULT_ARABIC_FONT_SIZE;
+  const zoom = clampZoom(zoomDelta * sizeScale);
   const hasAudioSession = Boolean(audioAyah || audioService.currentAyah || audioService.playlist.length || audioService.audio?.src);
 
   const isDouble = layout === "double";
@@ -288,9 +294,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (isInteractiveTarget(event.target)) return;
     if (event.key === "ArrowLeft") { handleNext(); return; }
     if (event.key === "ArrowRight") { handlePrev(); return; }
-    if (event.key === "+" || event.key === "=") { setZoom((value) => clampZoom(value + ZOOM_STEP)); return; }
-    if (event.key === "-") { setZoom((value) => clampZoom(value - ZOOM_STEP)); return; }
-    if (event.key === "0") setZoom(1);
+    if (event.key === "+" || event.key === "=") { setZoomDelta((value) => clampZoom(value + ZOOM_STEP)); return; }
+    if (event.key === "-") { setZoomDelta((value) => clampZoom(value - ZOOM_STEP)); return; }
+    if (event.key === "0") setZoomDelta(1);
   }, [actionsAyah, handleNext, handlePrev, hasAudioSession, onClose]);
 
   useEffect(() => {
@@ -346,11 +352,22 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     };
   }, [fullPage, returnFocusRef]);
 
-  useEffect(() => { if (viewportRef.current) viewportRef.current.scrollTop = 0; }, [currentPage]);
+  // A leaf wider than the window — big type or a zoomed sheet — opens on its
+  // reading edge: a mushaf page starts on the right, and leaving the scroll at
+  // the left showed the end of every line instead of its beginning. The
+  // requested leaf is the one aligned, not the outer edge of the spread.
+  useEffect(() => {
+    const viewport = viewportRef.current;
+    if (!viewport) return;
+    const leaf = viewport.querySelector(`.qcm-page-shell[data-page="${currentPage}"]`);
+    if (leaf) leaf.scrollIntoView({ inline: "end", block: "start" });
+    else viewport.scrollLeft = Math.max(0, viewport.scrollWidth - viewport.clientWidth);
+    viewport.scrollTop = 0;
+  }, [currentPage, layout]);
 
   useEffect(() => {
-    try { sessionStorage.setItem(ZOOM_STORAGE_KEY, String(zoom)); } catch { /* best-effort preference */ }
-  }, [zoom]);
+    try { sessionStorage.setItem(ZOOM_STORAGE_KEY, String(zoomDelta)); } catch { /* best-effort preference */ }
+  }, [zoomDelta]);
 
   if (!fullPage || typeof document === "undefined") return null;
 
@@ -379,7 +396,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const handleWheel = (event) => {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
-    setZoom((value) => clampZoom(value + (event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP)));
+    setZoomDelta((value) => clampZoom(value + (event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP)));
   };
   // Fit changes only the type scale: the fifteen lines and their words are
   // fixed by the printed page data, so the sheet shrinks or grows whole.
@@ -397,7 +414,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     const scale = mode === "width"
       ? availW / width
       : Math.min(availW / width, availH / height);
-    setZoom((value) => clampZoom(scale || value));
+    // The fit target is an absolute scale of the printed sheet, while the
+    // reader's size already counts as 100 % — convert the target into the delta.
+    setZoomDelta((value) => clampZoom((scale || value * sizeScale) / sizeScale));
   };
 
   return createPortal(
@@ -410,9 +429,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
         <div className="mfp-header__tools">
           <AudioControls {...audioProps} />
           <div className="mfp-zoom-controls" dir="ltr">
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>
-            <button type="button" className="mfp-zoom-value" onClick={() => setZoom(1)} aria-label={t("quran.zoomReset", lang)}>{Math.round(zoom * 100)}%</button>
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoom((value) => clampZoom(value + ZOOM_STEP))} disabled={zoom >= MAX_ZOOM} aria-label={t("quran.zoomIn", lang)}><Plus size={16} /></button>
+            <button type="button" className="mfp-icon-btn" onClick={() => setZoomDelta((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>
+            <button type="button" className="mfp-zoom-value" onClick={() => setZoomDelta(1)} aria-label={t("quran.zoomReset", lang)}>{Math.round(zoom * 100)}%</button>
+            <button type="button" className="mfp-icon-btn" onClick={() => setZoomDelta((value) => clampZoom(value + ZOOM_STEP))} disabled={zoom >= MAX_ZOOM} aria-label={t("quran.zoomIn", lang)}><Plus size={16} /></button>
             <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("page")} aria-label={t("quran.fitPage", lang)} title={t("quran.fitPage", lang)}><Maximize size={16} /></button>
             <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("width")} aria-label={t("quran.fitWidth", lang)} title={t("quran.fitWidth", lang)}><ArrowLeftRight size={16} /></button>
           </div>

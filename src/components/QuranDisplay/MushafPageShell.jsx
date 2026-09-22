@@ -30,6 +30,7 @@ export default function MushafPageShell({
   return (
     <section
       className="qcm-page-shell"
+      data-page={currentPage}
       data-page-kind={isOpening ? "opening" : undefined}
       aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${lang === "ar" ? toAr(currentPage) : currentPage}`}
     >
