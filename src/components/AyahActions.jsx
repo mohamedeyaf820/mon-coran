@@ -28,6 +28,7 @@ import {
   getAllPlaylists,
 } from "../services/playlistService";
 import { writeTextToClipboard } from "../services/verseShareService";
+import { NOTE_TEXT_MAX_LENGTH } from "../services/storageValidation";
 import { cn } from "../lib/utils";
 import {
   DropdownMenu,
@@ -1159,6 +1160,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onChange={(event) => { noteVersionRef.current += 1; setNoteText(event.target.value); }}
             placeholder={t("notes.placeholder", lang)}
             className="ayah-actions__textarea"
+            maxLength={NOTE_TEXT_MAX_LENGTH}
             rows={4}
           />
 

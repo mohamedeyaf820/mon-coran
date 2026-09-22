@@ -472,6 +472,7 @@ export default {
     playlists: 'Audio lists',
     emptyFavorites: 'No bookmarked verse yet.',
     emptyNotes: 'No personal note yet.',
+    noNoteResults: 'No note matches this search.',
     emptyPlaylists: 'No audio list yet.',
     newList: 'New list',
     create: 'Create',

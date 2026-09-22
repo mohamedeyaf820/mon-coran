@@ -30,6 +30,9 @@ function isIntBetween(value, min, max) {
   return Number.isInteger(value) && value >= min && value <= max;
 }
 
+/** Longest note the device keeps; the editors hold the writer to the same cap. */
+export const NOTE_TEXT_MAX_LENGTH = 8000;
+
 function isText(value, max) {
   return typeof value === "string" && value.length <= max;
 }
@@ -125,7 +128,7 @@ export const noteRecordSchema = schema((value) => {
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
   if (value.id !== `${value.surah}:${value.ayah}`) return null;
-  if (!isText(value.text, 8000)) return null;
+  if (!isText(value.text, NOTE_TEXT_MAX_LENGTH)) return null;
   if (!isIntBetween(value.updatedAt, 0, Number.MAX_SAFE_INTEGER)) return null;
   return {
     id: value.id,

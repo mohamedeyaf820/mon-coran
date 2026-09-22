@@ -36,6 +36,7 @@ import {
   normalizeAyahsForAudioPlaylist,
 } from "../utils/audioPlaylist";
 import { confirmAction } from "../services/interactionService";
+import { NOTE_TEXT_MAX_LENGTH } from "../services/storageValidation";
 import { t } from "../i18n";
 
 export default function LibraryModal() {
@@ -207,7 +208,7 @@ export default function LibraryModal() {
           {kind === "notes" && editingNoteId === (item.id || `${item.surah}:${item.ayah}`) ? (
             <div className="library-row__editor">
               <span className="library-row__ref">{item.surah}:{item.ayah}</span>
-              <textarea value={editingNoteText} onChange={(event) => setEditingNoteText(event.target.value)} maxLength={2000} autoFocus aria-label={t("library.edit", lang)} />
+              <textarea value={editingNoteText} onChange={(event) => setEditingNoteText(event.target.value)} maxLength={NOTE_TEXT_MAX_LENGTH} autoFocus aria-label={t("library.edit", lang)} />
               <button type="button" disabled={busy} onClick={() => runAction(() => commitNote(item))} aria-label={t("library.save", lang)}><Check size={16} /></button>
             </div>
           ) : <button type="button" className="library-row__main" onClick={() => goToVerse(item.surah, item.ayah)}>
@@ -270,7 +271,7 @@ export default function LibraryModal() {
               ) : null}
               {loading ? <div className="library-loading"><Loader2 size={22} className="animate-spin" /></div> : null}
               {!loading && error !== "loadError" && tab === "favorites" ? renderSaved(bookmarks, "favorites", t("library.emptyFavorites", lang)) : null}
-              {!loading && error !== "loadError" && tab === "notes" ? renderSaved(filteredNotes, "notes", t("library.emptyNotes", lang)) : null}
+              {!loading && error !== "loadError" && tab === "notes" ? renderSaved(filteredNotes, "notes", noteQuery.trim() ? t("library.noNoteResults", lang) : t("library.emptyNotes", lang)) : null}
               {!loading && error !== "loadError" && tab === "playlists" ? (
                 <div className="library-playlists">
                   <div className="library-create">

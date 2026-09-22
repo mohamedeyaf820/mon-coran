@@ -471,6 +471,7 @@ export default {
     playlists: 'Listes audio',
     emptyFavorites: 'Aucun verset favori pour le moment.',
     emptyNotes: 'Aucune note personnelle pour le moment.',
+    noNoteResults: 'Aucune note ne correspond à cette recherche.',
     emptyPlaylists: 'Aucune liste audio pour le moment.',
     newList: 'Nouvelle liste',
     create: 'Créer',

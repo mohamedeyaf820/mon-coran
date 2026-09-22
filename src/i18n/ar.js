@@ -472,6 +472,7 @@ export default {
     playlists: 'القوائم الصوتية',
     emptyFavorites: 'لا توجد آيات مفضلة بعد.',
     emptyNotes: 'لا توجد ملاحظات بعد.',
+    noNoteResults: 'لا توجد ملاحظة مطابقة لهذا البحث',
     emptyPlaylists: 'لا توجد قوائم صوتية بعد.',
     newList: 'قائمة جديدة',
     create: 'إنشاء',
