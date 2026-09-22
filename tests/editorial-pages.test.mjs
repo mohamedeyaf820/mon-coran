@@ -27,7 +27,7 @@ test("English and Arabic editorial copy remains complete and cacheable", async (
   const translated = JSON.parse(await read("public/data/editorial-copy.json"));
   for (const lang of ["en", "ar"]) {
     for (const page of ["about", "privacy", "legal", "sources"]) {
-      assert.equal(translated[lang][page].sections.length, 4, `${lang}.${page}`);
+      assert.equal(translated[lang][page].sections.length, 6, `${lang}.${page}`);
     }
     assert.equal(Object.keys(translated[lang].tabs).length, 5, `${lang}.tabs`);
   }
