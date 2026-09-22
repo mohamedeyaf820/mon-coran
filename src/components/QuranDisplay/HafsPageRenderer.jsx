@@ -98,6 +98,13 @@ const PAGE_GLYPH_FONT_IDS = new Set([
   "mushaf-tajweed",
 ]);
 
+// The one question the page stream asks before spending a font request: does
+// the chosen face actually print the sheet with per-page glyph files? Warsh has
+// no such cut, and a proportional Hafs face flows, so both must skip it.
+export function usesMushafPageGlyphs(fontFamily, riwaya) {
+  return riwaya === "hafs" && PAGE_GLYPH_FONT_IDS.has(normalizeFontId(fontFamily, riwaya));
+}
+
 function getHafsFlowWords(ayah, fontFamily, riwaya) {
   const words = Array.isArray(ayah?.words) ? ayah.words : [];
   return words
@@ -122,7 +129,7 @@ export default function HafsPageRenderer({
   // fallback rather than failing the sheet.
   const [resolvedVersion, setResolvedVersion] = useState("v2");
   const requestedVersion = showTajwid ? "v4" : "v2";
-  const usesPageGlyphs = PAGE_GLYPH_FONT_IDS.has(normalizeFontId(fontFamily, riwaya));
+  const usesPageGlyphs = usesMushafPageGlyphs(fontFamily, riwaya);
   const pageFontFamily = getQcfPageFontFamily(currentPage, resolvedVersion);
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);

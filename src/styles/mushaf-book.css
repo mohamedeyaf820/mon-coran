@@ -752,13 +752,14 @@
   min-height: 24.3em;
 }
 
-/* A short Warsh surah cannot fill the fifteen lines even at the fit ceiling;
-   the leaf keeps its height and the body is centred between the running head
-   and the folio instead of running into either. */
+/* A short opening page cannot fill the fifteen lines even at the fit ceiling.
+   The printed leaf does not answer that by centring the body: the text starts
+   under the running head and the unused height stays above the folio, so the
+   reader sees the same page shape as in the in-app sheet. */
 #root ~ .mfp-portal-root .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 24.3em;
 }
 

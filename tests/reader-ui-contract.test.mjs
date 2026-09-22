@@ -262,7 +262,8 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(overlay, /onWheel=\{handleWheel\}/);
 
   // The exact Madani page is set like print: measure and pitch from the type,
-  // opening pages centred, title band and basmala on the empty lines.
+  // an opening page starting under the running head, title band and basmala on
+  // the empty lines.
   // One printed-page contract is shared by both riwayas through
   // MushafPageShell + MushafPageLines; QuranMushafPage only dispatches.
   const hafsRenderer = source("src/components/QuranDisplay/HafsPageRenderer.jsx");
@@ -288,6 +289,34 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.match(pageLines, /qcm-line--surah-header/);
   assert.match(pageLines, /qcm-line--basmala/);
   assert.match(pageLines, /qcm-line--surah-end/);
+
+  // A short page keeps the printed shape: one body size for the whole mushaf,
+  // the unused height below the text. Growing the type to reach fifteen lines
+  // gave Al-Fatiha 40 px glyphs and still left the leaf empty.
+  assert.match(flowRenderer, /const MAX_LINE_FIT = 1;/);
+  // The floor still outranks the ceiling: a narrow phone measures its body
+  // below 15 px before the fit runs.
+  assert.match(flowRenderer, /Math\.max\(floor, Math\.min\(MAX_LINE_FIT/);
+  const sheetStyles = source("src/styles/mushaf-page-polish.css");
+  for (const [name, css] of [["sheet", sheetStyles], ["book", book]]) {
+    assert.match(
+      css,
+      /\[data-flow="true"\] \{[^}]*justify-content: flex-start/,
+      `${name}: an opening page must start under the running head`,
+    );
+  }
+  // The reader's own face must reach the printed word: the Warsh display
+  // element re-declares --font-quran above the inline stamp, so reading it
+  // alone printed every Warsh choice as KFGQPC Warsh.
+  assert.match(
+    flowRenderer,
+    /fontFamily: "var\(--qd-font-family, var\(--font-quran\)\)"/,
+  );
+  const pageMode = source("src/components/QuranDisplay/PageMode.jsx");
+  assert.match(
+    pageMode,
+    /if \(!usesMushafPageGlyphs\(state\.fontFamily, riwaya\)\) return undefined;/,
+  );
 
   // The page classes are composed in template strings: PurgeCSS must keep them.
   assert.match(purgeConfig, /\/\^qcm-\//);

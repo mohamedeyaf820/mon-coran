@@ -5,6 +5,7 @@ import { getSurah, toAr } from "../../data/surahs";
 import ReadingToolbar from "../Quran/ReadingToolbar";
 import AyahActionsModal from "./AyahActionsModal";
 import QuranMushafPage from "./QuranMushafPage";
+import { usesMushafPageGlyphs } from "./HafsPageRenderer";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import usePageStream from "./usePageStream";
 import { useApp } from "../../context/AppContext";
@@ -91,9 +92,12 @@ function PageMode({
   // only glyph codes, so a sheet stays blank until its font resolves: start
   // the load the moment a page enters the stream window (the loader dedupes
   // with the renderer's own request). Tajweed switches the whole stream to the
-  // coloured v4 cut, so the prefetch must follow the same version.
+  // coloured v4 cut, so the prefetch must follow the same version. Faces that
+  // print as continuous flow never ask for those files — Warsh has no glyph
+  // cut at all — so prefetching there only spends the reader's data.
   useEffect(() => {
     if (mushafLayout !== "mushaf") return undefined;
+    if (!usesMushafPageGlyphs(state.fontFamily, riwaya)) return undefined;
     let active = true;
     const numbers = stream.pages.map(({ page }) => page).join(",");
     const version = showTajwid ? "v4" : "v2";
@@ -106,7 +110,7 @@ function PageMode({
     return () => {
       active = false;
     };
-  }, [mushafLayout, showTajwid, stream.pages]);
+  }, [mushafLayout, riwaya, showTajwid, state.fontFamily, stream.pages]);
   const streamPages = useMemo(
     () =>
       stream.pages.map(({ page, ayahs: pageAyahs }) => {

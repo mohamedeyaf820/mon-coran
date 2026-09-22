@@ -1140,10 +1140,14 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   min-height: 24.3em;
 }
 
+/* A printed page starts under its running head and keeps whatever space the
+   text does not use at the foot of the leaf, where the page number sits.
+   Centring a short opening (page 1, a closing surah) put the void above the
+   text instead, which reads as a broken page. */
 .quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   min-height: 24.3em;
 }
 

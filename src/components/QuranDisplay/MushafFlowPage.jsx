@@ -18,7 +18,11 @@ import { t } from "../../i18n";
 const MUSHAF_PAGE_LINES = 15;
 // Smallest type the fit loop may print, as a fraction of the page body size.
 const MIN_LINE_FIT = 0.45;
-const MAX_LINE_FIT = 1.6;
+// The loop only ever shrinks. A printed Madani page keeps one glyph size for
+// the whole mushaf and lets a short page — page 1, a closing surah — end with
+// blank lines; inflating the type to reach fifteen lines instead gives the
+// reader 40 px glyphs on Al-Fatiha and still leaves the sheet empty.
+const MAX_LINE_FIT = 1;
 // A narrow phone fits fifteen dense lines only in micro-glyphs. Below this
 // rendered size the sheet stops shrinking and grows past fifteen lines
 // instead, reporting the adjusted-layout notice: legibility outranks the
@@ -135,7 +139,11 @@ export default function MushafFlowPage({
         const floor = Math.max(MIN_LINE_FIT, MIN_LEGIBLE_FLOW_PX / basePx);
 
         setFlowFit((current) => {
-          const next = Math.min(MAX_LINE_FIT, Math.max(floor, current * (target / rows)));
+          // The legibility floor outranks the no-growth ceiling: on a narrow
+          // phone the measured body is already below 15 px before the fit, so
+          // capping at 1 there would print micro-glyphs. Growth is allowed
+          // only up to what legibility demands, never to reach fifteen lines.
+          const next = Math.max(floor, Math.min(MAX_LINE_FIT, current * (target / rows)));
           if (Math.abs(next - current) < 0.004) {
             // Converged: the notice fires only when the legibility floor holds
             // the type up and the page therefore runs past fifteen lines.
@@ -210,7 +218,11 @@ export default function MushafFlowPage({
           }
         }}
         style={{
-          fontFamily: "var(--font-quran)",
+          // --qd-font-family is the reader's own choice. --font-quran cannot be
+          // the only source: the Warsh display element re-declares it above the
+          // inline stamp, so it resolves to the fixed Madinah stack and every
+          // face in the picker prints as KFGQPC Warsh.
+          fontFamily: "var(--qd-font-family, var(--font-quran))",
           fontSize: "1em",
           lineHeight: "inherit",
           letterSpacing: 0,
