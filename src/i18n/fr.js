@@ -437,6 +437,7 @@ export default {
     bookmarkRemoved: 'Favori retiré',
     bookmarkAdded: 'Verset ajouté aux favoris',
     noteSaved: 'Note enregistrée',
+    noteDeleted: 'Note supprimée',
     reciterIncompatible: 'Récitateur incompatible avec le mode Warsh strict',
     unableToPlay: 'Lecture impossible pour cette ayah',
     fullSurahStream: 'Ce récitateur diffuse la sourate entière : la lecture démarre au début de la sourate.',

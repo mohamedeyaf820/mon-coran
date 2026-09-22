@@ -8,6 +8,7 @@ import {
 import { t } from "../i18n";
 import {
   addBookmark,
+  deleteNote,
   getNote,
   isBookmarked,
   removeBookmark,
@@ -110,6 +111,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
   const [playlists, setPlaylists] = useState([]);
   const [playlistAdded, setPlaylistAdded] = useState(false);
   const [noteText, setNoteText] = useState("");
+  const [hasNote, setHasNote] = useState(false);
   const [copied, setCopied] = useState(false);
   const [audioError, setAudioError] = useState(false);
   const mutationPendingRef = useRef(false);
@@ -147,7 +149,11 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     const version = mutationVersionRef.current;
     const noteVersion = noteVersionRef.current;
     isBookmarked(surah, ayah).then((v) => { if (mounted && version === mutationVersionRef.current) setBookmarked(v); });
-    getNote(surah, ayah).then((note) => { if (mounted && noteVersion === noteVersionRef.current) setNoteText(note?.text || ""); });
+    getNote(surah, ayah).then((note) => {
+      if (!mounted || noteVersion !== noteVersionRef.current) return;
+      setNoteText(note?.text || "");
+      setHasNote(Boolean(note?.text));
+    });
     return () => { mounted = false; };
   }, [ayah, surah]);
 
@@ -268,14 +274,37 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
   const handleSaveNote = async () => {
     const cleanText = noteText.trim();
-    if (!cleanText) { closePanels(); return; }
+    // An emptied note is a deletion request, not a no-op: the alternative is a
+    // panel that closes and leaves the old text behind.
+    if (!cleanText) {
+      if (!hasNote) { closePanels(); return; }
+      return handleDeleteNote();
+    }
     if (mutationPendingRef.current) return;
     mutationPendingRef.current = true;
     noteVersionRef.current += 1;
     try {
       if (!(await saveNote(surah, ayah, cleanText))) { reportStorageError(); return; }
+      setHasNote(true);
       closePanels();
       emitToast("success", t("toast.noteSaved", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
+    }
+  };
+
+  const handleDeleteNote = async () => {
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    noteVersionRef.current += 1;
+    try {
+      if (!(await deleteNote(surah, ayah))) { reportStorageError(); return; }
+      setHasNote(false);
+      setNoteText("");
+      closePanels();
+      emitToast("info", t("toast.noteDeleted", lang));
     } catch {
       reportStorageError();
     } finally {
@@ -1140,7 +1169,9 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               className="ayah-action-sheet__btn ayah-action-sheet__btn--primary"
               onClick={handleSaveNote}
             >
-              {t("notes.save", lang)}
+              {!noteText.trim() && hasNote
+                ? t("notes.delete", lang)
+                : t("notes.save", lang)}
             </button>
           </div>
         </div>

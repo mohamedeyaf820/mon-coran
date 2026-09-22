@@ -438,6 +438,7 @@ export default {
     bookmarkRemoved: 'Bookmark removed',
     bookmarkAdded: 'Verse bookmarked',
     noteSaved: 'Note saved',
+    noteDeleted: 'Note deleted',
     reciterIncompatible: 'Reciter is incompatible with strict Warsh mode',
     unableToPlay: 'Unable to play this ayah',
     fullSurahStream: 'This reciter streams the whole surah, so playback starts from its beginning.',

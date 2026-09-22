@@ -438,6 +438,7 @@ export default {
     bookmarkRemoved: 'تمت إزالة الحفظ',
     bookmarkAdded: 'تمت إضافة الآية للمفضلة',
     noteSaved: 'تم حفظ الملاحظة',
+    noteDeleted: 'تم حذف الملاحظة',
     reciterIncompatible: 'القارئ غير متوافق مع وضع ورش الصارم',
     unableToPlay: 'تعذر تشغيل هذه الآية',
     fullSurahStream: 'هذا القارئ يذيع السورة كاملة، لذا تبدأ التلاوة من أول السورة.',
