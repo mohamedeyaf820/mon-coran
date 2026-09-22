@@ -1719,6 +1719,31 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 }
 
+/* On a phone the reader header was five identical bordered tiles around a
+   74px name, so the row read as chrome and the surah — the one thing the
+   reader is looking for — read as the smallest object in it. The utility
+   controls drop to plain icons (their 44px target box is untouched), and the
+   name takes the weight the tiles gave up. */
+@media (max-width: 400px) {
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    :is(.mp-header__nav-arrow, .mp-header__more) {
+    border-color: transparent !important;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-compact .mp-header__title-compact-ar {
+    font-size: 1.34rem;
+    line-height: 1.22;
+  }
+
+  html body #root .app-root.app-root[data-view="reading"] > .mp-header
+    .mp-header__title-compact .mp-header__title-compact-la {
+    font-size: 0.7rem;
+  }
+}
+
 /* Below 321px the reader header holds six 44px controls, which leaves the
    title cell 27px at 280px and 48px at 301px: the Arabic surah ligature
    renders as an unreadable fragment. Prev/next surah is also reachable from
