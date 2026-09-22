@@ -1657,7 +1657,11 @@ body,
         display: none !important;
     }
 
-    .app-root .app-main-shell {
+    /* In immersive mode the header gives its row back with a negative margin
+       and the player slides away, so the reader must take the whole viewport;
+       keeping the header-height subtraction there exposed a band of bare app
+       background along the bottom edge. */
+    .app-root:not(.immersive-mode) .app-main-shell {
         height: calc(100dvh - var(--header-h, 72px)) !important;
         max-height: calc(100dvh - var(--header-h, 72px)) !important;
     }

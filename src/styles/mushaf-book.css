@@ -522,10 +522,20 @@
 /* ─── Single-page layout (mobile / tablet portrait) ────────────────── */
 
 /* One leaf needs no side gutters: dropping them lets the type scale grow to
-   the true measure of the sheet instead of a gutter it never prints. */
+   the true measure of the sheet instead of a gutter it never prints.
+   On these surfaces the leaf IS the screen: the header and the phone footer
+   float over the paper instead of cutting bands out of it, so the vertical
+   budget is the viewport's own safe insets and nothing else. The chrome fades
+   to a tap, and the printed page never has to scroll to be read. */
 .mfp-portal-root[data-layout="single"] {
   --mfp-hchrome: 92px;
   --mfp-min-font: 15px;
+  --mfp-chrome: 64px;
+  --mfp-header-room: max(0.5rem, env(safe-area-inset-top));
+}
+
+.mfp-portal-root[data-layout="single"] .mfp-viewport {
+  padding: var(--mfp-header-room) 0.35rem max(0.6rem, env(safe-area-inset-bottom));
 }
 
 #root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-edge {
@@ -952,14 +962,10 @@
 
 /* Narrow screens: no side gutters, the sheet takes the width. */
 @media (max-width: 640px) {
-  /* Same attribute specificity as the single-layout rule above so these
-     phone values win over it (source order). */
   .mfp-portal-root[data-layout="single"] {
-    /* 150px only paid for the bars: the running head, folio, sheet padding
-       and viewport padding (~100px more) pushed the fifteen lines past the
-       scroll area, and the auto-centred sheet lost its first line off the
-       top. The budget now covers the whole stack so the leaf fits. */
-    --mfp-chrome: 250px;
+    /* A phone is far narrower than the Madani page is tall, so the printed
+       16.7em line measure — not the vertical budget — caps the type here.
+       The budget only pays for the viewport's own insets. */
     --mfp-hchrome: 44px;
     --mfp-min-font: 14px;
   }
@@ -988,14 +994,15 @@
   .mfp-zoom-controls .mfp-icon-btn { min-width: 44px; }
   .mfp-zoom-controls .mfp-zoom-value { min-width: 2.75rem; }
   .mfp-side-nav { display: none; }
-  /* The footer is a sticky flex row: it already reserves its own height below
-     the viewport, so the scroll area only needs a reading breath underneath
-     the sheet. */
-  .mfp-viewport { padding: var(--mfp-header-room) 0.35rem 1.5rem; }
+  /* The footer floats over the foot of the leaf: as a sticky row it reserved
+     65px of the column, and that band of bare canvas is exactly what the
+     reader saw when the chrome faded. */
   .mfp-mobile-footer {
-    position: sticky;
+    position: fixed;
     z-index: 30;
+    right: 0;
     bottom: 0;
+    left: 0;
     display: flex !important;
     flex: 0 0 auto;
     align-items: center;
