@@ -1,6 +1,29 @@
 import { useCallback, useEffect, useRef } from "react";
 import { loadAudioService } from "../services/loadAudioService";
 
+/**
+ * Overlays that own the keyboard: while one is open its own controls answer
+ * the keys, and a reading shortcut must not change what is behind it.
+ * The sidebar is deliberately absent — on a wide screen it is a persistent
+ * rail, not an overlay, and the reader stays visible next to it.
+ */
+const BLOCKING_OVERLAYS = [
+  "searchOpen",
+  "settingsOpen",
+  "libraryOpen",
+  "shareImageOpen",
+  "readerTypographyOpen",
+  "showDuas",
+  "legalPage",
+];
+
+function hasBlockingOverlay(latest) {
+  return (
+    latest.showShortcuts === true ||
+    BLOCKING_OVERLAYS.some((key) => latest.state[key] === true)
+  );
+}
+
 function shouldIgnoreKeyboardEvent(event) {
   if (event.defaultPrevented) return true;
 
@@ -66,7 +89,7 @@ export function useKeyboardNavigation({
 
   const handlePrevious = useCallback(() => {
     const latest = latestRef.current;
-    if (latest.state.showDuas) return;
+    if (hasBlockingOverlay(latest)) return;
 
     set({ showHome: false, showDuas: false });
 
@@ -89,7 +112,7 @@ export function useKeyboardNavigation({
 
   const handleNext = useCallback(() => {
     const latest = latestRef.current;
-    if (latest.state.showDuas) return;
+    if (hasBlockingOverlay(latest)) return;
 
     set({ showHome: false, showDuas: false });
 
@@ -121,11 +144,16 @@ export function useKeyboardNavigation({
 
   const handleEscape = useCallback(() => {
     const latest = latestRef.current;
+    // Each of these panels answers Escape itself and the event reaches this
+    // window listener in the same keystroke, while the state still reads as
+    // open. Toggling here then closed it and reopened it; setting it false is
+    // the one action both handlers can share.
     const closeActions = [
-      { condition: latest.state.searchOpen, action: () => dispatch({ type: "TOGGLE_SEARCH" }) },
-      { condition: latest.state.settingsOpen, action: () => dispatch({ type: "TOGGLE_SETTINGS" }) },
-      { condition: latest.state.libraryOpen, action: () => dispatch({ type: "TOGGLE_LIBRARY" }) },
+      { condition: latest.state.searchOpen, action: () => set({ searchOpen: false }) },
+      { condition: latest.state.settingsOpen, action: () => set({ settingsOpen: false }) },
+      { condition: latest.state.libraryOpen, action: () => set({ libraryOpen: false }) },
       { condition: latest.state.shareImageOpen, action: () => set({ shareImageOpen: false }) },
+      { condition: latest.state.readerTypographyOpen, action: () => set({ readerTypographyOpen: false }) },
       { condition: latest.showShortcuts, action: () => setShowShortcuts(false) },
       { condition: latest.sidebarOpen, action: () => dispatch({ type: "TOGGLE_SIDEBAR" }) },
     ];
@@ -135,20 +163,25 @@ export function useKeyboardNavigation({
   }, [dispatch, set, setShowShortcuts]);
 
   const handlePlayPause = useCallback(() => {
-    const { state: s } = latestRef.current;
-    const modalOpen = s.searchOpen || s.settingsOpen || s.libraryOpen || s.shareImageOpen;
-    if (modalOpen) return;
+    if (hasBlockingOverlay(latestRef.current)) return;
     loadAudioService()
       .then((audioService) => audioService.toggle())
       .catch(() => {});
   }, []);
 
   const handleToggleShortcuts = useCallback(() => {
-    setShowShortcuts((prev) => !prev);
+    const latest = latestRef.current;
+    if (latest.showShortcuts) {
+      setShowShortcuts(false);
+      return;
+    }
+    if (hasBlockingOverlay(latest)) return;
+    setShowShortcuts(true);
   }, [setShowShortcuts]);
 
   const handleToggleTranslation = useCallback(() => {
     const { state: s } = latestRef.current;
+    if (hasBlockingOverlay(latestRef.current)) return;
     // The printed Mushaf page has no translation band; keep the shortcut
     // aligned with the disabled toolbar toggle instead of flipping a
     // setting whose effect is invisible.
@@ -157,6 +190,7 @@ export function useKeyboardNavigation({
   }, [set]);
 
   const handleToggleTajweed = useCallback(() => {
+    if (hasBlockingOverlay(latestRef.current)) return;
     const { state: s } = latestRef.current;
     set({ showTajwid: !s.showTajwid });
   }, [set]);

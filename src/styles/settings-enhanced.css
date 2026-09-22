@@ -1402,6 +1402,13 @@
   outline-offset: 2px !important;
 }
 
+/* A switch's real control is the checkbox hidden inside the label, so its focus
+   ring has to be drawn on the track next to it. */
+.settings-control-row:has(.settings-visually-hidden:focus-visible) .settings-switch {
+  outline: 2px solid color-mix(in srgb, var(--primary) 55%, transparent) !important;
+  outline-offset: 2px !important;
+}
+
 .settings-time-grid,
 .settings-action-grid {
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
