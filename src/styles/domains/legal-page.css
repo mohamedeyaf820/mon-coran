@@ -187,8 +187,10 @@ html[data-theme="dark"] .surah-directory,
 html[data-theme="quran-night"] .surah-directory,
 html[data-theme="oled"] .surah-directory { box-shadow: 0 18px 48px rgba(0, 0, 0, .2); }
 
-[dir="rtl"] .legal-page__back svg { transform: rotate(180deg); }
-[dir="rtl"] .surah-directory__open svg { transform: rotate(180deg); }
+/* [dir=...] selectors are stripped by the production CSS build; key off the
+   surviving .app-root[data-dir] hook instead. */
+.app-root[data-dir="rtl"] .legal-page__back svg { transform: rotate(180deg); }
+.app-root[data-dir="rtl"] .surah-directory__open svg { transform: rotate(180deg); }
 
 @media (max-width: 900px) {
   .legal-page__hero-layout { grid-template-columns: 1fr; gap: .75rem; }

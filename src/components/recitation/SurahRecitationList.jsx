@@ -1,18 +1,11 @@
 import React, { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import SURAHS from "../../data/surahs";
+import { filterSurahDirectory } from "../../utils/searchIntelligence";
 import SurahRecitationRow from "./SurahRecitationRow";
+import { t } from "../../i18n";
 
 const INITIAL_VISIBLE_SURAHS = 18;
 const CHUNK_SIZE = 18;
-
-function normalize(value) {
-  return String(value || "")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim();
-}
 
 export default function SurahRecitationList({
   lang,
@@ -24,20 +17,16 @@ export default function SurahRecitationList({
   const [query, setQuery] = useState("");
   const [visibleCount, setVisibleCount] = useState(INITIAL_VISIBLE_SURAHS);
   const deferredQuery = useDeferredValue(query);
-  const normalizedQuery = normalize(deferredQuery);
+  const normalizedQuery = deferredQuery.trim();
 
   useEffect(() => {
     setQuery("");
   }, [reciter?.id]);
 
-  const filteredSurahs = useMemo(() => {
-    if (!normalizedQuery) return SURAHS;
-    return SURAHS.filter((surah) =>
-      normalize(`${surah.n} ${surah.fr} ${surah.en} ${surah.ar}`).includes(
-        normalizedQuery,
-      ),
-    );
-  }, [normalizedQuery]);
+  const filteredSurahs = useMemo(
+    () => filterSurahDirectory(normalizedQuery),
+    [normalizedQuery],
+  );
 
   useEffect(() => {
     setVisibleCount(INITIAL_VISIBLE_SURAHS);
@@ -81,12 +70,7 @@ export default function SurahRecitationList({
     [onOpenSurahIntent],
   );
 
-  const searchLabel =
-    lang === "fr"
-      ? "Rechercher une sourate"
-      : lang === "ar"
-        ? "البحث عن سورة"
-        : "Search a surah";
+  const searchLabel = t("recitation.searchSurah", lang);
 
   return (
     <div className="recitation-library">
@@ -103,20 +87,14 @@ export default function SurahRecitationList({
             <button
               type="button"
               onClick={() => setQuery("")}
-              aria-label={
-                lang === "fr"
-                  ? "Effacer la recherche"
-                  : lang === "ar"
-                    ? "مسح البحث"
-                    : "Clear search"
-              }
+              aria-label={t("home.clearSearch", lang)}
             >
               <X className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
             </button>
           ) : null}
         </label>
         <span className="recitation-library__count">
-          {filteredSurahs.length} {lang === "fr" ? "sourates" : lang === "ar" ? "سورة" : "surahs"}
+          {t("recitation.surahCount", lang, filteredSurahs.length)}
         </span>
       </div>
 
@@ -142,11 +120,7 @@ export default function SurahRecitationList({
           <div className="recitation-library__empty" role="status">
             <Search className="recitation-icon recitation-icon--lg" size={20} aria-hidden="true" />
             <span>
-              {lang === "fr"
-                ? "Aucune sourate ne correspond à cette recherche."
-                : lang === "ar"
-                  ? "لا توجد سورة مطابقة لهذا البحث."
-                  : "No surah matches this search."}
+              {t("recitation.noMatch", lang)}
             </span>
           </div>
         ) : null}
@@ -157,11 +131,7 @@ export default function SurahRecitationList({
             className="recitation-row--load-more"
             onClick={revealMore}
           >
-            {lang === "fr"
-              ? "Afficher plus de sourates"
-              : lang === "ar"
-                ? "عرض المزيد من السور"
-                : "Show more surahs"}
+            {t("recitation.showMore", lang)}
           </button>
         ) : null}
       </div>

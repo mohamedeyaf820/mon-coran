@@ -274,7 +274,7 @@ for (const [riwaya, fonts] of Object.entries(FONT_MATRIX)) {
       await select.selectOption(fontId);
       const mushafText = page.locator(".mushaf-container .verse-text").first();
       await expectFontFamily(mushafText, family);
-      await expectCanonicalQuranFlow(mushafText, { maxLeading: 1.78 });
+      await expectCanonicalQuranFlow(mushafText, { maxLeading: 2.21 });
       await expectCanonicalWaqfMark(page, riwaya);
     }
   });

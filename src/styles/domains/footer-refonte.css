@@ -84,9 +84,10 @@
   line-height: 1.6;
 }
 
-/* The footer's small print carries the Quran verse translation and its
-   reference. The root font-size is fluid (15-17px), so the rem-only scales
-   below drifted to 8.4-9.2px on a phone; each one now carries a pixel floor. */
+/* The footer's small print is the one place the app shows a Quran verse
+   translation, a reference and a source note. The root font-size is fluid
+   (15-17px), so the rem-only scales below drifted to 8.4-9.2px on a phone;
+   each one now carries a pixel floor. */
 .mp-footer-v2__verse-translation {
   overflow: hidden;
   color: var(--text-muted);
@@ -94,6 +95,14 @@
   line-height: 1.35;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.mp-footer-v2__verse-source {
+  color: var(--text-muted);
+  font-size: clamp(max(0.62rem, 10px), 0.8vw, 0.68rem);
+  font-style: normal;
+  line-height: 1.3;
+  opacity: 0.85;
 }
 
 .mp-footer-v2__verse-ref {

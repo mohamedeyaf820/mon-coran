@@ -6,7 +6,12 @@ import {
   getLatencyForReciter,
   getReciterUnavailableRemainingMs,
 } from "../../utils/reciterRanking";
-import { getReciterBio, getReciterPhoto, getReciterAvatar } from "../../data/reciters";
+import {
+  getReciterBio,
+  getReciterPhoto,
+  getReciterAvatar,
+  getReciterSourceInfo,
+} from "../../data/reciters";
 import { ReciterPhoto } from "./AudioPlayerPrimitives";
 
 function pick(lang, values) {
@@ -135,11 +140,9 @@ export default function ReciterOptionsList(props) {
   const activeLatency = activeReciter
     ? getLatencyForReciter(activeReciter, reciterLatencyByKey)
     : null;
-  const activeSource = activeReciter?.cdnType === "everyayah"
-    ? "EveryAyah CDN"
-    : activeReciter?.cdnType === "mp3quran-surah"
-      ? "MP3Quran"
-      : "Islamic Network";
+  const activeSource = activeReciter
+    ? getReciterSourceInfo(activeReciter).label
+    : "EveryAyah";
 
   return (
     <section

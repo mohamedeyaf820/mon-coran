@@ -19,7 +19,7 @@
  *    chains over the raw fields.
  */
 
-import { applyFontSigns, getFontSignVariant, normalizeQuranGlyphText } from "../utils/quranUtils.js";
+import { applyFontSigns, comparableArabicText, getFontSignVariant, normalizeQuranGlyphText } from "../utils/quranUtils.js";
 
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
@@ -304,6 +304,22 @@ function joinWordField(words, field) {
     .join(" ");
 }
 
+// A verse-level field can carry the exact letters of the verse while losing a
+// word boundary: quran.com's text_qpc_hafs for 15:7 renders "لَّوۡمَا" where
+// every other source, and its own word list, have لَّوْ + مَا. The word-by-word
+// division is the authoritative one, so when both sides carry the same letters
+// and only the word list has the fuller segmentation, paint the word list.
+// A real wording difference changes the letters, so it never triggers here.
+function restoreWordDivisionBoundaries(verseLevelText, joinedWords) {
+  if (!verseLevelText || !joinedWords) return "";
+  const painted = stripEmbeddedAyahMarkers(verseLevelText);
+  const paintedTokens = painted.split(/\s+/u).filter(Boolean).length;
+  const wordTokens = joinedWords.split(/\s+/u).filter(Boolean).length;
+  if (wordTokens <= paintedTokens) return "";
+  const letters = (value) => comparableArabicText(value).replace(/\s+/g, "");
+  return letters(painted) === letters(joinedWords) ? joinedWords : "";
+}
+
 export function getQuranWordTextForFont(word, fontId, riwaya = "hafs") {
   if (!word) return "";
   const normalizedId = normalizeFontId(fontId, riwaya);
@@ -346,19 +362,25 @@ export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
 
   const quranCom = ayah.quranCom || {};
   if (normalizedId === "qpc-indopak") {
+    const verseLevel = quranCom.textIndopak || "";
+    const joined = joinWordField(ayah.words, "textIndopak");
     return normalizeQuranGlyphText(
-      quranCom.textIndopak ||
-      joinWordField(ayah.words, "textIndopak") ||
+      restoreWordDivisionBoundaries(verseLevel, joined) ||
+      verseLevel ||
+      joined ||
       quranCom.textUthmani ||
       ayah.text ||
       "",
     );
   }
   if (normalizedId === "qpc-hafs") {
+    const verseLevel = quranCom.textQpcHafs || "";
+    const joined = joinWordField(ayah.words, "textQpcHafs");
     return applyFontSigns(
       normalizeQuranGlyphText(
-        quranCom.textQpcHafs ||
-        joinWordField(ayah.words, "textQpcHafs") ||
+        restoreWordDivisionBoundaries(verseLevel, joined) ||
+        verseLevel ||
+        joined ||
         quranCom.textUthmani ||
         ayah.text ||
         "",
@@ -366,9 +388,12 @@ export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
       signVariant,
     );
   }
+  const verseLevel = quranCom.textUthmani || "";
+  const joined = joinWordField(ayah.words, "textUthmani");
   return normalizeQuranGlyphText(
-    quranCom.textUthmani ||
-    joinWordField(ayah.words, "textUthmani") ||
+    restoreWordDivisionBoundaries(verseLevel, joined) ||
+    verseLevel ||
+    joined ||
     ayah.text ||
     "",
   );

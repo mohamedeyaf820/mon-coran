@@ -50,7 +50,7 @@ export default function TajweedTooltip() {
       setTooltipState({
         name: data.name,
         desc: data.desc,
-        color: data.color || "#27ae60",
+        color: data.color || "#09b000",
         x: Math.round(left),
         y: Math.round(top),
         placement,
@@ -112,7 +112,7 @@ export default function TajweedTooltip() {
         const color =
           target.getAttribute("data-tajwid-color") ||
           target.style.color ||
-          "#27ae60";
+          "#1e8e4e";
 
         target.classList.add("is-tajwid-hovered");
         updatePosition(target, { name, desc, color });
@@ -153,7 +153,7 @@ export default function TajweedTooltip() {
       const color =
         target.getAttribute("data-tajwid-color") ||
         target.style.color ||
-        "#27ae60";
+        "#1e8e4e";
 
       activeElementRef.current = target;
       activeVirtualRef.current = null;
@@ -161,22 +161,42 @@ export default function TajweedTooltip() {
       updatePosition(target, { name, desc, color });
     };
 
+    let scrollFrame = null;
+    const releaseAnchor = () => {
+      activeElementRef.current?.classList.remove("is-tajwid-hovered");
+      activeElementRef.current = null;
+      activeVirtualRef.current = null;
+      setTooltipState(null);
+    };
     const handleScroll = () => {
-      if (activeVirtualRef.current) {
+      if (!activeVirtualRef.current && !activeElementRef.current) return;
+      if (scrollFrame !== null) return;
+      scrollFrame = window.requestAnimationFrame(() => {
+        scrollFrame = null;
         const detail = activeVirtualRef.current;
-        placeTooltip(detail.getRect?.(), detail);
-        return;
-      }
-      if (activeElementRef.current) {
-        const target = activeElementRef.current;
+        const target = detail ? null : activeElementRef.current;
+        if (!detail && !target) return;
+        const rect = detail ? detail.getRect?.() : target.getBoundingClientRect();
+        if (!rect) return;
+        // The reader has scrolled the anchored word away: chasing it across the
+        // surah only costs layout and ends in a tooltip about a hidden word.
+        if (rect.bottom < 0 || rect.top > window.innerHeight) {
+          clearTimers();
+          releaseAnchor();
+          return;
+        }
+        if (detail) {
+          placeTooltip(rect, detail);
+          return;
+        }
         const name = target.getAttribute("data-tajwid-name");
         const desc = target.getAttribute("data-tajwid-desc");
         const color =
           target.getAttribute("data-tajwid-color") ||
           target.style.color ||
-          "#27ae60";
-        updatePosition(target, { name, desc, color });
-      }
+          "#1e8e4e";
+        placeTooltip(rect, { name, desc, color });
+      });
     };
 
     document.addEventListener("pointerover", handlePointerOver, { passive: true });
@@ -189,6 +209,8 @@ export default function TajweedTooltip() {
 
     return () => {
       clearTimers();
+      if (scrollFrame !== null) window.cancelAnimationFrame(scrollFrame);
+      scrollFrame = null;
       document.removeEventListener("pointerover", handlePointerOver);
       document.removeEventListener("pointerout", handlePointerOut);
       document.removeEventListener("click", handleClick);

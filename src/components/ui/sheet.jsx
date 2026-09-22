@@ -1,8 +1,19 @@
-import { useEffect, useRef, useCallback } from "react";
+import { useEffect, useRef } from "react";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useAppLocale } from "../../context/AppContext";
 import { t } from "../../i18n";
+
+// Mirrors the trap used by `ui/modal.jsx` and the ayah action sheets so every
+// dismissible surface keeps keyboard focus inside itself while it is open.
+const SHEET_FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 export function Sheet({
   open,
@@ -16,21 +27,77 @@ export function Sheet({
 }) {
   const { lang } = useAppLocale();
   const sheetRef = useRef(null);
+  const restoreFocusRef = useRef(null);
+  // `onClose` is usually an inline arrow in the parent: reading it through a
+  // ref keeps a fresh identity from re-running the focus effect and stealing
+  // focus from the user while the sheet is open.
+  const closeHandlerRef = useRef(onClose);
 
-  const handleKeyDown = useCallback((e) => {
-    if (e.key === "Escape") onClose?.();
+  useEffect(() => {
+    closeHandlerRef.current = onClose;
   }, [onClose]);
 
   useEffect(() => {
-    if (open) {
-      document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
-      return () => {
-        document.removeEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = "";
-      };
-    }
-  }, [open, handleKeyDown]);
+    if (!open || typeof document === "undefined") return undefined;
+
+    const sheet = sheetRef.current;
+    restoreFocusRef.current = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const focusTimer = window.setTimeout(() => {
+      const firstFocusable = sheet?.querySelector(SHEET_FOCUSABLE_SELECTOR);
+      (firstFocusable || sheet)?.focus();
+    }, 80);
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        event.stopPropagation();
+        closeHandlerRef.current?.();
+        return;
+      }
+      if (event.key !== "Tab" || !sheet) return;
+
+      const focusable = Array.from(
+        sheet.querySelectorAll(SHEET_FOCUSABLE_SELECTOR),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("hidden") &&
+          element.getAttribute("aria-hidden") !== "true" &&
+          element.getClientRects().length > 0,
+      );
+
+      if (!focusable.length) {
+        event.preventDefault();
+        sheet.focus();
+        return;
+      }
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      const active = document.activeElement;
+      const outside = !sheet.contains(active);
+
+      if (event.shiftKey && (active === first || outside)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || outside)) {
+        event.preventDefault();
+        first.focus();
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", handleKeyDown);
+      document.body.style.overflow = previousOverflow;
+      const restoreTarget = restoreFocusRef.current;
+      restoreFocusRef.current = null;
+      if (restoreTarget?.isConnected) restoreTarget.focus();
+    };
+  }, [open]);
 
   if (!open) return null;
 
@@ -55,8 +122,9 @@ export function Sheet({
       />
       <div
         ref={sheetRef}
+        tabIndex={-1}
         className={cn(
-          "fixed z-10 bg-[var(--bg-card)]",
+          "fixed z-10 bg-[var(--bg-card)] outline-none",
           "animate-slideIn",
           sideClasses[side] || sideClasses.right,
           sizeClasses[size] || sizeClasses.md,
@@ -67,7 +135,7 @@ export function Sheet({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:rotate-90"
+            className="absolute top-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:rotate-90"
             aria-label={t("audio.close", lang)}
           >
             <X size={18} />

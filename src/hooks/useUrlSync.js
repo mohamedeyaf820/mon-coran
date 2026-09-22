@@ -1,5 +1,6 @@
 import { useEffect, useRef } from "react";
 import { getSurahAyahCount } from "../data/surahs.js";
+import { getWarshSurahAyahCount } from "../constants/warshSource.js";
 
 /**
  * Synchronise React navigation state with the browser URL.
@@ -135,7 +136,10 @@ export function parseRoutePath(pathname = "/") {
     if (!Number.isInteger(surah) || surah < 1 || surah > 114) {
       return { routeNotFound: true, showHome: false, showDuas: false };
     }
-    const maxAyah = getSurahAyahCount(surah);
+    const maxAyah = Math.max(
+      getSurahAyahCount(surah),
+      getWarshSurahAyahCount(surah),
+    );
     const requestedAyah = surahMatch[2] ? Number(surahMatch[2]) : 1;
     if (!Number.isInteger(requestedAyah) || requestedAyah < 1 || requestedAyah > maxAyah) {
       return { routeNotFound: true, showHome: false, showDuas: false };

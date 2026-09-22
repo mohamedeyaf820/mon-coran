@@ -216,6 +216,28 @@ test("bookmarking a verse survives a page reload", async ({ page }) => {
   ).toBeVisible();
 });
 
+test("a bookmark taken in the reader is reachable from the header", async ({
+  page,
+}) => {
+  await seedFrenchState(page, { showHome: false });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/surah/1");
+  await expect(page.locator(".qc-list-card").first()).toBeVisible({
+    timeout: 30_000,
+  });
+
+  await page.getByRole("button", { name: "Ajouter aux favoris" }).first().click();
+  await expect(
+    page.getByRole("button", { name: "Retirer le favori" }).first(),
+  ).toBeVisible();
+
+  await page.locator(".mp-header__more").first().click();
+  await page.locator('.mp-header-menu__item[data-key="library"]').click();
+  const library = page.locator(".library-modal");
+  await expect(library).toBeVisible();
+  await expect(library.locator(".library-row__ref")).toHaveText(["1:1"]);
+});
+
 test("switching reciter in the player updates the selected voice", async ({
   page,
 }) => {

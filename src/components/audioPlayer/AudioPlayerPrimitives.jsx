@@ -81,7 +81,7 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
             cx={Math.min(98.3, pct)}
             cy="2"
             r="1.7"
-            fill="#fff7da"
+            fill="var(--gold-pale, #fff7da)"
             stroke="rgba(18,31,25,0.32)"
             strokeWidth="0.8"
           />
@@ -124,7 +124,7 @@ export function CoverArt({ isPlaying, size = 52, reciter }) {
         "audio-cover-art relative overflow-hidden rounded-xl shrink-0 bg-[linear-gradient(135deg,var(--theme-primary)_0%,color-mix(in_srgb,var(--theme-primary)_78%,var(--theme-bg)_22%)_58%,color-mix(in_srgb,var(--theme-primary)_62%,var(--theme-bg)_38%)_100%)]",
         COVER_SIZE_CLASSES[size] || COVER_SIZE_CLASSES[52],
         isPlaying
-          ? "shadow-[0_2px_12px_rgba(184,134,11,0.35)]"
+          ? "shadow-[0_2px_12px_color-mix(in_srgb,var(--gold)_35%,transparent_65%)]"
           : "shadow-[0_2px_8px_rgba(0,0,0,0.3)]",
       )}
     >
@@ -162,7 +162,7 @@ export function ReciterAvatar({ reciter, active = false, loading = false }) {
       className={cn(
         "relative mt-0.5 inline-flex h-10 w-10 shrink-0 overflow-hidden rounded-xl border text-[0.68rem] font-black",
         active
-          ? "border-[rgba(122,188,210,0.48)] bg-[rgba(122,188,210,0.24)] text-white"
+          ? "border-[rgba(var(--theme-primary-rgb),0.48)] bg-[rgba(var(--theme-primary-rgb),0.24)] text-white"
           : "border-white/10 bg-white/[0.08] text-white",
       )}
     >
@@ -214,11 +214,11 @@ export function IconBtn({
         base,
         "flex items-center justify-center rounded-full cursor-pointer outline-none transition-all duration-150",
         active
-          ? "bg-[rgba(212,168,32,0.25)] text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_88%,#ffffff_12%)] border border-[rgba(212,168,32,0.45)]"
+          ? "bg-[color-mix(in_srgb,var(--gold)_25%,transparent_75%)] text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_88%,#ffffff_12%)] border border-[color-mix(in_srgb,var(--gold)_45%,transparent_55%)]"
           : "bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[color-mix(in_srgb,var(--theme-text)_88%,var(--theme-bg)_12%)] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)]",
-        "hover:bg-[rgba(212,168,32,0.18)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[rgba(212,168,32,0.35)] hover:scale-105",
+        "hover:bg-[color-mix(in_srgb,var(--gold)_18%,transparent_82%)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[color-mix(in_srgb,var(--gold)_35%,transparent_65%)] hover:scale-105",
         "active:scale-95",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[rgba(212,168,32,0.5)]",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--gold)_50%,transparent_50%)]",
         className,
       )}
     >

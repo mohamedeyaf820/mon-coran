@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 let profileCataloguePromise;
-const PROFILE_CATALOGUE_VERSION = "2026-08-13";
+const PROFILE_CATALOGUE_VERSION = "2026-09-19";
 
 function loadProfileCatalogue() {
   if (!profileCataloguePromise) {

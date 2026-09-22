@@ -78,3 +78,38 @@ for (const [url, cacheName, ignoreVary] of [
     assert.deepEqual(calls, [ignoreVary]);
   });
 }
+
+test('worker and downloader open the same offline audio cache', () => {
+  const downloadSource = readFileSync(
+    new URL('../src/services/downloadService.js', import.meta.url),
+    'utf8',
+  );
+  const workerCache = /const AUDIO_CACHE_NAME = "([^"]+)"/.exec(workerSource)?.[1];
+  const serviceCache = /export const OFFLINE_AUDIO_CACHE_NAME = "([^"]+)"/.exec(
+    downloadSource,
+  )?.[1];
+  // A mismatch is silent: downloads succeed and the player still streams.
+  assert.equal(workerCache, serviceCache);
+});
+
+test('trim keeps the precached shell and evicts the oldest runtime entries', async () => {
+  const keys = [
+    '/manifest.json',
+    '/fonts/uthmanic-hafs-v18.woff2',
+    '/assets/late-chunk.js',
+    '/icons/icon-192.png',
+    '/index.html',
+  ].map((path) => ({ request: { url: `https://qa.test${path}` } }));
+  const deleted = [];
+  const context = {
+    URL, Response,
+    self: { location: { origin: 'https://qa.test' }, addEventListener: () => {} },
+    caches: { open: async () => ({}) },
+  };
+  vm.runInNewContext(workerSource, context);
+  await context.trimCache(
+    { keys: async () => keys, delete: async (key) => deleted.push(new URL(key.request.url).pathname) },
+    3,
+  );
+  assert.deepEqual(deleted, ['/assets/late-chunk.js', '/icons/icon-192.png']);
+});

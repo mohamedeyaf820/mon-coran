@@ -16,7 +16,6 @@ const RECITER_TO_QURAN_COM_RECITATION = {
   "ar.saoodshuraym": 10,
   "ar.abdurrahmaansudais": 3,
   hani_rifai: 5,
-  muhammad_tablawi: 11,
 };
 
 const memCache = new Map();
@@ -24,7 +23,8 @@ const inflight = new Map();
 
 function normalizeAudioUrl(url) {
   if (typeof url !== "string" || !url) return null;
-  if (/^https?:\/\//i.test(url)) return url;
+  if (/^https:\/\//i.test(url)) return url;
+  if (url.startsWith("//")) return `https:${url}`;
   return `${AUDIO_BASE_URL}${url.replace(/^\/+/, "")}`;
 }
 

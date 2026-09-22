@@ -13,9 +13,10 @@ const STORAGE_KEY = "mushaf-plus-arabic-font-preferences";
 export { ARABIC_FONT_SIZE_MAX, ARABIC_FONT_SIZE_MIN };
 
 export default function useArabicFontPreferences() {
-  const { fontFamily, quranFontSize, riwaya } = useAppSelector(
+  const { fontFamily, mushafLayout, quranFontSize, riwaya } = useAppSelector(
     (state) => ({
       fontFamily: state.fontFamily,
+      mushafLayout: state.mushafLayout,
       quranFontSize: state.quranFontSize,
       riwaya: state.riwaya,
     }),
@@ -72,6 +73,7 @@ export default function useArabicFontPreferences() {
   return {
     arabicFontFamily: normalizeFontId(fontFamily, riwaya),
     arabicFontSize: clampArabicFontSize(quranFontSize),
+    mushafLayout,
     riwaya,
     setArabicFontFamily,
     setArabicFontSize,

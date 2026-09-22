@@ -264,7 +264,7 @@
   position: fixed !important;
   inset-block: 0 !important;
   inset-inline-end: 0 !important;
-  z-index: 500 !important;
+  z-index: var(--z-drawer) !important;
   display: flex !important;
   flex-direction: column !important;
   width: min(100vw, 520px) !important;
@@ -971,7 +971,7 @@
 .settings-backdrop {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 499 !important;
+  z-index: var(--z-overlay) !important;
   background: rgba(0, 0, 0, 0.42) !important;
 }
 
@@ -979,7 +979,7 @@
   position: fixed !important;
   inset-block: 0 !important;
   inset-inline-end: 0 !important;
-  z-index: 500 !important;
+  z-index: var(--z-drawer) !important;
   display: flex !important;
   flex-direction: column !important;
   width: min(100vw, 520px) !important;

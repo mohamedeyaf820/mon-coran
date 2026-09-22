@@ -25,14 +25,14 @@ const FONT_SOURCES = {
     url: "/fonts/scheherazade-new-400.woff2",
     format: "woff2",
   },
-  // Google Fonts: loaded via <link> in index.html, mark as cssUrl so we wait for the stylesheet
+  // Amiri Quran / Noto Naskh Arabic are declared as local @font-face in index.html
   "amiri-quran": {
     family: "Amiri Quran",
-    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+    selfHosted: true,
   },
   "noto-naskh-arabic": {
     family: "Noto Naskh Arabic",
-    cssUrl: "https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Noto+Naskh+Arabic:wght@400;600;700&display=swap",
+    selfHosted: true,
   },
   "qpc-warsh": {
     family: "QPC Warsh",
@@ -97,30 +97,20 @@ async function loadFontFace(fontId, source) {
     return { loaded: available, localOnly: true, family: source.family };
   }
 
-  if (source.cssUrl) {
-    const linkId = `font-css-${fontId}`;
-    const stylesheetAlreadyPresent = [...document.querySelectorAll('link[rel="stylesheet"], link[rel="preload"]')]
-      .some((link) => link.href === new URL(source.cssUrl, document.baseURI).href);
-    if (!document.getElementById(linkId) && !stylesheetAlreadyPresent) {
-      const link = document.createElement("link");
-      link.id = linkId;
-      link.rel = "stylesheet";
-      link.href = source.cssUrl;
-      document.head.appendChild(link);
-      await new Promise((resolve) => {
-        link.onload = resolve;
-        link.onerror = resolve;
-        setTimeout(resolve, 1800);
-      });
-    }
+  if (source.selfHosted) {
+    let matched = [];
     try {
-      await document.fonts.load(`400 1em "${source.family}"`);
+      matched = await document.fonts.load(`400 1em "${source.family}"`);
     } catch {
-      // Browser fallback stack still keeps the reader usable offline.
+      matched = [];
     }
-    loadedFontIds.add(fontId);
-    failedFontIds.delete(fontId);
-    return { loaded: true, family: source.family, url: source.cssUrl };
+    if (matched.length) {
+      loadedFontIds.add(fontId);
+      failedFontIds.delete(fontId);
+    } else {
+      failedFontIds.add(fontId);
+    }
+    return { loaded: matched.length > 0, family: source.family, selfHosted: true };
   }
 
   // Skip document.fonts.check() — it returns true for unknown fonts (browser

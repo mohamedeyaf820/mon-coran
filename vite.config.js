@@ -3,6 +3,19 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import { buildCspPolicy } from "./scripts/cspPolicy.mjs";
 
+// Les polices « Amiri Quran » et « Noto Naskh Arabic » sont auto-hébergées sous
+// /fonts/ (voir src/styles/riwaya-fonts.css). La politique CSP injectée dans le
+// HTML retire ces hôtes : le document refuse donc toute feuille de style ou
+// police distante venant de Google, ce qui supprime la fuite vers un tiers même
+// si un chemin de chargement obsolète demande encore l'URL Google.
+// Les en-têtes HTTP de déploiement restent, eux, générés depuis
+// scripts/cspPolicy.mjs ; le navigateur applique l'intersection des deux
+// politiques, la plus stricte (le meta) gagne.
+const THIRD_PARTY_FONT_HOSTS = [
+  "https://fonts.googleapis.com",
+  "https://fonts.gstatic.com",
+];
+
 export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
@@ -22,6 +35,12 @@ export default defineConfig(({ mode }) => ({
               // directive in the HTML meta policy makes WebKit upgrade local
               // preview assets from http://127.0.0.1 to HTTPS and blank the app.
               directive !== "upgrade-insecure-requests",
+          )
+          .map((directive) =>
+            directive
+              .split(" ")
+              .filter((token) => !THIRD_PARTY_FONT_HOSTS.includes(token))
+              .join(" "),
           )
           .join("; ");
         return html.replace("__CSP_POLICY__", metaPolicy);

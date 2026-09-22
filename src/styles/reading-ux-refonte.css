@@ -117,7 +117,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   border-radius: 8px !important;
   background: var(--bg-secondary, #f1f5f9) !important;
   color: var(--text-muted) !important;
-  font-size: 0.72rem !important;
+  font-size: max(0.8rem, 13px) !important;
   font-weight: 700 !important;
 }
 
@@ -330,7 +330,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
     min-width: 2.2rem !important;
     min-height: 1.8rem !important;
-    font-size: 0.68rem !important;
   }
 }
 

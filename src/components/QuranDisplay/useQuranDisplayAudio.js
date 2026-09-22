@@ -12,15 +12,22 @@ import {
   isPlaylistEndForActiveScope,
 } from "../../utils/audioNavigationScope";
 import { buildSurahAudioPlaylist } from "../../utils/audioPlaylist";
+import { hafsNumbersForAyah } from "../../constants/warshSource";
 
-function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map()) {
-  return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => ({
-    surah: ayah.surah?.number || currentSurah,
-    numberInSurah: ayah.numberInSurah,
-    number: ayah.number,
-    text: ayah.text,
-    quranComAudioTiming: timingMap.get(`${ayah.surah?.number || currentSurah}:${ayah.numberInSurah}`) || null,
-  }));
+function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map(), riwaya = "hafs") {
+  return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => {
+    const surahNumber = ayah.surah?.number || currentSurah;
+    const hafsNumber = hafsNumbersForAyah(ayah, riwaya)?.[0] ?? null;
+    return {
+      surah: surahNumber,
+      numberInSurah: ayah.numberInSurah,
+      hafsNumber,
+      number: ayah.number,
+      text: ayah.text,
+      quranComAudioTiming:
+        timingMap.get(`${surahNumber}:${hafsNumber ?? ayah.numberInSurah}`) || null,
+    };
+  });
 }
 
 export default function useQuranDisplayAudio({
@@ -126,9 +133,9 @@ export default function useQuranDisplayAudio({
     const safeTimingMap =
       timingReciterRef.current === safeReciterId ? audioTimingMap : new Map();
     audioService.loadPlaylist(
-      toPlaylistAyahs(ayahs, currentSurah, safeTimingMap),
+      toPlaylistAyahs(ayahs, currentSurah, safeTimingMap, riwaya),
       currentReciter.cdn,
-      currentReciter.cdnType || "islamic",
+      currentReciter.cdnType || "everyayah",
     );
     activePlaylistScopeRef.current = readingScopeKey;
 
@@ -192,9 +199,9 @@ export default function useQuranDisplayAudio({
       return;
     }
     audioService.loadPlaylist(
-      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap),
+      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap, riwaya),
       currentReciter.cdn,
-      currentReciter.cdnType || "islamic",
+      currentReciter.cdnType || "everyayah",
     );
     activePlaylistScopeRef.current = readingScopeKey;
     audioService.play();
@@ -218,7 +225,7 @@ export default function useQuranDisplayAudio({
       return;
     }
 
-    const playlist = toPlaylistAyahs(sourceAyahs, currentSurah, audioTimingMap);
+    const playlist = toPlaylistAyahs(sourceAyahs, currentSurah, audioTimingMap, riwaya);
     const ayahSurah = Number(targetAyah?.surah?.number || targetAyah?.surah || currentSurah);
     const index = playlist.findIndex(
       (entry) =>
@@ -230,7 +237,7 @@ export default function useQuranDisplayAudio({
     audioService.loadPlaylist(
       playlist,
       currentReciter.cdn,
-      currentReciter.cdnType || "islamic",
+      currentReciter.cdnType || "everyayah",
     );
     activePlaylistScopeRef.current = readingScopeKey;
     try {
@@ -284,7 +291,7 @@ export default function useQuranDisplayAudio({
       audioService.loadPlaylist(
         playlistAyahs,
         currentReciter.cdn,
-        currentReciter.cdnType || "islamic",
+        currentReciter.cdnType || "everyayah",
       );
       activePlaylistScopeRef.current =
         displayMode === "surah" && surahNumber === currentSurah

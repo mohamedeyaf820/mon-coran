@@ -127,10 +127,15 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   assert.equal(settings.volume, 1);
   assert.deepEqual(settings.lastPosition, {
     surah: 9,
-    ayah: 129,
+    ayah: 130,
     page: 604,
     juz: 30,
   });
+
+  // Same position under Hafs must clamp to the Hafs total (129), proving the
+  // clamp follows the saved riwaya instead of always quoting Hafs.
+  saveSettings({ lang: "fr", riwaya: "hafs", lastPosition: { surah: 9, ayah: 999 } });
+  assert.equal(getSettings().lastPosition.ayah, 129);
 });
 
 test("storage: retired comparison pins are discarded", () => {

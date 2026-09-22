@@ -1,8 +1,8 @@
 import { getDefaultReciterId, getRecitersByRiwaya } from "../data/reciters";
 
 export function getReciterLatencyKey(reciter) {
-  if (!reciter) return "islamic:";
-  return `${reciter.cdnType || "islamic"}:${reciter.cdn || ""}`;
+  if (!reciter) return "everyayah:";
+  return `${reciter.cdnType || "everyayah"}:${reciter.cdn || ""}`;
 }
 
 export function getLatencyForReciter(reciter, latencyByKey = {}) {
@@ -110,8 +110,8 @@ export function sortRecitersByPreference(
       return aHasLatency ? -1 : 1;
     }
 
-    if ((a.cdnType || "islamic") !== (b.cdnType || "islamic")) {
-      return (a.cdnType || "islamic").localeCompare(b.cdnType || "islamic");
+    if ((a.cdnType || "everyayah") !== (b.cdnType || "everyayah")) {
+      return (a.cdnType || "everyayah").localeCompare(b.cdnType || "everyayah");
     }
 
     return compareNames(a, b);

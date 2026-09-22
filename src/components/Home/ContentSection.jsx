@@ -366,14 +366,14 @@ export default function ContentSection({
         {/* Recherche */}
         {(activeTab === "surah" || (activeTab === "audio" && audioView === "reciters")) && (
           <div className="relative flex flex-1 items-center w-full min-w-[200px]">
-            <Search size={14} className="absolute left-3.5 text-text-muted" />
+            <Search size={14} className="pointer-events-none absolute start-3.5 text-text-muted" />
             <input
-              className="h-11 w-full rounded-xl border border-border/70 bg-bg-secondary pl-10 pr-10 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
+              className="h-11 w-full rounded-xl border border-border/70 bg-bg-secondary ps-10 pe-12 text-[0.85rem] sm:text-[0.9rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary focus:ring-1 focus:ring-primary"
               placeholder={
-                activeTab === "surah" ? t("search.placeholder", lang) : t("home.searchReciter", lang)
+                activeTab === "surah" ? t("home.searchSurah", lang) : t("home.searchReciter", lang)
               }
               aria-label={
-                activeTab === "surah" ? t("search.placeholder", lang) : t("home.searchReciter", lang)
+                activeTab === "surah" ? t("home.searchSurah", lang) : t("home.searchReciter", lang)
               }
               value={filter}
               onChange={(e) => onFilterChange(e.target.value)}
@@ -381,11 +381,11 @@ export default function ContentSection({
             {filter && (
               <button
                 type="button"
-                className="absolute right-2 flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-[0.8rem] text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
+                className="absolute end-0.5 flex h-11 w-11 items-center justify-center rounded-full text-text-muted transition-colors hover:bg-bg-tertiary hover:text-text-primary"
                 onClick={() => onFilterChange("")}
                 aria-label={t("home.clearSearch", lang)}
               >
-                <X size={13} />
+                <X size={15} />
               </button>
             )}
           </div>

@@ -6,23 +6,7 @@ import {
 } from "../utils/audioPlaylist.js";
 import { validateReciterAudioConfig } from "../data/reciters.js";
 
-const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
-
-function isSafeReciterDownloadUrl(url) {
-  try {
-    const parsed = new URL(String(url || ""));
-    if (parsed.protocol !== "https:") return false;
-    const host = parsed.hostname.toLowerCase();
-    const path = parsed.pathname || "/";
-    if (host === "download.quranicaudio.com") return /\.mp3$/i.test(path);
-    if (TRUSTED_MP3QURAN_HOST.test(host)) return /\.mp3$/i.test(path);
-    return false;
-  } catch {
-    return false;
-  }
-}
-
-export function buildStationPlaylist(surahNumbers = [], cdnType = "islamic") {
+export function buildStationPlaylist(surahNumbers = [], cdnType = "everyayah") {
   const numbers = Array.isArray(surahNumbers) ? surahNumbers : [];
   if (AudioService.isSurahStreamCdn(cdnType)) {
     return numbers.flatMap((num) => buildSurahAudioPlaylist(num).slice(0, 1));
@@ -33,7 +17,7 @@ export function buildStationPlaylist(surahNumbers = [], cdnType = "islamic") {
 export async function buildStationPlaylistForRiwaya(
   surahNumbers = [],
   riwaya = "hafs",
-  cdnType = "islamic",
+  cdnType = "everyayah",
 ) {
   if (AudioService.isSurahStreamCdn(cdnType)) {
     return buildStationPlaylist(surahNumbers, cdnType);
@@ -45,7 +29,7 @@ export async function buildStationPlaylistForRiwaya(
 export async function buildSurahPlaylistForRiwaya(
   surahNum,
   riwaya = "hafs",
-  cdnType = "islamic",
+  cdnType = "everyayah",
 ) {
   if (AudioService.isSurahStreamCdn(cdnType)) {
     return buildSurahAudioPlaylist(surahNum).slice(0, 1);
@@ -54,26 +38,10 @@ export async function buildSurahPlaylistForRiwaya(
   return buildAudioPlaylistForSurah(surahNum, riwaya);
 }
 
-export function reciterDownloadUrl(targetReciter, surahNum) {
-  if (
-    !targetReciter ||
-    targetReciter.cdnType !== "mp3quran-surah" ||
-    !validateReciterAudioConfig(targetReciter).valid
-  ) {
-    return null;
-  }
-  const url = AudioService.buildUrl(
-    targetReciter.cdn,
-    { surah: surahNum },
-    targetReciter.cdnType,
-  );
-  return isSafeReciterDownloadUrl(url) ? url : null;
-}
-
 export async function buildContinuousRadioPlaylist(
   startSurah = 1,
   riwaya = "hafs",
-  cdnType = "islamic",
+  cdnType = "everyayah",
 ) {
   const start = Math.max(1, Math.min(114, Math.trunc(Number(startSurah)) || 1));
   const surahNumbers = [];
@@ -101,7 +69,7 @@ export function playPlaylistWithReciter({ items, reciter, set }) {
     showHome: false,
     showDuas: false,
   });
-  audioService.loadPlaylist(items, reciter.cdn, reciter.cdnType || "islamic");
+  audioService.loadPlaylist(items, reciter.cdn, reciter.cdnType || "everyayah");
   audioService.play();
   return true;
 }

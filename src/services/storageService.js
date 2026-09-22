@@ -17,6 +17,11 @@ import {
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
 import { getSurahAyahCount } from "../data/surahs.js";
+import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
+import {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+} from "./warshTranslationService.js";
 import {
   normalizeDayTheme,
   normalizeNightTheme,
@@ -168,7 +173,18 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 
 // Valeurs valides pour validation
 const VALID_LANGS = ["fr", "en", "ar"];
-const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
+// The vendored Warsh-adapted editions are selectable like a language: their
+// edition id doubles as the translationLangs token (see quranAPI TRANSLATION_CHOICES).
+const VALID_TRANSLATION_LANGS = [
+  "fr",
+  "en",
+  "es",
+  "de",
+  "tr",
+  "ur",
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
@@ -179,9 +195,10 @@ function clampSurah(value) {
   return Math.max(1, Math.min(114, Number(value) || 1));
 }
 
-function clampAyahForSurah(surahValue, ayahValue) {
+function clampAyahForSurah(surahValue, ayahValue, riwaya = "hafs") {
   const surah = clampSurah(surahValue);
-  const maxAyah = getSurahAyahCount(surah);
+  const maxAyah =
+    getSurahVerseCountByRiwaya(surah, riwaya) || getSurahAyahCount(surah);
   return Math.max(1, Math.min(maxAyah, Number(ayahValue) || 1));
 }
 
@@ -347,6 +364,14 @@ function cloneDefaultSettings() {
   return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 }
 
+// The default is opt-in for fresh installs only: a stored boolean, including
+// `false`, must survive so automatic reciter selection can really be disabled.
+function normalizeFastestReciterPreference(value) {
+  return typeof value === "boolean"
+    ? value
+    : DEFAULT_SETTINGS.autoSelectFastestReciter;
+}
+
 function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
   const source = input && typeof input === "object" && !Array.isArray(input)
     ? input
@@ -394,7 +419,9 @@ export function getSettings() {
       ),
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
-      autoSelectFastestReciter: true,
+      autoSelectFastestReciter: normalizeFastestReciterPreference(
+        parsed?.autoSelectFastestReciter,
+      ),
       reciterLatencyByKey: sanitizeLatencyMap(parsed?.reciterLatencyByKey),
       reciterAvailabilityById: sanitizeReciterAvailabilityMap(
         parsed?.reciterAvailabilityById,
@@ -423,14 +450,15 @@ function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
   const safeSyncOffsets = sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
   const lastSurah = clampSurah(safeInput.lastPosition?.surah);
+  const normalizedRiwaya = VALID_RIWAYAS.includes(safeInput.riwaya)
+    ? safeInput.riwaya
+    : "hafs";
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
     theme: normalizeThemeId(safeInput.theme, "light"),
     skipSplashAnimation: Boolean(safeInput.skipSplashAnimation),
-    riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
-      ? safeInput.riwaya
-      : "hafs",
+    riwaya: normalizedRiwaya,
     reciter:
       typeof safeInput.reciter === "string"
         ? safeInput.reciter.slice(0, 50)
@@ -490,7 +518,9 @@ function sanitizeSettings(settings) {
     warshStrictMode: Boolean(safeInput.warshStrictMode),
     syncOffsetsMs: safeSyncOffsets,
     favoriteReciters: sanitizeFavoriteReciters(safeInput.favoriteReciters),
-    autoSelectFastestReciter: true,
+    autoSelectFastestReciter: normalizeFastestReciterPreference(
+      safeInput.autoSelectFastestReciter,
+    ),
     reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
     reciterAvailabilityById: sanitizeReciterAvailabilityMap(
       safeInput.reciterAvailabilityById,
@@ -539,7 +569,7 @@ function sanitizeSettings(settings) {
         : true,
     lastPosition: {
       surah: lastSurah,
-      ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah),
+      ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah, normalizedRiwaya),
       page: Math.max(
         1,
         Math.min(604, Number(safeInput.lastPosition?.page) || 1),
@@ -549,6 +579,8 @@ function sanitizeSettings(settings) {
   };
 }
 
+let storageFailureAnnounced = false;
+
 export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
@@ -556,6 +588,18 @@ export function saveSettings(settings) {
     return true;
   } catch {
     // Never fall back to plaintext when encryption/storage is unavailable.
+    // Callers ignore the false return, so say once per session that reading
+    // state is no longer being persisted (QuotaExceeded, private mode, …).
+    if (!storageFailureAnnounced && typeof window !== "undefined") {
+      storageFailureAnnounced = true;
+      import("../lib/utils.js")
+        .then(({ toast }) => {
+          import("../i18n/index.js").then(({ t }) => {
+            toast(t("errors.storageFull", safe.lang), "error");
+          });
+        })
+        .catch(() => {});
+    }
     return false;
   }
 }
@@ -622,12 +666,33 @@ export function updateSetting(key, value) {
   return settings;
 }
 
+/**
+ * Patches the stored settings instead of replacing the whole blob. Callers
+ * that persist a subset of keys (reading position, one audio preference) must
+ * not reset the keys they ignore, so unspecified keys keep their stored value
+ * and `lastPosition` is merged field by field.
+ */
+export function mergeSettings(patch) {
+  const current = getSettings();
+  return saveSettings({
+    ...current,
+    ...patch,
+    lastPosition: {
+      ...current.lastPosition,
+      ...(patch?.lastPosition || {}),
+    },
+  });
+}
+
 /* ═══════════════════════════════════════════ */
 /*  READING POSITION (quick access)           */
 /* ═══════════════════════════════════════════ */
 
 export function savePosition(surah, ayah, page) {
-  updateSetting("lastPosition", { surah, ayah, page });
+  const settings = getSettings();
+  settings.lastPosition = { ...settings.lastPosition, surah, ayah, page };
+  saveSettings(settings);
+  return settings.lastPosition;
 }
 
 export function getPosition() {

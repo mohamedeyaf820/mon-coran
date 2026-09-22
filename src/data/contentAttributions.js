@@ -32,12 +32,44 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     url: "https://github.com/Yousr-Allah-Allouani/warsh-quran-audio",
   },
   {
+    id: "montada-warsh-fr",
+    category: "translation",
+    name: "« Le Saint Coran » — Dr Nabil Redouane, Al-Montada Al-Islami 2017",
+    usage: "Traduction française des sens remappée sur la numérotation Warsh (6214 versets) et servie hors ligne.",
+    rights: "L’utilisation en direct dans l’application est déclarée libre par le fournisseur (quranpedia.net, livre 1949); attribution au traducteur et à l’éditeur requise.",
+    url: "https://quranpedia.net/translation-books/1949",
+  },
+  {
+    id: "pickthall-warsh-en",
+    category: "translation",
+    name: "« The Holy Qur’an » — M. M. Pickthall (1930)",
+    usage: "Traduction anglaise des sens remappée sur la numérotation Warsh (6214 versets) et servie hors ligne.",
+    rights: "Domaine public (publication 1930); jeu de données repris du catalogue quranpedia.net, livre 13604; attribution au traducteur requise.",
+    url: "https://quranpedia.net/translation-books/13604",
+  },
+  {
+    id: "transliteration-en",
+    category: "transliteration",
+    name: "Translittération latine mot à mot — Quran.com",
+    usage: "Phonétique latine des 6236 versets Hafs, générée hors ligne depuis les données word-by-word de l’API v4 de quran.com. Non appliquée au Warsh, dont la prononciation diffère (imala, naql).",
+    rights: "Jeu de données word-by-word publié par Quran.com; conditions développeur de l’API et attribution au fournisseur requises.",
+    url: "https://quran.com/developer",
+  },
+  {
     id: "recitations",
     category: "audio",
-    name: "EveryAyah, MP3Quran et Islamic Network",
-    usage: "Récitations par verset ou par sourate selon le récitateur.",
+    name: "EveryAyah et Quran.com Audio",
+    usage: "Récitations Hafs verset par verset, servies par EveryAyah ou par le CDN Quran.com.",
     rights: "Diffusion depuis les serveurs des fournisseurs. Aucun droit de réhébergement ou de redistribution des enregistrements n’est accordé par MushafPlus.",
     url: "https://everyayah.com/",
+  },
+  {
+    id: "quranpedia-audio",
+    category: "audio",
+    name: "QuranPedia — récitations Warsh",
+    usage: "Récitations Warsh verset par verset (jeux de données 261 à 267) numérotées selon la riwaya.",
+    rights: "Diffusion depuis files.quranpedia.net. Aucun droit de réhébergement ou de redistribution des enregistrements n’est accordé par MushafPlus.",
+    url: "https://quranpedia.net/",
   },
   {
     id: "fonts",
@@ -55,14 +87,7 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     rights: "Attribution au fournisseur indiqué dans la fiche du récitateur; aucune licence générale de réutilisation n’est revendiquée.",
     url: "https://www.assabile.com/",
   },
-  {
-    id: "portrait-adel-al-kalbani",
-    category: "image",
-    name: "Portrait d’Adel Al-Kalbani — Wikimedia Commons",
-    usage: "Photographie du profil d’Adel Al-Kalbani.",
-    rights: "Photo par I3bdulghani, sous licence Creative Commons Attribution-ShareAlike 3.0 (CC BY-SA 3.0).",
-    url: "https://commons.wikimedia.org/wiki/File:Kalbani.jpg",
-  },
+
 ]);
 
 export default CONTENT_ATTRIBUTIONS;

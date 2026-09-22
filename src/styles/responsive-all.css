@@ -455,7 +455,7 @@ html {
         bottom: 0;
         width: 290px !important;
         max-width: 85vw !important;
-        z-index: var(--z-sidebar, 500) !important;
+        z-index: var(--z-drawer, 500) !important;
         transform: translateX(-100%);
         transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         box-shadow: 20px 0 30px rgba(0, 0, 0, 0.25);
@@ -684,22 +684,9 @@ html {
     background: rgba(16, 185, 129, 0.15) !important;
 }
 
-:root:not([data-theme]),
-[data-theme="light"] {
-    --tajwid-silent: #9e9e9e !important;
-    --tajwid-lam-shamsiyya: #9e9e9e !important;
-    --tajwid-madd-normal: #f48fb1 !important;
-    --tajwid-madd: #e53935 !important;
-    --tajwid-madd-separated: #ff9800 !important;
-    --tajwid-madd-connected: #e91e63 !important;
-    --tajwid-madd-necessary: #e53935 !important;
-    --tajwid-ghunna: #27ae60 !important;
-    --tajwid-idgham: #27ae60 !important;
-    --tajwid-ikhfa: #27ae60 !important;
-    --tajwid-iqlab: #27ae60 !important;
-    --tajwid-qalqala: #00d2ff !important;
-    --tajwid-tafkhim: #2e86de !important;
-}
+/* The tajweed rule palette is owned by domains/themes4.css per theme. It used
+   to be re-declared here with !important, which silently forced the light
+   colours on the sepia reader and defeated its tuned palette. */
 
 [data-theme="sepia"] {
     --reader-page-bg: #f3e8cf !important;
@@ -716,20 +703,6 @@ html {
     --reader-page-border: rgba(110, 78, 36, 0.22) !important;
     --reader-paper-bg: #fff6e3 !important;
     --reader-paper-border: rgba(124, 74, 23, 0.4) !important;
-
-    --tajwid-silent: #9e9e9e !important;
-    --tajwid-lam-shamsiyya: #9e9e9e !important;
-    --tajwid-madd-normal: #f48fb1 !important;
-    --tajwid-madd: #e53935 !important;
-    --tajwid-madd-separated: #ff9800 !important;
-    --tajwid-madd-connected: #e91e63 !important;
-    --tajwid-madd-necessary: #e53935 !important;
-    --tajwid-ghunna: #27ae60 !important;
-    --tajwid-idgham: #27ae60 !important;
-    --tajwid-ikhfa: #27ae60 !important;
-    --tajwid-iqlab: #27ae60 !important;
-    --tajwid-qalqala: #00d2ff !important;
-    --tajwid-tafkhim: #2e86de !important;
 }
 
 html
@@ -935,7 +908,7 @@ html {
 
 .app-root .notes-fab {
     position: fixed !important;
-    z-index: 250 !important;
+    z-index: var(--z-fab) !important;
     flex: none !important;
 }
 

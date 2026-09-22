@@ -26,6 +26,7 @@ import AudioOptionsModal from "./audioPlayer/AudioOptionsModal";
 import SimpleAudioPlayerView from "./audioPlayer/SimpleAudioPlayerView";
 import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
 import { useMediaSession } from "../hooks/useMediaSession";
+import { useDirectionAwareKeys } from "../hooks/useDirectionAwareKeys";
 import {
   isMobilePlayerViewport,
   MOBILE_BREAKPOINT,
@@ -87,6 +88,7 @@ export default function AudioPlayer() {
     return isMobilePlayerViewport();
   });
   const [audioError, setAudioError] = useState(null);
+  const [audioFailed, setAudioFailed] = useState(false);
   const [networkState, setNetworkState] = useState("idle");
   const networkStateTimerRef = useRef(null);
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
@@ -201,17 +203,19 @@ export default function AudioPlayer() {
         try {
           const switched = await audioService.switchReciter(
             candidate.cdn,
-            candidate.cdnType || "islamic",
+            candidate.cdnType || "everyayah",
           );
           if (!switched) continue;
           markReciterAvailable(candidate.id);
           set({ reciter: candidate.id });
-          toast(
+          const switchedName =
             lang === "fr"
-              ? `Récitateur indisponible, bascule vers ${candidate.nameFr || candidate.nameEn || candidate.name}.`
+              ? candidate.nameFr || candidate.nameEn || candidate.name
               : lang === "ar"
-                ? `القارئ غير متاح، تم التبديل إلى ${candidate.name || candidate.nameEn || candidate.id}.`
-                : `Reciter unavailable, switched to ${candidate.nameEn || candidate.nameFr || candidate.name}.`,
+                ? candidate.name || candidate.nameEn || candidate.id
+                : candidate.nameEn || candidate.nameFr || candidate.name;
+          toast(
+            t("audio.reciterSwitched", lang).replace("{name}", switchedName),
             "warning",
           );
           return true;
@@ -282,6 +286,7 @@ export default function AudioPlayer() {
     audioService.onPlay = (item) => {
       setClosed(false); // rouvre le lecteur s'il etait ferme
       setAudioError(null);
+      setAudioFailed(false);
       markReciterAvailable(reciter);
       failedRecitersRef.current.clear();
       const nextPlayingAyah = item
@@ -339,6 +344,7 @@ export default function AudioPlayer() {
       try {
       set({ isPlaying: false });
       setNetworkState("error");
+      setAudioFailed(true);
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);
       }
@@ -351,13 +357,7 @@ export default function AudioPlayer() {
       const switched = await tryAutoReciterFailover();
       if (switched) {
         setNetworkState("loading");
-        setAudioError(
-          lang === "fr"
-            ? "Le r\u00e9citateur ne chargeait pas. Bascule automatique vers une voix disponible..."
-            : lang === "ar"
-              ? "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0647\u0630\u0627 \u0627\u0644\u0642\u0627\u0631\u0626. \u064a\u062a\u0645 \u0627\u0644\u062a\u0628\u062f\u064a\u0644 \u062a\u0644\u0642\u0627\u0626\u064a\u0627..."
-              : "The reciter failed to load. Switching to an available voice...",
-        );
+        setAudioError(t("audio.reciterFailover", lang));
         audioErrorTimerRef.current = setTimeout(() => {
           setAudioError(null);
           audioErrorTimerRef.current = null;
@@ -366,16 +366,8 @@ export default function AudioPlayer() {
       }
       const msg =
         riwaya === "warsh"
-          ? lang === "fr"
-            ? "Ce r\u00e9citateur Warsh ne charge pas pour le moment. R\u00e9essayez ou choisissez un autre r\u00e9citateur."
-            : lang === "ar"
-              ? "صوت ورش غير متاح الآن. تحقق من الاتصال أو اختر قارئا آخر."
-              : "Warsh audio unavailable. Check your connection or switch reciter."
-          : lang === "fr"
-            ? "Ce r\u00e9citateur ne charge pas pour le moment. R\u00e9essayez ou choisissez un autre r\u00e9citateur."
-            : lang === "ar"
-              ? "تعذر تحميل الصوت."
-              : "Audio load error.";
+          ? t("audio.reciterLoadErrorWarsh", lang)
+          : t("audio.reciterLoadError", lang);
       setAudioError(msg);
       audioErrorTimerRef.current = setTimeout(() => {
         setAudioError(null);
@@ -426,22 +418,12 @@ export default function AudioPlayer() {
   const networkBadge = (() => {
     if (networkState === "loading" || networkState === "buffering") {
       return {
-        text:
-          lang === "fr"
-            ? "Chargement audio..."
-            : lang === "ar"
-              ? "جار تحميل الصوت..."
-              : "Loading audio...",
+        text: t("audio.networkLoading", lang),
       };
     }
     if (networkState === "stalled") {
       return {
-        text:
-          lang === "fr"
-            ? "Connexion instable"
-            : lang === "ar"
-              ? "اتصال غير مستقر"
-              : "Unstable connection",
+        text: t("audio.networkStalled", lang),
       };
     }
     return null;
@@ -479,7 +461,7 @@ export default function AudioPlayer() {
     if (!currentReciter) return;
 
     const activeCdn = currentReciter.cdn;
-    const activeCdnType = currentReciter.cdnType || "islamic";
+    const activeCdnType = currentReciter.cdnType || "everyayah";
 
     if (
       audioService._currentReciterCdn !== activeCdn ||
@@ -505,6 +487,15 @@ export default function AudioPlayer() {
   const next = useCallback(() => audioService.next(), []);
   const prev = useCallback(() => audioService.prev(), []);
 
+  const retryPlayback = useCallback(() => {
+    setAudioFailed(false);
+    setNetworkState("loading");
+    Promise.resolve(audioService.play()).catch(() => {
+      setAudioFailed(true);
+      setNetworkState("error");
+    });
+  }, []);
+
   const seekFromClientX = useCallback((clientX) => {
     if (!progressRef.current) return;
     const rect = progressRef.current.getBoundingClientRect();
@@ -520,25 +511,11 @@ export default function AudioPlayer() {
     [seekFromClientX],
   );
 
-  const handleProgressKeyDown = useCallback(
-    (event) => {
-      let nextProgress = progress;
-      if (event.key === "ArrowLeft" || event.key === "ArrowDown") {
-        nextProgress = progress - 0.05;
-      } else if (event.key === "ArrowRight" || event.key === "ArrowUp") {
-        nextProgress = progress + 0.05;
-      } else if (event.key === "Home") {
-        nextProgress = 0;
-      } else if (event.key === "End") {
-        nextProgress = 1;
-      } else {
-        return;
-      }
-      event.preventDefault();
-      seekSurahProgress(Math.max(0, Math.min(1, nextProgress)));
-    },
-    [progress],
-  );
+  const handleProgressKeyDown = useDirectionAwareKeys({
+    lang,
+    value: progress,
+    onSeek: seekSurahProgress,
+  });
 
   /*Progress bar drag support*/
   const [progressDragging, setProgressDragging] = useState(false);
@@ -694,6 +671,7 @@ export default function AudioPlayer() {
     setMinimized(false);
     setOptionsModalOpen(false);
     setAudioError(null);
+    setAudioFailed(false);
     setNetworkState("idle");
     set({ playerMinimized: false });
     setClosed(true);
@@ -768,11 +746,7 @@ export default function AudioPlayer() {
       if (remainingMs > 0) {
         const retryLabel = formatCooldownLabel(remainingMs, lang);
         toast(
-          lang === "fr"
-            ? `Ce r\u00e9citateur est temporairement indisponible. R\u00e9essayez dans ${retryLabel}.`
-            : lang === "ar"
-              ? `هذا القارئ غير متاح مؤقتا. حاول بعد ${retryLabel}.`
-              : `This reciter is temporarily unavailable. Try again in ${retryLabel}.`,
+          t("audio.reciterCooldown", lang).replace("{time}", retryLabel),
           "warning",
         );
         return;
@@ -783,7 +757,7 @@ export default function AudioPlayer() {
       try {
         const switched = await audioService.switchReciter(
           target.cdn,
-          target.cdnType || "islamic",
+          target.cdnType || "everyayah",
         );
         if (!switched) {
           // Superseded by a newer click — that call handles cleanup.
@@ -795,11 +769,7 @@ export default function AudioPlayer() {
         markReciterUnavailable(nextReciterId, error);
         console.error("Instant reciter switch failed:", error);
         toast(
-          lang === "fr"
-            ? "Le changement instantan\u00e9 du r\u00e9citateur a \u00e9chou\u00e9."
-            : lang === "ar"
-              ? "تعذر تبديل القارئ فوريا."
-              : "Instant reciter switch failed.",
+          t("audio.reciterSwitchFailed", lang),
           "warning",
         );
       } finally {
@@ -825,7 +795,8 @@ export default function AudioPlayer() {
   const currentSurahName = surahMeta ? surahName(currentSurah, lang) : "";
   const currentArabicName = surahMeta?.ar || "";
 
-  const reciterObj = currentReciters.find((r) => r.id === reciter) ?? getReciter(reciter);
+  const reciterObj =
+    currentReciters.find((r) => r.id === reciter) ?? getReciter(reciter, riwaya);
   const isSurahStreamReciter = reciterObj?.audioMode === "surah";
   const hasAyahContext = Boolean(currentPlayingAyah?.ayah);
   const isContextualDesktop = !isMobile && !showHome;
@@ -909,61 +880,48 @@ export default function AudioPlayer() {
       ? `${currentAyahText.slice(0, 180).trim()}...`
       : currentAyahText;
 
-  const audioRegionLabel =
-    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a" : lang === "fr" ? "Lecteur audio" : "Audio player";
-  const minimizedAudioRegionLabel =
-    lang === "ar" ? "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a \u0627\u0644\u0645\u0635\u063a\u0631" : lang === "fr" ? "Lecteur audio r\u00e9duit" : "Minimized audio player";
-  const readyLabel =
-    lang === "ar" ? "\u062c\u0627\u0647\u0632" : lang === "fr" ? "Pr\u00eat \u00e0 lire" : "Ready";
-  const closeLabel =
-    lang === "ar" ? "\u0627\u063a\u0644\u0627\u0642" : lang === "fr" ? "Fermer" : "Close";
-  const expandLabel =
-    lang === "ar" ? "\u062a\u0648\u0633\u064a\u0639" : lang === "fr" ? "Agrandir" : "Expand";
-  const minimizeLabel =
-    lang === "ar" ? "\u062a\u0635\u063a\u064a\u0631" : lang === "fr" ? "R\u00e9duire" : "Minimize";
-  const optionsLabel =
-    lang === "ar" ? "\u0627\u0644\u062e\u064a\u0627\u0631\u0627\u062a \u0648\u0627\u0644\u0642\u0631\u0627\u0621" : lang === "fr" ? "Options et r\u00e9citateurs" : "Options and reciters";
+  const audioRegionLabel = t("audio.region", lang);
+  const minimizedAudioRegionLabel = t("audio.regionMinimized", lang);
+  const readyLabel = t("audio.readyToPlay", lang);
+  const closeLabel = t("common.close", lang);
+  const expandLabel = t("audio.expand", lang);
+  const minimizeLabel = t("audio.minimize", lang);
+  const optionsLabel = t("audio.optionsAndReciters", lang);
   const playPauseLabel = isPlaying ? t("audio.pause", lang) : t("audio.play", lang);
-  const speedLabel =
-    lang === "ar" ? "\u0627\u0644\u0633\u0631\u0639\u0629" : lang === "fr" ? "Vitesse" : "Speed";
-  const progressLabel =
-    lang === "ar"
-      ? "\u062a\u0642\u062f\u0645 \u0627\u0644\u062a\u0634\u063a\u064a\u0644"
-      : lang === "fr"
-        ? "Progression audio"
-        : "Audio progress";
+  const speedLabel = t("audio.speed", lang);
+  const progressLabel = t("audio.progressLabel", lang);
 
   /* Shared button classes (mobile bar) */
   const playerSoftSurfaceClass =
     "rounded-[20px] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--theme-panel-bg-strong)_84%,transparent_16%),color-mix(in_srgb,var(--theme-panel-bg)_74%,transparent_26%))] shadow-[inset_0_1px_0_rgba(255,255,255,0.07)]";
   const playerSectionLabelClass =
-    "mb-2 text-[0.56rem] font-bold uppercase tracking-[0.18em] text-[color-mix(in_srgb,var(--theme-primary)_68%,var(--theme-text)_32%)] [font-family:var(--font-ui)]";
+    "mb-2 text-[max(0.7rem,11px)] font-bold uppercase tracking-[0.12em] text-[color-mix(in_srgb,var(--theme-primary)_68%,var(--theme-text)_32%)] [font-family:var(--font-ui)]";
   const playerMutedTextClass =
-    "text-[rgba(233,223,202,0.9)] [font-family:var(--font-ui)]";
+    "text-[color-mix(in_srgb,var(--theme-text-inverse)_90%,transparent_10%)] [font-family:var(--font-ui)]";
   const playerSearchInputClass =
-    "audio-reciter-options__search-input w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 ps-11 pe-10 text-[0.64rem] text-[rgba(245,236,217,0.9)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.4)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
+    "audio-reciter-options__search-input w-full rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] py-1.5 ps-11 pe-10 text-base text-[color-mix(in_srgb,var(--theme-text-inverse)_90%,transparent_10%)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(var(--theme-primary-rgb),0.4)] focus:ring-2 focus:ring-[rgba(var(--theme-primary-rgb),0.18)]";
   const playerNumberInputClass =
-    "w-12 rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] px-1.5 py-1 text-center text-[0.72rem] text-[rgba(250,240,220,0.95)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(122,188,210,0.42)] focus:ring-2 focus:ring-[rgba(122,188,210,0.18)]";
+    "w-12 rounded-xl border border-white/12 bg-[rgba(6,13,24,0.78)] px-1.5 py-1 text-center text-base text-[color-mix(in_srgb,var(--theme-text-inverse)_95%,transparent_5%)] outline-none [font-family:var(--font-ui)] focus:border-[rgba(var(--theme-primary-rgb),0.42)] focus:ring-2 focus:ring-[rgba(var(--theme-primary-rgb),0.18)]";
   const playerCardToggleClass = (active = false) =>
     cn(
       "flex items-center justify-between gap-2 rounded-2xl border px-3 py-1.5 text-[0.7rem] font-semibold transition-all duration-150 [font-family:var(--font-ui)]",
       active
-        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.16)] text-[rgba(245,250,255,0.98)]"
-        : "border-white/12 bg-white/[0.045] text-[rgba(236,227,208,0.72)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
+        ? "border-[rgba(var(--theme-primary-rgb),0.42)] bg-[rgba(var(--theme-primary-rgb),0.16)] text-[color-mix(in_srgb,var(--theme-text-inverse)_98%,transparent_2%)]"
+        : "border-white/12 bg-white/[0.045] text-[color-mix(in_srgb,var(--theme-text-inverse)_72%,transparent_28%)] hover:border-[rgba(var(--theme-primary-rgb),0.34)] hover:bg-[rgba(var(--theme-primary-rgb),0.1)]",
     );
   const playerOptionPillClass = (active = false) =>
     cn(
       "rounded-xl border px-2 py-1 text-[0.6rem] font-semibold transition-all [font-family:var(--font-ui)]",
       active
-        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.18)] text-white"
-        : "border-white/12 bg-white/[0.045] text-[rgba(236,227,208,0.72)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
+        ? "border-[rgba(var(--theme-primary-rgb),0.42)] bg-[rgba(var(--theme-primary-rgb),0.18)] text-white"
+        : "border-white/12 bg-white/[0.045] text-[color-mix(in_srgb,var(--theme-text-inverse)_72%,transparent_28%)] hover:border-[rgba(var(--theme-primary-rgb),0.34)] hover:bg-[rgba(var(--theme-primary-rgb),0.1)]",
     );
   const playerGoldMetaClass =
     "text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)] [font-family:var(--font-ui)]";
   const playerFadedTextClass =
-    "text-[rgba(222,213,195,0.82)] [font-family:var(--font-ui)]";
+    "text-[color-mix(in_srgb,var(--theme-text-inverse)_82%,transparent_18%)] [font-family:var(--font-ui)]";
   const playerSurfaceButtonClass =
-    "rounded-2xl border border-white/12 bg-white/[0.045] text-[rgba(234,224,205,0.74)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)] hover:text-white";
+    "rounded-2xl border border-white/12 bg-white/[0.045] text-[color-mix(in_srgb,var(--theme-text-inverse)_74%,transparent_26%)] transition-all duration-150 [font-family:var(--font-ui)] hover:border-[rgba(var(--theme-primary-rgb),0.34)] hover:bg-[rgba(var(--theme-primary-rgb),0.1)] hover:text-white";
   const playerReciterButtonClass = (
     active = false,
     isLoading = false,
@@ -972,8 +930,8 @@ export default function AudioPlayer() {
     cn(
       "group flex min-h-[3.8rem] w-full items-start gap-3 rounded-2xl border px-3 py-2.5 text-left transition-all duration-150",
       active
-        ? "border-[rgba(122,188,210,0.42)] bg-[rgba(122,188,210,0.16)] text-[rgba(249,253,255,0.98)]"
-        : "border-white/10 bg-white/[0.04] text-[rgba(232,222,202,0.74)] hover:border-[rgba(122,188,210,0.34)] hover:bg-[rgba(122,188,210,0.1)]",
+        ? "border-[rgba(var(--theme-primary-rgb),0.42)] bg-[rgba(var(--theme-primary-rgb),0.16)] text-[color-mix(in_srgb,var(--theme-text-inverse)_98%,transparent_2%)]"
+        : "border-white/10 bg-white/[0.04] text-[color-mix(in_srgb,var(--theme-text-inverse)_74%,transparent_26%)] hover:border-[rgba(var(--theme-primary-rgb),0.34)] hover:bg-[rgba(var(--theme-primary-rgb),0.1)]",
       isUnavailable &&
         !active &&
         "border-rose-300/30 bg-rose-300/10 text-rose-100 hover:border-rose-300/40 hover:bg-rose-300/16",
@@ -1132,6 +1090,7 @@ export default function AudioPlayer() {
 
       <SimpleAudioPlayerView
         audioError={audioError}
+        audioFailed={audioFailed}
         audioIndicatorState={audioIndicatorState}
         audioSpeed={audioSpeed}
         closeLabel={closeLabel}
@@ -1139,6 +1098,7 @@ export default function AudioPlayer() {
         currentAyahPreview={currentAyahPreview}
         currentTime={currentTime}
         duration={duration}
+        errorLabel={t("audio.error", lang)}
         expandLabel={expandLabel}
         isMobile={isMobile}
         isPlaying={isPlaying}
@@ -1149,6 +1109,7 @@ export default function AudioPlayer() {
         nextLabel={t("audio.next", lang)}
         onClose={closePlayer}
         onCycleSpeed={cycleSpeed}
+        onDismissError={() => setAudioFailed(false)}
         onExpand={toggleMinimized}
         onMinimize={toggleMinimized}
         onNext={next}
@@ -1157,6 +1118,7 @@ export default function AudioPlayer() {
         onProgressClick={handleSeek}
         onProgressKeyDown={handleProgressKeyDown}
         onProgressPointerDown={handleProgressPointerDown}
+        onRetryAudio={retryPlayback}
         onToggle={toggle}
         optionsLabel={optionsLabel}
         optionsOpen={optionsModalOpen}
@@ -1169,6 +1131,7 @@ export default function AudioPlayer() {
         reciter={reciterObj}
         reciterLabel={reciterLabel}
         regionLabel={minimized ? minimizedAudioRegionLabel : audioRegionLabel}
+        retryLabel={t("actions.retry", lang)}
         riwaya={riwaya}
         surahNum={currentSurah}
         speedLabel={speedLabel}

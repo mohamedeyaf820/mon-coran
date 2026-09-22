@@ -95,7 +95,7 @@ test('QA: reader never announces a note saved when the database transaction abor
   await page.goto('/surah/1');
   await page.locator('.ayah-action--options').first().click();
   await page.getByRole('menuitem', { name: 'Ajouter une note', exact: true }).click();
-  const dialog = page.getByRole('dialog', { name: 'Ecrire sur cette ayah', exact: true });
+  const dialog = page.getByRole('dialog', { name: 'Écrire sur ce verset', exact: true });
   const editor = dialog.getByRole('textbox', { name: 'Note personnelle sur ce verset' });
   await editor.fill('Brouillon lecteur QA');
   await failNoteWrites(page);

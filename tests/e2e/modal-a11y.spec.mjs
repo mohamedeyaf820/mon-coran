@@ -47,6 +47,14 @@ test.describe("Modal a11y — Focus trap & Escape", () => {
 
     await page.keyboard.press("Escape");
     await expect(modal).toBeHidden({ timeout: 3000 });
+
+    // The panel unmounts on close and its opener was already blurred by the
+    // inert guard, so App.jsx has to hand focus back — without it the keyboard
+    // reader restarts at the top of the document.
+    const restoredLabel = await page.evaluate(
+      () => document.activeElement?.getAttribute("aria-label") || "",
+    );
+    expect(restoredLabel).toMatch(/Rechercher|Search/);
   });
 
   test("SearchModal: Tab reste dans le dialog (focus trap)", async ({ page }) => {
@@ -68,13 +76,43 @@ test.describe("Modal a11y — Focus trap & Escape", () => {
   });
 
   test("Bibliothèque: ouvre, tab trap, ferme avec Escape", async ({ page }) => {
-    await page.keyboard.press("Control+b");
+    // The library has no always-visible trigger: it is opened from the reader's
+    // overflow menu, which is also the element focus must return to.
+    const trigger = page.getByRole("button", { name: /Plus d'options|More options/i }).first();
+    await trigger.click();
+    const item = page
+      .locator('[role="dialog"] button')
+      .filter({ hasText: /Bibliothèque|Library/i })
+      .first();
+    await item.click();
     const libraryModal = page.locator('[aria-labelledby="library-title"]').first();
     await expect(libraryModal).toBeVisible({ timeout: 5000 });
 
     // Escape ferme
     await page.keyboard.press("Escape");
     await expect(libraryModal).toBeHidden({ timeout: 3000 });
+
+    const restored = await page.evaluate(
+      () => document.activeElement?.getAttribute("aria-label") || "",
+    );
+    expect(restored).toMatch(/Plus d'options|More options/i);
+  });
+
+  test("Réglages: Escape ferme le panneau", async ({ page }) => {
+    // Escape fires both onEscapeKeyDown and Radix's dismiss: when the panel's
+    // close handler toggled, the two flips cancelled out and it never closed.
+    const trigger = page.getByRole("button", { name: /Plus d'options|More options/i }).first();
+    await trigger.click();
+    await page
+      .locator('[role="dialog"] button, [role="menu"] button')
+      .filter({ hasText: /Paramètres|Settings/i })
+      .first()
+      .click();
+    const settings = page.getByRole("dialog", { name: /Paramètres|Settings/i });
+    await expect(settings).toBeVisible({ timeout: 5000 });
+
+    await page.keyboard.press("Escape");
+    await expect(settings).toBeHidden({ timeout: 5000 });
   });
 
   test("Tous les dialogs ont role=dialog et aria-modal=true", async ({ page }) => {

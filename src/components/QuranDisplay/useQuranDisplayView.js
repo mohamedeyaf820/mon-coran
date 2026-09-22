@@ -149,6 +149,13 @@ export default function useQuranDisplayView({
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
+    // The print-engine sheet sizes itself from the raw preference: the CSS
+    // clamp keeps it inside the fifteen-line measure of the pane, so the
+    // slider shrinks freely and grows up to the sheet's natural width.
+    element.style.setProperty(
+      "--qcm-mushaf-font-size",
+      `${Math.round(preferredReadingFontSize)}px`,
+    );
     // The continuous sheet sizes itself from its own width, so the preference
     // reaches it as a unitless multiplier rather than a pixel value.
     element.style.setProperty(
@@ -186,6 +193,9 @@ export default function useQuranDisplayView({
         if (!isQCF4) {
           arabicElement.style.fontFamily = quranFontCss;
         }
+        // The print-engine sheet owns its size: the device-scaled stamp would
+        // override the fifteen-line clamp contract and desync adjacent sheets.
+        if (arabicElement.closest(".qcm-page-shell")) return;
         arabicElement.style.fontSize = quranFontSizeCss;
       });
   }, [

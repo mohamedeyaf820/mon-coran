@@ -6,13 +6,16 @@ import {
   ImageDown,
   Languages,
   Loader2,
+  RotateCw,
   Share2,
+  TriangleAlert,
   X,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { getSurah } from "../data/surahs";
+import { t } from "../i18n";
 import { sanitizeSvgMarkup } from "../lib/security";
-import { createVerseSharePayload } from "../services/verseShareService";
+import { cleanShareText, createVerseSharePayload } from "../services/verseShareService";
 
 export const VERSE_CARD_FORMATS = [
   { id: "square", label: "Carré", detail: "Publication", width: 1080, height: 1080 },
@@ -111,6 +114,44 @@ function buildGeometry(width, height, preset) {
   `;
 }
 
+/*
+ * The Arabic stack of the card follows the riwaya of the verse it quotes: a
+ * Warsh card set in a Hafs face drops the Warsh signs, and vice versa.
+ * src/styles/riwaya-fonts.css owns those stacks as the --font-quran-hafs /
+ * --font-quran-warsh tokens, so the value is read from the document instead of
+ * being restated here. The card is rasterised as a standalone SVG image, which
+ * cannot resolve a CSS custom property from the page cascade, hence the one
+ * read plus a literal fallback for the non-browser case.
+ */
+const CARD_ARABIC_FONT_TOKENS = {
+  hafs: "--font-quran-hafs",
+  warsh: "--font-quran-warsh",
+};
+
+const CARD_ARABIC_FONT_FALLBACK = {
+  hafs: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri',serif",
+  warsh: "'KFGQPC Warsh','QPC Warsh','Scheherazade New','Amiri Quran',serif",
+};
+
+function resolveCardArabicFontFamily(riwaya) {
+  const target = riwaya === "warsh" ? "warsh" : "hafs";
+  if (typeof window === "undefined") return CARD_ARABIC_FONT_FALLBACK[target];
+  const token = CARD_ARABIC_FONT_TOKENS[target];
+  const declared = window
+    .getComputedStyle(document.documentElement)
+    .getPropertyValue(token)
+    .trim()
+    // Emitted inside a double-quoted SVG attribute.
+    .replace(/"/g, "'");
+  return declared || CARD_ARABIC_FONT_FALLBACK[target];
+}
+
+function buildRiwayaLine({ width, preset, riwayaLabel, riwayaLabelRtl }) {
+  if (!riwayaLabel) return "";
+  const x = Math.round(width * 0.5);
+  return `<text x="${x}" y="205" text-anchor="middle" direction="${riwayaLabelRtl ? "rtl" : "ltr"}" unicode-bidi="plaintext" font-family="'Cairo','Segoe UI',sans-serif" font-size="19" letter-spacing="${riwayaLabelRtl ? 0 : 1.5}" fill="${preset.muted}">${escapeSvgText(riwayaLabel)}</text>`;
+}
+
 export function buildVerseCardSvg({
   arabicText,
   translationText,
@@ -121,10 +162,14 @@ export function buildVerseCardSvg({
   ayahNumber,
   presetId = "fajr",
   formatId = "square",
+  arabicFontFamily,
+  riwayaLabel = "",
+  riwayaLabelRtl = false,
 }) {
   const preset = VERSE_CARD_PRESETS.find((item) => item.id === presetId) || VERSE_CARD_PRESETS[0];
   const format = VERSE_CARD_FORMATS.find((item) => item.id === formatId) || VERSE_CARD_FORMATS[0];
   const { width, height } = format;
+  const arabicFamily = arabicFontFamily || resolveCardArabicFontFamily("hafs");
   const isStory = formatId === "story";
   const isSquare = formatId === "square";
   const arabicLines = wrapWords(arabicText, isStory ? 29 : 32, isSquare ? 6 : isStory ? 10 : 8);
@@ -168,6 +213,7 @@ export function buildVerseCardSvg({
   ${buildGeometry(width, height, preset)}
   <text x="${width / 2}" y="128" text-anchor="middle" direction="rtl" font-family="'Amiri Quran','Amiri',serif" font-size="32" fill="${preset.arabic}">${escapeSvgText(arabicLabel)}</text>
   <text x="${width / 2}" y="181" text-anchor="middle" font-family="'Cairo','Segoe UI',sans-serif" font-size="24" letter-spacing="3" fill="${preset.muted}">${escapeSvgText(refLabel.toUpperCase())}</text>
+  ${buildRiwayaLine({ width, preset, riwayaLabel, riwayaLabelRtl })}
   <line x1="${width * 0.34}" y1="218" x2="${width * 0.66}" y2="218" stroke="${preset.accent}" stroke-width="2" opacity="0.58"/>
   ${lineText(arabicLines, {
     x: width / 2,
@@ -175,7 +221,7 @@ export function buildVerseCardSvg({
     lineHeight: arabicLineHeight,
     fontSize: arabicSize,
     fill: preset.ink,
-    family: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri',serif",
+    family: arabicFamily,
     direction: "rtl",
   })}
   ${translationLines.length ? `<rect x="80" y="${dividerY + 14}" width="${width - 160}" height="${translationHeight + 54}" rx="28" fill="${preset.surface}" opacity="0.72"/><line x1="${width * 0.42}" y1="${dividerY}" x2="${width * 0.58}" y2="${dividerY}" stroke="${preset.accent}" stroke-width="2" opacity="0.72"/>` : ""}
@@ -293,67 +339,109 @@ export default function AyahSharePanel() {
   const { state, dispatch } = useApp();
   const { lang, currentSurah, currentAyah, theme, shareVerseDraft } = state;
   const labels = localizedCopy(lang);
-  const surahData = getSurah(currentSurah);
+  const draft = shareVerseDraft || {};
+  const surahNumber = Number(draft.surah) || Number(currentSurah) || 1;
+  const ayahNumber = Number(draft.ayah) || Number(currentAyah) || 1;
+  // The card prints the number the reader displays; the text deep link keeps
+  // the storage coordinate the routes and bookmarks are keyed on.
+  const displayAyahNumber = Number(draft.displayAyah) || ayahNumber;
+  const draftRiwaya = (draft.riwaya || state.riwaya) === "warsh" ? "warsh" : "hafs";
+  const surahData = getSurah(surahNumber);
   const initialPreset = theme === "dark" ? "madinah" : theme === "sepia" ? "mushaf" : "fajr";
-  const [arabicText, setArabicText] = useState(shareVerseDraft?.arabicText || "");
-  const [translationText, setTranslationText] = useState(shareVerseDraft?.translationText || "");
   const [presetId, setPresetId] = useState(initialPreset);
   const [formatId, setFormatId] = useState("square");
   const [includeTranslation, setIncludeTranslation] = useState(true);
   const [busyAction, setBusyAction] = useState("");
   const [feedback, setFeedback] = useState("");
+  const [retryState, setRetryState] = useState("idle");
 
   const close = useCallback(() => {
     dispatch({ type: "SET", payload: { shareImageOpen: false, shareVerseDraft: null } });
   }, [dispatch]);
 
+  // Data-layer text only. The card is never filled from the DOM again: a
+  // scraped miss used to fall through to the Basmala under a valid reference.
+  const arabicText = useMemo(() => cleanShareText(draft.arabicText), [draft.arabicText]);
+  const translationText = useMemo(
+    () => cleanShareText(draft.translationText),
+    [draft.translationText],
+  );
+  const verseUnavailable = !arabicText;
+
+  // Retry asks the ayah actions row that opened this studio to re-publish the
+  // verse it still has in hand.
+  const retryVerseText = useCallback(() => {
+    setRetryState("pending");
+    window.dispatchEvent(new CustomEvent("ayah-share-refresh", {
+      detail: { surah: surahNumber, ayah: ayahNumber },
+    }));
+  }, [ayahNumber, surahNumber]);
+
   useEffect(() => {
-    const ayahBlock = document.getElementById(`ayah-${currentAyah}`);
-    if (!ayahBlock) return;
-    const arabicNode = ayahBlock.querySelector(".qc-ayah-text-ar, .rd-arabic, .verse-text");
-    const translationNode = ayahBlock.querySelector(
-      ".qc-list-card__translation-slot p, .cpv-translation-text, .ayah-translation, [data-translation]",
-    );
-    const rawArabic = arabicNode?.textContent?.trim() || "";
-    if (!shareVerseDraft?.arabicText) {
-      setArabicText(rawArabic.replace(/\s*﴿?\d+﴾?\s*$/u, "").trim());
+    if (retryState !== "pending") return undefined;
+    if (arabicText) {
+      setRetryState("idle");
+      return undefined;
     }
-    if (!shareVerseDraft?.translationText) {
-      setTranslationText(translationNode?.textContent?.trim() || "");
-    }
-  }, [currentAyah, currentSurah, shareVerseDraft]);
+    const timer = window.setTimeout(() => setRetryState("idle"), 1500);
+    return () => window.clearTimeout(timer);
+  }, [arabicText, retryState]);
 
   const format = VERSE_CARD_FORMATS.find((item) => item.id === formatId) || VERSE_CARD_FORMATS[0];
   const surahNameLabel =
     lang === "ar" ? surahData?.ar : lang === "en" ? surahData?.en : surahData?.fr;
   const sharePayload = useMemo(
     () => createVerseSharePayload({
-      surah: currentSurah,
-      ayah: currentAyah,
+      surah: surahNumber,
+      ayah: ayahNumber,
       arabicText,
       translationText: includeTranslation ? translationText : "",
       surahName: surahNameLabel,
       lang,
     }),
-    [arabicText, currentAyah, currentSurah, includeTranslation, lang, surahNameLabel, translationText],
+    [arabicText, ayahNumber, includeTranslation, lang, surahNameLabel, surahNumber, translationText],
   );
+  const arabicFontFamily = useMemo(
+    () => resolveCardArabicFontFamily(draftRiwaya),
+    [draftRiwaya],
+  );
+  const riwayaLabel = t(draftRiwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang);
   const svgContent = useMemo(
-    () => buildVerseCardSvg({
-      arabicText: arabicText || "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
+    () => (verseUnavailable ? "" : buildVerseCardSvg({
+      arabicText,
       translationText,
       includeTranslation,
       surahNameAr: surahData?.ar,
       surahNameLabel,
-      surahNumber: currentSurah,
-      ayahNumber: currentAyah,
+      surahNumber,
+      ayahNumber: displayAyahNumber,
       presetId,
       formatId,
-    }),
-    [arabicText, currentAyah, currentSurah, formatId, includeTranslation, presetId, surahData?.ar, surahNameLabel, translationText],
+      arabicFontFamily,
+      riwayaLabel,
+      riwayaLabelRtl: lang === "ar",
+    })),
+    [
+      arabicFontFamily,
+      arabicText,
+      displayAyahNumber,
+      formatId,
+      includeTranslation,
+      lang,
+      presetId,
+      riwayaLabel,
+      surahData?.ar,
+      surahNameLabel,
+      surahNumber,
+      translationText,
+      verseUnavailable,
+    ],
   );
-  const safeSvgContent = sanitizeSvgMarkup(svgContent);
-  const previewUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(safeSvgContent)}`;
-  const filename = `mushafplus-${currentSurah}-${currentAyah}-${formatId}.png`;
+  const safeSvgContent = svgContent ? sanitizeSvgMarkup(svgContent) : "";
+  const previewUrl = safeSvgContent
+    ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(safeSvgContent)}`
+    : "";
+  const filename = `mushafplus-${surahNumber}-${displayAyahNumber}-${formatId}.png`;
 
   const createPng = useCallback(
     () => svgToPngBlob(safeSvgContent, format.width, format.height),
@@ -361,6 +449,7 @@ export default function AyahSharePanel() {
   );
 
   const runAction = useCallback(async (action, callback) => {
+    if (verseUnavailable) return;
     setBusyAction(action);
     setFeedback("");
     try {
@@ -370,7 +459,7 @@ export default function AyahSharePanel() {
     } finally {
       setBusyAction("");
     }
-  }, [labels.error]);
+  }, [labels.error, verseUnavailable]);
 
   const handleShare = () => runAction("share", async () => {
     const blob = await createPng();
@@ -415,11 +504,11 @@ export default function AyahSharePanel() {
           >
             <header className="share-studio__header">
               <div className="share-studio__heading">
-                <span className="share-studio__kicker"><Share2 size={13} /> {surahNameLabel} · {currentSurah}:{currentAyah}</span>
+                <span className="share-studio__kicker"><Share2 size={13} /> {surahNameLabel} · {surahNumber}:{displayAyahNumber}</span>
                 <Dialog.Title>{labels.title}</Dialog.Title>
                 <Dialog.Description id="verse-share-description">{labels.subtitle}</Dialog.Description>
               </div>
-              <button type="button" className="modal-close share-studio__close" onClick={close} aria-label={lang === "ar" ? "إغلاق" : lang === "en" ? "Close" : "Fermer"}>
+              <button type="button" className="modal-close share-studio__close" onClick={close} aria-label={t("share.close", lang)}>
                 <X size={16} />
               </button>
             </header>
@@ -427,9 +516,33 @@ export default function AyahSharePanel() {
             <div className="share-studio__workspace">
               <section className="share-studio__preview-column" aria-label={labels.preview}>
                 <div className="share-studio__preview-stage">
-                  <div className="share-studio__preview-frame" style={{ aspectRatio: `${format.width} / ${format.height}` }}>
-                    <img src={previewUrl} alt={labels.preview} />
-                  </div>
+                  {verseUnavailable ? (
+                    <div
+                      className="share-studio__unavailable flex h-full min-h-56 w-full flex-col items-center justify-center gap-1.5 rounded-2xl border border-amber-500/45 bg-amber-500/10 p-5 text-center"
+                      role="alert"
+                      aria-busy={retryState === "pending" || undefined}
+                    >
+                      <TriangleAlert size={22} className="text-amber-600" aria-hidden="true" />
+                      <strong className="text-sm font-extrabold text-[var(--text-primary)]">{t("share.verseUnavailable", lang)}</strong>
+                      <span className="text-xs font-bold tabular-nums text-[var(--text-muted)]" dir="ltr">{surahNumber}:{displayAyahNumber}</span>
+                      <p className="max-w-[34ch] text-xs leading-relaxed text-[var(--text-secondary)]">{t("share.verseUnavailableHint", lang)}</p>
+                      <button
+                        type="button"
+                        className="share-action-btn share-action-btn--secondary mt-1 min-h-11"
+                        onClick={retryVerseText}
+                        disabled={retryState === "pending"}
+                      >
+                        {retryState === "pending"
+                          ? <Loader2 className="animate-spin" size={15} aria-hidden="true" />
+                          : <RotateCw size={15} aria-hidden="true" />}
+                        <span>{t("actions.retry", lang)}</span>
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="share-studio__preview-frame" style={{ aspectRatio: `${format.width} / ${format.height}` }}>
+                      <img src={previewUrl} alt={labels.preview} />
+                    </div>
+                  )}
                 </div>
               </section>
 
@@ -472,15 +585,15 @@ export default function AyahSharePanel() {
             <footer className="share-studio__footer">
               <div className={`share-studio__feedback ${feedback ? "is-visible" : ""}`} role="status" aria-live="polite">{feedback}</div>
               <div className="share-actions">
-                <button type="button" className="share-action-btn share-action-btn--secondary share-action-btn--icon" onClick={handleCopyImage} disabled={Boolean(busyAction)} aria-label={labels.copy} title={labels.copy}>
+                <button type="button" className="share-action-btn share-action-btn--secondary share-action-btn--icon" onClick={handleCopyImage} disabled={Boolean(busyAction) || verseUnavailable} aria-label={labels.copy} title={labels.copy}>
                   {busyAction === "copy" ? <Loader2 className="animate-spin" size={15} /> : <Clipboard size={15} />}
                   <span>{labels.copy}</span>
                 </button>
-                <button type="button" className="share-action-btn share-action-btn--secondary share-action-btn--icon" onClick={handleDownload} disabled={Boolean(busyAction)} aria-label={labels.download} title={labels.download}>
+                <button type="button" className="share-action-btn share-action-btn--secondary share-action-btn--icon" onClick={handleDownload} disabled={Boolean(busyAction) || verseUnavailable} aria-label={labels.download} title={labels.download}>
                   {busyAction === "download" ? <Loader2 className="animate-spin" size={15} /> : <ImageDown size={15} />}
                   <span>{labels.download}</span>
                 </button>
-                <button type="button" className="share-action-btn share-action-btn--primary" onClick={handleShare} disabled={Boolean(busyAction)}>
+                <button type="button" className="share-action-btn share-action-btn--primary" onClick={handleShare} disabled={Boolean(busyAction) || verseUnavailable}>
                   {busyAction === "share" ? <Loader2 className="animate-spin" size={16} /> : <Share2 size={16} />}
                   <span>{labels.share}</span>
                 </button>

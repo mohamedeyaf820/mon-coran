@@ -125,7 +125,7 @@ body {
     position: absolute;
     inset-block-start: 0;
     inset-inline-start: 0;
-    z-index: 10000;
+    z-index: var(--z-skip);
     width: 1px;
     min-width: 0;
     height: 1px;
@@ -423,12 +423,30 @@ body {
     --player-h: 80px;
     --sidebar-w: 320px;
 
+    /* Canonical stacking scale (single source of truth — expert-overhaul.css
+       previously re-declared a conflicting --z-* set here; do not re-add it).
+       Values preserve the effective order measured on the pre-tokenisation
+       cascade: header(260!) < player(410) < scrim(499) < drawer(500)
+       < modal(600) < ayah-sheet(630/631) < dock(950) < sidebar(1000)
+       < reciter overlay(1100) < fullscreen mushaf(3000) < toast(9999)
+       < skip link(10000) < rich tooltip(99999).
+       Global fixed/sticky layers in src/styles must reference these tokens;
+       small intra-component values (0/1/2/…) stay literal on purpose. */
+    --z-base: 0;
     --z-progress: 200;
-    --z-player: 400;
+    --z-fab: 250;
+    --z-header: 260;
+    --z-player: 410;
     --z-overlay: 499;
-    --z-sidebar: 500;
+    --z-drawer: 500;
     --z-modal: 600;
-    --z-skip: 700;
+    --z-dock: 950;
+    --z-sidebar: 1000;
+    --z-reciter: 1100;
+    --z-fullscreen: 3000;
+    --z-toast: 9999;
+    --z-skip: 10000;
+    --z-max: 99999;
 
 
     --space-1: 0.25rem;
@@ -816,26 +834,26 @@ body {
     --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
     --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
 
-    --tajwid-silent: #9e9e9e;
-    --tajwid-lam-shamsiyya: #9e9e9e;
-    --tajwid-madd-normal: #f48fb1;
-    --tajwid-madd: #e53935;
-    --tajwid-madd-separated: #ff9800;
-    --tajwid-madd-connected: #e91e63;
-    --tajwid-madd-necessary: #e53935;
-    --tajwid-madd-badal: #f48fb1;
-    --tajwid-ghunna: #27ae60;
-    --tajwid-idgham: #27ae60;
-    --tajwid-ikhfa: #27ae60;
-    --tajwid-iqlab: #27ae60;
-    --tajwid-qalqala: #00d2ff;
-    --tajwid-tafkhim: #2e86de;
-    --tajwid-naql: #ff9800;
-    --tajwid-tashil: #27ae60;
-    --tajwid-ibdal: #ff9800;
-    --tajwid-sila-kubra: #e91e63;
-    --tajwid-tarqiq-ra: #27ae60;
-    --tajwid-idgham-warsh: #9e9e9e;
+    --tajwid-silent: #999999;
+    --tajwid-lam-shamsiyya: #999999;
+    --tajwid-madd-normal: #ffc1e0;
+    --tajwid-madd: #e30000;
+    --tajwid-madd-separated: #ff8e3b;
+    --tajwid-madd-connected: #ff5e8e;
+    --tajwid-madd-necessary: #e30000;
+    --tajwid-madd-badal: #ff8e3b;
+    --tajwid-ghunna: #26b55d;
+    --tajwid-idgham: #999999;
+    --tajwid-ikhfa: #26b55d;
+    --tajwid-iqlab: #26b55d;
+    --tajwid-qalqala: #00deff;
+    --tajwid-tafkhim: #3c84d5;
+    --tajwid-naql: #ff8e3b;
+    --tajwid-tashil: #26b55d;
+    --tajwid-ibdal: #ff8e3b;
+    --tajwid-sila-kubra: #ff5e8e;
+    --tajwid-tarqiq-ra: #999999;
+    --tajwid-idgham-warsh: #999999;
 
     --emerald-subtle: rgba(196, 219, 208, 0.12);
     --reading-surface-soft: #151719;
@@ -1489,7 +1507,7 @@ ol {
 .modal-overlay {
     position: fixed;
     inset: 0;
-    z-index: 500;
+    z-index: var(--z-modal);
     background:
         radial-gradient(
             ellipse at 50% 0%,
@@ -5120,7 +5138,7 @@ input:focus-visible {
     position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.88);
-    z-index: 2000;
+    z-index: var(--z-fullscreen);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -7312,7 +7330,7 @@ input:focus-visible {
     left: 0;
     right: 0;
     height: 2px;
-    z-index: 200;
+    z-index: var(--z-progress);
     width: 100%;
     background: var(--primary);
     animation: none;
@@ -13809,7 +13827,7 @@ body {
     width: min(92vw, 360px);
     background: var(--bg-primary);
     border-right: 1px solid var(--border);
-    z-index: 1000;
+    z-index: var(--z-sidebar);
     display: flex;
     flex-direction: column;
     transform: translateX(-100%);
@@ -18016,7 +18034,7 @@ body {
 .app-root > .mp-header {
     position: sticky;
     top: 0;
-    z-index: 240;
+    z-index: var(--z-header);
     display: block;
     width: 100%;
     padding: 0.45rem clamp(0.65rem, 1.4vw, 1.15rem);

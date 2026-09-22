@@ -10,21 +10,60 @@ import {
   Scale,
   ShieldCheck,
 } from "lucide-react";
-import { useAppActions, useAppLocale } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppLocale,
+  useAppSelector,
+} from "../context/AppContext";
 import { t } from "../i18n";
+import siteConfig from "../../site.config.json";
 import "../styles/domains/footer-refonte.css";
 
 export default function Footer() {
   const { set } = useAppActions();
   const { lang } = useAppLocale();
   const [verseIndex, setVerseIndex] = useState(0);
+  const [rotationPaused, setRotationPaused] = useState(false);
+  const [reduceMotion, setReduceMotion] = useState(false);
+  const view = useAppSelector(
+    (state) => ({
+      homeSection: state.homeSection,
+      legalPage: state.legalPage,
+      showDuas: state.showDuas,
+      showHome: state.showHome,
+    }),
+    shallowEqual,
+  );
+
+  // WCAG 2.2.2: the rotating verse must stop for people who ask for reduced
+  // motion, and pause while a visitor reads or tabs through it.
+  useEffect(() => {
+    if (typeof window === "undefined" || !window.matchMedia) return undefined;
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const sync = () => setReduceMotion(query.matches);
+    sync();
+    query.addEventListener("change", sync);
+    return () => query.removeEventListener("change", sync);
+  }, []);
 
   useEffect(() => {
+    if (reduceMotion || rotationPaused || FOOTER_VERSES.length < 2) {
+      return undefined;
+    }
     const timer = window.setInterval(() => {
       setVerseIndex((current) => (current + 1) % FOOTER_VERSES.length);
     }, 30_000);
     return () => window.clearInterval(timer);
-  }, []);
+  }, [reduceMotion, rotationPaused]);
+
+  const activeView = view.legalPage || view.showDuas
+    ? null
+    : view.showHome
+      ? view.homeSection === "audio"
+        ? "audio"
+        : "home"
+      : "read";
 
   const scrollTop = () => {
     const main = document.querySelector("#main-content");
@@ -48,34 +87,15 @@ export default function Footer() {
 
   const navItems = [
     { key: "home",      Icon: Home,      label: t("nav.home", lang),      onClick: openHome },
-    { key: "read",      Icon: BookOpen,  label: lang === "fr" ? "Lire" : lang === "ar" ? "اقرأ" : "Read", onClick: openReader },
+    { key: "read",      Icon: BookOpen,  label: t("footer.navRead", lang),      onClick: openReader },
     { key: "search",    Icon: Search,    label: t("nav.search", lang),     onClick: () => set({ searchOpen: true }) },
-    { key: "audio",     Icon: Headphones,label: lang === "fr" ? "Écouter" : lang === "ar" ? "استمع" : "Listen", onClick: openAudio },
+    { key: "audio",     Icon: Headphones,label: t("footer.navListen", lang), onClick: openAudio },
   ];
   const legalLabels = {
-    fr: {
-      about: "À propos",
-      privacy: "Confidentialité",
-      legal: "Mentions légales",
-      sources: "Sources",
-    },
-    en: {
-      about: "About",
-      privacy: "Privacy",
-      legal: "Legal notice",
-      sources: "Sources",
-    },
-    ar: {
-      about: "حول التطبيق",
-      privacy: "الخصوصية",
-      legal: "إشعار قانوني",
-      sources: "المصادر",
-    },
-  }[lang] || {
-    about: "À propos",
-    privacy: "Confidentialité",
-    legal: "Mentions légales",
-    sources: "Sources",
+    about: t("footer.legalAbout", lang),
+    privacy: t("footer.legalPrivacy", lang),
+    legal: t("footer.legalNotice", lang),
+    sources: t("footer.legalSources", lang),
   };
 
   const pageItems = [
@@ -95,11 +115,22 @@ export default function Footer() {
   const verseReference = lang === "ar"
     ? `${currentVerse.surahAr} · ${currentVerse.refAr}`
     : `${lang === "en" ? currentVerse.surahEn : currentVerse.surahFr} · ${currentVerse.ref}`;
+  // These hardcoded meanings are paraphrases rather than one published edition
+  // verbatim, so they are labelled as approximate and routed to the Sources
+  // register the footer already links to instead of claiming an edition.
+  const verseAttribution = t("footer.verseAttribution", lang);
 
   return (
     <footer className="mp-footer-v2" role="contentinfo">
       <div className="mp-footer-v2__shell">
-        <div className="mp-footer-v2__verse" aria-label={verseReference}>
+        <div
+          className="mp-footer-v2__verse"
+          aria-label={verseReference}
+          onMouseEnter={() => setRotationPaused(true)}
+          onMouseLeave={() => setRotationPaused(false)}
+          onFocus={() => setRotationPaused(true)}
+          onBlur={() => setRotationPaused(false)}
+        >
           <span className="mp-footer-v2__verse-icon" aria-hidden="true">
             <BookOpenText size={14} />
           </span>
@@ -109,6 +140,11 @@ export default function Footer() {
             </p>
             {lang !== "ar" ? (
               <p className="mp-footer-v2__verse-translation">{verseTranslation}</p>
+            ) : null}
+            {lang !== "ar" ? (
+              <cite className="mp-footer-v2__verse-source">
+                {verseAttribution}
+              </cite>
             ) : null}
           </div>
           <span className="mp-footer-v2__verse-ref">{verseReference}</span>
@@ -125,7 +161,7 @@ export default function Footer() {
               className="mp-footer-v2__nav-btn"
               onClick={item.onClick}
               aria-label={item.label}
-              aria-current={item.key === "home" ? "page" : undefined}
+              aria-current={item.key === activeView ? "page" : undefined}
             >
               <span className="mp-footer-v2__nav-icon" aria-hidden="true">
                 <item.Icon size={14} />
@@ -138,7 +174,7 @@ export default function Footer() {
         <div className="mp-footer-v2__directory">
           <div className="mp-footer-v2__directory-copy">
             <span>MushafPlus</span>
-            <strong>{lang === "ar" ? "اقرأ، استمع وتدبّر" : lang === "en" ? "Read, listen, reflect" : "Lire, écouter, comprendre"}</strong>
+            <strong>{t("footer.tagline", lang)}</strong>
           </div>
           <nav className="mp-footer-v2__legal" aria-label={legalLabels.legal}>
             {pageItems.map(({ key, Icon }) => (
@@ -154,9 +190,9 @@ export default function Footer() {
           <span className="mp-footer-v2__credit">{t("footer.credit", lang)}</span>
           <span className="mp-footer-v2__privacy">
             <ShieldCheck size={13} aria-hidden="true" />
-            {lang === "ar" ? "قراءة خاصة، بلا حساب" : lang === "en" ? "Private reading, no account" : "Lecture privée, sans compte"}
+            {t("footer.privacyNote", lang)}
           </span>
-          <span className="mp-footer-v2__brand">MushafPlus</span>
+          <span className="mp-footer-v2__brand">v{siteConfig.version}</span>
         </div>
       </div>
     </footer>

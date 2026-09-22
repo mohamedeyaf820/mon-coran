@@ -133,17 +133,27 @@ test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page
   await trigger.click();
   await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
 
-  // The worker controls this fetch, so once the face is applied the
-  // cache-first rule has already written the response to the font cache.
+  // The worker controls this fetch and writes the response to the font cache
+  // after handing the bytes to the page, so the cache is polled rather than
+  // assumed to be populated.
   const firstWord = page.locator(".mfp-portal-root .qcm-word").first();
   await expect
     .poll(() => firstWord.evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
     .toContain("qcf-v2-p3");
-  const cached = await page.evaluate(async () => {
-    const cache = await caches.open("mushaf-plus-qcf-fonts-v1");
-    return Boolean(await cache.match("https://verses.quran.foundation/fonts/quran/hafs/v2/woff2/p3.woff2"));
-  });
-  expect(cached, "the page font was served through the service worker").toBe(true);
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(async () => {
+          const cache = await caches.open("mushaf-plus-qcf-fonts-v1");
+          return Boolean(
+            await cache.match(
+              "https://verses.quran.foundation/fonts/quran/hafs/v2/woff2/p3.woff2",
+            ),
+          );
+        }),
+      { message: "the worker writes the page font to its cache" },
+    )
+    .toBe(true);
 
   await page.keyboard.press("Escape");
   await expect(page.locator(".mfp-portal-root")).toBeHidden({ timeout: 30_000 });
@@ -181,7 +191,7 @@ test("PWA: an explicitly downloaded recitation is served while offline", async (
     .toBe(true);
 
   const audioUrl =
-    "https://cdn.islamic.network/quran/audio/128/offline-test/1.mp3";
+    "https://files.quranpedia.net/recitations/261/001001.mp3";
   await page.evaluate(async (url) => {
     const cache = await caches.open("mushafplus-audio-v2");
     await cache.put(

@@ -53,10 +53,9 @@ html body .app-root {
   touch-action: pan-y;
 }
 
-/* Smooth scroll on the main content anchor */
-#main-content {
-  scroll-behavior: smooth;
-}
+/* The shell must scroll instantly: scroll-behavior also drives `scrollTop =`
+   assignments and behavior:"auto", so a global smooth turns every navigation
+   reset into a multi-second flight. Animating surfaces pass behavior:"smooth". */
 
 .app-root .app-view-shell {
   width: 100%;
@@ -77,7 +76,9 @@ html body .app-root {
   border-radius: var(--mp-radius-lg);
 }
 
-.app-root :is(.home-radio-card__meta, .reciter-card__meta, .recitation-row__meta, .modal-subtitle, .legal-page__intro, .duas-hero p, .settings-info-note) {
+/* The Duas hero sits on a dark green gradient: its paragraphs keep the light
+   ink owned by duas-page.css instead of this page-secondary colour. */
+.app-root :is(.home-radio-card__meta, .reciter-card__meta, .recitation-row__meta, .modal-subtitle, .legal-page__intro, .settings-info-note) {
   color: var(--text-secondary);
   line-height: 1.55;
 }
@@ -1809,4 +1810,17 @@ html body .app-root.immersive-mode .mp-audio-player.mp-audio-player {
   transform: translateY(calc(100% + 2rem)) !important;
   opacity: 0 !important;
   pointer-events: none !important;
+}
+
+/* Bottom-pinned system cards: clear the reserved player band, and stack the
+   install card above the update banner when both are on screen. */
+.pwa-update-banner,
+.install-prompt {
+  bottom: calc(var(--space-5) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px));
+}
+
+body:has(.pwa-update-banner) .install-prompt {
+  bottom: calc(
+    var(--space-5) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 4.5rem
+  );
 }

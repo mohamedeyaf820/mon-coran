@@ -269,6 +269,24 @@
     display: none;
 }
 
+/* The scrollbar is hidden, so fade the inline-end edge: a chip cut in half
+   otherwise reads as the end of the list instead of a scrollable strip. */
+.duas-categories {
+    -webkit-mask-image: linear-gradient(to right, #000 0 calc(100% - 2.5rem), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0 calc(100% - 2.5rem), transparent 100%);
+}
+
+.app-root[data-dir="rtl"] .duas-categories {
+    -webkit-mask-image: linear-gradient(to left, #000 0 calc(100% - 2.5rem), transparent 100%);
+    mask-image: linear-gradient(to left, #000 0 calc(100% - 2.5rem), transparent 100%);
+}
+
+.duas-categories:focus-visible {
+    outline: none;
+    border-radius: 0.75rem;
+    box-shadow: var(--focus-ring);
+}
+
 .duas-cat-btn {
     white-space: nowrap;
     padding: 0.42rem 1rem;
@@ -406,6 +424,24 @@
     opacity: 0.28;
     display: block;
     margin-bottom: 0.5rem;
+}
+
+.duas-empty-reset {
+    min-height: 2.75rem;
+    padding: 0.5rem 1.15rem;
+    border-radius: 9999px;
+    border: 1.5px solid var(--primary);
+    background: transparent;
+    color: var(--primary);
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.duas-empty-reset:hover {
+    background: var(--primary);
+    color: #fff;
 }
 
 .duas-empty p {
@@ -547,9 +583,8 @@
 }
 
 html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 {
-    width: 2.35rem;
-    min-width: 2.35rem;
-    height: 2.35rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     padding: 0 !important;
 }
 

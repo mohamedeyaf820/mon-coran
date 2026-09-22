@@ -1,6 +1,7 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';
 import { useAppLocale } from '../../context/AppContext';
+import { t as i18nT } from '../../i18n';
 import { applyFontSigns, getReadableWaqfGlyph, normalizeQuranGlyphText } from '../../utils/quranUtils';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 import {
@@ -209,7 +210,7 @@ const WAQF_RULES = {
 
 function getVerseLabel(lang, ayahNumber) {
     if (!ayahNumber) return undefined;
-    const word = lang === 'ar' ? '\u0627\u0644\u0622\u064a\u0629' : lang === 'en' ? 'Verse' : 'Verset';
+    const word = i18nT('quran.verseLabel', lang);
     return `${word} ${ayahNumber}`;
 }
 
@@ -368,6 +369,12 @@ const WAQF_CHAR_RE = /^[\u06D6-\u06DC\u06DE]$/;
  * their joined forms) and every engine loses the cursive attachment of the
  * kashida carrying a dagger alif, which shows up as coloured bars floating
  * under the word. See src/utils/tajweedHighlights.js.
+ *
+ * Colours are painted over the whole word, never over the rule's own letters:
+ * the Uthmanic face draws joined glyphs that overlap their advance boxes, so a
+ * sub-word range slices the neighbouring strokes and the letters read as cut.
+ * The precise ranges stay in `rules` for hit-testing, so a tap still reports
+ * the exact rule under the pointer.
  * ──────────────────────────────────────────────────────────────────────── */
 
 const TAJWEED_HIGHLIGHTS_SUPPORTED = supportsTajweedHighlights();
@@ -391,7 +398,10 @@ function finishHighlightWord(text, rules) {
                 });
             }
         }
-        parts.push({ type: 'text', text: buffer, rules: partRules });
+        const paintRules = partRules.length
+            ? [{ start: 0, end: buffer.length, ruleId: partRules[0].ruleId }]
+            : [];
+        parts.push({ type: 'text', text: buffer, rules: partRules, paintRules });
         buffer = '';
     };
 
@@ -592,7 +602,7 @@ function TajweedHighlightWords({
                 const nodeText = normalizeQuranGlyphText(node.data);
                 const partText = normalizeQuranGlyphText(part.text);
                 if (nodeText !== partText) continue;
-                cleanups.push(applyTajweedHighlights(node, part.rules));
+                cleanups.push(applyTajweedHighlights(node, part.paintRules));
                 const list = entries.get(wordIndex) || [];
                 for (const rule of part.rules) list.push({ node, ...rule });
                 entries.set(wordIndex, list);

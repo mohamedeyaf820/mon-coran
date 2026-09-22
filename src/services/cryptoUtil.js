@@ -1,4 +1,13 @@
-import CryptoJS from "crypto-js";
+// crypto-js ships one module per algorithm. Importing only what the envelope
+// format uses keeps TripleDES, RC4, Rabbit, SHA3 and the unused cipher modes
+// out of the reader's boot bundle.
+import CryptoJS from "crypto-js/core.js";
+import AES from "crypto-js/aes.js";
+import SHA256 from "crypto-js/sha256.js";
+import SHA512 from "crypto-js/sha512.js";
+import HmacSHA256 from "crypto-js/hmac-sha256.js";
+import Base64 from "crypto-js/enc-base64.js";
+import Utf8 from "crypto-js/enc-utf8.js";
 
 // The former application-wide key is retained only to migrate old installs.
 const LEGACY_SECRET_KEY = String.fromCharCode(
@@ -144,9 +153,9 @@ async function deriveKeyFromPassphrase(passphrase, salt, iterations) {
 
 function createVerifier(secret, version = 2) {
   if (version === 1) {
-    return CryptoJS.SHA256(`${secret}|mushafplus-v1`).toString();
+    return SHA256(`${secret}|mushafplus-v1`).toString();
   }
-  return CryptoJS.HmacSHA256(
+  return HmacSHA256(
     "mushafplus-protected-mode-verifier-v2",
     secret,
   ).toString();
@@ -293,7 +302,7 @@ export function removeEncryptionPassphrase() {
 }
 
 function deriveEnvelopeKeys(secret) {
-  const material = CryptoJS.SHA512(`mushafplus-envelope-v2|${secret}`);
+  const material = SHA512(`mushafplus-envelope-v2|${secret}`);
   return {
     encryptionKey: CryptoJS.lib.WordArray.create(material.words.slice(0, 8), 32),
     authenticationKey: CryptoJS.lib.WordArray.create(material.words.slice(8, 16), 32),
@@ -302,8 +311,8 @@ function deriveEnvelopeKeys(secret) {
 
 function encodeEnvelope(envelope) {
   const json = JSON.stringify(envelope);
-  return `${ENVELOPE_PREFIX}${CryptoJS.enc.Base64.stringify(
-    CryptoJS.enc.Utf8.parse(json),
+  return `${ENVELOPE_PREFIX}${Base64.stringify(
+    Utf8.parse(json),
   )}`;
 }
 
@@ -311,7 +320,7 @@ function decodeEnvelope(payload) {
   if (!payload.startsWith(ENVELOPE_PREFIX)) return null;
   try {
     const encoded = payload.slice(ENVELOPE_PREFIX.length);
-    const json = CryptoJS.enc.Base64.parse(encoded).toString(CryptoJS.enc.Utf8);
+    const json = Base64.parse(encoded).toString(Utf8);
     const parsed = JSON.parse(json);
     if (
       parsed?.version !== 2 ||
@@ -333,22 +342,22 @@ function decryptEnvelope(payload, secret) {
   if (!envelope) return null;
   const { encryptionKey, authenticationKey } = deriveEnvelopeKeys(secret);
   const authenticated = `${envelope.version}|${envelope.iv}|${envelope.ciphertext}`;
-  const expectedMac = CryptoJS.HmacSHA256(
+  const expectedMac = HmacSHA256(
     authenticated,
     authenticationKey,
   ).toString();
   if (!constantTimeEqual(expectedMac, envelope.mac)) return null;
 
   try {
-    const plaintext = CryptoJS.AES.decrypt(
-      { ciphertext: CryptoJS.enc.Base64.parse(envelope.ciphertext) },
+    const plaintext = AES.decrypt(
+      { ciphertext: Base64.parse(envelope.ciphertext) },
       encryptionKey,
       {
-        iv: CryptoJS.enc.Base64.parse(envelope.iv),
+        iv: Base64.parse(envelope.iv),
         mode: CryptoJS.mode.CBC,
         padding: CryptoJS.pad.Pkcs7,
       },
-    ).toString(CryptoJS.enc.Utf8);
+    ).toString(Utf8);
     return plaintext ? JSON.parse(plaintext) : null;
   } catch {
     return null;
@@ -356,8 +365,8 @@ function decryptEnvelope(payload, secret) {
 }
 
 function decryptLegacyCiphertext(ciphertext, key) {
-  const bytes = CryptoJS.AES.decrypt(ciphertext, key);
-  const plaintext = bytes.toString(CryptoJS.enc.Utf8);
+  const bytes = AES.decrypt(ciphertext, key);
+  const plaintext = bytes.toString(Utf8);
   return plaintext ? JSON.parse(plaintext) : null;
 }
 
@@ -369,7 +378,7 @@ export function encryptData(data) {
     const secret = getActiveSecretKey();
     const { encryptionKey, authenticationKey } = deriveEnvelopeKeys(secret);
     const iv = CryptoJS.lib.WordArray.random(16);
-    const encrypted = CryptoJS.AES.encrypt(plaintext, encryptionKey, {
+    const encrypted = AES.encrypt(plaintext, encryptionKey, {
       iv,
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
@@ -377,10 +386,10 @@ export function encryptData(data) {
     const envelope = {
       version: 2,
       algorithm: "AES-256-CBC+HMAC-SHA256",
-      iv: CryptoJS.enc.Base64.stringify(iv),
-      ciphertext: CryptoJS.enc.Base64.stringify(encrypted.ciphertext),
+      iv: Base64.stringify(iv),
+      ciphertext: Base64.stringify(encrypted.ciphertext),
     };
-    envelope.mac = CryptoJS.HmacSHA256(
+    envelope.mac = HmacSHA256(
       `${envelope.version}|${envelope.iv}|${envelope.ciphertext}`,
       authenticationKey,
     ).toString();

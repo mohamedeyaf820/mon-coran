@@ -6,6 +6,14 @@ export const CSS_CONTENT_PATTERNS = ["dist/index.html", "dist/assets/**/*.js"];
 export const CSS_SAFELIST = {
   standard: [
     /^app-mode-/,
+    // PurgeCSS drops attribute selectors unless the attribute name survives as
+    // a content token; dir/type/lang are set dynamically in JSX, so the minified
+    // bundle never yields a bare `dir` token and RTL/range rules vanished.
+    // `input` is guarded too: range-styled player sliders die with it.
+    /^dir$/,
+    /^type$/,
+    /^lang$/,
+    /^input$/,
     // Madani page (QuranMushafPage) and fullscreen book classes are
     // composed in template strings: the bare tokens never appear in the
     // built JS, and purging `.qcm-line` turns the 15-line flex grid into

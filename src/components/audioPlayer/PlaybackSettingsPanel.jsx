@@ -277,7 +277,7 @@ export default function PlaybackSettingsPanel(props) {
             <button
               type="button"
               onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
-              className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
+              className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[color-mix(in_srgb,var(--theme-accent-bright)_90%,transparent_10%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
               aria-label={labels.mute}
             >
               {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
@@ -289,7 +289,7 @@ export default function PlaybackSettingsPanel(props) {
               step="0.05"
               value={volume}
               onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-              className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
+              className="h-1.5 flex-1 cursor-pointer rounded-full accent-[var(--theme-primary)]"
               aria-label={labels.volume}
             />
           </div>
@@ -310,7 +310,7 @@ export default function PlaybackSettingsPanel(props) {
           value={syncOffsetMs}
           disabled={isSurahStreamReciter}
           onChange={(e) => setSyncOffsetMs(e.target.value)}
-          className="h-1.5 w-full cursor-pointer rounded-full accent-[rgb(110,204,233)]"
+          className="h-1.5 w-full cursor-pointer rounded-full accent-[var(--theme-primary)]"
           aria-label={labels.wordSync}
         />
         <div className="audio-settings-pills mt-2 flex flex-wrap items-center gap-1.5">

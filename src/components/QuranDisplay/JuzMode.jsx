@@ -16,6 +16,7 @@ function JuzMode({
   currentJuz,
   currentPlayingAyah,
   getTranslationForAyah,
+  getTransliterationForAyah,
   isQCF4,
   lang,
   mushafLayout,
@@ -121,6 +122,7 @@ function JuzMode({
           activeAyah={activeAyah}
           lang={lang}
           getTranslationForAyah={getTranslationForAyah}
+          getTransliterationForAyah={getTransliterationForAyah}
           showTajwid={showTajwid}
           showTranslation={showTranslation}
           showTransliteration={showTransliteration}

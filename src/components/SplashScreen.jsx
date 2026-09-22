@@ -8,7 +8,6 @@ const VERSE = {
   ref: "الحجر — ٩",
 };
 
-const SKIP_LABELS = { ar: "تخطّي", fr: "Passer", en: "Skip" };
 const SPLASH_DURATION_MS = 3200;
 const SPLASH_FADE_MS = 400;
 const SKIP_DELAY_MS = 1400;
@@ -80,7 +79,7 @@ export default function SplashScreen({
       {/* Skip button */}
       {showSkip && !fadeOut && (
         <button type="button" className="splash-skip" onClick={dismiss}>
-          {SKIP_LABELS[lang] ?? SKIP_LABELS.fr}
+          {t("splash.skip", lang)}
           <span aria-hidden="true">›</span>
         </button>
       )}

@@ -88,6 +88,18 @@ export function getJuzForAyah(surah, ayah) {
 }
 
 /**
+ * Helper: the juz that opens exactly on this verse, or null. The printed
+ * Mushaf sets an illuminated medallion on the ayah marker of a juz boundary,
+ * which needs the exact match getJuzForAyah's range walk cannot give.
+ */
+export function getJuzOpeningAtAyah(surah, ayah) {
+  const s = Number(surah);
+  const a = Number(ayah);
+  if (!Number.isFinite(s) || !Number.isFinite(a)) return null;
+  return JUZ_DATA.find((j) => j.start.s === s && j.start.a === a) || null;
+}
+
+/**
  * Helper: find hizb number for a given surah:ayah
  */
 export function getHizbForAyah(surah, ayah) {

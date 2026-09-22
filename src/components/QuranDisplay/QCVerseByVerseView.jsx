@@ -5,14 +5,18 @@ import React, {
 } from "react";
 import { Bookmark } from "lucide-react";
 import { arabicToLatin } from "../../data/transliteration";
+import { toAr } from "../../data/surahs";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 import QCVerseActions from "./QCVerseActions";
 import AyahSkeleton from "../Quran/AyahSkeleton";
 import VirtualizedItem from "../ui/VirtualizedItem";
 
-function PageSeparator({ page }) {
+function PageSeparator({ page, lang }) {
   if (!page) return null;
+
+  const label = `${t("quran.page", lang)} ${lang === "ar" ? toAr(page) : page}`;
 
   return (
     <div
@@ -22,7 +26,7 @@ function PageSeparator({ page }) {
       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
       <div className="page-separator__label">
         <Bookmark size={11} className="text-[var(--text-muted)]" aria-hidden="true" />
-        <span>Page {page}</span>
+        <span>{label}</span>
       </div>
       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
     </div>
@@ -69,6 +73,7 @@ const QCVerseCard = memo(function QCVerseCard({
   showTransliteration,
   showTajwid,
   translation,
+  getTransliterationForAyah,
   calibration,
   riwaya,
   fontSize,
@@ -83,9 +88,11 @@ const QCVerseCard = memo(function QCVerseCard({
   const transliterationText = useMemo(
     () =>
       showTransliteration && ayah?.text
-        ? arabicToLatin(ayah.text, riwaya)
+        ? getTransliterationForAyah
+          ? getTransliterationForAyah(ayah)
+          : arabicToLatin(ayah.text, riwaya)
         : "",
-    [showTransliteration, ayah?.text, riwaya],
+    [showTransliteration, ayah, riwaya, getTransliterationForAyah],
   );
 
   const arabicContent = useMemo(
@@ -125,6 +132,7 @@ const QCVerseCard = memo(function QCVerseCard({
 
   return (
     <article
+      data-verse-dir={lang === "ar" ? "rtl" : "ltr"}
       className={cn(
         "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
         "px-4 sm:px-6 py-5 sm:py-6",
@@ -228,7 +236,7 @@ const QCVerseCard = memo(function QCVerseCard({
                     key={item.id || item.resourceId || index}
                     className={cn(
                       "text-left leading-[1.85] text-[var(--text-secondary)]",
-                      index > 0 && "mt-2 pt-2 border-t border-[var(--border)]",
+                      index > 0 && "mt-3",
                     )}
                     style={{
                       fontSize: "var(--qd-translation-font-size, 0.95rem)",
@@ -264,6 +272,7 @@ export default function QCVerseByVerseView({
   showTransliteration,
   showTajwid,
   getTranslationForAyah,
+  getTransliterationForAyah,
   calibration,
   riwaya,
   fontSize,
@@ -352,7 +361,7 @@ export default function QCVerseByVerseView({
           >
             {() => (
               <>
-                {showSeparator ? <PageSeparator page={ayah.page} /> : null}
+                {showSeparator ? <PageSeparator page={ayah.page} lang={lang} /> : null}
                 <QCVerseCard
                   ayah={ayah}
                   surahNum={surahNum}
@@ -363,6 +372,7 @@ export default function QCVerseByVerseView({
                   showTransliteration={showTransliteration}
                   showTajwid={showTajwid}
                   translation={getTranslationForAyah?.(ayah)}
+                  getTransliterationForAyah={getTransliterationForAyah}
                   calibration={calibration}
                   riwaya={riwaya}
                   fontSize={fontSize}

@@ -1,6 +1,11 @@
+import { useMemo } from "react";
 import { BookMarked, Layers, Star, Type } from "lucide-react";
 import { cn } from "../../lib/utils";
-import { HOME_DEFERRED_SECTION_STYLE } from "./homeConstants";
+import {
+  HOME_DEFERRED_SECTION_STYLE,
+  getMushafAyahTotal,
+} from "./homeConstants";
+import { useAppLocale } from "../../context/AppContext";
 
 /**
  * StatsStrip — bande des 4 statistiques du Coran.
@@ -9,14 +14,19 @@ import { HOME_DEFERRED_SECTION_STYLE } from "./homeConstants";
  *   lang  {string}  "fr" | "ar" | "en"
  */
 
+const formatGrouped = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+
 const STATS = [
-  { num: "114", Icon: BookMarked, labelFr: "Sourates", labelEn: "Surahs", labelAr: "سور" },
-  { num: "30", Icon: Layers, labelFr: "Juz'", labelEn: "Juz", labelAr: "جزء" },
-  { num: "6 236", Icon: Star, labelFr: "Versets", labelEn: "Ayahs", labelAr: "آية" },
-  { num: "77 430", Icon: Type, labelFr: "Mots", labelEn: "Words", labelAr: "كلمة" },
+  { key: "surahs", num: "114", Icon: BookMarked, labelFr: "Sourates", labelEn: "Surahs", labelAr: "سور" },
+  { key: "juz", num: "30", Icon: Layers, labelFr: "Juz'", labelEn: "Juz", labelAr: "جزء" },
+  { key: "ayahs", num: null, Icon: Star, labelFr: "Versets", labelEn: "Ayahs", labelAr: "آية" },
+  { key: "words", num: "77 430", Icon: Type, labelFr: "Mots", labelEn: "Words", labelAr: "كلمة" },
 ];
 
 export default function StatsStrip({ lang }) {
+  const { riwaya } = useAppLocale();
+  const totalAyahs = useMemo(() => getMushafAyahTotal(riwaya), [riwaya]);
+
   return (
     <div
       className={cn(
@@ -35,7 +45,7 @@ export default function StatsStrip({ lang }) {
     >
       {STATS.map((s, i) => (
         <div
-          key={s.num}
+          key={s.key}
           className={cn(
             /* layout interne */
             "flex items-center gap-2 flex-1 py-1 px-2",
@@ -67,7 +77,7 @@ export default function StatsStrip({ lang }) {
                 "leading-tight",
               )}
             >
-              {s.num}
+              {s.num ?? formatGrouped(totalAyahs)}
             </span>
             <span
               className={cn(

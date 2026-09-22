@@ -17,6 +17,7 @@ import {
   getVerseTranslation,
 } from "../services/quranComStudyService";
 import { cn } from "../lib/utils";
+import { t } from "../i18n";
 
 const TAFSIR_OPTIONS = [
   {
@@ -101,11 +102,6 @@ const TAFSIR_OPTIONS = [
   },
 ];
 
-function label(lang, fr, en, ar = en) {
-  if (lang === "ar") return ar;
-  return lang === "fr" ? fr : en;
-}
-
 function getTafsirLabel(option, lang) {
   const name =
     lang === "ar"
@@ -185,11 +181,7 @@ export default function TafsirSidebar() {
           data: null,
           error:
             error?.message ||
-            label(
-              lang,
-              "Impossible de charger le tafsir.",
-              "Unable to load tafsir.",
-            ),
+            t("tafsir.loadError", lang),
         });
       });
     return () => controller.abort();
@@ -259,7 +251,7 @@ export default function TafsirSidebar() {
             className="fixed inset-y-0 right-0 z-[390] flex w-full max-w-[min(100vw,34rem)] flex-col border-l border-[color-mix(in_srgb,var(--theme-border)_70%,transparent_30%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_96%,#ffffff_4%)] text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] shadow-[-28px_0_70px_rgba(3,10,18,0.34)] backdrop-blur-2xl"
           >
             <Dialog.Title className="sr-only">
-              {lang === "ar" ? "التفسير" : lang === "en" ? "Tafsir" : "Tafsir"}
+              {t("tafsir.title", lang)}
             </Dialog.Title>
             {/* Header */}
             <div className="flex items-start justify-between gap-3 border-b border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-4 sm:px-5">
@@ -275,12 +267,7 @@ export default function TafsirSidebar() {
                   {surahDisplayName} {surahNumber}:{ayahNumber}
                 </h2>
                 <p className="mt-1 text-sm text-[var(--text-secondary)]">
-                  {label(
-                    lang,
-                    "Explication du verset",
-                    "Verse explanation",
-                    "تفسير الآية",
-                  )}
+                  {t("tafsir.subtitle", lang)}
                 </p>
               </div>
               <button
@@ -288,7 +275,7 @@ export default function TafsirSidebar() {
                 ref={closeButtonRef}
                 onClick={closeSidebar}
                 className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_80%,transparent_20%)] text-[color-mix(in_srgb,var(--theme-text)_82%,var(--theme-bg)_18%)] transition hover:border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] hover:text-[color-mix(in_srgb,var(--theme-text)_96%,#ffffff_4%)]"
-                aria-label={label(lang, "Fermer", "Close", "إغلاق")}
+                aria-label={t("common.close", lang)}
               >
                 <X size={18} />
               </button>
@@ -301,12 +288,7 @@ export default function TafsirSidebar() {
                   htmlFor="tafsir-source-select"
                   className="mb-2 block text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]"
                 >
-                  {label(
-                    lang,
-                    "Source du tafsir",
-                    "Tafsir source",
-                    "مصدر التفسير",
-                  )}
+                  {t("tafsir.sourceLabel", lang)}
                 </label>
                 <select
                   id="tafsir-source-select"
@@ -325,16 +307,8 @@ export default function TafsirSidebar() {
                     <Languages size={12} className="mt-0.5 shrink-0" />
                     <span>
                       {selectedOption.lang === "en"
-                        ? label(
-                            lang,
-                            "Ce tafsir est affiché en anglais. Sélectionnez une source [AR] pour lire en arabe.",
-                            "This tafsir is shown in English. Select an [AR] source to read in Arabic.",
-                          )
-                        : label(
-                            lang,
-                            "Ce tafsir est affiché en arabe.",
-                            "This tafsir is shown in Arabic.",
-                          )}
+                        ? t("tafsir.shownInEnglish", lang)
+                        : t("tafsir.shownInArabic", lang)}
                     </span>
                   </div>
                 )}
@@ -351,12 +325,12 @@ export default function TafsirSidebar() {
                   >
                     <span className="inline-flex items-center gap-2 text-sm font-black">
                       <Languages size={17} />
-                      {label(lang, "Traduction française", "Translation")}
+                      {t("tafsir.translationLabel", lang)}
                     </span>
                     <span className="text-xs font-bold text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]">
                       {showTranslation
-                        ? label(lang, "Masquer", "Hide")
-                        : label(lang, "Afficher", "Show")}
+                        ? t("tafsir.hide", lang)
+                        : t("tafsir.show", lang)}
                     </span>
                   </button>
                   {showTranslation ? (
@@ -364,24 +338,16 @@ export default function TafsirSidebar() {
                       {translationState.status === "loading" ? (
                         <span className="inline-flex items-center gap-2">
                           <RefreshCw size={14} className="animate-spin" />
-                          {label(lang, "Chargement...", "Loading...")}
+                          {t("tafsir.loading", lang)}
                         </span>
                       ) : translationState.status === "error" ? (
                         <span className="tafsir-error-text">
                           {translationState.error ||
-                            label(
-                              lang,
-                              "Traduction indisponible.",
-                              "Translation unavailable.",
-                            )}
+                            t("tafsir.translationUnavailable", lang)}
                         </span>
                       ) : (
                         translationState.data?.text ||
-                        label(
-                          lang,
-                          "Traduction indisponible.",
-                          "Translation unavailable.",
-                        )
+                        t("tafsir.translationUnavailable", lang)
                       )}
                     </div>
                   ) : null}
@@ -394,12 +360,7 @@ export default function TafsirSidebar() {
                   <div className="flex min-h-[14rem] items-center justify-center">
                     <div className="flex items-center gap-3 text-sm font-semibold text-[var(--text-secondary)]">
                       <RefreshCw size={17} className="animate-spin" />
-                      {label(
-                        lang,
-                        "Chargement du tafsir...",
-                        "Loading tafsir...",
-                        "جاري التحميل...",
-                      )}
+                      {t("tafsir.loadingTafsir", lang)}
                     </div>
                   </div>
                 ) : tafsirState.status === "error" ? (
@@ -414,7 +375,7 @@ export default function TafsirSidebar() {
                       className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--theme-primary)_48%,transparent_52%)] bg-[rgba(var(--theme-primary-rgb),0.14)] px-3 py-2 text-sm font-bold"
                     >
                       <RefreshCw size={15} />
-                      {label(lang, "Réessayer", "Retry", "أعد المحاولة")}
+                      {t("tafsir.retry", lang)}
                     </button>
                   </div>
                 ) : tafsirState.data?.text ? (
@@ -424,7 +385,7 @@ export default function TafsirSidebar() {
                       <BookOpen size={11} />
                       {getTafsirLabel(displayedOption, lang)}
                       {tafsirState.data.cached
-                        ? ` - ${label(lang, "hors connexion", "offline", "\u062f\u0648\u0646 \u0627\u062a\u0635\u0627\u0644")}`
+                        ? ` - ${t("tafsir.offlineBadge", lang)}`
                         : ""}
                     </div>
                     <article
@@ -445,12 +406,7 @@ export default function TafsirSidebar() {
                   </>
                 ) : (
                   <div className="flex min-h-[14rem] items-center justify-center text-sm text-[var(--text-secondary)]">
-                    {label(
-                      lang,
-                      "Aucune donnée disponible.",
-                      "No data available.",
-                      "لا توجد بيانات.",
-                    )}
+                    {t("tafsir.noData", lang)}
                   </div>
                 )}
               </section>

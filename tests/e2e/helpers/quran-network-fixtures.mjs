@@ -1,4 +1,5 @@
 import SURAHS from "../../../src/data/surahs.js";
+import { getWarshSurahAyahCount } from "../../../src/constants/warshSource.js";
 
 const SURAH_COUNTS = new Map(
   SURAHS.map((surah) => [Number(surah.n), Number(surah.ayahs)]),
@@ -114,7 +115,8 @@ function quranComVersesForUrl(url, options) {
 }
 
 function mockWarshVerses(surah, { withWaqfSigns = false } = {}) {
-  return Array.from({ length: verseCount(surah) }, (_, index) => ({
+  const count = getWarshSurahAyahCount(surah) || verseCount(surah);
+  return Array.from({ length: count }, (_, index) => ({
     sura_no: Number(surah),
     aya_no: index + 1,
     aya_text:

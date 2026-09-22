@@ -1,6 +1,15 @@
-import SURAHS from "../../data/surahs";
-
 /* ─── Pagination / layout ─────────────────────────────────────────────────── */
+import SURAHS from "../../data/surahs.js";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource.js";
+
+/** Whole-mushaf ayah total as the active riwaya counts it (Warsh differs from Hafs). */
+export function getMushafAyahTotal(riwaya) {
+  return SURAHS.reduce(
+    (sum, s) => sum + (getSurahVerseCountByRiwaya(s.n, riwaya) || s.ayahs),
+    0,
+  );
+}
+
 export const HOME_INITIAL_SURAHS     = 48;
 export const HOME_INITIAL_SURAHS_LOW = 24;
 export const HOME_SURAHS_BATCH       = 36;
@@ -143,15 +152,6 @@ export const SURAH_EN_MEANINGS = {
   113: "The Daybreak",
   114: "Mankind",
 };
-
-/* ─── Index de recherche (calculé une seule fois au chargement du module) ─── */
-export const SURAH_SEARCH_INDEX = SURAHS.map((surah) => ({
-  surah,
-  number:  String(surah.n),
-  ar:      String(surah.ar || ""),
-  enLower: String(surah.en || "").toLowerCase(),
-  frLower: String(surah.fr || "").toLowerCase(),
-}));
 
 /* ─── Versets du jour — cycle de 60 jours ────────────────────────────────── */
 export const DAILY_VERSES = [

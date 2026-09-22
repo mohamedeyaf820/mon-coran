@@ -4,8 +4,13 @@
  * Optimized: AbortController, timeout, request deduplication, IndexedDB persistent cache.
  */
 
-import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
 import { preloadWarshSurah } from './warshService';
+import {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+  getWarshTranslationEdition,
+  isWarshTranslationEdition,
+} from './warshTranslationService';
 import { shouldAvoidBackgroundWork } from '../utils/networkPolicy.js';
 import {
   canLoadFromQuranCom,
@@ -40,6 +45,33 @@ const TRANSLATION_EDITIONS = {
   tr: 'tr.diyanet',
   ur: 'ur.junagarhi',
 };
+
+// Ids that double as a translationLangs token but are served from the vendored
+// Warsh translation assets (scripts/build-warsh-translation.mjs) instead of a
+// remote API. They never reach AlQuran Cloud: fetchTranslations splits them out
+// with warshTranslationService.isWarshTranslationEdition().
+
+/**
+ * Selectable translations: the six remote language shortcuts plus the
+ * Warsh-adapted French edition. `riwaya` marks an edition whose numbering only
+ * matches one riwaya's mushaf, so it attaches only in that reading.
+ */
+export const TRANSLATION_CHOICES = [
+  ...Object.keys(TRANSLATION_EDITIONS).map((id) => ({ id, label: id.toUpperCase() })),
+  {
+    id: WARSH_TRANSLATION_EDITION_ID,
+    label: 'FR · Warsh',
+    labelKey: 'settings.translationWarshLabel',
+    riwaya: 'warsh',
+  },
+  {
+    id: WARSH_TRANSLATION_EDITION_ID_EN,
+    label: 'EN · Warsh',
+    labelKey: 'settings.translationWarshLabelEn',
+    riwaya: 'warsh',
+  },
+];
+
 const QURAN_COM_TRANSLATION_LANGS = new Set(['fr', 'en']);
 
 // In-memory cache with size limit
@@ -520,8 +552,15 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
   throw lastError || new Error(`No edition available for riwaya: ${riwaya}`);
 }
 
-async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
-  const langArray = Array.isArray(langs) ? langs : [langs];
+/** surah/N, juz/N, page/N: the scopes a translation is requested for. */
+function parseTranslationScope(pathPrefix) {
+  const [type, value] = String(pathPrefix || '').split('/');
+  if (!['surah', 'juz', 'page'].includes(type)) return null;
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? { type, value: number } : null;
+}
+
+async function fetchRemoteTranslations(pathPrefix, langArray, signal) {
   const canUseQuranCom = langArray.every((lang) => QURAN_COM_TRANSLATION_LANGS.has(lang));
 
   const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
@@ -537,6 +576,34 @@ async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
     console.warn('AlQuran.cloud translation fallback to Quran.com:', err);
     return fetchQuranComTranslations(pathPrefix, langArray, signal);
   }
+}
+
+async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const localLangs = langArray.filter(isWarshTranslationEdition);
+  const remoteLangs = langArray.filter((lang) => !isWarshTranslationEdition(lang));
+
+  if (!localLangs.length) return fetchRemoteTranslations(pathPrefix, remoteLangs, signal);
+
+  // Vendored editions answer from the local assets, so they also work offline.
+  // A scope they cannot place returns nothing rather than Hafs-keyed verses.
+  const scope = parseTranslationScope(pathPrefix);
+  const [localEditions, remoteEditions] = await Promise.all([
+    scope
+      ? Promise.all(
+          localLangs.map((editionId) => getWarshTranslationEdition(scope.type, scope.value, editionId)),
+        )
+      : Promise.resolve([]),
+    remoteLangs.length
+      ? fetchRemoteTranslations(pathPrefix, remoteLangs, signal).catch((err) => {
+          if (err.name === 'AbortError') throw err;
+          console.warn('Remote translation editions unavailable:', err);
+          return [];
+        })
+      : Promise.resolve([]),
+  ]);
+
+  return [...localEditions, ...remoteEditions].filter(Boolean);
 }
 
 /* ── Surah Text ──────────────────────────────── */
@@ -666,10 +733,20 @@ export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'],
 
 /* ── Search ──────────────────────────────────── */
 
+// AlQuran Cloud answers a query with no match with HTTP 404, so a 404 on a
+// search route means "nothing found", not "the index is down". Reporting it as
+// an outage sends the reader to retry a query that can never match.
+const SEARCH_NO_MATCH_RE = /^API error 404\b/;
+
+function isSearchNoMatch(error) {
+  return SEARCH_NO_MATCH_RE.test(String(error?.message || ''));
+}
+
 export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
   const scope = surahNum ? `/${surahNum}` : '';
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
+  let everyEditionMissed = true;
 
   for (const edition of editions) {
     try {
@@ -677,8 +754,13 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
     } catch (err) {
       if (err.name === 'AbortError') throw err;
       lastError = err;
+      // Keep trying the other editions: their orthography differs, so a miss in
+      // one script can still be a hit in another.
+      if (!isSearchNoMatch(err)) everyEditionMissed = false;
     }
   }
+
+  if (everyEditionMissed) return { matches: [] };
 
   try {
     return await searchArabicLocally(query, surahNum, signal);
@@ -694,14 +776,22 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
  * Returns { matches: [{ surah, numberInSurah, text, translationText }] }
  */
 export async function searchTranslation(query, lang = 'fr', surahNum = null, signal) {
+  // The vendored Warsh edition has no search index yet: selecting it searches
+  // the remote Hafs 'fr' edition, whose hits are Hafs-numbered.
   const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
   const scope = surahNum ? `/${surahNum}` : '';
-  const data = await fetchJSON(
-    `${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`,
-    signal,
-  );
-  // data.matches items have { surah, numberInSurah, text } where text is the translation
-  return data;
+  try {
+    const data = await fetchJSON(
+      `${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`,
+      signal,
+    );
+    // data.matches items have { surah, numberInSurah, text } where text is the translation
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    if (isSearchNoMatch(err)) return { matches: [] };
+    throw err;
+  }
 }
 
 /* ── Helpers ─────────────────────────────────── */
@@ -724,23 +814,6 @@ export async function clearCache() {
   } catch (err) {
     console.warn('Cache clear error:', err);
   }
-}
-
-/**
- * Build audio URL for a specific ayah.
- * Uses the Islamic.network CDN structure — requires the global ayah number (1-6236).
- * @param {string} reciterCdn - reciter CDN folder name
- * @param {number} globalAyahNumber - global ayah number in the whole Quran (1-6236)
- */
-export function getAudioUrl(reciterCdn, globalAyahNumber) {
-  return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalAyahNumber}.mp3`;
-}
-
-/**
- * Alternative: use ayah reference from API which includes audioUrl
- */
-export function getAudioUrlFromAyah(ayahData) {
-  return ayahData?.audio || ayahData?.audioSecondary?.[0] || null;
 }
 
 /**

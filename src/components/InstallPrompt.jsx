@@ -1,15 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useAppSelector } from '../context/AppContext';
+import { t } from '../i18n';
 
 // One-shot install guidance. Android/Chrome gets the native
 // beforeinstallprompt flow; iOS Safari exposes no such event, so the card
 // explains the Share → Home Screen path instead. A dismissal is persisted so
 // the hint never interrupts reading twice.
 const DISMISS_KEY = 'mushaf-plus-install-hint-dismissed';
-
-function labelFor(lang, fr, en, ar = en) {
-  return lang === 'ar' ? ar : lang === 'en' ? en : fr;
-}
 
 function isIOS() {
   if (typeof navigator === 'undefined') return false;
@@ -74,26 +71,16 @@ export default function InstallPrompt() {
 
   if (!mode) return null;
 
-  const title = labelFor(lang, 'Installer MushafPlus', 'Install MushafPlus', 'ثبّت مصحف بلس');
-  const body = mode === 'ios'
-    ? labelFor(lang,
-        'Lecture hors-ligne : appuyez sur Partager, puis « Sur l’écran d’accueil ».',
-        'Offline reading: tap Share, then “Add to Home Screen”.',
-        'قراءة دون اتصال: اضغط مشاركة ثم «الإضافة إلى الشاشة الرئيسية».')
-    : labelFor(lang,
-        'Lecture hors-ligne et accès rapide depuis votre écran d’accueil.',
-        'Offline reading and quick access from your home screen.',
-        'قراءة دون اتصال ووصول سريع من شاشتك الرئيسية.');
-  const cta = mode === 'ios'
-    ? labelFor(lang, 'Compris', 'Got it', 'فهمت')
-    : labelFor(lang, 'Installer', 'Install', 'تثبيت');
+  const title = t('install.title', lang);
+  const body = t(mode === 'ios' ? 'install.iosBody' : 'install.androidBody', lang);
+  const cta = t(mode === 'ios' ? 'install.understood' : 'install.cta', lang);
 
   return (
     <div
       role="note"
+      className="install-prompt"
       style={{
         position: 'fixed',
-        bottom: 'calc(var(--space-5) + env(safe-area-inset-bottom))',
         left: '50%', transform: 'translateX(-50%)',
         zIndex: 9998, background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--r-lg)', padding: 'var(--space-3) var(--space-4)',
@@ -137,7 +124,7 @@ export default function InstallPrompt() {
       <button
         type="button"
         onClick={dismiss}
-        aria-label={labelFor(lang, 'Ignorer', 'Dismiss', 'تجاهل')}
+        aria-label={t('install.ignore', lang)}
         style={{
           background: 'transparent', border: 'none', cursor: 'pointer',
           color: 'var(--text-muted)', fontSize: '1.1rem', lineHeight: 1, padding: '0 0.15rem',

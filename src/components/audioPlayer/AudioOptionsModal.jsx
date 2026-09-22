@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import { createPortal } from "react-dom";
+import { t } from "../../i18n";
 import { getAudioPlayerLabels } from "./audioPlayerLabels";
 import PlaybackSettingsPanel from "./PlaybackSettingsPanel";
 import ReciterOptionsList from "./ReciterOptionsList";
@@ -78,7 +79,7 @@ export default function AudioOptionsModal(props) {
             <div className="audio-player-modal__title-wrap min-w-0">
               <h3
                 id="audio-options-modal-title"
-                className="truncate text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_92%,#ffffff_8%)] sm:text-base"
+                className="truncate text-sm font-bold text-[color-mix(in_srgb,var(--theme-text)_92%,var(--theme-text-inverse)_8%)] sm:text-base"
               >
                 {labels.modalTitle}
               </h3>
@@ -100,7 +101,7 @@ export default function AudioOptionsModal(props) {
           <div
             className="audio-player-modal__tabs"
             role="tablist"
-            aria-label={lang === "fr" ? "Catégories des réglages audio" : lang === "ar" ? "فئات إعدادات الصوت" : "Audio settings categories"}
+            aria-label={t("audio.tabsAria", lang)}
           >
             <button
               id="tab-reciters"
@@ -120,7 +121,7 @@ export default function AudioOptionsModal(props) {
               aria-controls="tabpanel-settings"
               onClick={() => setActiveMobileTab("settings")}
             >
-              {lang === "fr" ? "Lecture" : lang === "ar" ? "التشغيل" : "Playback"}
+              {t("audio.playbackTab", lang)}
             </button>
           </div>
 

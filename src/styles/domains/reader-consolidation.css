@@ -547,7 +547,7 @@
 }
 
 .app-root .scroll-top-btn {
-    z-index: 260;
+    z-index: var(--z-header);
     width: clamp(2.1rem, 1.96rem + 0.72vw, 2.65rem);
     height: clamp(2.1rem, 1.96rem + 0.72vw, 2.65rem);
     bottom: calc(var(--player-h) + clamp(0.68rem, 1.5vw, 1.15rem));
@@ -911,7 +911,7 @@ html[data-split-view="on"]
 .view-reading .mp-header {
     position: sticky;
     top: 0;
-    z-index: 240;
+    z-index: var(--z-header);
     width: 100%;
     border-bottom: 1px solid color-mix(in srgb, var(--border) 82%, transparent 18%);
     background: color-mix(in srgb, var(--bg-card) 92%, transparent 8%);
@@ -1200,9 +1200,14 @@ html[data-split-view="on"]
 .app-root[data-view="duas"] .duas-results-copy {
     max-width: 68ch;
     margin-top: 0.45rem;
-    color: var(--text-secondary) !important;
     font-size: 0.96rem;
     line-height: 1.58;
+}
+
+/* Only the results blurb sits on the light page background. The hero subtitle
+   is painted on the dark green gradient and keeps its own light ink. */
+.app-root[data-view="duas"] .duas-results-copy {
+    color: var(--text-secondary) !important;
 }
 
 .app-root[data-view="duas"] .duas-back-btn {
@@ -1426,8 +1431,8 @@ html[data-split-view="on"]
 }
 
 .app-root[data-view="duas"] .dua-open-btn-v5 {
-    width: 2.3rem;
-    height: 2.3rem;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
     padding: 0;
 }
 
@@ -1547,7 +1552,7 @@ html[data-split-view="on"]
     }
 
     .app-root[data-view="duas"] .duas-page--platform {
-        padding-inline: 0.45rem;
+        padding-inline: 0.875rem;
     }
 
     .app-root[data-view="duas"] .duas-hero-head,
@@ -1944,7 +1949,10 @@ html[data-split-view="on"]
 .view-reading .mp-header {
     position: sticky !important;
     top: 0 !important;
-    z-index: 210 !important;
+    /* Reading view historically parks the header 50 below the app header
+       band (210 vs 260) so the notes FAB (250) stays clickable over it.
+       Preserve that delta through the scale. */
+    z-index: calc(var(--z-header) - 50) !important;
     width: 100%;
     min-height: 0 !important;
     padding: 0.42rem clamp(0.5rem, 1.6vw, 1rem);

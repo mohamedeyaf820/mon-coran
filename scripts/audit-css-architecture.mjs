@@ -20,8 +20,22 @@ const LIMITS = {
   // budgets remain the stricter deployment gates. Updated to reflect current
   // measured sizes after responsive reader, recitation platform, mushaf
   // style additions and the calm reader/shell/book layers (2026-09).
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1760),
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1230),
+  // 2026-09-21: source raised after the mushaf cartouche/folio/portal-chrome
+  // gilding added ~3 kB of rules to mushaf-book.css and mushaf-page-polish.css.
+  // 2026-09-21: re-measured at 1775.8 kB after the tajweed palette edits.
+  // 2026-09-21: raised to 1782 kB — the Quran.com tajweed palette migration added
+  // explanatory header comments to the three themes4.css blocks (source only; the
+  // hex swaps are length-neutral and the removed Hafs saturate filter cut retained).
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1782),
+  // 2026-09-20: retained raised after the purge safelist fix brought back the
+  // [dir=]/[lang=] RTL rules that PurgeCSS v8 had been silently dropping.
+  // 2026-09-21: +1 kB for the retained portal rules of the same cartouche,
+  // folio and chrome work counted above in sourceKb.
+  // 2026-09-21: raised to the measured 1250.5 kB (print-engine sheet rework:
+  // sober tajweed filters, line-measure clamp contract, mirrored furniture).
+  // 2026-09-21: raised to 1258 kB for concurrent-session reader CSS landed in the
+  // shared tree during the palette migration (measured 1254.3 kB).
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1258),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

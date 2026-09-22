@@ -1,10 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
-import { getSurahAyahCount } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
 import { getPageTranslation } from "../../services/quranAPI";
 import { t } from "../../i18n";
 import { toast } from "../../lib/utils";
-import { getTranslationKeyForAyah } from "./displayHelpers";
+import {
+  getTranslationKeyForAyah,
+  getWarshTranslationKeyForAyah,
+  isWarshNumberedAyah,
+} from "./displayHelpers";
 
 const LAST_PAGE = 604;
 const MAX_PAGES = 8;
@@ -85,9 +89,17 @@ export default function usePageStream({
     const map = new Map();
     translationsByPage.forEach((editions) => {
       editions.forEach((edition) => {
+        // A Warsh-adapted edition numbers the mushaf the Warsh way: keep its
+        // verses out of the Hafs namespace (see displayHelpers).
+        const isWarshEdition =
+          edition.riwaya === "warsh" || edition.edition?.riwaya === "warsh";
         (edition.ayahs || []).forEach((translation) => {
           const surahNumber = translation.surah?.number;
-          const ayahKey = surahNumber ? getTranslationKeyForAyah(surahNumber, translation.numberInSurah) : null;
+          const ayahKey = surahNumber
+            ? isWarshEdition
+              ? getWarshTranslationKeyForAyah(surahNumber, translation.numberInSurah)
+              : getTranslationKeyForAyah(surahNumber, translation.numberInSurah)
+            : null;
           if (ayahKey) map.set(ayahKey, [...(map.get(ayahKey) || []), translation]);
           if (typeof translation.number === "number") {
             const globalKey = `global:${translation.number}`;
@@ -100,23 +112,33 @@ export default function usePageStream({
   }, [translationsByPage]);
   const getTranslationForAyah = useCallback(
     (ayah) => {
+      const surahNumber = ayah.surah?.number || currentSurah;
+      const matched = [];
+
+      if (isWarshNumberedAyah(ayah)) {
+        const warshEditions = translationMap.get(
+          getWarshTranslationKeyForAyah(surahNumber, ayah.numberInSurah),
+        );
+        if (warshEditions) matched.push(...warshEditions);
+      }
+
       const hafsNumbers = ayah?.hafsNumbers;
       if (Array.isArray(hafsNumbers) && hafsNumbers.length > 0) {
-        const matched = [];
         for (const hafsNumber of hafsNumbers) {
           const found = translationMap.get(
-            getTranslationKeyForAyah(ayah.surah?.number || currentSurah, hafsNumber),
+            getTranslationKeyForAyah(surahNumber, hafsNumber),
           );
           if (found) matched.push(...found);
         }
         if (matched.length) return matched;
       }
-      return (
+
+      const direct =
         translationMap.get(`global:${ayah.number}`) ||
-        translationMap.get(getTranslationKeyForAyah(ayah.surah?.number || currentSurah, ayah.numberInSurah)) ||
-        fallbackGetTranslation?.(ayah) ||
-        null
-      );
+        translationMap.get(getTranslationKeyForAyah(surahNumber, ayah.numberInSurah));
+
+      if (direct) return [...matched, ...direct];
+      return matched.length ? matched : fallbackGetTranslation?.(ayah) || null;
     },
     [currentSurah, fallbackGetTranslation, translationMap],
   );
@@ -237,7 +259,8 @@ export default function usePageStream({
   const lastSurah = Number(lastAyah?.surah?.number || lastAyah?.surah || 0);
   const endsSurah =
     Boolean(lastAyah) &&
-    Number(lastAyah.numberInSurah) >= getSurahAyahCount(lastSurah) &&
+    Number(lastAyah.numberInSurah) >=
+      getSurahVerseCountByRiwaya(lastSurah, riwaya) &&
     window_.end < LAST_PAGE;
   const pausedAtSurah = endsSurah && continuedPast !== window_.end;
 

@@ -1,83 +1,56 @@
 import React from "react";
 import { Keyboard, X } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
+import { t } from "../i18n";
 
 const SHORTCUTS = [
   {
     keys: ["Ctrl", "K"],
-    desc: { fr: "Rechercher", en: "Search", ar: "بحث" },
+    descKey: "shortcuts.search",
   },
   {
     keys: ["/"],
-    desc: { fr: "Rechercher", en: "Search", ar: "بحث" },
+    descKey: "shortcuts.search",
   },
   {
     keys: ["Ctrl", ","],
-    desc: { fr: "Paramètres", en: "Settings", ar: "الإعدادات" },
+    descKey: "shortcuts.settings",
   },
   {
     keys: ["Ctrl", "B"],
-    desc: { fr: "Favoris", en: "Bookmarks", ar: "المفضلة" },
+    descKey: "shortcuts.bookmarks",
   },
   {
     keys: ["Alt", "←"],
-    desc: {
-      fr: "Sourate précédente",
-      en: "Previous surah",
-      ar: "السورة السابقة",
-    },
+    descKey: "shortcuts.prevSurah",
   },
   {
     keys: ["Alt", "→"],
-    desc: {
-      fr: "Sourate suivante",
-      en: "Next surah",
-      ar: "السورة التالية",
-    },
+    descKey: "shortcuts.nextSurah",
   },
   {
     keys: ["Alt", "↑"],
-    desc: {
-      fr: "Page / Juz précédent(e)",
-      en: "Previous page / juz",
-      ar: "الصفحة / الجزء السابق",
-    },
+    descKey: "shortcuts.prevPageJuz",
   },
   {
     keys: ["Alt", "↓"],
-    desc: {
-      fr: "Page / Juz suivant(e)",
-      en: "Next page / juz",
-      ar: "الصفحة / الجزء التالي",
-    },
+    descKey: "shortcuts.nextPageJuz",
   },
   {
     keys: ["Espace"],
-    desc: { fr: "Lecture / Pause", en: "Play / Pause", ar: "تشغيل / إيقاف" },
+    descKey: "shortcuts.playPause",
   },
   {
     keys: ["H"],
-    desc: {
-      fr: "Aller à l'accueil",
-      en: "Go home",
-      ar: "الصفحة الرئيسية",
-    },
+    descKey: "shortcuts.home",
   },
   {
     keys: ["Échap"],
-    desc: {
-      fr: "Fermer le panneau actif",
-      en: "Close active panel",
-      ar: "إغلاق اللوحة الحالية",
-    },
+    descKey: "shortcuts.closePanel",
   },
   {
     keys: ["?"],
-    desc: {
-      fr: "Aide raccourcis clavier",
-      en: "Keyboard shortcut help",
-      ar: "مساعدة اختصارات لوحة المفاتيح",
-    },
+    descKey: "shortcuts.help",
   },
 ];
 
@@ -91,12 +64,7 @@ const SHORTCUTS = [
 export default function KeyboardShortcutsModal({ lang, onClose }) {
   const isRtl = lang === "ar";
 
-  const title =
-    lang === "fr"
-      ? "Raccourcis clavier"
-      : lang === "ar"
-        ? "اختصارات لوحة المفاتيح"
-        : "Keyboard shortcuts";
+  const title = t("app.keyboardShortcuts", lang);
 
   return (
     <Dialog.Root
@@ -107,7 +75,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
     >
       <Dialog.Portal>
         <div
-          className="fixed inset-0 z-[500] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+          className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
           onClick={onClose}
           dir={isRtl ? "rtl" : "ltr"}
         >
@@ -128,9 +96,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
                 type="button"
                 onClick={onClose}
                 className="w-8 h-8 flex items-center justify-center rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-secondary)] hover:text-[var(--text)] transition-colors"
-                aria-label={
-                  lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"
-                }
+                aria-label={t("common.close", lang)}
               >
                 <X size={14} />
               </button>
@@ -145,7 +111,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
                 >
                   {/* Description */}
                   <span className="text-sm text-[var(--text-secondary)] font-[var(--font-ui)]">
-                    {shortcut.desc[lang] ?? shortcut.desc.fr}
+                    {t(shortcut.descKey, lang)}
                   </span>
 
                   {/* Touches */}
@@ -171,11 +137,7 @@ export default function KeyboardShortcutsModal({ lang, onClose }) {
 
             {/* Pied : conseil d'utilisation */}
             <p className="mt-5 text-xs text-[var(--text-muted)] font-[var(--font-ui)] text-center">
-              {lang === "fr"
-                ? "Les raccourcis sont désactivés quand un champ de saisie est actif."
-                : lang === "ar"
-                  ? "تُعطَّل الاختصارات عند تفعيل حقل إدخال النص."
-                  : "Shortcuts are disabled when a text input is focused."}
+              {t("shortcuts.inputHint", lang)}
             </p>
           </Dialog.Content>
         </div>

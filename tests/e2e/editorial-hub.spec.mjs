@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { CONTENT_ATTRIBUTIONS } from "../../src/data/contentAttributions.js";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -59,7 +60,7 @@ test("editorial navigation exposes complete project information", async ({ page 
 
   await page.getByRole("button", { name: "Sources" }).click();
   await expect(page).toHaveURL(/\/sources$/);
-  await expect(page.locator(".legal-page__attribution-item")).toHaveCount(8);
+  await expect(page.locator(".legal-page__attribution-item")).toHaveCount(CONTENT_ATTRIBUTIONS.length);
   await expect(page.getByRole("heading", { name: /sources nommées/i })).toBeVisible();
 });
 

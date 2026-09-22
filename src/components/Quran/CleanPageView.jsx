@@ -3,6 +3,7 @@ import { getSurah, toAr } from "../../data/surahs";
 import SmartAyahRenderer from "./SmartAyahRenderer";
 import { CleanPageSurahHeader } from "./CleanPageDecor";
 import Bismillah from "./Bismillah";
+import { t } from "../../i18n";
 
 function CleanPageViewComponent({
   ayahs,
@@ -33,7 +34,10 @@ function CleanPageViewComponent({
 
   const juzLabel = useMemo(() => {
     if (!juzNumber) return "";
-    return lang === "ar" ? `الجزء ${toAr(juzNumber)}` : `Juz ${juzNumber}`;
+    return t("quran.juzLabel", lang).replace(
+      "{n}",
+      lang === "ar" ? toAr(juzNumber) : juzNumber,
+    );
   }, [juzNumber, lang]);
 
   const surahLabel = useMemo(() => {
@@ -121,7 +125,7 @@ function CleanPageViewComponent({
                 event.preventDefault();
                 onAyahClick?.(getAyahToggleId(ayah));
               }}
-              aria-label={`${lang === "ar" ? "الآية" : lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`}
+              aria-label={`${t("quran.verseLabel", lang)} ${ayah.numberInSurah}`}
               aria-current={isPlaying ? "true" : undefined}
             >
               <span className="qc-ayah-text-ar quran-arabic-text verse-text">

@@ -1,14 +1,20 @@
 /**
  * Warsh Unicode Service
- * 
+ *
  * Provides authentic Warsh (Nafi') text rendering using Unicode text.
- * Data is fetched from the new warsh-quran-audio repository.
+ * Both datasets are third-party mirrors pinned to immutable commit SHAs and the
+ * legacy payload is SHA-256 verified before it is cached - see
+ * src/constants/warshSource.js for the provenance and the refresh procedure.
  */
 
 import { dbGet, dbSet, dbDelete } from './dbService';
 import { JUZ_DATA } from '../data/juz';
-import { WARSH_DATA_BASE_URL, WARSH_LEGACY_JSON_URL } from '../constants/warshSource';
-import { getSurah } from '../data/surahs';
+import {
+  WARSH_DATA_BASE_URL,
+  WARSH_LEGACY_JSON_URL,
+  WARSH_LEGACY_JSON_SHA256,
+  getWarshSurahAyahCount,
+} from '../constants/warshSource';
 import { fetchQuranComText } from './quranComAPI';
 import { fetchWithTimeout } from './fetchWithTimeout';
 import { stripEmbeddedAyahMarkers } from '../data/fonts';
@@ -107,6 +113,22 @@ function getSurahNumberFromRaw(raw) {
       raw?.chapter_id ??
       raw?.chapter,
   );
+}
+
+/**
+ * Hex SHA-256 of a fetched payload, or null when WebCrypto is not exposed
+ * (insecure contexts). Callers must treat null as "unverifiable": the payload
+ * may serve the current session but never gets persisted as offline Quran text.
+ */
+async function sha256Hex(bytes) {
+  const subtle = globalThis.crypto?.subtle;
+  if (!subtle || !bytes) return null;
+  try {
+    const digest = await subtle.digest('SHA-256', bytes);
+    return Array.from(new Uint8Array(digest), (byte) => byte.toString(16).padStart(2, '0')).join('');
+  } catch {
+    return null;
+  }
 }
 
 function unwrapLegacyArray(data) {
@@ -247,17 +269,26 @@ function normalizeWarshRows(rows, surahNumber) {
 }
 
 function validateWarshRows(records, surahNumber) {
-  const expected = Number(getSurah(surahNumber)?.ayahs || 0);
   if (!Array.isArray(records) || records.length === 0) return false;
-  
-  // More permissive validation - allow some margin of error
-  // Surahs should have at least 80% of expected verses to be considered valid
-  if (expected && records.length < expected * 0.8) {
-    logError(`Warsh validation: expected ${expected} verses, got ${records.length} for surah ${surahNumber}`);
+
+  // Exact completeness, not a percentage. A surah that is 80-99% present used
+  // to pass here, ship to the reader and then be cached in IndexedDB as if it
+  // were the Quran text. The expectation is the surah's Warsh total (6214 ayahs
+  // across the mushaf - e.g. 285 in Al-Baqara against 286 in Hafs), derived from
+  // the canonical Warsh/Hafs numbering, never from the Hafs metadata.
+  const expected = getWarshSurahAyahCount(surahNumber);
+  if (!expected) {
+    logError(`Warsh validation: no Warsh verse total for surah ${surahNumber}, refusing source`);
     return false;
   }
-  
-  // Check that verse numbers are sequential (with possible gaps)
+  if (records.length !== expected) {
+    logError(`Warsh validation: expected exactly ${expected} Warsh verses, got ${records.length} for surah ${surahNumber}`);
+    return false;
+  }
+
+  // Sequential and dense: the Warsh mushaf numbers each surah from 1 to its
+  // total, so gaps or a shifted start mean a damaged source even when the
+  // record count happens to match.
   let prevAyah = 0;
   for (const record of records) {
     const ayahNum = Number(record.ayahNumber);
@@ -267,7 +298,11 @@ function validateWarshRows(records, surahNumber) {
     }
     prevAyah = ayahNum;
   }
-  
+  if (Number(records[0]?.ayahNumber) !== 1 || prevAyah !== expected) {
+    logError(`Warsh validation: surah ${surahNumber} does not cover Warsh verses 1..${expected}`);
+    return false;
+  }
+
   return true;
 }
 
@@ -442,16 +477,37 @@ async function loadLegacyWarshData() {
       log(`[WarshService] Fetching Warsh JSON from: ${WARSH_LEGACY_JSON_URL}`);
       const res = await fetchWithTimeout(WARSH_LEGACY_JSON_URL, {}, 20000);
       if (!res.ok) throw new Error(`Failed to load legacy Warsh JSON: ${res.status}`);
-      const rawData = await res.json();
-      
+
+      // Integrity gate: the URL is pinned to a commit, but the mirror is still
+      // third-party content and an intermediate (cache, proxy, offline worker)
+      // can hand back anything. Hash the exact bytes and refuse a payload that
+      // does not match the reviewed digest, so a substituted Quran text can
+      // never reach the reader or the durable offline cache.
+      const rawBytes = await res.arrayBuffer();
+      const digest = await sha256Hex(rawBytes);
+      if (digest && digest !== WARSH_LEGACY_JSON_SHA256) {
+        logError(`[WarshService] Legacy Warsh digest mismatch, rejecting payload: ${digest}`);
+        throw new Error(`Legacy Warsh checksum mismatch: ${digest}`);
+      }
+      if (!digest) {
+        logError('[WarshService] WebCrypto unavailable: legacy Warsh data stays in memory only.');
+      }
+
+      const rawData = JSON.parse(new TextDecoder().decode(rawBytes));
+
       // Normalize: unwrap {data: [...]} wrapper
       const arrayData = Array.isArray(rawData) ? rawData : (rawData?.data || rawData?.verses || []);
       log(`[WarshService] Loaded legacy data, ${arrayData.length} items`);
       getLegacyIndex(arrayData);
-      
-      dbSet(IDB_STORE, { key: idbKey, data: arrayData }).catch(() => { });
+
+      if (digest === WARSH_LEGACY_JSON_SHA256) {
+        dbSet(IDB_STORE, { key: idbKey, data: arrayData }).catch(() => { });
+      }
       return arrayData;
     })();
+    legacyWarshDataPromise.catch(() => {
+      legacyWarshDataPromise = null;
+    });
   }
   return legacyWarshDataPromise;
 }

@@ -32,6 +32,7 @@ import useQuranDisplayPrefetch from "./QuranDisplay/useQuranDisplayPrefetch";
 import useQuranDisplayScroll from "./QuranDisplay/useQuranDisplayScroll";
 import useQuranDisplayView from "./QuranDisplay/useQuranDisplayView";
 import useQuranTranslations from "./QuranDisplay/useQuranTranslations";
+import useTransliterationData from "./QuranDisplay/useTransliterationData";
 import AyahSkeleton from "./Quran/AyahSkeleton";
 import { Icon } from "./ui/icon";
 
@@ -136,6 +137,10 @@ export default function QuranDisplay() {
     displayMode,
     showTranslation,
     translationLangs,
+  });
+  const { getTransliterationForAyah } = useTransliterationData({
+    riwaya,
+    showTransliteration,
   });
   const { pageTopSurah, surahGroups, pageGroups } = useQuranDisplayGroups({
     ayahs,
@@ -389,15 +394,13 @@ export default function QuranDisplay() {
         {isNetworkFailure ? (
           <>
             <p className="text-lg text-[var(--theme-text)] font-medium mb-3">
-              {lang === "fr"
-                ? "Impossible de charger les données : vérifiez votre connexion internet et réessayez."
-                : lang === "ar"
-                  ? "تعذر تحميل البيانات. تحقق من اتصالك بالإنترنت ثم أعد المحاولة."
-                  : "Unable to load data: please check your internet connection and try again."}
+              {t("errors.loadNetwork", lang)}
             </p>
           </>
         ) : (
-          <p className="text-lg text-[var(--theme-text)] mb-8">{error}</p>
+          <p className="text-lg text-[var(--theme-text)] mb-8" title={error}>
+            {t("errors.loadError", lang)}
+          </p>
         )}
         <div className="reader-data-state__actions flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
           <button
@@ -410,15 +413,11 @@ export default function QuranDisplay() {
             className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
             onClick={openHome}
           >
-            {lang === "fr"
-              ? "Retour \u00e0 l\u2019accueil"
-              : lang === "ar"
-                ? "\u0627\u0644\u0639\u0648\u062f\u0629 \u0644\u0644\u0631\u0626\u064a\u0633\u064a\u0629"
-                : "Back to home"}
+            {t("errors.backHome", lang)}
           </button>
         </div>
         <p className="reader-data-state__source">
-          {lang === "fr" ? "Source tentée" : lang === "ar" ? "المصدر المطلوب" : "Attempted source"}: {dataSource?.label || (riwaya === "warsh" ? "Warsh dataset" : "Quran.com / AlQuran Cloud")}
+          {t("errors.attemptedSource", lang)}: {dataSource?.label || (riwaya === "warsh" ? "Warsh dataset" : "Quran.com / AlQuran Cloud")}
         </p>
       </div>
     );
@@ -440,11 +439,7 @@ export default function QuranDisplay() {
             className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
             onClick={openHome}
           >
-            {lang === "fr"
-              ? "Retour \u00e0 l\u2019accueil"
-              : lang === "ar"
-                ? "\u0627\u0644\u0639\u0648\u062f\u0629 \u0644\u0644\u0631\u0626\u064a\u0633\u064a\u0629"
-                : "Back to home"}
+            {t("errors.backHome", lang)}
           </button>
         </div>
       </div>
@@ -482,6 +477,7 @@ export default function QuranDisplay() {
             currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
             currentSurah={currentSurah}
             getTranslationForAyah={getTranslationForAyah}
+            getTransliterationForAyah={getTransliterationForAyah}
             isQCF4={isQCF4}
             lang={lang}
             mushafLayout={mushafLayout}
@@ -498,7 +494,6 @@ export default function QuranDisplay() {
             showTajwid={showTajwid}
             showTranslation={showTranslation}
             showTransliteration={showTransliteration}
-            theme={state.theme}
           />
         ) : null}
         {displayMode === "page" ? (
@@ -522,6 +517,7 @@ export default function QuranDisplay() {
               fontFamily={fontFamily}
               getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
               getTranslationForAyah={getTranslationForAyah}
+              getTransliterationForAyah={getTransliterationForAyah}
               isQCF4={isQCF4}
               lang={lang}
               mushafLayout={mushafLayout}
@@ -541,7 +537,6 @@ export default function QuranDisplay() {
               showTranslation={showTranslation}
               showTransliteration={showTransliteration}
               surahGroups={surahGroups}
-              theme={state.theme}
             />
           </Suspense>
         ) : null}
@@ -563,6 +558,7 @@ export default function QuranDisplay() {
               currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
               getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
               getTranslationForAyah={getTranslationForAyah}
+              getTransliterationForAyah={getTransliterationForAyah}
               isQCF4={isQCF4}
               lang={lang}
               mushafLayout={mushafLayout}
@@ -581,7 +577,6 @@ export default function QuranDisplay() {
               showTranslation={showTranslation}
               showTransliteration={showTransliteration}
               surahGroups={surahGroups}
-              theme={state.theme}
             />
           </Suspense>
         ) : null}

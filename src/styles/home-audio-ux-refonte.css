@@ -34,7 +34,7 @@ button,
 .app-root > .mp-header {
   position: sticky !important;
   top: 0 !important;
-  z-index: 260 !important;
+  z-index: var(--z-header) !important;
   padding: 0.45rem clamp(0.55rem, 1.8vw, 1rem);
   border-bottom: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 70%, transparent);
   background:
@@ -586,7 +586,7 @@ html.dark [data-reciter-card="true"] {
 
 .app-root .home-audio-speed-button[aria-pressed="true"] {
   background: var(--primary, #0b6235) !important;
-  color: #fff !important;
+  color: var(--theme-text-inverse, #fff) !important;
 }
 
 .audio-player-modal button:focus-visible,
@@ -3293,12 +3293,12 @@ html body .app-root[data-view="home"] .reciter-card__favorite--active {
 }
 
 html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__listen {
-  /* 2.65rem = 36 px avec la racine fluide à 15 px. */
   min-width: max(2.65rem, 44px) !important;
   min-height: max(2.65rem, 44px) !important;
   border-radius: 12px;
   background: var(--primary) !important;
-  color: #ffffff !important;
+  /* --primary est plus clair en sombre : le blanc n'y tient pas 4,5:1. */
+  color: var(--theme-text-inverse, #ffffff) !important;
   border-color: var(--primary);
 }
 
@@ -3319,17 +3319,21 @@ html body .app-root[data-view="home"] .reciter-card__playing {
 
 html body .app-root[data-view="home"] .reciter-card__playing i {
   width: 1px;
+  height: 100%;
+  transform-origin: bottom;
   border-radius: 2px;
   background: #fff;
+  /* scaleY plutôt que height : la barre animée ne recalcule plus la mise en
+     page à chaque image. */
   animation: reciterPlayingBar 720ms ease-in-out infinite alternate;
 }
 
-html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(1) { height: 45%; }
-html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(2) { height: 85%; animation-delay: -240ms; }
-html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(3) { height: 62%; animation-delay: -480ms; }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(1) { transform: scaleY(0.45); }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(2) { transform: scaleY(0.85); animation-delay: -240ms; }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(3) { transform: scaleY(0.62); animation-delay: -480ms; }
 
 @keyframes reciterPlayingBar {
-  to { height: 100%; }
+  to { transform: scaleY(1); }
 }
 
 html body .app-root[data-view="home"] .home-reciter-load-more {
@@ -3396,7 +3400,7 @@ html body .app-root[data-view="home"] .home-content-toolbar input {
 html body .app-root[data-view="home"] .home-content-toolbar [role="tab"][aria-selected="true"] {
   border-radius: 10px;
   background: var(--primary) !important;
-  color: #ffffff !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
   box-shadow: none;
 }
 
@@ -3497,7 +3501,7 @@ html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
   border-color: var(--primary);
   border-radius: 50%;
   background: var(--primary) !important;
-  color: #ffffff !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
   opacity: 1;
   transform: none;
   box-shadow: 0 5px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.18);

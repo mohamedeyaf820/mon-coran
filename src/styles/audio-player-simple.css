@@ -6,7 +6,7 @@
   --simple-player-line: color-mix(in srgb, var(--theme-border) 74%, transparent 26%);
   --simple-player-surface: color-mix(in srgb, var(--theme-panel-bg-strong) 96%, var(--theme-primary) 4%);
   position: fixed !important;
-  z-index: 410 !important;
+  z-index: var(--z-player) !important;
   overflow: hidden;
   border: 1px solid var(--simple-player-line);
   background:
@@ -486,14 +486,14 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   border-color: color-mix(in srgb, var(--theme-primary) 72%, #fff 28%);
   border-radius: 50%;
   background: var(--theme-primary) !important;
-  color: #fff !important;
+  color: var(--theme-text-inverse, #fff) !important;
   box-shadow: 0 9px 22px rgba(var(--theme-primary-rgb), .28);
 }
 
 @media (hover: hover) and (pointer: fine) {
   .app-root .audio-player-simple .simple-player__play:hover {
     background: color-mix(in srgb, var(--theme-primary) 88%, #fff 12%) !important;
-    color: #fff !important;
+    color: var(--theme-text-inverse, #fff) !important;
   }
 }
 
@@ -602,9 +602,9 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   min-width: max(2.75rem, 44px) !important;
   min-height: max(2.75rem, 44px) !important;
   border-radius: 50% !important;
-  background: linear-gradient(135deg, #0d5c4a, #168a70) !important;
-  color: #ffffff !important;
-  box-shadow: 0 4px 12px rgba(13, 92, 74, 0.32) !important;
+  background: linear-gradient(135deg, var(--theme-primary, var(--primary)), color-mix(in srgb, var(--theme-primary, var(--primary)) 76%, #fff 24%)) !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
+  box-shadow: 0 4px 12px rgba(var(--theme-primary-rgb, 13, 92, 74), 0.32) !important;
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -616,7 +616,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 @media (hover: hover) and (pointer: fine) {
   .app-root .audio-player-simple .simple-player__play--compact:hover {
     transform: scale(1.06) !important;
-    box-shadow: 0 6px 16px rgba(13, 92, 74, 0.42) !important;
+    box-shadow: 0 6px 16px rgba(var(--theme-primary-rgb, 13, 92, 74), 0.42) !important;
   }
 }
 
@@ -652,6 +652,34 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 
 .app-root .audio-player-simple .simple-player__expand-btn:active {
   transform: scale(0.94) !important;
+}
+
+/* Persistent playback failure in the compact bar: icon + wording, never colour alone.
+   Typography/truncation come from .simple-player__compact-reciter on the same node;
+   danger ink is mixed with the player ink so it stays readable on light and dark surfaces. */
+.app-root .audio-player-simple .simple-player__compact-error {
+  display: flex !important;
+  align-items: center !important;
+  gap: .28rem !important;
+  color: color-mix(in srgb, var(--c-danger-hover) 78%, var(--simple-player-ink)) !important;
+  font-weight: 700 !important;
+}
+
+.app-root .audio-player-simple .simple-player__compact-error > span {
+  min-width: 0 !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+}
+
+.app-root .audio-player-simple .simple-player__compact-error svg {
+  flex: 0 0 auto;
+}
+
+.app-root .audio-player-simple .simple-player__expand-btn--alert {
+  color: color-mix(in srgb, var(--c-danger-hover) 78%, var(--simple-player-ink)) !important;
+  background: color-mix(in srgb, var(--c-danger) 12%, transparent) !important;
+  border-color: color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
 }
 
 /* text info block (title + ar-name + reciter stacked) */
@@ -902,7 +930,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 }
 
 @media (max-width: 380px) {
-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
+  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock:not(.simple-player--mobile-open) {
     box-sizing: border-box !important;
     height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
     max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
@@ -969,7 +997,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 }
 
 @media (min-width: 381px) and (max-width: 599px) {
-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
+  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock:not(.simple-player--mobile-open) {
     max-height: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
     border-radius: 1.15rem 1.15rem 0 0;
   }

@@ -1,5 +1,43 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
+/**
+ * Anchors of the reciting verse, most reliable first.
+ *
+ * `data-ayah-global` only means something inside one numbering space, and the
+ * two riwayat use different ones: the Warsh mushaf emits its own 1..6214 legacy
+ * row ids there (warshService page data) while a Warsh playlist carries the
+ * hafs-keyed global number every audio CDN is keyed on. Anchoring on that first
+ * would follow a neighbouring Warsh verse (off by one..twenty-two across the
+ * mushaf). The surah+ayah pair is always in the numbering the reader displays —
+ * Warsh numbers during Warsh playback, hafs numbers otherwise — so it wins, and
+ * the global number stays the fallback for surfaces exposing nothing else.
+ */
+export function playingAyahSelectors(playingAyah, displayMode) {
+  const { surah, ayah, globalNumber } = playingAyah || {};
+  const ids =
+    displayMode === "page"
+      ? [ayah && `#ayah-${ayah}`]
+      : displayMode === "juz"
+        ? [globalNumber && `#ayah-${globalNumber}`, ayah && `#ayah-${ayah}`]
+        : [ayah && `#ayah-${ayah}`, globalNumber && `#ayah-${globalNumber}`];
+
+  return [
+    surah && ayah && `[data-surah-number="${surah}"][data-ayah-number="${ayah}"]`,
+    globalNumber && `[data-ayah-global="${globalNumber}"]`,
+    displayMode === "surah" && ayah && `[data-ayah-number="${ayah}"]`,
+    ...ids,
+  ].filter(Boolean);
+}
+
+export function findPlayingAyahElement(root, playingAyah, displayMode) {
+  if (!root || !playingAyah) return null;
+  for (const selector of playingAyahSelectors(playingAyah, displayMode)) {
+    const element = root.querySelector(selector);
+    if (element) return element;
+  }
+  return null;
+}
+
 export default function useQuranDisplayScroll({
   ayahCount,
   contentRef,
@@ -27,34 +65,7 @@ export default function useQuranDisplayScroll({
   }, []);
 
   const resolvePlayingAyahElement = useCallback(
-    (playingAyah) => {
-      if (!playingAyah) return null;
-
-      const root = contentRef.current || document;
-      const selectors = [
-        playingAyah.globalNumber ? `[data-ayah-global="${playingAyah.globalNumber}"]` : null,
-        playingAyah.surah && playingAyah.ayah
-          ? `[data-surah-number="${playingAyah.surah}"][data-ayah-number="${playingAyah.ayah}"]`
-          : null,
-        displayMode === "surah" && playingAyah.ayah
-          ? `[data-ayah-number="${playingAyah.ayah}"]`
-          : null,
-      ].filter(Boolean);
-
-      for (const selector of selectors) {
-        const element = root.querySelector(selector);
-        if (element) return element;
-      }
-
-      const ids =
-        displayMode === "page"
-          ? [`ayah-pg-${playingAyah.globalNumber}`, `ayah-${playingAyah.ayah}`]
-          : displayMode === "juz"
-            ? [`ayah-${playingAyah.globalNumber}`, `ayah-${playingAyah.ayah}`]
-            : [`ayah-${playingAyah.ayah}`, `ayah-${playingAyah.globalNumber}`];
-
-      return ids.filter(Boolean).map((id) => root.querySelector(`#${CSS.escape(id)}`)).find(Boolean) || null;
-    },
+    (playingAyah) => findPlayingAyahElement(contentRef.current || document, playingAyah, displayMode),
     [displayMode],
   );
 
@@ -134,43 +145,62 @@ export default function useQuranDisplayScroll({
       return;
     }
     let cancelled = false;
-    let correctionTimer = null;
-    let frameId = null;
+    let observer = null;
+    let discoveryTimer = null;
+    let deadlineTimer = null;
 
-    const alignTarget = (attempt = 0) => {
+    const stop = () => {
+      observer?.disconnect();
+      observer = null;
+      if (discoveryTimer !== null) window.clearTimeout(discoveryTimer);
+      if (deadlineTimer !== null) window.clearTimeout(deadlineTimer);
+      discoveryTimer = null;
+      deadlineTimer = null;
+    };
+
+    const align = () => {
       if (cancelled) return;
-      frameId = window.requestAnimationFrame(() => {
-        frameId = null;
-        const target = document.getElementById(`ayah-${currentAyah}`);
-        if (!target) {
-          // VirtualizedItem renders lazily; retry until the DOM element appears
-          if (attempt < 12) {
-            correctionTimer = window.setTimeout(() => alignTarget(attempt + 1), 95);
-          }
-          return;
+      if (Date.now() < userScrollUntilRef.current) return stop();
+      const target = document.getElementById(`ayah-${currentAyah}`);
+      if (!target) {
+        // VirtualizedItem renders lazily; the observer covers growth, but a
+        // still-empty sheet never resizes, so keep looking for a while.
+        if (discoveryTimer === null) {
+          discoveryTimer = window.setTimeout(() => {
+            discoveryTimer = null;
+            align();
+          }, 95);
         }
-        target.scrollIntoView({ behavior: "auto", block: "center" });
-        correctionTimer = window.setTimeout(() => {
-          if (!cancelled) {
-            target.scrollIntoView({ behavior: "auto", block: "center" });
-          }
-        }, 220);
-      });
+        return;
+      }
+      target.scrollIntoView({ behavior: "auto", block: "center" });
+    };
+
+    const start = () => {
+      if (cancelled) return;
+      align();
+      const content = contentRef.current;
+      if (typeof ResizeObserver === "undefined" || !content) return;
+      observer = new ResizeObserver(align);
+      observer.observe(content);
+      // The virtualized verses keep being re-measured for a moment, so the
+      // sheet grows after each alignment. Follow it until it settles, then stop
+      // rather than fighting wherever the reader has scrolled to.
+      deadlineTimer = window.setTimeout(stop, 3_000);
     };
 
     const fontReady = document.fonts?.ready;
     if (fontReady && typeof fontReady.then === "function") {
-      fontReady.then(alignTarget, alignTarget);
+      fontReady.then(start, start);
     } else {
-      alignTarget();
+      start();
     }
 
     return () => {
       cancelled = true;
-      if (frameId !== null) window.cancelAnimationFrame(frameId);
-      if (correctionTimer !== null) window.clearTimeout(correctionTimer);
+      stop();
     };
-  }, [currentAyah, ayahCount, displayMode]);
+  }, [ayahCount, contentRef, currentAyah, displayMode]);
 
   useEffect(() => {
     clearFollowRetryTimer();

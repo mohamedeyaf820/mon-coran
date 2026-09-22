@@ -15,6 +15,7 @@ import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import FullQuranDownloadCard from "./FullQuranDownloadCard";
 import { cn } from "../../lib/utils";
+import { isSafeLinkHref } from "../../lib/security";
 import {
   getReciterProfileSource,
   getReciterSourceInfo,
@@ -76,7 +77,10 @@ export default function ReciterDetailPage({
 
       <header
         className="rd-sticky-head"
-        style={{ "--reciter-avatar-gradient": visual.avatar?.gradient }}
+        style={{
+          "--reciter-avatar-gradient": visual.avatar?.gradient,
+          "--reciter-avatar-color": visual.avatar?.color,
+        }}
       >
         <div className="rd-hero-bg" aria-hidden="true" />
         <button
@@ -163,7 +167,7 @@ export default function ReciterDetailPage({
             {profileSources.map((source) => (
               <a
                 key={source.url}
-                href={source.url}
+                href={isSafeLinkHref(source.url) ? source.url : undefined}
                 target="_blank"
                 rel="noreferrer"
                 title={source.url}
@@ -184,7 +188,7 @@ export default function ReciterDetailPage({
               <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
               <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
               <a
-                href={visual.attribution.url}
+                href={isSafeLinkHref(visual.attribution.url) ? visual.attribution.url : undefined}
                 target="_blank"
                 rel="noreferrer"
               >

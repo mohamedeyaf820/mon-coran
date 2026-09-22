@@ -129,15 +129,15 @@ function AyahBlockComponent({
           )}
           aria-hidden="true"
         >
-          {lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"}{" "}
+          {t("quran.verseWord", lang)}{" "}
           {lang === "ar" ? `${toAr(surahNum)}:${toAr(ayah.numberInSurah)}` : `${surahNum}:${ayah.numberInSurah}`}
         </div>
         <button
           type="button"
           className="flex h-8 w-8 items-center justify-center rounded-full text-[var(--text-muted)] opacity-40 hover:!opacity-100 hover:text-[var(--primary)] hover:bg-[rgba(var(--primary-rgb),0.08)] transition-all duration-300"
           onClick={handleBookmark}
-          aria-label={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
-          title={lang === "fr" ? "Marquer ce verset" : lang === "ar" ? "وضع إشارة مرجعية" : "Bookmark this verse"}
+          aria-label={t("quran.bookmarkVerse", lang)}
+          title={t("quran.bookmarkVerse", lang)}
         >
           <Bookmark size={16} strokeWidth={2.5} />
         </button>

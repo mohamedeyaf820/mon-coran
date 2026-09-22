@@ -27,13 +27,10 @@
     --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
 
 
-    --z-base: 1;
-    --z-dropdown: 100;
-    --z-sticky: 200;
-    --z-overlay: 300;
-    --z-modal: 400;
-    --z-toast: 500;
-    --z-tooltip: 600;
+    /* Stacking tokens live only in tailwind.css (:root --z-* scale).
+       A conflicting --z-* set used to be re-declared here and, because this
+       file loads deferred, it silently re-based every var(--z-modal)/
+       var(--z-overlay) consumer after hydration. Do not re-add it. */
 
 
     --radius-sm: 8px;
@@ -683,7 +680,7 @@ button:active:not(:disabled),
     padding: 0.5rem 1rem !important;
     background: var(--primary) !important;
     color: white !important;
-    z-index: var(--z-skip, 700) !important;
+    z-index: var(--z-skip, 10000) !important;
     border-radius: 0 0 var(--radius-md) 0 !important;
     font-weight: 700 !important;
 }

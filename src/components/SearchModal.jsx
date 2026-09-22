@@ -16,6 +16,7 @@ import {
   Mic,
   Square,
   Heart,
+  RotateCcw,
 } from "lucide-react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { useApp } from "../context/AppContext";
@@ -26,22 +27,32 @@ import QURAN_DUAS from "../data/duas";
 import { getJuzForAyah } from "../data/juz";
 import {
   containsArabic,
+  parseSearchReference,
   sanitizeSearchQuery,
 } from "../utils/searchIntelligence";
 import { prepareSearchQuery } from "../services/searchWorkerService";
 import { startPerformanceTimer } from "../services/performanceMetrics";
 import useVoiceSearch from "../hooks/useVoiceSearch";
 
+// Never surface a raw error message: it leaks internals and reads as a crash.
 function formatSearchError(error, lang) {
   const message = String(error?.message || error || "").trim();
-  if (/404|search failed|index unavailable|api error/i.test(message)) {
-    return lang === "fr"
-      ? "La recherche distante a échoué. Veuillez vérifier votre connexion internet."
-      : lang === "ar"
-        ? "تعذر البحث. يرجى التحقق من اتصالك بالإنترنت."
-        : "Remote search failed. Please check your internet connection.";
+
+  if (typeof navigator !== "undefined" && navigator.onLine === false) {
+    return t("search.errors.offline", lang);
   }
-  return message;
+  if (/failed to fetch|networkerror|network request failed|load failed|err_/i.test(message)) {
+    return /offline|network is (?:not )?online/i.test(message)
+      ? t("search.errors.offline", lang)
+      : t("search.errors.network", lang);
+  }
+  if (/404|search failed|index unavailable|api error/i.test(message)) {
+    return t("search.errors.unavailable", lang);
+  }
+  if (/timeout|timed out|econn|enotfound|50[0-4]/i.test(message)) {
+    return t("search.errors.timeout", lang);
+  }
+  return t("search.errors.generic", lang);
 }
 
 export default function SearchModal() {
@@ -61,6 +72,9 @@ export default function SearchModal() {
       `${dua.arabic} ${dua.transliteration} ${dua.fr} ${dua.en}`.toLowerCase().includes(q),
     );
   }, [query]);
+
+  // "36", "2:10", "sourate 36", "juz 5", "٢:١٠" ask for a position, not a word.
+  const reference = useMemo(() => parseSearchReference(query), [query]);
 
   const handleVoiceTranscript = useCallback((transcript) => {
     const sanitized = sanitizeSearchQuery(transcript);
@@ -200,21 +214,30 @@ export default function SearchModal() {
     if (query.trim()) return;
     setResults([]);
     setError(null);
+    setLoading(false);
   }, [query]);
 
   useEffect(() => {
-  }, [results]);
+    if (!reference) return;
+    setResults([]);
+    setError(null);
+    setLoading(false);
+  }, [reference]);
 
   useEffect(() => {
     const sanitized = sanitizeSearchQuery(query);
-    if (!sanitized) return;
+    if (!sanitized || reference) return;
 
+    // The debounce window has to read as "searching", not as "nothing found":
+    // the empty state is keyed on `!loading`, so leaving loading false here let
+    // it paint before the first request had even started.
+    setLoading(true);
     const timeoutId = window.setTimeout(() => {
       void runSearch(sanitized);
     }, 280);
 
     return () => window.clearTimeout(timeoutId);
-  }, [query, runSearch]);
+  }, [query, reference, runSearch]);
 
   useEffect(() => {
     return () => {
@@ -230,6 +253,19 @@ export default function SearchModal() {
   const goToAyah = (surah, ayah) => {
     set({ displayMode: "surah", showHome: false, showDuas: false });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
+    close();
+  };
+
+  const goToReference = (target) => {
+    set({ showHome: false, showDuas: false });
+    if (target.kind === "juz") {
+      dispatch({ type: "NAVIGATE_JUZ", payload: { juz: target.juz } });
+    } else {
+      dispatch({
+        type: "NAVIGATE_SURAH",
+        payload: { surah: target.surah, ayah: target.ayah },
+      });
+    }
     close();
   };
 
@@ -253,6 +289,10 @@ export default function SearchModal() {
   const handleInputKeyDown = (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
+      if (reference) {
+        goToReference(reference);
+        return;
+      }
       handleSearch();
     }
   };
@@ -268,6 +308,28 @@ export default function SearchModal() {
     return duaResults.filter((dua) => !quranRefs.has(`${dua.surah}:${dua.ayah}`));
   }, [duaResults, filteredResults]);
   const activeResultCount = filteredResults.length + visibleDuaResults.length;
+
+  const referenceDisplay = useMemo(() => {
+    if (!reference) return null;
+    const digit = (value) => (lang === "ar" ? toAr(value) : String(value));
+    const key =
+      reference.kind === "juz"
+        ? "goToJuz"
+        : reference.kind === "surah"
+          ? "goToSurah"
+          : "goToAyah";
+    const position =
+      reference.kind === "ayah"
+        ? `${digit(reference.surah)}:${digit(reference.ayah)}`
+        : digit(reference.kind === "juz" ? reference.juz : reference.surah);
+    const surahMeta = reference.kind === "juz" ? null : getSurah(reference.surah);
+    return {
+      label: t(`search.${key}`, lang).replace("{n}", position),
+      translatedName:
+        surahMeta && (lang === "fr" ? surahMeta.fr || surahMeta.en : surahMeta.en),
+      arabicName: surahMeta?.ar,
+    };
+  }, [reference, lang]);
 
   return (
     <Dialog.Root
@@ -290,15 +352,17 @@ export default function SearchModal() {
               e.preventDefault();
               close();
             }}
+            onCloseAutoFocus={(event) => {
+              // The panel unmounts on close, so Radix's own restore target is the
+              // element the `inert` guard already blurred (the document body).
+              // App.jsx restores focus to the real opener instead.
+              event.preventDefault();
+            }}
             onInteractOutside={(e) => { e.preventDefault(); close(); }}
             onClick={(event) => event.stopPropagation()}
           >
               <Dialog.Description className="sr-only">
-                {lang === "fr"
-                  ? "Rechercher un verset par texte arabe, phonétique ou traduction."
-                  : lang === "ar"
-                    ? "ابحث عن آية بالنص العربي أو الكتابة الصوتية أو الترجمة."
-                    : "Search for a verse by Arabic text, phonetics, or translation."}
+                {t("search.dialogDescription", lang)}
               </Dialog.Description>
               <header className="search-pro__header">
                 <div className="search-pro__title-wrap">
@@ -307,24 +371,14 @@ export default function SearchModal() {
                   </span>
                   <Dialog.Title asChild>
                     <h2>
-                      {lang === "fr"
-                        ? "Rechercher"
-                        : lang === "ar"
-                          ? "البحث"
-                          : "Search"}
+                      {t("nav.search", lang)}
                     </h2>
                   </Dialog.Title>
                 </div>
                 <button
                   className="search-pro__close"
                   onClick={close}
-                  aria-label={
-                    lang === "fr"
-                      ? "Fermer la recherche"
-                      : lang === "ar"
-                        ? "إغلاق البحث"
-                        : "Close search"
-                  }
+                  aria-label={t("search.closeAria", lang)}
                 >
                   <X size={14} aria-hidden="true" />
                 </button>
@@ -334,9 +388,7 @@ export default function SearchModal() {
                 <div className="search-pro__main">
                   <section
                     className="search-pro__command"
-                    aria-label={
-                      lang === "fr" ? "Commande de recherche" : "Search command"
-                    }
+                    aria-label={t("search.commandAria", lang)}
                   >
                     <div className="search-pro__input-shell">
                       <span aria-hidden="true">
@@ -356,13 +408,7 @@ export default function SearchModal() {
                           setQuery(sanitizeSearchQuery(event.target.value));
                         }}
                         onKeyDown={handleInputKeyDown}
-                        placeholder={
-                          lang === "fr"
-                            ? "Mot, verset ou traduction…"
-                            : lang === "ar"
-                              ? "كلمة أو آية أو ترجمة…"
-                              : "Word, verse or translation…"
-                        }
+                        placeholder={t("search.queryPlaceholder", lang)}
                         autoFocus
                         aria-controls="search-results-list"
                       />
@@ -403,13 +449,7 @@ export default function SearchModal() {
                         className="search-pro__submit"
                         onClick={handleSearch}
                         disabled={loading}
-                        aria-label={
-                          lang === "fr"
-                            ? "Lancer la recherche"
-                            : lang === "ar"
-                              ? "بدء البحث"
-                              : "Start search"
-                        }
+                        aria-label={t("search.startAria", lang)}
                       >
                         {loading ? (
                           <Loader2 size={14} className="animate-spin" />
@@ -417,11 +457,7 @@ export default function SearchModal() {
                           <ArrowRight size={14} />
                         )}
                         <span>
-                          {lang === "fr"
-                            ? "Chercher"
-                            : lang === "ar"
-                              ? "بحث"
-                              : "Search"}
+                          {t("search.submit", lang)}
                           </span>
                       </button>
                     </div>
@@ -444,29 +480,72 @@ export default function SearchModal() {
                     </p>
                   )}
 
-                  {error && <p className="search-pro__error">{error}</p>}
+                  {error && (
+                    <div
+                      className="search-pro__error"
+                      role="alert"
+                      aria-live="assertive"
+                    >
+                      <p>{error}</p>
+                      <button
+                        type="button"
+                        onClick={handleSearch}
+                        disabled={loading}
+                        className="mt-2 inline-flex min-h-[44px] items-center gap-1.5 rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] px-3 text-[0.8rem] font-bold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-hover)]"
+                      >
+                        <RotateCcw size={13} aria-hidden="true" />
+                        {t("search.errors.retry", lang)}
+                      </button>
+                    </div>
+                  )}
 
                   <section
                     className="search-pro__results"
                     aria-live="polite"
                     aria-atomic="false"
-                    aria-label={
-                      lang === "fr"
-                        ? "Résultats"
-                        : lang === "ar"
-                          ? "نتائج البحث"
-                          : "Search results"
-                    }
+                    aria-label={t("search.resultsAria", lang)}
                   >
+                    {reference && !loading && referenceDisplay && (
+                      <button
+                        type="button"
+                        data-testid="search-reference"
+                        className="search-pro__reference"
+                        onClick={() => goToReference(reference)}
+                      >
+                        <span className="search-pro__reference-mark" aria-hidden="true">
+                          <ArrowRight size={16} />
+                        </span>
+                        <span className="search-pro__reference-body">
+                          <strong>{referenceDisplay.label}</strong>
+                          {referenceDisplay.arabicName && (
+                            <span className="search-pro__reference-names">
+                              <span lang="ar" dir="rtl">
+                                {referenceDisplay.arabicName}
+                              </span>
+                              {referenceDisplay.translatedName && (
+                                <span>{referenceDisplay.translatedName}</span>
+                              )}
+                            </span>
+                          )}
+                        </span>
+                      </button>
+                    )}
+
+                    {loading && query && !reference && (
+                      // Reuses the voice-status row: same affordance already styled
+                      // for a transient status line, and the retained-CSS budget has
+                      // no room for a one-off class.
+                      <p className="search-pro__voice-status" role="status">
+                        <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                        <strong>{t("search.searching", lang)}</strong>
+                      </p>
+                    )}
+
                     {!query && !loading && (
                       <div className="search-pro__empty">
                         <div>
                           <p>
-                            {lang === "fr"
-                              ? "Écrivez un mot, un verset ou utilisez le micro."
-                              : lang === "ar"
-                                ? "اكتب كلمة أو آية أو استخدم الميكروفون."
-                                : "Type a word, a verse, or use the microphone."}
+                            {t("search.emptyHint", lang)}
                           </p>
                           <div className="search-pro__suggestions">
                             {suggestionItems.map((suggestion) => (
@@ -483,7 +562,7 @@ export default function SearchModal() {
                       </div>
                     )}
 
-                    {activeResultCount === 0 && !loading && query && (
+                    {activeResultCount === 0 && !loading && query && !error && !reference && (
                       <div className="search-pro__no-results">
                         <Search size={16} />
                         <strong>{t("search.noResults", lang)}</strong>
@@ -493,11 +572,7 @@ export default function SearchModal() {
                     {activeResultCount > 0 && (
                       <div className="search-pro__results-head">
                         <strong>
-                          {lang === "fr"
-                            ? `${activeResultCount} résultat${activeResultCount > 1 ? "s" : ""}`
-                            : lang === "ar"
-                              ? `${activeResultCount} نتيجة`
-                              : `${activeResultCount} result${activeResultCount > 1 ? "s" : ""}`}
+                          {t("search.resultsCount", lang, activeResultCount)}
                         </strong>
                       </div>
                     )}
@@ -505,14 +580,8 @@ export default function SearchModal() {
                     <div
                       className="search-pro__list"
                       id="search-results-list"
-                      role="listbox"
-                      aria-label={
-                        lang === "ar"
-                          ? "نتائج البحث"
-                          : lang === "fr"
-                            ? "Résultats de recherche"
-                            : "Search results"
-                      }
+                      role="list"
+                      aria-label={t("search.listAria", lang)}
                     >
                       {filteredResults.map((result, index) => {
                         const surahNumber =
@@ -526,16 +595,8 @@ export default function SearchModal() {
                         );
                         const revelationLabel =
                           surahMeta?.type === "Medinan"
-                            ? lang === "fr"
-                              ? "Médinoise"
-                              : lang === "ar"
-                                ? "مدنية"
-                                : "Medinan"
-                            : lang === "fr"
-                              ? "Mecquoise"
-                              : lang === "ar"
-                                ? "مكية"
-                                : "Meccan";
+                            ? t("quran.medinan", lang)
+                            : t("quran.meccan", lang);
                         const translatedName =
                           lang === "ar"
                             ? surahMeta?.ar
@@ -544,55 +605,55 @@ export default function SearchModal() {
                               : surahMeta?.en;
 
                         return (
-                          <button
+                          <div
                             key={`${surahNumber}-${ayahNumber}-${index}`}
-                            data-testid="search-result"
-                            data-surah={surahNumber}
-                            data-ayah={ayahNumber}
-                            className={`search-pro__result ${isTranslationMode ? "is-translation" : ""}`}
-                            onClick={() => goToAyah(surahNumber, ayahNumber)}
+                            role="listitem"
                           >
-                            <span className="search-pro__result-number">
-                              {lang === "ar" ? toAr(surahNumber) : surahNumber}
-                            </span>
-                            <span className="search-pro__result-body">
-                              <span className="search-pro__result-top">
-                                <span className="search-pro__result-ref">
-                                  <strong>{surahMeta?.ar}</strong>
-                                  <span>{translatedName}</span>
-                                  <b>
-                                    :
-                                    {lang === "ar"
-                                      ? toAr(ayahNumber)
-                                      : ayahNumber}
-                                  </b>
+                            <button
+                              data-testid="search-result"
+                              data-surah={surahNumber}
+                              data-ayah={ayahNumber}
+                              className={`search-pro__result ${isTranslationMode ? "is-translation" : ""}`}
+                              onClick={() => goToAyah(surahNumber, ayahNumber)}
+                            >
+                              <span className="search-pro__result-number">
+                                {lang === "ar" ? toAr(surahNumber) : surahNumber}
+                              </span>
+                              <span className="search-pro__result-body">
+                                <span className="search-pro__result-top">
+                                  <span className="search-pro__result-ref">
+                                    <strong>{surahMeta?.ar}</strong>
+                                    <span>{translatedName}</span>
+                                    <b>
+                                      :
+                                      {lang === "ar"
+                                        ? toAr(ayahNumber)
+                                        : ayahNumber}
+                                    </b>
+                                  </span>
+                                  <span className="search-pro__result-tags">
+                                    <small>{revelationLabel}</small>
+                                    <small>
+                                      Juz {lang === "ar" ? toAr(resultJuz) : resultJuz}
+                                    </small>
+                                  </span>
                                 </span>
-                                <span className="search-pro__result-tags">
-                                  <small>{revelationLabel}</small>
-                                  <small>
-                                    Juz {lang === "ar" ? toAr(resultJuz) : resultJuz}
-                                  </small>
+                                {isTranslationMode ? (
+                                  <span className="search-pro__translation">
+                                    {result.text}
+                                  </span>
+                                ) : (
+                                  <span className="search-pro__arabic" dir="rtl">
+                                    {result.text}
+                                  </span>
+                                )}
+                                <span className="search-pro__open">
+                                  <ExternalLink size={12} />
+                                  {t("search.openInReading", lang)}
                                 </span>
                               </span>
-                              {isTranslationMode ? (
-                                <span className="search-pro__translation">
-                                  {result.text}
-                                </span>
-                              ) : (
-                                <span className="search-pro__arabic" dir="rtl">
-                                  {result.text}
-                                </span>
-                              )}
-                              <span className="search-pro__open">
-                                <ExternalLink size={12} />
-                                {lang === "fr"
-                                  ? "Ouvrir dans la lecture"
-                                  : lang === "ar"
-                                    ? "فتح في القراءة"
-                                    : "Open in reading"}
-                              </span>
-                            </span>
-                          </button>
+                            </button>
+                          </div>
                         );
                       })}
                       {visibleDuaResults.map((dua) => {
@@ -610,43 +671,40 @@ export default function SearchModal() {
                                   ? dua.en
                                   : dua.fr;
                             return (
-                              <button
-                                key={dua.id}
-                                data-testid="search-result"
-                                data-surah={dua.surah}
-                                data-ayah={dua.ayah}
-                                className="search-pro__result search-pro__result--dua"
-                                onClick={() => goToAyah(dua.surah, dua.ayah)}
-                              >
-                                <span className="search-pro__result-number">
-                                  <Heart size={13} aria-hidden="true" />
-                                </span>
-                                <span className="search-pro__result-body">
-                                  <span className="search-pro__result-top">
-                                    <span className="search-pro__result-ref">
-                                      <strong>{surahMeta?.ar}</strong>
-                                      <span>{translatedName}</span>
-                                      <b>:{lang === "ar" ? toAr(dua.ayah) : dua.ayah}</b>
+                              <div key={dua.id} role="listitem">
+                                <button
+                                  data-testid="search-result"
+                                  data-surah={dua.surah}
+                                  data-ayah={dua.ayah}
+                                  className="search-pro__result search-pro__result--dua"
+                                  onClick={() => goToAyah(dua.surah, dua.ayah)}
+                                >
+                                  <span className="search-pro__result-number">
+                                    <Heart size={13} aria-hidden="true" />
+                                  </span>
+                                  <span className="search-pro__result-body">
+                                    <span className="search-pro__result-top">
+                                      <span className="search-pro__result-ref">
+                                        <strong>{surahMeta?.ar}</strong>
+                                        <span>{translatedName}</span>
+                                        <b>:{lang === "ar" ? toAr(dua.ayah) : dua.ayah}</b>
+                                      </span>
+                                    </span>
+                                    <span className="search-pro__arabic" dir="rtl">
+                                      {dua.arabic}
+                                    </span>
+                                    {translation && (
+                                      <span className="search-pro__translation">
+                                        {translation}
+                                      </span>
+                                    )}
+                                    <span className="search-pro__open">
+                                      <ExternalLink size={12} />
+                                      {t("search.openInReading", lang)}
                                     </span>
                                   </span>
-                                  <span className="search-pro__arabic" dir="rtl">
-                                    {dua.arabic}
-                                  </span>
-                                  {translation && (
-                                    <span className="search-pro__translation">
-                                      {translation}
-                                    </span>
-                                  )}
-                                  <span className="search-pro__open">
-                                    <ExternalLink size={12} />
-                                    {lang === "fr"
-                                      ? "Ouvrir dans la lecture"
-                                      : lang === "ar"
-                                        ? "فتح في القراءة"
-                                        : "Open in reading"}
-                                  </span>
-                                </span>
-                              </button>
+                                </button>
+                              </div>
                             );
                           })}
                     </div>

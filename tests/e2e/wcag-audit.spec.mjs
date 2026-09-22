@@ -106,7 +106,7 @@ test("partage, playlist et note exposent des dialogues correctement étiquetés"
   await page.keyboard.press("Escape");
 
   await openOption("Ajouter une note");
-  const noteDialog = await expectAccessibleDialog(page, "Ecrire sur cette ayah");
+  const noteDialog = await expectAccessibleDialog(page, "Écrire sur ce verset");
   await expect(
     noteDialog.getByRole("textbox", {
       name: "Note personnelle sur ce verset",

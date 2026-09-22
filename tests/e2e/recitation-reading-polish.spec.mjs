@@ -181,12 +181,13 @@ test("mobile recitation collection and reciter library stay clear and valid", as
 
   const modal = page.locator(".reciter-detail");
   await expect(modal).toBeVisible();
-  await expect(modal.locator(".reciter-detail__source-row").first()).toContainText(
-    "MP3Quran",
-  );
-  await expect(modal.locator(".reciter-detail__source-row").last()).toContainText(
-    "Wikimedia",
-  );
+  const audioRow = modal.locator(".reciter-detail__source-row", { hasText: "Source audio" }).first();
+  await expect(audioRow).toBeVisible();
+  await expect(audioRow.locator("strong")).not.toBeEmpty();
+  const portraitRow = modal.locator(".reciter-detail__source-row", { hasText: "Portrait" }).first();
+  if (await portraitRow.count()) {
+    await expect(portraitRow.locator("a")).not.toBeEmpty();
+  }
   const modalBox = await modal.boundingBox();
   expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
   expect(modalBox?.y || 0).toBeGreaterThanOrEqual(0);

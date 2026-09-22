@@ -1,5 +1,5 @@
 .reciter-detail-overlay {
-    z-index: 1100 !important;
+    z-index: var(--z-reciter) !important;
     padding: clamp(0.5rem, 2vw, 1.4rem) !important;
     background: color-mix(in srgb, var(--theme-text) 58%, transparent) !important;
     backdrop-filter: blur(3px);
@@ -257,7 +257,7 @@
 .reciter-radio-button {
     border: 1px solid var(--primary);
     background: var(--primary);
-    color: #fff;
+    color: var(--theme-text-inverse, #fff);
     box-shadow: 0 6px 20px rgba(var(--primary-rgb), 0.28), 0 2px 6px rgba(var(--primary-rgb), 0.18);
     transition: transform 160ms ease, filter 160ms ease, box-shadow 160ms ease;
 }
@@ -945,7 +945,7 @@ html[data-theme="dark"] .recitation-row__type--meccan {
     min-width: 92px;
     border-color: var(--primary);
     background: var(--primary);
-    color: #fff;
+    color: var(--theme-text-inverse, #fff);
     font-size: 0.72rem;
     font-weight: 760;
     box-shadow: 0 4px 14px rgba(var(--primary-rgb), 0.22);
@@ -954,7 +954,7 @@ html[data-theme="dark"] .recitation-row__type--meccan {
 @media (hover: hover) and (pointer: fine) {
     .recitation-action-btn--primary:hover:not(:disabled) {
         background: color-mix(in srgb, var(--primary) 86%, #000 14%);
-        color: #fff;
+        color: var(--theme-text-inverse, #fff);
         transform: translateY(-2px);
         box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.3);
     }
@@ -1424,7 +1424,7 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
     .app-root .reciter-card__listen:hover {
         background: var(--primary);
         border-color: var(--primary);
-        color: #fff;
+        color: var(--theme-text-inverse, #fff);
         transform: scale(1.04);
     }
 }
@@ -1436,7 +1436,7 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
 .app-root .reciter-card[data-playing="true"] .reciter-card__listen {
     background: var(--primary);
     border-color: var(--primary);
-    color: #fff;
+    color: var(--theme-text-inverse, #fff);
 }
 
 /* Bouton favori — gold quand actif */

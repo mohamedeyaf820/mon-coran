@@ -223,9 +223,16 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
   // engine loses the cursive kashida under a dagger alif. With the Highlight
   // API the coloured ranges live on a single text node per word.
   const readContract = () => tajwid.evaluate((root) => {
-    const supported = typeof CSS !== "undefined" && "highlights" in CSS;
-    const firstWord = root.querySelector("[data-tajwid-word='0'], .quran-word-item");
     const zwj = String.fromCharCode(0x200d);
+    // The component owns this choice: WebKit exposes CSS.highlights but paints
+    // them by re-shaping sub-runs, so it deliberately keeps word-level colour.
+    const supported = root.getAttribute("data-tajwid-render") === "highlight";
+    const firstWord = root.querySelector("[data-tajwid-word='0'], .quran-word-item");
+    const colourRanges = () =>
+      [...CSS.highlights.entries()]
+        .filter(([name]) => name.startsWith("tajwid-") && name !== "tajwid-hover")
+        .flatMap(([, highlight]) => [...highlight])
+        .filter((range) => root.contains(range.startContainer));
     return {
       supported,
       render: root.getAttribute("data-tajwid-render"),
@@ -235,14 +242,18 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
       firstWordUserSelect: firstWord
         ? getComputedStyle(firstWord).webkitUserSelect || getComputedStyle(firstWord).userSelect
         : null,
-      colouredRanges: supported
-        ? [...CSS.highlights.entries()]
-            .filter(([name]) => name.startsWith("tajwid-") && name !== "tajwid-hover")
-            .reduce(
-              (count, [, highlight]) =>
-                count + [...highlight].filter((range) => root.contains(range.startContainer)).length,
-              0,
-            )
+      colouredRanges: supported ? colourRanges().length : null,
+      // A calligraphic Arabic glyph overlaps the advance boxes of its
+      // neighbours: a range that stops inside a word slices the ink of the
+      // surrounding letters, which reads as a cut letter.
+      partialRanges: supported
+        ? colourRanges().filter((range) => {
+            const node = range.startContainer;
+            return (
+              node.nodeType === Node.TEXT_NODE
+              && (range.startOffset !== 0 || range.endOffset !== node.data.length)
+            );
+          }).length
         : null,
     };
   });
@@ -263,6 +274,7 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
     expect(contract.joiners).toBe(0);
     expect(contract.firstWordChildren).toBe(1);
     expect(contract.colouredRanges).toBeGreaterThan(0);
+    expect(contract.partialRanges).toBe(0);
     // WebKit does not paint custom highlights inside user-select: none.
     expect(contract.firstWordUserSelect).not.toBe("none");
   } else {
@@ -382,7 +394,12 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   await expect(quickMenu.locator(".mp-header-menu__header-text")).toHaveCount(0);
   const quickMenuBox = await quickMenu.boundingBox();
   expect(quickMenuBox?.width || 0).toBeLessThanOrEqual(315);
-  expect(quickMenuBox?.height || 0).toBeLessThanOrEqual(310);
+  // Rows carry 44px touch targets, so the sheet is bounded by the viewport,
+  // not a fixed height: it must open fully under the header and scroll in place.
+  const viewport = page.viewportSize();
+  expect(quickMenuBox.y).toBeGreaterThanOrEqual(0);
+  expect(quickMenuBox.height).toBeLessThanOrEqual(viewport.height - quickMenuBox.y);
+  expect(await quickMenu.evaluate((el) => el.scrollHeight > el.clientHeight ? el.scrollTop === 0 && getComputedStyle(el).overflowY === "auto" : true)).toBe(true);
   await page.mouse.click(4, 520);
   await expect(quickMenu).toBeHidden();
 
@@ -438,7 +455,7 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   await expect(page.locator(".srh-mobile-bar")).toBeHidden();
 });
 
-test("le mode Mushaf compose les ayahs dans un seul paragraphe continu", async ({ page }) => {
+test("le mode Mushaf affiche le feuillet aéré en ligne et la grille 15 lignes en plein écran", async ({ page }) => {
   await installQuranNetworkFixtures(page);
   await page.addInitScript(() => {
     localStorage.setItem(
@@ -464,64 +481,61 @@ test("le mode Mushaf compose les ayahs dans un seul paragraphe continu", async (
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/page/3", { waitUntil: "domcontentloaded" });
 
-  const textBlock = page.locator(".mushaf-text-block.mushaf-container").first();
-  const verses = textBlock.locator(":scope > .quran-verse-inline");
-  await expect(textBlock).toBeVisible({ timeout: 30_000 });
-  await expect.poll(() => verses.count()).toBeGreaterThan(1);
+  const sheet = page.locator(".cpv-container").first();
+  await expect(sheet).toBeVisible({ timeout: 30_000 });
+  await expect
+    .poll(() => page.locator(".cpv-verse").count())
+    .toBeGreaterThan(5);
 
-  const layout = await textBlock.evaluate((element) => {
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: width <= 430 ? 844 : 900 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+        ),
+      )
+      .toBe(true);
+  }
+
+  // The fifteen-line printed grid remains the contract of the fullscreen
+  // engine, reached from the stream by the fullscreen trigger.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator(".reader-fullscreen-trigger").click();
+  const portal = page.locator(".mfp-portal-root");
+  await expect(portal).toBeVisible({ timeout: 30_000 });
+  const grid = portal.locator(".qcm-lines").first();
+  await expect(grid).toBeVisible({ timeout: 30_000 });
+  await expect.poll(() => grid.locator(".qcm-word").count()).toBeGreaterThan(5);
+
+  const layout = await grid.evaluate((element) => {
     const style = getComputedStyle(element);
-    const verse = element.querySelector(".quran-verse-inline");
-    const ayah = verse?.querySelector(".qc-ayah-text-ar");
-    const inlineText = ayah?.querySelector(
-      ".quran-tajwid-text, .quran-canonical-text",
-    );
-    const fontSize = Number.parseFloat(style.fontSize);
-    const lineHeight = Number.parseFloat(style.lineHeight);
+    const rows = Array.from(element.querySelectorAll(".qcm-line"));
+    const tops = rows.map((row) => row.getBoundingClientRect().top);
     return {
       direction: style.direction,
-      textAlign: style.textAlign,
-      verseDisplay: verse ? getComputedStyle(verse).display : null,
-      ayahDisplay: ayah ? getComputedStyle(ayah).display : null,
-      ayahWidth: ayah?.getBoundingClientRect().width ?? 0,
-      blockWidth: element.getBoundingClientRect().width,
-      inlineTextDisplay: inlineText ? getComputedStyle(inlineText).display : null,
-      lineHeightRatio: lineHeight / fontSize,
+      lang: element.getAttribute("lang"),
+      rows: style.gridTemplateRows.trim().split(/\s+/).map((row) => Number.parseFloat(row)),
+      numbered: rows.filter((row) => row.hasAttribute("data-line-number")).length,
+      words: element.querySelectorAll(".qcm-word").length,
+      stacked: tops.every((top, index) => index === 0 || top >= tops[index - 1] - 1),
       pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1,
     };
   });
 
   expect(layout.direction).toBe("rtl");
-  expect(layout.textAlign).toBe("justify");
-  expect(layout.verseDisplay).toBe("inline");
-  expect(layout.ayahDisplay).toBe("inline");
-  expect(layout.inlineTextDisplay).toBe("inline");
-  expect(layout.ayahWidth).toBeLessThan(layout.blockWidth);
-  expect(layout.lineHeightRatio).toBeLessThanOrEqual(2.1);
-  expect(layout.pageFits).toBe(true);
-
-  for (const width of [320, 390, 768, 1024, 1440]) {
-    await page.setViewportSize({ width, height: width <= 430 ? 844 : 900 });
-    let responsiveLayout;
-    await expect.poll(async () => {
-      responsiveLayout = await textBlock.evaluate((element) => {
-        const ayah = element.querySelector(
-          ".quran-verse-inline .qc-ayah-text-ar",
-        );
-        return {
-          ayahDisplay: ayah?.isConnected ? getComputedStyle(ayah).display : null,
-          lineHeightRatio:
-            Number.parseFloat(getComputedStyle(element).lineHeight) /
-            Number.parseFloat(getComputedStyle(element).fontSize),
-          pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1,
-        };
-      });
-      return responsiveLayout.ayahDisplay;
-    }).toBe("inline");
-    expect(responsiveLayout.ayahDisplay, `${width}px doit conserver le flux inline`).toBe("inline");
-    expect(responsiveLayout.lineHeightRatio).toBeLessThanOrEqual(2.1);
-    expect(responsiveLayout.pageFits, `${width}px ne doit pas déborder`).toBe(true);
+  expect(layout.lang).toBe("ar");
+  expect(layout.numbered).toBe(15);
+  expect(layout.rows).toHaveLength(15);
+  // A printed page is fifteen equal rows: a collapsing or wrapping sheet shows
+  // up here as rows that no longer share the line pitch.
+  for (const height of layout.rows) {
+    expect(height).toBeGreaterThan(0);
+    expect(Math.abs(height - layout.rows[0])).toBeLessThan(1);
   }
+  expect(layout.stacked).toBe(true);
+  expect(layout.words).toBeGreaterThan(5);
+  expect(layout.pageFits).toBe(true);
 });
 
 test("Al-Fātiḥa garde son arabe canonique si un cache livre les mots d'un autre verset", async ({ page }) => {

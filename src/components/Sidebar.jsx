@@ -4,9 +4,14 @@ import { X, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import SURAHS, { toAr } from "../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../constants/warshSource";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
 import VirtualizedItem from "./ui/VirtualizedItem";
+import { filterSurahDirectory } from "../utils/searchIntelligence";
+
+const localizedSurahName = (surah, lang) =>
+  lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
 
 export default function Sidebar() {
   const { state, dispatch, set } = useApp();
@@ -23,6 +28,24 @@ export default function Sidebar() {
   const availableTabs = ["surah", "juz", "page"];
   const [tab, setTab] = useState("surah");
 
+  // From lg the shell shifts <main> beside the panel (see App.jsx
+  // sidebarShiftClass): it is a docked rail, not a modal — no focus trap, no
+  // dialog semantics. focusReading keeps the drawer behaviour at any width
+  // because there the panel floats over unshifted content.
+  const [isWideViewport, setIsWideViewport] = useState(
+    () => typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = (event) => setIsWideViewport(event.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  const sidebarIsModal = sidebarOpen && !(isWideViewport && !state.focusReading);
+
   const [filter, setFilter] = useState("");
   const [pageInput, setPageInput] = useState("");
   const [selectedJuzForPages, setSelectedJuzForPages] = useState(1);
@@ -37,11 +60,17 @@ export default function Sidebar() {
   const activeSummary =
     displayMode === "surah"
       ? currentSurahMeta
-        ? `${currentSurahMeta.en} · ${currentSurahMeta.ar}`
+        ? lang === "ar"
+          ? currentSurahMeta.ar
+          : `${localizedSurahName(currentSurahMeta, lang)} · ${currentSurahMeta.ar}`
         : null
       : displayMode === "juz"
-        ? `Juz ${currentJuz}`
-        : `${lang === "fr" ? "Page" : lang === "ar" ? "الصفحة" : "Page"} ${currentPage}`;
+        ? lang === "ar"
+          ? `الجزء ${toAr(currentJuz)}`
+          : `Juz ${currentJuz}`
+        : `${lang === "ar" ? "الصفحة" : "Page"} ${
+            lang === "ar" ? toAr(currentPage) : currentPage
+          }`;
 
   // Scroll active item into view when sidebar opens
   useEffect(() => {
@@ -110,7 +139,7 @@ export default function Sidebar() {
       return;
     }
 
-    if (event.key !== "Tab") return;
+    if (event.key !== "Tab" || !sidebarIsModal) return;
     const focusable = Array.from(
       sidebarRef.current?.querySelectorAll(
         'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
@@ -136,17 +165,10 @@ export default function Sidebar() {
     }
   };
 
-  const filteredSurahs = useMemo(() => {
-    if (!filter) return SURAHS;
-    const q = filter.toLowerCase();
-    return SURAHS.filter(
-      (s) =>
-        s.ar.includes(filter) ||
-        s.en.toLowerCase().includes(q) ||
-        s.fr.toLowerCase().includes(q) ||
-        String(s.n) === q,
-    );
-  }, [filter]);
+  const filteredSurahs = useMemo(
+    () => filterSurahDirectory(filter),
+    [filter],
+  );
 
   const warmTarget = useCallback(
     (mode, value) =>
@@ -204,16 +226,43 @@ export default function Sidebar() {
 
   const isRtl = lang === "ar";
 
+  // Roving tabindex for the tablist: one tab stop, arrows move the selection.
+  // RTL lays the strip out right-to-left, so the arrow keys follow it.
+  const handleTabKeyDown = (event) => {
+    const currentIndex = availableTabs.findIndex((tabId) => tabId === tab);
+    const nextKey = isRtl ? "ArrowLeft" : "ArrowRight";
+    const previousKey = isRtl ? "ArrowRight" : "ArrowLeft";
+    let nextIndex = -1;
+
+    if (event.key === nextKey || event.key === "ArrowDown") {
+      nextIndex = (currentIndex + 1) % availableTabs.length;
+    } else if (event.key === previousKey || event.key === "ArrowUp") {
+      nextIndex = (currentIndex - 1 + availableTabs.length) % availableTabs.length;
+    } else if (event.key === "Home") {
+      nextIndex = 0;
+    } else if (event.key === "End") {
+      nextIndex = availableTabs.length - 1;
+    }
+
+    if (nextIndex < 0) return;
+    event.preventDefault();
+    const nextTab = availableTabs[nextIndex];
+    setTab(nextTab);
+    document.getElementById(`sidebar-tab-${nextTab}`)?.focus();
+  };
+
   return (
     <>
       <aside
         ref={sidebarRef}
         id="sidebar"
         className={cn(
-          "sb-wrapper fixed top-0 left-0 z-[1000] flex h-[100dvh] w-[min(92vw,360px)] flex-col bg-bg-primary border-r border-border shadow-2xl transition-transform duration-300 rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l",
-          sidebarOpen
-            ? "open translate-x-0"
-            : "-translate-x-full rtl:translate-x-full",
+          "sb-wrapper flex h-[100dvh] flex-col",
+          // The off-canvas transform is owned by sidebar-enhanced.css, which
+          // mirrors it for RTL. A Tailwind translate-* utility here would set the
+          // separate `translate` property, which composes with that transform
+          // instead of overriding it — cancelling the RTL slide-out entirely.
+          sidebarOpen ? "open" : null,
         )}
         aria-label={
           lang === "fr"
@@ -223,9 +272,9 @@ export default function Sidebar() {
               : "Quran Navigation"
         }
         aria-hidden={!sidebarOpen}
-        aria-modal={sidebarOpen ? "true" : undefined}
+        aria-modal={sidebarIsModal ? "true" : undefined}
         inert={sidebarOpen ? undefined : ""}
-        role={sidebarOpen ? "dialog" : undefined}
+        role={sidebarIsModal ? "dialog" : undefined}
         tabIndex={-1}
         data-tab={tab}
         onClick={(e) => e.stopPropagation()}
@@ -253,7 +302,7 @@ export default function Sidebar() {
               )}
             </div>
             <span className="shrink-0 text-[0.6rem] font-bold text-text-muted uppercase tracking-wide">
-              {riwaya === "warsh" ? "Warsh" : "Hafs"}
+              {t(riwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang)}
             </span>
           </div>
 
@@ -261,6 +310,7 @@ export default function Sidebar() {
           <div
             role="tablist"
             aria-label={lang === "ar" ? "التنقل في القرآن" : lang === "fr" ? "Navigation dans le Coran" : "Quran navigation"}
+            onKeyDown={handleTabKeyDown}
             className={cn(
               "sidebar-tab-list grid gap-0.5 rounded-lg bg-bg-secondary p-0.5 border border-border/40",
               availableTabs.length === 2 ? "grid-cols-2" : "grid-cols-3",
@@ -273,6 +323,7 @@ export default function Sidebar() {
                 role="tab"
                 aria-selected={tab === tabId}
                 aria-controls={`sidebar-panel-${tabId}`}
+                tabIndex={tab === tabId ? 0 : -1}
                 className={cn(
                   "sidebar-tab-trigger flex min-h-[44px] items-center justify-center rounded-md px-2 text-[0.72rem] font-bold text-text-secondary transition-all hover:text-text-primary",
                   tab === tabId && "bg-bg-primary text-primary shadow-sm",
@@ -300,7 +351,7 @@ export default function Sidebar() {
                       ? "البحث عن سورة"
                       : "Search for a surah"
                 }
-                placeholder={t("search.placeholder", lang)}
+                placeholder={t("sidebar.searchPlaceholder", lang)}
                 value={filter}
                 onChange={(e) => setFilter(e.target.value)}
                 className="h-[44px] w-full rounded-lg border border-border bg-bg-secondary px-3 pr-12 text-[0.78rem] text-text-primary outline-none transition-colors focus:border-primary focus:bg-bg-primary"
@@ -334,7 +385,7 @@ export default function Sidebar() {
         >
           {/* ── Section sourates ── */}
           {tab === "surah" && filter && filteredSurahs.length === 0 && (
-            <div className="flex flex-col items-center justify-center py-12 text-text-muted opacity-60 gap-3">
+            <div className="flex flex-col items-center justify-center py-12 text-text-muted gap-3">
               <Search size={24} />
               <p className="text-[0.9rem] font-medium">
                 {lang === "fr"
@@ -361,7 +412,7 @@ export default function Sidebar() {
           {tab === "surah" &&
             filteredSurahs.map((s) => {
               const isActive = s.n === currentSurah && displayMode === "surah";
-              const surahCalligraphyId = String(s.n).padStart(3, "0");
+              const verseCount = getSurahVerseCountByRiwaya(s.n, riwaya) || s.ayahs;
               return (
                 <VirtualizedItem
                   key={s.n}
@@ -378,7 +429,7 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-left",
+                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-start",
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goSurah(s.n)}
@@ -387,7 +438,7 @@ export default function Sidebar() {
                   onFocus={() => warmTarget("surah", s.n)}
                 >
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-border/40 bg-bg-secondary text-[0.68rem] font-bold text-text-muted group-hover:border-primary/30 group-hover:text-primary transition-colors">
-                    {s.n}
+                    {lang === "ar" ? toAr(s.n) : s.n}
                   </div>
                   <div className="flex flex-1 flex-col items-start min-w-0">
                     <span
@@ -398,32 +449,27 @@ export default function Sidebar() {
                           : "text-text-primary group-hover:text-primary",
                       )}
                     >
-                      {lang === "fr" ? s.fr : s.en}
+                      {localizedSurahName(s, lang)}
                     </span>
                     <span className="flex items-center gap-1 truncate text-[0.64rem] text-text-muted">
                       <span className="inline-flex items-center text-[0.64rem] text-text-muted">
                         {s.type === "Meccan"
-                          ? lang === "ar"
-                            ? "مكية"
-                            : lang === "fr"
-                              ? "Mecquoise"
-                              : "Meccan"
-                          : lang === "ar"
-                            ? "مدنية"
-                            : lang === "fr"
-                              ? "Médinoise"
-                              : "Medinan"}
+                          ? t("quran.meccan", lang)
+                          : t("quran.medinan", lang)}
                       </span>
-                      {s.ayahs} {lang === "ar" ? "آية" : "v."}
+                      <span aria-hidden="true">·</span>
+                      {lang === "ar" ? toAr(verseCount) : verseCount} {t("quran.ayahs", lang)}
                     </span>
                   </div>
-                  <div
-                    className="shrink-0 font-surah-names text-[1.3rem] opacity-70 transition-opacity group-hover:opacity-100"
-                    aria-label={s.ar}
-                    role="img"
-                  >
-                    {surahCalligraphyId}
-                  </div>
+                  {lang !== "ar" && (
+                    <span
+                      dir="rtl"
+                      lang="ar"
+                      className="sb-row-ar shrink-0 truncate"
+                    >
+                      {s.ar}
+                    </span>
+                  )}
                 </button>
                   )}
                 </VirtualizedItem>
@@ -440,7 +486,7 @@ export default function Sidebar() {
                   ref={isActive ? activeItemRef : null}
                   type="button"
                   className={cn(
-                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-left",
+                    "group flex min-h-[44px] w-full cursor-pointer items-center gap-2.5 rounded-lg p-2 transition-[background-color] hover:bg-bg-secondary text-start",
                     isActive && "bg-primary/8",
                   )}
                   onClick={() => goJuz(j.juz)}
@@ -468,15 +514,15 @@ export default function Sidebar() {
                         lang={lang === "ar" ? "ar" : undefined}
                         dir={lang === "ar" ? "rtl" : undefined}
                       >
-                        {lang === "fr"
-                          ? startSurah.fr
-                          : lang === "ar"
-                            ? startSurah.ar
-                            : startSurah.en}
+                        {localizedSurahName(startSurah, lang)}
                       </span>
                     )}
                   </div>
-                  <div className="shrink-0 text-[0.65rem] font-bold text-text-muted">
+                  <div
+                    className="sb-row-ar shrink-0 truncate"
+                    dir="rtl"
+                    lang="ar"
+                  >
                     {j.name}
                   </div>
                 </button>
@@ -580,16 +626,13 @@ export default function Sidebar() {
         </div>
 
         {/* ── FOOTER ── */}
-        <div className="flex shrink-0 items-center justify-between border-t border-border bg-bg-primary px-3 py-1.5 text-[0.65rem] font-medium text-text-muted">
+        <div className="flex shrink-0 items-center border-t border-border bg-bg-primary px-3 py-1.5 text-[0.65rem] font-medium text-text-muted">
           <span>
             {tab === "surah"
-              ? `${filteredSurahs.length} ${lang === "ar" ? "سورة" : lang === "fr" ? "Sourates" : "Surahs"}`
+              ? `${lang === "ar" ? toAr(SURAHS.length) : SURAHS.length} ${lang === "ar" ? "سورة" : lang === "fr" ? "sourates" : "surahs"}`
               : tab === "juz"
-                ? `30 ${lang === "ar" ? "جزء" : "Juz"}`
-                : `604 ${lang === "ar" ? "صفحة" : lang === "fr" ? "Pages" : "Pages"}`}
-          </span>
-          <span className="text-[0.6rem] font-bold uppercase tracking-wide">
-            {riwaya === "warsh" ? "Warsh" : "Hafs"}
+                ? `${lang === "ar" ? toAr(30) : 30} ${lang === "ar" ? "جزء" : "Juz"}`
+                : `${lang === "ar" ? toAr(604) : 604} ${lang === "ar" ? "صفحة" : lang === "fr" ? "pages" : "pages"}`}
           </span>
         </div>
       </aside>

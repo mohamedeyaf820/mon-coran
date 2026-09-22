@@ -931,7 +931,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-head
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
-    padding: 0.38rem 0.75rem 0.62rem !important;
+    padding: 0.38rem 0.75rem 0.5rem !important;
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {

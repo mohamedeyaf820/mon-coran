@@ -318,7 +318,14 @@ function htmlToPlainText(value) {
 function stripVerseEndGlyphs(value) {
   return String(value || "")
     .replace(/<span[^>]*(?:class|data-type)=["'][^"']*(?:end|ayah|verse)[^"']*["'][^>]*>.*?<\/span>/gi, "")
-    .replace(/[\u06DD\u06DE\uFC00-\uFCFF\uFDF0-\uFDFF]/g, "")
+    // Only the proven end-of-ayah marker bases: U+06DD (end-of-ayah rosette)
+    // and U+06DE. Arabic presentation forms (U+FC00-U+FCFF, U+FDF0-U+FDFF) are
+    // deliberately NOT stripped - they carry reader-visible Quranic ligatures
+    // (U+FDFC Allah, U+FDFD salawat, ...), which src/data/fonts.js and
+    // tests/warsh-marker-integrity.test.mjs define as content unless the ayah
+    // number itself is proven. Stripping the whole range silently deleted
+    // Quran text from the verse.
+    .replace(/[\u06DD\u06DE]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }

@@ -119,7 +119,7 @@ const SURAHS = [
   },
   {
     n: 14,
-    ar: "ابراهيم",
+    ar: "إبراهيم",
     en: "Ibrahim",
     fr: "Abraham",
     type: "Meccan",

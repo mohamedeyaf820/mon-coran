@@ -22,11 +22,13 @@ export const AyahMarker = React.memo(function AyahMarker({
   size: _size = "md",
   onClick,
 }) {
+  const { lang } = useAppLocale();
   const markerNumber = number ?? num;
   if (markerNumber == null) return null;
 
   const markerFontFamily = resolveFontFamily(fontFamily, riwaya || "hafs");
   const markerText = getUiAyahMarker(markerNumber, fontFamily, riwaya || "hafs");
+  const spokenNumber = lang === "ar" ? toArabicNumeral(markerNumber) : markerNumber;
 
   return (
     <span
@@ -37,10 +39,9 @@ export const AyahMarker = React.memo(function AyahMarker({
         isPlaying && "is-playing",
         className,
       )}
-      title={String(markerNumber)}
       role={onClick ? "button" : undefined}
       tabIndex={onClick ? 0 : undefined}
-      aria-label={`Verset ${markerNumber}`}
+      aria-label={`${t("quran.ayah", lang)} ${spokenNumber}`}
       data-marker-font={UI_AYAH_MARKER_FONT_ID}
       style={{ fontFamily: markerFontFamily }}
       onClick={onClick}
@@ -98,7 +99,10 @@ export function HizbMarker({ type = "full" }) {
 }
 
 export function JuzBanner({ number, lang }) {
-  const label = lang === "ar" ? `\u0627\u0644\u062c\u0632\u0621 ${toArabicNumeral(number)}` : `Juz ${number}`;
+  const label = t("quran.juzLabel", lang).replace(
+    "{n}",
+    lang === "ar" ? toArabicNumeral(number) : number,
+  );
   return (
     <div className="juz-banner flex items-center gap-3 my-5 select-none" aria-hidden="true">
       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[rgba(180,134,11,0.35)]" />

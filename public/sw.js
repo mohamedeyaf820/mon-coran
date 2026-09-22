@@ -252,11 +252,12 @@ function isTrustedAudioRequest(request, url) {
   if (!/\.mp3$/i.test(url.pathname)) return false;
   const host = url.hostname.toLowerCase();
   return (
-    host === "cdn.islamic.network" ||
     host === "everyayah.com" ||
     host === "www.everyayah.com" ||
     host === "download.quranicaudio.com" ||
+    host === "mirrors.quranicaudio.com" ||
     host === "audio.qurancdn.com" ||
+    host === "files.quranpedia.net" ||
     host === "verses.quran.com" ||
     /^server\d+\.mp3quran\.net$/i.test(host)
   );
@@ -269,8 +270,10 @@ async function createPartialResponse(response, rangeHeader) {
   // Ignore unsupported/malformed ranges without consuming the full response.
   if (!matches || (!matches[1] && !matches[2])) return response;
   try {
-    const buffer = await response.clone().arrayBuffer();
-    const total = buffer.byteLength;
+    // A Blob slice keeps the cached body in one backing store: decoding every
+    // range request into an ArrayBuffer would copy the whole surah per scrub.
+    const blob = await response.clone().blob();
+    const total = blob.size;
     const suffix = !matches[1];
     const start = suffix ? Math.max(0, total - Number(matches[2])) : Number(matches[1]);
     const end = suffix || !matches[2] ? total - 1 : Math.min(Number(matches[2]), total - 1);
@@ -284,14 +287,14 @@ async function createPartialResponse(response, rangeHeader) {
         },
       });
     }
-    const sliced = buffer.slice(start, end + 1);
+    const sliced = blob.slice(start, end + 1);
     return new Response(sliced, {
       status: 206,
       statusText: "Partial Content",
       headers: {
         "Content-Type": response.headers.get("Content-Type") || "audio/mpeg",
         "Content-Range": `bytes ${start}-${end}/${total}`,
-        "Content-Length": String(sliced.byteLength),
+        "Content-Length": String(sliced.size),
         "Accept-Ranges": "bytes",
         "Cache-Control": "public, max-age=31536000",
       },
@@ -401,12 +404,31 @@ function fetchWithTimeout(request, timeoutMs = 8000) {
   );
 }
 
+/**
+ * `cache.keys()` follows write order, not usage order, so a plain trim would
+ * evict the entries written first — the app shell precached at install. The
+ * shell URLs are pinned instead: once the cap is reached, the oldest
+ * *non-shell* entries leave, and the cache may briefly sit a few entries over
+ * its limit. A full LRU would still need a timestamp per read.
+ */
+const SHELL_PROTECTED_PATHS = new Set([
+  ...ASSETS_TO_CACHE,
+  "/index.html",
+  "/shell-assets.json",
+]);
+
 async function trimCache(cache, maxEntries) {
   if (!Number.isFinite(maxEntries) || maxEntries < 1) return;
   const keys = await cache.keys();
-  const overflow = keys.length - maxEntries;
+  let overflow = keys.length - maxEntries;
   if (overflow <= 0) return;
-  await Promise.all(keys.slice(0, overflow).map((key) => cache.delete(key)));
+  for (const key of keys) {
+    if (overflow <= 0) break;
+    const url = key.request?.url;
+    if (url && SHELL_PROTECTED_PATHS.has(new URL(url).pathname)) continue;
+    await cache.delete(key);
+    overflow -= 1;
+  }
 }
 
 async function putBounded(cache, request, response, cacheName) {

@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { getWarshSurahAyahCount } from "../../src/constants/warshSource.js";
+import { getSurah } from "../../src/data/surahs.js";
+import { JUZ_DATA } from "../../src/data/juz.js";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -168,8 +171,12 @@ test("surah arrows keep the current text visible until the neighbour is ready", 
 
 test("Warsh juz loading uses scoped surah files before the legacy full Quran", async ({ page }) => {
   const surah = 67;
-  const ayahCount = 30;
   const juz = 29;
+  // Al-Mulk has 31 verses in Warsh, not the 30 of Hafs: a fixture that uses the
+  // Hafs total makes warshService reject the file and fall back to the legacy
+  // full Quran, so the scoped path the test claims to exercise never runs.
+  const warshAyahCount = getWarshSurahAyahCount(surah);
+  expect(warshAyahCount).toBe(getSurah(surah).ayahs + 1);
   await seedReader(page, {
     displayMode: "juz",
     riwaya: "warsh",
@@ -181,13 +188,27 @@ test("Warsh juz loading uses scoped surah files before the legacy full Quran", a
   await mockQuranComScope(page, `by_juz/${juz}`, (route) =>
     route.fulfill({
       json: {
-        verses: quranComVerses(ayahCount, juz, surah),
+        verses: quranComVerses(getSurah(surah).ayahs, juz, surah),
         pagination: { total_pages: 1 },
       },
     }),
   );
-  await mockWarshSurah(page, surah, (route) =>
-    route.fulfill({ json: warshVerses(ayahCount, surah) }),
+  const firstSurahOfJuz = JUZ_DATA[juz - 1].start.s;
+  const lastSurahOfJuz = (JUZ_DATA[juz]?.start.s ?? 115) - 1;
+  const surahsInJuz = Array.from(
+    { length: lastSurahOfJuz - firstSurahOfJuz + 1 },
+    (_, index) => firstSurahOfJuz + index,
+  );
+  expect(surahsInJuz[0]).toBe(surah);
+  await page.route(
+    (url) => /\/warsh_text\/\d{3}\.json$/.test(url.pathname),
+    (route) => {
+      const requested = Number(/\/warsh_text\/(\d{3})\.json$/.exec(route.request().url())[1]);
+      expect(surahsInJuz).toContain(requested);
+      return route.fulfill({
+        json: warshVerses(getWarshSurahAyahCount(requested), requested),
+      });
+    },
   );
 
   let legacyRequestCount = 0;

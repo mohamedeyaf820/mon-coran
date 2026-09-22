@@ -7,10 +7,12 @@ import AyahActions from "../AyahActions";
  * compact=false → full expanded row (shown when verse is active/selected)
  */
 export default function QCVerseActions({ surah, ayah, ayahData, translations, compact = false, layout = "horizontal" }) {
+  // Bookmark/note/tafsir persistence is Hafs-keyed; a Warsh ayah must write
+  // its mapped number, exactly as AyahActionsModal does.
   return (
     <AyahActions
       surah={surah}
-      ayah={ayah}
+      ayah={ayahData?.hafsNumber ?? ayah}
       ayahData={ayahData}
       translations={translations}
       compact={compact}

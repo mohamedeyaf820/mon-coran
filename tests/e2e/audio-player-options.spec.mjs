@@ -1,4 +1,7 @@
 import { test, expect } from "@playwright/test";
+import { getRecitersByRiwaya } from "../../src/data/reciters.js";
+
+const WARSH_RECITER_COUNT = getRecitersByRiwaya("warsh").length;
 
 async function openReader(page) {
   await page.goto("/");
@@ -106,8 +109,10 @@ test.describe("mobile", () => {
 
     const reciterPanel = optionsModal.locator(".audio-reciter-options");
     const reciterCards = reciterPanel.locator(".audio-reciter-options__item");
-    await expect(reciterPanel.locator(".audio-reciter-options__count")).toContainText("10 voix");
-    await expect(reciterCards).toHaveCount(10);
+    await expect(reciterPanel.locator(".audio-reciter-options__count")).toContainText(
+      `${WARSH_RECITER_COUNT} voix`,
+    );
+    await expect(reciterCards).toHaveCount(WARSH_RECITER_COUNT);
     await expect(reciterPanel.locator('[data-state="selected"]')).toHaveCount(1);
     await expect(reciterPanel.locator('[data-state="selected"] .audio-reciter-options__check')).toBeVisible();
     await expect(reciterCards.first().locator(".audio-reciter-options__meta")).toContainText("Warsh");

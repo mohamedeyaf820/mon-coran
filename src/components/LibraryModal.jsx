@@ -36,80 +36,11 @@ import {
   normalizeAyahsForAudioPlaylist,
 } from "../utils/audioPlaylist";
 import { confirmAction } from "../services/interactionService";
-
-const COPY = {
-  fr: {
-    loadError: "Impossible de charger la bibliothèque.",
-    saveError: "Impossible d’enregistrer cette modification. Votre saisie est conservée.",
-    audioError: "Impossible de lancer cette liste audio. Réessayez.",
-    retry: "Réessayer",
-    title: "Bibliothèque",
-    subtitle: "Favoris, notes et listes audio réunis au même endroit.",
-    favorites: "Favoris",
-    notes: "Notes",
-    playlists: "Listes audio",
-    emptyFavorites: "Aucun verset favori pour le moment.",
-    emptyNotes: "Aucune note personnelle pour le moment.",
-    emptyPlaylists: "Aucune liste audio pour le moment.",
-    newList: "Nouvelle liste",
-    create: "Créer",
-    close: "Fermer la bibliothèque",
-    remove: "Supprimer",
-    listen: "Écouter",
-    searchNotes: "Rechercher dans les notes",
-    edit: "Modifier",
-    save: "Enregistrer",
-  },
-  en: {
-    loadError: "Unable to load the library.",
-    saveError: "Unable to save this change. Your input has been kept.",
-    audioError: "Unable to play this audio list. Try again.",
-    retry: "Retry",
-    title: "Library",
-    subtitle: "Bookmarks, notes and audio lists in one calm space.",
-    favorites: "Bookmarks",
-    notes: "Notes",
-    playlists: "Audio lists",
-    emptyFavorites: "No bookmarked verse yet.",
-    emptyNotes: "No personal note yet.",
-    emptyPlaylists: "No audio list yet.",
-    newList: "New list",
-    create: "Create",
-    close: "Close library",
-    remove: "Delete",
-    listen: "Listen",
-    searchNotes: "Search notes",
-    edit: "Edit",
-    save: "Save",
-  },
-  ar: {
-    loadError: "تعذّر تحميل المكتبة.",
-    saveError: "تعذّر حفظ التغيير. تم الاحتفاظ بما كتبته.",
-    audioError: "تعذّر تشغيل القائمة الصوتية. حاول مرة أخرى.",
-    retry: "إعادة المحاولة",
-    title: "المكتبة",
-    subtitle: "المفضلة والملاحظات والقوائم الصوتية في مكان واحد.",
-    favorites: "المفضلة",
-    notes: "الملاحظات",
-    playlists: "القوائم الصوتية",
-    emptyFavorites: "لا توجد آيات مفضلة بعد.",
-    emptyNotes: "لا توجد ملاحظات بعد.",
-    emptyPlaylists: "لا توجد قوائم صوتية بعد.",
-    newList: "قائمة جديدة",
-    create: "إنشاء",
-    close: "إغلاق المكتبة",
-    remove: "حذف",
-    listen: "استماع",
-    searchNotes: "البحث في الملاحظات",
-    edit: "تعديل",
-    save: "حفظ",
-  },
-};
+import { t } from "../i18n";
 
 export default function LibraryModal() {
   const { state, dispatch, set } = useApp();
   const { lang, reciter, riwaya } = state;
-  const copy = COPY[lang] || COPY.fr;
   const requestedTab = ["favorites", "notes", "playlists"].includes(state.libraryTab)
     ? state.libraryTab
     : "favorites";
@@ -169,11 +100,11 @@ export default function LibraryModal() {
 
   const tabs = useMemo(
     () => [
-      { id: "favorites", label: copy.favorites, Icon: Bookmark, count: bookmarks.length },
-      { id: "notes", label: copy.notes, Icon: NotebookPen, count: notes.length },
-      { id: "playlists", label: copy.playlists, Icon: ListMusic, count: playlists.length },
+      { id: "favorites", label: t("library.favorites", lang), Icon: Bookmark, count: bookmarks.length },
+      { id: "notes", label: t("library.notes", lang), Icon: NotebookPen, count: notes.length },
+      { id: "playlists", label: t("library.playlists", lang), Icon: ListMusic, count: playlists.length },
     ],
-    [bookmarks.length, copy, notes.length, playlists.length],
+    [bookmarks.length, lang, notes.length, playlists.length],
   );
   const filteredNotes = useMemo(() => {
     const query = noteQuery.trim().toLocaleLowerCase(lang === "ar" ? "ar" : undefined);
@@ -192,6 +123,11 @@ export default function LibraryModal() {
   };
 
   const removeSavedItem = async (kind, item) => {
+    const ref = `${item.surah}:${item.ayah}`;
+    const message = (kind === "favorites" ? t("library.removeFavoriteConfirm", lang) : t("library.removeNoteConfirm", lang))
+      .replace("{ref}", ref);
+    const approved = await confirmAction({ message, tone: "danger" });
+    if (!approved) return;
     const removed = kind === "favorites"
       ? await removeBookmark(item.surah, item.ayah)
       : await deleteNote(item.surah, item.ayah);
@@ -209,7 +145,7 @@ export default function LibraryModal() {
 
   const removeList = async (id) => {
     const approved = await confirmAction({
-      message: lang === "fr" ? "Supprimer cette liste audio ?" : lang === "ar" ? "حذف هذه القائمة الصوتية؟" : "Delete this audio list?",
+      message: t("library.deleteListConfirm", lang),
       tone: "danger",
     });
     if (!approved) return;
@@ -248,7 +184,7 @@ export default function LibraryModal() {
     audioService.loadPlaylist(
       items,
       selectedReciter?.cdn || reciter,
-      selectedReciter?.cdnType || "islamic",
+      selectedReciter?.cdnType || "everyayah",
     );
     await audioService.play();
     const first = items[0];
@@ -271,8 +207,8 @@ export default function LibraryModal() {
           {kind === "notes" && editingNoteId === (item.id || `${item.surah}:${item.ayah}`) ? (
             <div className="library-row__editor">
               <span className="library-row__ref">{item.surah}:{item.ayah}</span>
-              <textarea value={editingNoteText} onChange={(event) => setEditingNoteText(event.target.value)} maxLength={2000} autoFocus aria-label={copy.edit} />
-              <button type="button" disabled={busy} onClick={() => runAction(() => commitNote(item))} aria-label={copy.save}><Check size={16} /></button>
+              <textarea value={editingNoteText} onChange={(event) => setEditingNoteText(event.target.value)} maxLength={2000} autoFocus aria-label={t("library.edit", lang)} />
+              <button type="button" disabled={busy} onClick={() => runAction(() => commitNote(item))} aria-label={t("library.save", lang)}><Check size={16} /></button>
             </div>
           ) : <button type="button" className="library-row__main" onClick={() => goToVerse(item.surah, item.ayah)}>
             <span className="library-row__ref">{item.surah}:{item.ayah}</span>
@@ -283,11 +219,11 @@ export default function LibraryModal() {
             <ChevronRight size={17} aria-hidden="true" />
           </button>}
           {kind === "notes" && editingNoteId !== (item.id || `${item.surah}:${item.ayah}`) ? (
-            <button type="button" className="library-row__edit" onClick={() => { setEditingNoteId(item.id || `${item.surah}:${item.ayah}`); setEditingNoteText(item.text || ""); }} aria-label={copy.edit}>
+            <button type="button" className="library-row__edit" onClick={() => { setEditingNoteId(item.id || `${item.surah}:${item.ayah}`); setEditingNoteText(item.text || ""); }} aria-label={t("library.edit", lang)}>
               <Pencil size={16} aria-hidden="true" />
             </button>
           ) : null}
-          <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeSavedItem(kind, item))} aria-label={copy.remove}>
+          <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeSavedItem(kind, item))} aria-label={t("library.remove", lang)}>
             <Trash2 size={16} aria-hidden="true" />
           </button>
         </article>
@@ -302,13 +238,13 @@ export default function LibraryModal() {
           <Dialog.Content className="library-modal" onClick={(event) => event.stopPropagation()} aria-labelledby="library-title">
             <header className="library-modal__header">
               <div>
-                <p>{lang === "fr" ? "Votre espace personnel" : lang === "ar" ? "مساحتك الخاصة" : "Your personal space"}</p>
-                <Dialog.Title id="library-title">{copy.title}</Dialog.Title>
-                <Dialog.Description>{copy.subtitle}</Dialog.Description>
+                <p>{t("library.personalSpace", lang)}</p>
+                <Dialog.Title id="library-title">{t("library.title", lang)}</Dialog.Title>
+                <Dialog.Description>{t("library.subtitle", lang)}</Dialog.Description>
               </div>
-              <button type="button" className="library-close" onClick={close} aria-label={copy.close}><X size={18} /></button>
+              <button type="button" className="library-close" onClick={close} aria-label={t("library.closeLabel", lang)}><X size={18} /></button>
             </header>
-            <nav className="library-tabs" role="tablist" aria-label={copy.title}>
+            <nav className="library-tabs" role="tablist" aria-label={t("library.title", lang)}>
               {tabs.map(({ id, label, Icon, count }) => (
                 <button key={id} type="button" className={tab === id ? "is-active" : ""} onClick={() => setTab(id)} id={`library-tab-${id}`} aria-controls={`library-panel-${id}`} tabIndex={tab === id ? 0 : -1} onKeyDown={(event) => {
                   const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
@@ -325,34 +261,34 @@ export default function LibraryModal() {
               ))}
             </nav>
             <div className="library-modal__body" role="tabpanel" id={`library-panel-${tab}`} aria-labelledby={`library-tab-${tab}`} aria-busy={loading || busy}>
-              {error ? <div className="library-empty" role="alert"><span>{copy[error]}</span>{error === "loadError" ? <button type="button" onClick={load}>{copy.retry}</button> : null}</div> : null}
+              {error ? <div className="library-empty" role="alert"><span>{t(`library.${error}`, lang)}</span>{error === "loadError" ? <button type="button" onClick={load}>{t("library.retry", lang)}</button> : null}</div> : null}
               {tab === "notes" ? (
                 <label className="library-search">
                   <Search size={16} aria-hidden="true" />
-                  <input type="search" value={noteQuery} onChange={(event) => setNoteQuery(event.target.value)} placeholder={copy.searchNotes} aria-label={copy.searchNotes} />
+                  <input type="search" value={noteQuery} onChange={(event) => setNoteQuery(event.target.value)} placeholder={t("library.searchNotes", lang)} aria-label={t("library.searchNotes", lang)} />
                 </label>
               ) : null}
               {loading ? <div className="library-loading"><Loader2 size={22} className="animate-spin" /></div> : null}
-              {!loading && error !== "loadError" && tab === "favorites" ? renderSaved(bookmarks, "favorites", copy.emptyFavorites) : null}
-              {!loading && error !== "loadError" && tab === "notes" ? renderSaved(filteredNotes, "notes", copy.emptyNotes) : null}
+              {!loading && error !== "loadError" && tab === "favorites" ? renderSaved(bookmarks, "favorites", t("library.emptyFavorites", lang)) : null}
+              {!loading && error !== "loadError" && tab === "notes" ? renderSaved(filteredNotes, "notes", t("library.emptyNotes", lang)) : null}
               {!loading && error !== "loadError" && tab === "playlists" ? (
                 <div className="library-playlists">
                   <div className="library-create">
                     <Plus size={17} aria-hidden="true" />
-                    <input value={newName} onChange={(event) => setNewName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && runAction(createList)} placeholder={copy.newList} aria-label={copy.newList} maxLength={50} />
-                    <button type="button" disabled={busy || !newName.trim()} onClick={() => runAction(createList)}>{copy.create}</button>
+                    <input value={newName} onChange={(event) => setNewName(event.target.value)} onKeyDown={(event) => event.key === "Enter" && runAction(createList)} placeholder={t("library.newList", lang)} aria-label={t("library.newList", lang)} maxLength={50} />
+                    <button type="button" disabled={busy || !newName.trim()} onClick={() => runAction(createList)}>{t("library.create", lang)}</button>
                   </div>
-                  {!playlists.length ? <div className="library-empty"><span>{copy.emptyPlaylists}</span></div> : playlists.map((playlist) => (
+                  {!playlists.length ? <div className="library-empty"><span>{t("library.emptyPlaylists", lang)}</span></div> : playlists.map((playlist) => (
                     <article className="library-row library-row--playlist" key={playlist.id}>
                       <div className="library-row__main">
                         <span className="library-row__ref"><ListMusic size={17} /></span>
                         {editingPlaylistId === playlist.id ? (
-                          <span className="library-row__rename"><input value={editingPlaylistName} onChange={(event) => setEditingPlaylistName(event.target.value)} maxLength={50} autoFocus aria-label={copy.edit} /><button type="button" disabled={busy} onClick={() => runAction(() => commitPlaylistName(playlist))} aria-label={copy.save}><Check size={15} /></button></span>
-                        ) : <span className="library-row__copy"><strong>{playlist.name}</strong><small>{playlist.ayahs.length} {lang === "fr" ? "versets" : lang === "ar" ? "آيات" : "verses"}</small></span>}
+                          <span className="library-row__rename"><input value={editingPlaylistName} onChange={(event) => setEditingPlaylistName(event.target.value)} maxLength={50} autoFocus aria-label={t("library.edit", lang)} /><button type="button" disabled={busy} onClick={() => runAction(() => commitPlaylistName(playlist))} aria-label={t("library.save", lang)}><Check size={15} /></button></span>
+                        ) : <span className="library-row__copy"><strong>{playlist.name}</strong><small>{playlist.ayahs.length} {t("library.verses", lang)}</small></span>}
                       </div>
-                      {editingPlaylistId !== playlist.id ? <button type="button" className="library-row__edit" onClick={() => { setEditingPlaylistId(playlist.id); setEditingPlaylistName(playlist.name); }} aria-label={copy.edit}><Pencil size={16} /></button> : null}
-                      <button type="button" className="library-row__play" onClick={() => runAction(() => playList(playlist), "audioError")} disabled={busy || !playlist.ayahs.length} aria-label={copy.listen}><Play size={16} /></button>
-                      <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeList(playlist.id))} aria-label={copy.remove}><Trash2 size={16} /></button>
+                      {editingPlaylistId !== playlist.id ? <button type="button" className="library-row__edit" onClick={() => { setEditingPlaylistId(playlist.id); setEditingPlaylistName(playlist.name); }} aria-label={t("library.edit", lang)}><Pencil size={16} /></button> : null}
+                      <button type="button" className="library-row__play" onClick={() => runAction(() => playList(playlist), "audioError")} disabled={busy || !playlist.ayahs.length} aria-label={t("library.listen", lang)}><Play size={16} /></button>
+                      <button type="button" className="library-row__delete" disabled={busy} onClick={() => runAction(() => removeList(playlist.id))} aria-label={t("library.remove", lang)}><Trash2 size={16} /></button>
                     </article>
                   ))}
                 </div>

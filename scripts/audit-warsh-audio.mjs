@@ -1,43 +1,60 @@
-import RECITERS from '../src/data/reciters.js';
+/**
+ * Warsh audio audit: every catalogue voice must be a per-ayah set that really
+ * serves the files the app asks for.
+ *
+ * Numbering spaces differ by host, and the audit has to follow them:
+ *  - EveryAyah `warsh/…` folders are Hafs-keyed (Al-Baqara stops at 002286).
+ *  - QuranPedia sets are riwaya-keyed (Al-Baqara stops at 002285).
+ * The Warsh→Hafs mapping in src/utils/audioPlaylist.js decides which number is
+ * requested, so the audit reuses it instead of trusting a hand-written table.
+ * A missing file fails the audit unless src/data/audioAvailability.js declares
+ * that exact verse as a hole the provider does not serve.
+ */
+import RECITERS from "../src/data/reciters.js";
+import SURAHS from "../src/data/surahs.js";
+import { buildSurahAudioPlaylist } from "../src/utils/audioPlaylist.js";
+import { isAyahAudioUnavailable } from "../src/data/audioAvailability.js";
+import { getWarshSurahAyahCount } from "../src/constants/warshSource.js";
 
-const MP3QURAN_RECITERS_URL = 'https://www.mp3quran.net/api/v3/reciters?language=eng';
-const OFFICIAL_WARSH_REWAYA_IDS = new Set([2, 10, 18]);
-
-const SAMPLES = [
-  { surah: 1, ayah: 1 },
-  { surah: 2, ayah: 255 },
-  { surah: 18, ayah: 1 },
-  { surah: 36, ayah: 58 },
-  { surah: 55, ayah: 13 },
-  { surah: 67, ayah: 1 },
-  { surah: 78, ayah: 1 },
-  { surah: 93, ayah: 1 },
-  { surah: 112, ayah: 1 },
-  { surah: 114, ayah: 1 },
+// Baselines plus every surah whose Warsh total is larger than the Hafs total:
+// those tails are exactly where a provider set can end one verse too early.
+const SAMPLE_SURAHS = [
+  1,
+  2,
+  18,
+  36,
+  78,
+  112,
+  114,
+  ...SURAHS.filter(
+    (surah) => getWarshSurahAyahCount(surah.n) > surah.ayahs,
+  ).map((surah) => surah.n),
 ];
 
-function buildEveryayahUrl(cdn, surah, ayah) {
-  const s = String(surah).padStart(3, '0');
-  const a = String(ayah).padStart(3, '0');
-  return `https://everyayah.com/data/${cdn}/${s}${a}.mp3`;
-}
+const pad3 = (value) => String(value).padStart(3, "0");
 
-function buildMp3QuranSurahUrl(server, surah) {
-  const s = String(surah).padStart(3, '0');
-  return `${server}${s}.mp3`;
-}
-
-function buildWarshUrl(reciter, surah, ayah) {
-  if (reciter.cdnType === 'mp3quran-surah') {
-    return buildMp3QuranSurahUrl(reciter.cdn, surah);
+function buildWarshUrl(reciter, item) {
+  const file = `${pad3(item.surah)}${pad3(
+    reciter.cdnType === "quranpedia" ? item.ayah : item.hafsNumber,
+  )}.mp3`;
+  if (reciter.cdnType === "quranpedia") {
+    return `https://files.quranpedia.net/recitations/${reciter.cdn}/${file}`;
   }
-  return buildEveryayahUrl(reciter.cdn, surah, ayah);
+  return `https://everyayah.com/data/${reciter.cdn}/${file}`;
+}
+
+function sampleItems() {
+  return SAMPLE_SURAHS.flatMap((surah) => {
+    const playlist = buildSurahAudioPlaylist(surah, "warsh");
+    if (playlist.length === 0) return [];
+    return [playlist[0], playlist.at(-1)];
+  });
 }
 
 async function check(url) {
   try {
     const head = await fetch(url, {
-      method: 'HEAD',
+      method: "HEAD",
       signal: AbortSignal.timeout(12_000),
     });
     if (head.ok || ![403, 405].includes(head.status)) {
@@ -46,7 +63,7 @@ async function check(url) {
 
     // A few audio CDNs reject HEAD even though ranged playback works.
     const ranged = await fetch(url, {
-      headers: { Range: 'bytes=0-31' },
+      headers: { Range: "bytes=0-31" },
       signal: AbortSignal.timeout(12_000),
     });
     await ranged.body?.cancel();
@@ -56,83 +73,78 @@ async function check(url) {
   }
 }
 
-function normalizeServerUrl(url) {
-  return String(url || '').replace(/\/+$/, '');
+async function mapWithConcurrency(items, concurrency, worker) {
+  const results = new Array(items.length);
+  let cursor = 0;
+  async function next() {
+    while (cursor < items.length) {
+      const index = cursor++;
+      results[index] = await worker(items[index], index);
+    }
+  }
+  await Promise.all(Array.from({ length: concurrency }, () => next()));
+  return results;
 }
 
-async function fetchOfficialWarshServers() {
-  const response = await fetch(MP3QURAN_RECITERS_URL, {
-    signal: AbortSignal.timeout(15_000),
-  });
-  if (!response.ok) {
-    throw new Error(`MP3Quran reciters API HTTP ${response.status}`);
+const metadataFailures = RECITERS.warsh.flatMap((reciter) => {
+  const errors = [];
+  if (reciter.verifiedWarsh !== true) errors.push("Missing verifiedWarsh flag");
+  if (reciter.audioMode !== "ayah") errors.push("Whole-surah stream in the Warsh catalogue");
+  if (reciter.cdnType === "everyayah" && !/^warsh\//i.test(reciter.cdn)) {
+    errors.push("EveryAyah source is outside the Warsh collection");
   }
-
-  const payload = await response.json();
-  const servers = new Map();
-  for (const reciter of payload?.reciters || []) {
-    for (const moshaf of reciter?.moshaf || []) {
-      if (
-        OFFICIAL_WARSH_REWAYA_IDS.has(Number(moshaf?.rewaya_id)) &&
-        Number(moshaf?.surah_total) === 114
-      ) {
-        servers.set(normalizeServerUrl(moshaf.server), {
-          reciter: reciter.name,
-          reading: moshaf.name,
-        });
-      }
-    }
+  if (reciter.cdnType === "quranpedia" && !/^\d+$/.test(reciter.cdn)) {
+    errors.push("QuranPedia cdn is not a recitation id");
   }
-  return servers;
-}
+  return errors.map((reason) => ({ reciter: reciter.id, cdn: reciter.cdn, reason }));
+});
 
-(async () => {
-  const officialWarshServers = await fetchOfficialWarshServers();
-  const metadataFailures = RECITERS.warsh.flatMap((reciter) => {
-    if (reciter.verifiedWarsh !== true) {
-      return [{ reciter: reciter.id, cdn: reciter.cdn, reason: 'Missing verifiedWarsh flag' }];
-    }
-    if (
-      reciter.cdnType === 'mp3quran-surah' &&
-      !officialWarshServers.has(normalizeServerUrl(reciter.cdn))
-    ) {
-      return [{
+const items = sampleItems();
+const rows = await mapWithConcurrency(
+  RECITERS.warsh.flatMap((reciter) => items.map((item) => ({ reciter, item }))),
+  8,
+  async ({ reciter, item }) => {
+    if (!item.hafsNumber) {
+      return {
         reciter: reciter.id,
-        cdn: reciter.cdn,
-        reason: 'Not listed as a complete Warsh reading by MP3Quran',
-      }];
+        url: "(unmapped)",
+        ok: false,
+        status: "no Hafs mapping",
+      };
     }
-    if (reciter.cdnType === 'everyayah' && !/^warsh\//i.test(reciter.cdn)) {
-      return [{
-        reciter: reciter.id,
-        cdn: reciter.cdn,
-        reason: 'EveryAyah source is outside the Warsh collection',
-      }];
-    }
-    return [];
-  });
+    const url = buildWarshUrl(reciter, item);
+    const result = await check(url);
+    const declaredGap = isAyahAudioUnavailable(
+      reciter.cdnType,
+      reciter.cdn,
+      item.surah,
+      item.ayah,
+    );
+    return {
+      ...result,
+      reciter: reciter.id,
+      surah: item.surah,
+      ayah: item.ayah,
+      url,
+      declaredGap,
+      ok: result.ok || declaredGap,
+    };
+  },
+);
 
-  const rows = [];
-  for (const rec of RECITERS.warsh) {
-    for (const s of SAMPLES) {
-      const url = buildWarshUrl(rec, s.surah, s.ayah);
-      const status = await check(url);
-      rows.push({ reciter: rec.id, surah: s.surah, ayah: s.ayah, status: status.status, ok: status.ok, url });
-    }
-  }
-
-  const failed = rows.filter(r => !r.ok);
-  console.log(
-    `Warsh audio checks: total=${rows.length}, unavailable=${failed.length}, metadata=${metadataFailures.length}`,
+const failed = rows.filter((row) => !row.ok);
+const healed = rows.filter((row) => row.declaredGap && row.ok && row.status === 200);
+console.log(
+  `Warsh audio checks: total=${rows.length}, unavailable=${failed.length}, declaredGaps=${rows.filter((r) => r.declaredGap).length}, healed=${healed.length}, metadata=${metadataFailures.length}`,
+);
+if (metadataFailures.length > 0) console.table(metadataFailures);
+if (failed.length > 0) console.table(failed.slice(0, 20));
+if (healed.length > 0) {
+  console.table(healed.map(({ reciter, surah, ayah, url }) => ({ reciter, surah, ayah, url })));
+  console.error(
+    "Declared audio gaps are now served by the provider: remove them from src/data/audioAvailability.js.",
   );
-  if (metadataFailures.length > 0) {
-    console.table(metadataFailures);
-  }
-  if (failed.length > 0) {
-    console.table(failed.slice(0, 20));
-  }
-  if (metadataFailures.length > 0 || failed.length > 0) {
-    process.exit(1);
-  }
-  console.log('OK: all sampled URLs are reachable and official MP3Quran metadata confirms Warsh.');
-})();
+}
+if (metadataFailures.length > 0 || failed.length > 0 || healed.length > 0) process.exit(1);
+
+console.log("OK: every Warsh voice is a complete per-ayah set and the sampled files are reachable.");

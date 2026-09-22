@@ -20,7 +20,7 @@ test("privacy and source copy match the implemented local-first behavior", async
   assert.doesNotMatch(page, /horaires de prière|géolocalisation/);
   assert.match(page, /Aucune synchronisation cloud automatique/);
   assert.match(page, /Quran Foundation \/ Quran\.com/);
-  assert.match(page, /EveryAyah, MP3Quran, QuranicAudio/);
+  assert.match(page, /EveryAyah, le CDN audio de Quran\.com et QuranPedia/);
 });
 
 test("English and Arabic editorial copy remains complete and cacheable", async () => {

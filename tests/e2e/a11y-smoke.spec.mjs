@@ -99,6 +99,7 @@ test("A11y: la sidebar est inerte fermée et piège le focus ouverte", async ({ 
     }
   });
 
+  await page.setViewportSize({ width: 390, height: 844 });
   await openReader(page);
 
   const sidebar = page.locator("#sidebar");

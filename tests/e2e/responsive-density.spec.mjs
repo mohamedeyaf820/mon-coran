@@ -334,7 +334,18 @@ test("reader header stays stable and visually centered across breakpoints", asyn
     { width: 1280, height: 900 },
   ]) {
     await openReader(page, viewport);
-    expect(await headerCenterDelta(page)).toBeLessThanOrEqual(3);
+    const delta = await headerCenterDelta(page);
+    if (viewport.width <= 360) {
+      // Below 360px the reader trades optical centring for a legible name: the
+      // 44px balancing spacer was costing the surah title half its width.
+      expect(delta).toBeLessThanOrEqual(26);
+      const titleWidth = await page
+        .locator(".mp-header__title-btn")
+        .evaluate((node) => Math.round(node.getBoundingClientRect().width));
+      expect(titleWidth).toBeGreaterThanOrEqual(60);
+    } else {
+      expect(delta).toBeLessThanOrEqual(3);
+    }
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
 
     const disclosure = await revealReaderTools(page, viewport.width);
@@ -718,9 +729,9 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(toolbar?.height || 0).toBeLessThanOrEqual(220);
   expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
-  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
-  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
-  expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+  expect(firstAction?.width || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.height || 0).toBeGreaterThanOrEqual(43.9);
+  expect(firstAction?.width || 0).toBeLessThanOrEqual(44.1);
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
@@ -806,14 +817,18 @@ test("tiny phone keeps the quick menu and compact player calm and dismissible", 
   const menu = page.locator(".mp-header-menu");
   await expect(menu).toBeVisible();
   await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
+  // The 44px floor animates in via the control's all-property transition;
+  // measure only once the 180ms transition and 200ms entry have settled.
+  await page.waitForTimeout(350);
 
   const menuBox = await menu.boundingBox();
   const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
   expect(menuBox?.width || 0).toBeLessThanOrEqual(315);
-  // Linux font metrics add a fraction of a pixel to the four rows.
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(305);
-  expect(closeBox?.width || 0).toBeLessThanOrEqual(36);
-  expect(closeBox?.height || 0).toBeLessThanOrEqual(36);
+  // The 44px touch floor (WCAG 2.5.5) replaces the former sub-305px height
+  // budget on tiny phones; the menu stacks its controls instead of shrinking.
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(405);
+  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
 
   await page.mouse.click(4, 520);
   await expect(menu).toBeHidden();
@@ -832,16 +847,21 @@ test("general pages use a compact quick-command palette on narrow phones", async
   await expect(menu).toBeVisible();
   await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
   await expect(menu.locator(".mp-header-menu__item-description")).toBeHidden();
+  // Let the menu entry animation and the controls' 180ms transition settle
+  // before measuring the 44px touch floor.
+  await page.waitForTimeout(350);
 
   const menuBox = await menu.boundingBox();
   const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
   const searchBox = await menu.locator('[data-key="search"]').boundingBox();
   const searchIconBox = await menu.locator('[data-key="search"] .mp-header-menu__item-icon').boundingBox();
   expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(205);
-  expect(closeBox?.width || 0).toBeLessThanOrEqual(34);
-  expect(closeBox?.height || 0).toBeLessThanOrEqual(34);
-  expect(searchBox?.height || 0).toBeLessThanOrEqual(44);
+  // The compact palette still stacks few rows; only the 44px touch floor
+  // (WCAG 2.5.5) now bounds its height, not the former 205px budget.
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(235);
+  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(searchBox?.height || 0).toBeLessThanOrEqual(49.5);
   expect(searchIconBox?.width || 0).toBeLessThanOrEqual(24);
   expect(searchIconBox?.height || 0).toBeLessThanOrEqual(24);
 
@@ -1081,7 +1101,7 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
   await page.locator(".srh-typography-trigger").click();
   await expect(page.locator(".srh-typography-trigger")).toHaveAttribute("aria-expanded", "true");
   await expect(page.locator(".srh-typography-panel")).toBeVisible();
-  await page.locator('button[title="A-"]').click();
+  await page.locator(".srh-typography-panel .afc-size-btn").first().click();
   await expect
     .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
     .toBeLessThan(initialPhoneSize);
@@ -1090,7 +1110,7 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
     .toBeLessThan(initialCardPadding);
   await expect(page.locator(".afc-size-value")).toHaveText("23");
 
-  await page.locator('button[title="A+"]').click();
+  await page.locator(".srh-typography-panel .afc-size-btn").last().click();
   await expect
     .poll(() => arabicText.evaluate((node) => Number.parseFloat(getComputedStyle(node).fontSize)))
     .toBe(initialPhoneSize);

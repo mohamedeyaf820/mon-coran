@@ -24,7 +24,7 @@ export default function MushafInlineHeader({
       <div className="mp-header" dir="rtl">
         {juzNum ? (
           <div className="mp-header-side">
-            <span className="mp-header-label">{lang === "ar" ? "\u062c\u0632\u0621" : "Juz"}</span>
+            <span className="mp-header-label">{t("quran.juzWord", lang)}</span>
             <span className="mp-header-value">
               {lang === "ar" ? toAr(juzNum) : juzNum}
               {juzNumEnd !== juzNum ? (
@@ -75,7 +75,7 @@ export default function MushafInlineHeader({
           <span className="mp-header-value">
             {lang === "ar" ? toAr(ayahCountLabel) : ayahCountLabel}{" "}
             <span className="mp-header-label">
-              {lang === "ar" ? "\u0622\u064a\u0629" : "v."}
+              {t("quran.ayahAbbr", lang)}
             </span>
           </span>
         </div>

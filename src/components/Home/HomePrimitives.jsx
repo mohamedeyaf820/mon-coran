@@ -2,6 +2,8 @@ import { memo } from "react";
 import { Play, Pause } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { getSurahLigature, toAr } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
+import { useAppLocale } from "../../context/AppContext";
 import {
   normalizeLatinSurahName,
   getSurahEnglishMeaning,
@@ -85,12 +87,14 @@ export const SurahCard = memo(function SurahCard({
       : lang === "ar"
         ? TYPE_INFO[surah.type]?.ar || ""
         : getSurahEnglishMeaning(surah.n);
+  const { riwaya } = useAppLocale();
+  const verseCount = getSurahVerseCountByRiwaya(surah.n, riwaya) || surah.ayahs;
   const ayahLabel =
     lang === "ar"
-      ? `${toAr(surah.ayahs)} آية`
+      ? `${toAr(verseCount)} آية`
       : lang === "fr"
-        ? `${surah.ayahs} versets`
-        : `${surah.ayahs} ayahs`;
+        ? `${verseCount} versets`
+        : `${verseCount} ayahs`;
   const playAriaLabel = isPlaying
     ? lang === "ar"
       ? "إيقاف مؤقت"

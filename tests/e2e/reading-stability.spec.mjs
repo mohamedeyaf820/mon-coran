@@ -133,7 +133,10 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
   });
   expect(mushafFlow.verseDisplay).toBe("inline");
   expect(mushafFlow.lineHeightRatio).toBeGreaterThanOrEqual(1.64);
-  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(1.78);
+  // Continuous-mushaf leads at the 2.2 ratio verified in arabicTypography.js
+  // (glyph ink reaches ~1.8em); the budget follows that value, not the old
+  // per-face list ratios.
+  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(2.21);
   expect(mushafFlow.textAlignLast).not.toBe("center");
 });
 

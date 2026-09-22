@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { savePosition } from "../../services/storageService";
+import { hafsNumbersForAyah } from "../../constants/warshSource";
+import { isWarshNumberedAyah } from "./displayHelpers";
 import {
   assertWarshStrict,
   describeArabicDataSource,
@@ -24,24 +26,58 @@ function rememberLimited(map, key, value, maxSize) {
   if (map.size > maxSize) map.delete(map.keys().next().value);
 }
 
-function mergeHafsSupport(ayahs, hafsMap) {
-  if (!hafsMap?.size) return ayahs;
+function attachWarshHafsMapping(ayahs, riwaya) {
+  if (riwaya !== "warsh") return ayahs;
+  // Tafsir, bookmarks and notes are Hafs-keyed, so every Warsh verse object
+  // must carry its mapping — including on layouts that skip the Hafs support
+  // payload below (needsHafsSupport is false there).
   return ayahs.map((ayah) => {
-    const hafsAyah = hafsMap.get(`${ayah.surah?.number}:${ayah.numberInSurah}`);
-    return hafsAyah
-      ? {
-          ...ayah,
-          number: ayah.number ?? hafsAyah.number,
-          page: ayah.page ?? hafsAyah.page,
-          juz: ayah.juz ?? hafsAyah.juz,
-          hafsText: hafsAyah.text,
-          hafsSupport: {
-            text: hafsAyah.text,
-            quranCom: hafsAyah.quranCom || null,
-            words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
-          },
-        }
-      : ayah;
+    if (Array.isArray(ayah?.hafsNumbers)) return ayah;
+    if (!isWarshNumberedAyah(ayah)) return ayah;
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya);
+    if (!hafsNumbers?.length) return ayah;
+    return { ...ayah, hafsNumbers, hafsNumber: hafsNumbers[0] };
+  });
+}
+
+function mergeHafsSupport(ayahs, hafsMap, riwaya) {
+  if (!hafsMap?.size) return ayahs;
+  const isWarsh = riwaya === "warsh";
+  return ayahs.map((ayah) => {
+    // The Hafs support payload (quran.com text, word-by-word, transliteration)
+    // is keyed on Hafs numbers, while a Warsh reader shows Madinah-mushaf
+    // numbers: 6214 ayahs against 6236 Hafs, with 50 surahs split differently.
+    // Joining on the raw numberInSurah therefore attaches the neighbouring
+    // verse from the first divergence point on (Warsh 2:2 recites Hafs 3).
+    // A verse the mapping cannot place stays un-enriched rather than showing
+    // another verse's data. See src/data/warshHafsNumbering.js.
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya);
+    const surahNumber = ayah.surah?.number;
+    const hafsAyah =
+      hafsNumbers?.length && surahNumber != null
+        ? hafsMap.get(`${surahNumber}:${hafsNumbers[0]}`)
+        : null;
+
+    if (!hafsAyah) return ayah;
+
+    return {
+      ...ayah,
+      number: ayah.number ?? hafsAyah.number,
+      page: ayah.page ?? hafsAyah.page,
+      juz: ayah.juz ?? hafsAyah.juz,
+      hafsText: hafsAyah.text,
+      ...(isWarsh
+        ? {
+            hafsNumbers,
+            hafsNumber: hafsNumbers[0],
+          }
+        : {}),
+      hafsSupport: {
+        text: hafsAyah.text,
+        quranCom: hafsAyah.quranCom || null,
+        words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
+      },
+    };
   });
 }
 
@@ -177,7 +213,10 @@ export default function useQuranDisplayData({
             riwaya,
             signal,
           });
-      const fetchedAyahs = cachedData?.ayahs || ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
+      const fetchedAyahs = attachWarshHafsMapping(
+        cachedData?.ayahs || ensureRequestedRiwaya(arabicData.ayahs || [], riwaya),
+        riwaya,
+      );
       const fallback = cachedData
         ? Boolean(cachedData.isWarshFallback)
         : Boolean(arabicData?.isTextFallback);
@@ -225,7 +264,7 @@ export default function useQuranDisplayData({
               ayah,
             ]),
           );
-          resolvedAyahs = mergeHafsSupport(fetchedAyahs, hafsMap);
+          resolvedAyahs = mergeHafsSupport(fetchedAyahs, hafsMap, riwaya);
           hafsSupportReady = true;
         }
       }
@@ -338,7 +377,10 @@ export function preloadQuranDisplayData({
       riwaya,
       signal: undefined,
     });
-    const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
+    const fetchedAyahs = attachWarshHafsMapping(
+      ensureRequestedRiwaya(arabicData.ayahs || [], riwaya),
+      riwaya,
+    );
     assertWarshStrict({
       arabicData,
       displayMode,

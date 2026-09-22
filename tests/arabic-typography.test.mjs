@@ -106,8 +106,8 @@ test("continuous Mushaf line height stays compact for every exposed Quran font",
       mushafLayout: "mushaf",
       riwaya,
     });
-    assert.ok(lineHeight >= 1.64, `${fontFamily} must preserve Arabic marks`);
-    assert.ok(lineHeight <= 1.76, `${fontFamily} must keep Mushaf lines connected`);
+    assert.ok(lineHeight >= 1.8, `${fontFamily} must preserve Arabic marks`);
+    assert.ok(lineHeight <= 2.2, `${fontFamily} must keep Mushaf lines connected`);
   }
 });
 
@@ -126,7 +126,7 @@ test("page routes keep the same compact leading as continuous Mushaf routes", ()
   });
 
   assert.equal(pageLineHeight, surahLineHeight);
-  assert.ok(pageLineHeight < 1.8);
+  assert.ok(pageLineHeight >= 1.8, "page routes must not clip stacked harakat");
 });
 
 test("every exposed Hafs text path removes internal dotted-circle anchors", () => {

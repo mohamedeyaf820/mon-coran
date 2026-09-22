@@ -15,7 +15,7 @@ export default function AyahBlockFooter({ ayah, isActive, surahNum }) {
     >
       <AyahActions
         surah={surahNum}
-        ayah={ayah.numberInSurah}
+        ayah={ayah.hafsNumber ?? ayah.numberInSurah}
         ayahData={ayah}
         compact
       />

@@ -508,6 +508,7 @@
 
 .search-pro__empty,
 .search-pro__no-results,
+.search-pro__reference,
 .search-pro__result,
 .search-pro__panel {
     border: 1px solid color-mix(in srgb, var(--theme-border, #64748b) 28%, transparent);
@@ -595,6 +596,61 @@
 
 .search-pro__no-results i,
 .search-pro__no-results strong {
+    color: var(--theme-text, #f8fafc);
+}
+
+.search-pro__reference {
+    width: 100%;
+    min-height: 48px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 0.8rem;
+    padding: 0.75rem 0.9rem;
+    text-align: start;
+    color: var(--theme-text, #f8fafc);
+    border-color: color-mix(in srgb, var(--theme-primary, #10b981) 40%, transparent);
+}
+
+.search-pro__reference:hover {
+    border-color: color-mix(in srgb, var(--theme-primary, #10b981) 62%, transparent);
+    background: color-mix(in srgb, var(--theme-panel-bg-strong, #111827) 88%, var(--theme-primary, #10b981) 12%);
+}
+
+.search-pro__reference-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(var(--theme-primary-rgb, 16, 185, 129), 0.22);
+    background: rgba(var(--theme-primary-rgb, 16, 185, 129), 0.12);
+    color: var(--theme-primary, #10b981);
+}
+
+.search-pro__reference-body {
+    min-width: 0;
+    display: grid;
+    gap: 0.12rem;
+}
+
+.search-pro__reference-body strong {
+    font-size: 0.88rem;
+}
+
+.search-pro__reference-names {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    color: var(--theme-text-muted, #94a3b8);
+    font-size: 0.76rem;
+}
+
+.search-pro__reference-names span[lang="ar"] {
+    font-size: 0.95rem;
     color: var(--theme-text, #f8fafc);
 }
 
@@ -959,7 +1015,7 @@
 .modal-overlay.search-pro-overlay {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 1000 !important;
+  z-index: var(--z-sidebar) !important;
   width: 100vw !important;
   height: 100dvh !important;
   max-width: none !important;
@@ -2823,7 +2879,7 @@ html[data-theme="dark"] .search-pro__close:hover {
 
 .app-root .app-view-home .home-style-filter,
 .app-root[data-view="home"] .home-style-filter {
-    min-height: 36px;
+    min-height: 44px;
     border-radius: 999px;
     letter-spacing: 0;
     font-size: 0.76rem !important;

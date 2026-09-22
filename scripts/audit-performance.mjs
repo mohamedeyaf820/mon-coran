@@ -71,7 +71,10 @@ async function main() {
 
   const probes = await Promise.all([
     probe("https://api.alquran.cloud/v1/meta", "API metadata"),
-    probe("https://cdn.islamic.network/quran/audio/128/ar.alafasy/1.mp3", "Islamic CDN audio", {
+    probe("https://audio.qurancdn.com/Alafasy/mp3/001001.mp3", "Quran.com audio CDN", {
+      method: "HEAD",
+    }),
+    probe("https://files.quranpedia.net/recitations/261/001001.mp3", "QuranPedia Warsh audio", {
       method: "HEAD",
     }),
     probe(

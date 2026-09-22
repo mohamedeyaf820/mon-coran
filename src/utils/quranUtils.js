@@ -23,6 +23,19 @@ export function normalizeQuranGlyphText(text) {
         .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
 }
 
+// Two renderings of the same Quranic wording, compared as letter sequences
+// with the Uthmanic service marks (harakat, tatweel, waqf signs, invisible
+// direction controls) removed. Used to decide whether a difference is real
+// wording or only spelling/segmentation noise.
+export function comparableArabicText(value) {
+    return normalizeQuranGlyphText(value)
+        .normalize('NFC')
+        .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, '')
+        .replace(/[\u200C\u200D\u200E\u200F\u2066-\u2069]/gu, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
 // The KFGQPC Uthmanic Hafs face only knows its own signs: U+06EC for the
 // ishmam/tashil mark and a plain sukun on a silent letter (2:5 in the QPC
 // text). It has no glyph for the canonical U+06EB / U+06DF, which the system

@@ -5,9 +5,11 @@ import reactRefresh from "eslint-plugin-react-refresh";
 
 export default [
   {
+    name: "mushaf-plus/ignores",
     ignores: [
       "dist/**",
       ".vercel/**",
+      ".vercel-cli-data/**",
       "node_modules/**",
       "playwright-report/**",
       "test-results/**",
@@ -15,6 +17,17 @@ export default [
       "design-audit/**",
       "design-audit-2/**",
       "public/boot-recovery.js",
+      // Local-only workspaces that are git-ignored and never shipped or gated:
+      // `.kilo/worktrees/**` mirrors a whole copy of the repository, and
+      // `.codex-artifacts/**` plus `scratch/**` hold one-off investigation
+      // probes with no maintenance contract.
+      ".kilo/**",
+      ".codex-artifacts/**",
+      "scratch/**",
+      ".scratch-diag/**",
+      "tmp-verification-warsh/**",
+      "test-results-audio/**",
+      "test-results-juz/**",
     ],
   },
   js.configs.recommended,
@@ -55,7 +68,12 @@ export default [
     },
   },
   {
-    files: ["scripts/**/*.mjs", "tests/**/*.mjs", "*.{js,mjs}"],
+    files: [
+      "**/*.{mjs,cjs}",
+      "scripts/**/*.{js,mjs,cjs}",
+      "tests/**/*.{js,mjs,cjs}",
+      "*.{js,mjs,cjs}",
+    ],
     languageOptions: {
       ecmaVersion: "latest",
       sourceType: "module",
@@ -64,6 +82,15 @@ export default [
     rules: {
       "no-empty": ["error", { allowEmptyCatch: true }],
       "no-unused-vars": ["error", { argsIgnorePattern: "^_", caughtErrorsIgnorePattern: "^_" }],
+    },
+  },
+  {
+    // CommonJS probe scripts keep Node's classic module globals.
+    files: ["**/*.cjs"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "commonjs",
+      globals: globals.node,
     },
   },
   {

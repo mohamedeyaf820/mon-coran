@@ -9,7 +9,7 @@ import React, {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { getSettings, saveSettings } from "../services/storageService";
+import { getSettings, mergeSettings } from "../services/storageService";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import {
   normalizeDayTheme,
@@ -152,8 +152,9 @@ const getInitialState = () => {
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
   // Le meilleur serveur est choisi automatiquement. Ce choix technique reste
-  // volontairement invisible pour ne pas surcharger l'expérience de lecture.
-  autoSelectFastestReciter: true,
+  // volontairement invisible pour ne pas surcharger l'expérience de lecture,
+  // mais une préférence enregistrée contraire est respectée.
+  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? true,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
@@ -548,7 +549,9 @@ export function AppProvider({ children }) {
     state.surahRepeatCount,
   ]);
 
-  // Persist settings to localStorage on change (debounced — 500ms)
+  // Persist settings to localStorage on change (debounced — 500ms). The write
+  // patches the stored blob so keys owned by other savers, such as the reading
+  // position written by savePosition, keep the fields this list ignores.
   useEffect(() => {
     persistentSettingsRef.current = {
       ...persistentSettings,
@@ -578,14 +581,14 @@ export function AppProvider({ children }) {
       saveTimerRef.current = null;
     }
     if (!persistenceSuspendedRef.current && persistentSettingsRef.current) {
-      saveSettings(persistentSettingsRef.current);
+      mergeSettings(persistentSettingsRef.current);
     }
   }, []);
 
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      if (!persistenceSuspendedRef.current) saveSettings(persistentSettingsRef.current);
+      if (!persistenceSuspendedRef.current) mergeSettings(persistentSettingsRef.current);
       saveTimerRef.current = null;
     }, 500);
     return () => {

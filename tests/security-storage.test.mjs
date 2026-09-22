@@ -6,6 +6,7 @@ import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
 import {
   isAllowedExternalUrl,
+  isSafeLinkHref,
   sanitizeHtml,
   sanitizeSvgMarkup,
 } from "../src/lib/security.js";
@@ -54,6 +55,21 @@ test("security: allows only whitelisted https hosts", () => {
   assert.equal(isAllowedExternalUrl("javascript:alert(1)"), false);
 });
 
+test("security: runtime-sourced hrefs accept only link protocols", () => {
+  assert.equal(isSafeLinkHref("https://www.assabile.com/reciter/12"), true);
+  assert.equal(isSafeLinkHref("http://example.com/x"), true);
+  assert.equal(isSafeLinkHref("/data/reciter-profiles.json"), true);
+  assert.equal(isSafeLinkHref("data/x.json"), true);
+  assert.equal(isSafeLinkHref("javascript:alert(1)"), false);
+  assert.equal(isSafeLinkHref("JaVaScRiPt:alert(1)"), false);
+  assert.equal(isSafeLinkHref("data:text/html;base64,PHNjcmlwdD4="), false);
+  assert.equal(isSafeLinkHref("vbscript:msgbox(1)"), false);
+  assert.equal(isSafeLinkHref("  javascript:void(0)  "), false);
+  assert.equal(isSafeLinkHref(""), false);
+  assert.equal(isSafeLinkHref(undefined), false);
+  assert.equal(isSafeLinkHref("not a url: at all"), false);
+});
+
 test("security: production CSP excludes dev-only and unused risky sources", () => {
   const csp = buildCspPolicy("production");
   assert.equal(csp.includes("'unsafe-eval'"), false);
@@ -61,9 +77,8 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("ws://localhost"), false);
   assert.match(csp, /img-src[^;]*https:\/\/www\.assabile\.com/);
   assert.match(csp, /img-src[^;]*https:\/\/storage\.googleapis\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/static\.suratmp3\.com/);
-  assert.match(csp, /img-src[^;]*https:\/\/surahquran\.com/);
   assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
+  assert.doesNotMatch(csp, /img-src[^;]*(suratmp3\.com|surahquran\.com|wikimedia\.org)/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
   assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);

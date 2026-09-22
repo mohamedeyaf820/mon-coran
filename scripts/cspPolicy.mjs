@@ -8,8 +8,8 @@ export function buildCspPolicy(mode = "production") {
   
   // Connect sources - API endpoints and CDNs
   const connectSrc = isDev
-    ? "'self' https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net https://download.quranicaudio.com ws://localhost:* http://localhost:*"
-    : "'self' https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net https://download.quranicaudio.com";
+    ? "'self' https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com ws://localhost:* http://localhost:*"
+    : "'self' https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com";
 
   return [
     "default-src 'self'",
@@ -24,9 +24,9 @@ export function buildCspPolicy(mode = "production") {
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-attr 'unsafe-inline'",
     "font-src 'self' https://fonts.gstatic.com https://verses.quran.foundation https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.qurancdn.com https://static-cdn.tarteel.ai",
-    "img-src 'self' data: blob: https://static.qurancdn.com https://static.quran.com https://cdn.islamic.network https://www.assabile.com https://storage.googleapis.com https://static.suratmp3.com https://surahquran.com https://upload.wikimedia.org",
+    "img-src 'self' data: blob: https://static.qurancdn.com https://static.quran.com https://www.assabile.com https://storage.googleapis.com",
     `connect-src ${connectSrc}`,
-    "media-src 'self' blob: https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net https://download.quranicaudio.com",
+    "media-src 'self' blob: https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     isDev ? "" : "upgrade-insecure-requests",

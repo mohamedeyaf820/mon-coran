@@ -4,7 +4,11 @@ import {
   getPageTranslation,
   getSurahTranslation,
 } from "../../services/quranAPI";
-import { getTranslationKeyForAyah } from "./displayHelpers";
+import {
+  getTranslationKeyForAyah,
+  getWarshTranslationKeyForAyah,
+  isWarshNumberedAyah,
+} from "./displayHelpers";
 
 export default function useQuranTranslations({
   arabicReady = true,
@@ -81,13 +85,15 @@ export default function useQuranTranslations({
       const editionAyahs = edition.ayahs || [];
       const inferredSurah =
         editionAyahs[0]?.surah?.number ?? currentSurah;
+      // A Warsh-adapted edition is numbered by the Warsh mushaf: its verse 253
+      // is not Hafs 253. It therefore lives in its own key namespace.
+      const isWarshEdition = edition.riwaya === "warsh" || edition.edition?.riwaya === "warsh";
 
       editionAyahs.forEach((translation) => {
         const surahNumber = translation.surah?.number ?? inferredSurah;
-        const ayahKey = getTranslationKeyForAyah(
-          surahNumber,
-          translation.numberInSurah,
-        );
+        const ayahKey = isWarshEdition
+          ? getWarshTranslationKeyForAyah(surahNumber, translation.numberInSurah)
+          : getTranslationKeyForAyah(surahNumber, translation.numberInSurah);
         const globalKey =
           typeof translation.number === "number"
             ? `global:${translation.number}`
@@ -105,30 +111,33 @@ export default function useQuranTranslations({
 
   const getTranslationForAyah = useCallback(
     (ayah) => {
+      const surahNumber = ayah.surah?.number || currentSurah;
+      const matched = [];
+
+      if (isWarshNumberedAyah(ayah)) {
+        const warshEditions = translationMap.get(
+          getWarshTranslationKeyForAyah(surahNumber, ayah.numberInSurah),
+        );
+        if (warshEditions) matched.push(...warshEditions);
+      }
+
       const hafsNumbers = ayah?.hafsNumbers;
       if (Array.isArray(hafsNumbers) && hafsNumbers.length > 0) {
-        const matched = [];
         for (const hafsNumber of hafsNumbers) {
           const found = translationMap.get(
-            getTranslationKeyForAyah(
-              ayah.surah?.number || currentSurah,
-              hafsNumber,
-            ),
+            getTranslationKeyForAyah(surahNumber, hafsNumber),
           );
           if (found) matched.push(...found);
         }
         return matched.length ? matched : null;
       }
-      return (
+
+      const direct =
         translationMap.get(`global:${ayah.number}`) ||
-        translationMap.get(
-          getTranslationKeyForAyah(
-            ayah.surah?.number || currentSurah,
-            ayah.numberInSurah,
-          ),
-        ) ||
-        null
-      );
+        translationMap.get(getTranslationKeyForAyah(surahNumber, ayah.numberInSurah));
+
+      if (direct) return [...matched, ...direct];
+      return matched.length ? matched : null;
     },
     [currentSurah, translationMap],
   );

@@ -12,12 +12,8 @@ import {
   StickyNote,
 } from "lucide-react";
 import SURAHS, { getSurahLigature } from "../../data/surahs";
+import { t } from "../../i18n";
 import PlatformLogo from "../PlatformLogo";
-
-function localText(lang, fr, en, ar) {
-  if (lang === "ar") return ar;
-  return lang === "en" ? en : fr;
-}
 
 function TodaySuggestion({ isRtl, lang, onClick, onIntent, surah }) {
   const data = SURAHS[surah.n - 1] || surah;
@@ -38,7 +34,7 @@ function TodaySuggestion({ isRtl, lang, onClick, onIntent, surah }) {
       <span className="home-today-suggestion__copy">
         <strong>{label}</strong>
         <small>
-          {localText(lang, "Lecture suggérée", "Suggested reading", "قراءة مقترحة")}
+          {t("home.hero.suggestedReading", lang)}
         </small>
       </span>
       <span
@@ -82,15 +78,10 @@ export default function HeroSection({
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const greetingLabel = greeting[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"];
   const surahLigature = getSurahLigature(surahLabel?.n);
-  const heroTitle = localText(
-    lang,
-    "Lire, écouter et comprendre le Coran",
-    "Read, listen and understand the Quran",
-    "اقرأ القرآن واستمع إليه وتدبّره",
-  );
+  const heroTitle = t("home.hero.title", lang);
   const targetLabel = hasReadingHistory
-    ? localText(lang, "Votre prochaine lecture", "Your next reading", "قراءتك التالية")
-    : localText(lang, "Commencer par", "Start with", "ابدأ بـ");
+    ? t("home.hero.nextReading", lang)
+    : t("home.hero.startWith", lang);
 
   return (
     <section className="home-overview" aria-labelledby="home-resume-title">
@@ -150,21 +141,21 @@ export default function HeroSection({
 
           <nav
             className="home-resume-panel__library"
-            aria-label={localText(lang, "Bibliothèque personnelle", "Personal library", "المكتبة الشخصية")}
+            aria-label={t("home.hero.personalLibrary", lang)}
           >
             <button type="button" onClick={() => openLibrary("favorites")}>
               <Bookmark size={13} aria-hidden="true" />
-              <span><strong>{bookmarks.length}</strong> {localText(lang, "Favoris", "Saved", "محفوظ")}</span>
+              <span><strong>{bookmarks.length}</strong> {t("home.hero.favorites", lang)}</span>
               <ChevronRight size={12} aria-hidden="true" />
             </button>
             <button type="button" onClick={() => openLibrary("notes")}>
               <StickyNote size={13} aria-hidden="true" />
-              <span><strong>{notes.length}</strong> {localText(lang, "Notes", "Notes", "ملاحظات")}</span>
+              <span><strong>{notes.length}</strong> {t("home.hero.notes", lang)}</span>
               <ChevronRight size={12} aria-hidden="true" />
             </button>
             <button type="button" onClick={() => openLibrary("playlists")}>
               <ListMusic size={13} aria-hidden="true" />
-              <span><strong>{playlists.length}</strong> {localText(lang, "Listes", "Lists", "قوائم")}</span>
+              <span><strong>{playlists.length}</strong> {t("home.hero.lists", lang)}</span>
               <ChevronRight size={12} aria-hidden="true" />
             </button>
           </nav>
@@ -185,7 +176,7 @@ export default function HeroSection({
           </button>
           <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
             <HandHeart size={15} aria-hidden="true" />
-            <span>{localText(lang, "Invocations", "Supplications", "الأدعية")}</span>
+            <span>{t("nav.duas", lang)}</span>
           </button>
         </footer>
       </article>
@@ -194,7 +185,7 @@ export default function HeroSection({
         <header className="home-today-panel__header">
           <span>
             <Sparkles size={13} aria-hidden="true" />
-            <strong id="home-today-title">{localText(lang, "Aujourd’hui", "Today", "اليوم")}</strong>
+            <strong id="home-today-title">{t("home.hero.today", lang)}</strong>
           </span>
           <small>
             {suggestionSet.period?.[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"]}
@@ -208,7 +199,7 @@ export default function HeroSection({
           disabled={!vodSurahNum}
         >
           <span className="home-today-verse__label">
-            {localText(lang, "Verset du jour", "Verse of the day", "آية اليوم")}
+            {t("home.hero.verseOfDay", lang)}
           </span>
           <span className="home-today-verse__arabic" dir="rtl" lang="ar">
             {dailyVerse.text}
@@ -224,7 +215,7 @@ export default function HeroSection({
           </span>
         </button>
 
-        <div className="home-today-panel__suggestions" aria-label={localText(lang, "Suggestions de lecture", "Reading suggestions", "اقتراحات القراءة")}>
+        <div className="home-today-panel__suggestions" aria-label={t("home.hero.suggestions", lang)}>
           {suggestionSet.surahs.slice(0, 5).map((surah) => (
             <TodaySuggestion
               key={surah.n}

@@ -1,11 +1,13 @@
 import React, { memo } from "react";
 import { t } from "../../i18n";
 import { getSurah, toAr } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
 import SurahReaderHeader from "../Quran/SurahReaderHeader";
 import TajweedLegend from "../Quran/TajweedLegend";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
+import VerseActionsHint from "./VerseActionsHint";
 import VirtualizedMushafPages from "./VirtualizedMushafPages";
 import { modePaneShellClass } from "./displayClasses";
 
@@ -18,6 +20,7 @@ function SurahMode({
   currentPlayingAyah,
   currentSurah,
   getTranslationForAyah,
+  getTransliterationForAyah,
   isQCF4,
   lang,
   mushafLayout,
@@ -34,9 +37,10 @@ function SurahMode({
   showTajwid,
   showTranslation,
   showTransliteration,
-  theme: _theme,
 }) {
   const surahMeta = getSurah(currentSurah);
+  const ayahTotal =
+    getSurahVerseCountByRiwaya(currentSurah, riwaya) || surahMeta?.ayahs;
   const activeAyahData = ayahs.find(
     (ayah) => ayah.numberInSurah === activeAyah,
   );
@@ -60,6 +64,8 @@ function SurahMode({
           onOpenFullscreen={onOpenFullscreen}
         />
       </div>
+
+      <VerseActionsHint lang={lang} />
 
       {mushafLayout === "mushaf" ? (
         <>
@@ -97,6 +103,7 @@ function SurahMode({
           activeAyah={activeAyah}
           lang={lang}
           getTranslationForAyah={getTranslationForAyah}
+          getTransliterationForAyah={getTransliterationForAyah}
           showPageSeparators
           showTajwid={showTajwid}
           showTranslation={showTranslation}
@@ -130,7 +137,7 @@ function SurahMode({
                     : surahMeta.en}
               </strong>
               <span>
-                {lang === "ar" ? toAr(surahMeta.ayahs) : surahMeta.ayahs}{" "}
+                {lang === "ar" ? toAr(ayahTotal) : ayahTotal}{" "}
                 {t("quran.ayahs", lang)}
               </span>
             </div>

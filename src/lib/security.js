@@ -207,3 +207,22 @@ export function openExternalUrl(url, target = "_blank", features = "noopener,nor
   window.open(url, target, features);
   return true;
 }
+
+const SAFE_LINK_PROTOCOLS = new Set(["https:", "http:", "mailto:", "tel:"]);
+
+/**
+ * Protocol guard for hrefs built from data loaded at runtime (the reciter
+ * catalogue, source lists). React 18 hands a `javascript:` href to the DOM
+ * unchanged, so the check has to happen before rendering.
+ */
+export function isSafeLinkHref(url) {
+  if (typeof url !== "string") return false;
+  const candidate = url.trim();
+  if (!candidate) return false;
+  if (!candidate.includes(":")) return true;
+  try {
+    return SAFE_LINK_PROTOCOLS.has(new URL(candidate).protocol);
+  } catch {
+    return false;
+  }
+}

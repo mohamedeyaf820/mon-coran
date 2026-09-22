@@ -87,8 +87,6 @@ export default function Header({ immersiveHidden = false }) {
   const riwayaRequestRef = useRef(0);
 
   const isRtl = lang === "ar";
-  const tr = (obj) =>
-    lang === "ar" ? obj.ar : lang === "fr" ? obj.fr : obj.en;
 
   useEffect(() => {
     const updateHeaderHeight = () => {
@@ -145,6 +143,7 @@ export default function Header({ immersiveHidden = false }) {
   const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false });
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
+  const openLibrary = () => set({ libraryOpen: true, libraryTab: "favorites" });
   const isReadingView = !showHome && !showDuas && !legalPage;
   const changeArabicFontSize = (delta) => {
     set({
@@ -308,36 +307,21 @@ export default function Header({ immersiveHidden = false }) {
     displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
   const goToLabel =
     displayMode === "page"
-      ? tr({
-          fr: "Page (1-604)",
-          en: "Page (1-604)",
-          ar: "\u0635\u0641\u062d\u0629 (\u0661-\u0666\u0660\u0664)",
-        })
+      ? i18nT("nav.goToPage", lang)
       : displayMode === "juz"
-        ? tr({
-            fr: "Juz (1-30)",
-            en: "Juz (1-30)",
-            ar: "\u062c\u0632\u0621 (\u0661-\u0663\u0660)",
-          })
-        : tr({
-            fr: "Sourate (1-114)",
-            en: "Surah (1-114)",
-            ar: "\u0633\u0648\u0631\u0629 (\u0661-\u0661\u0661\u0664)",
-          });
+        ? i18nT("nav.goToJuz", lang)
+        : i18nT("nav.goToSurah", lang);
 
   const activeSurahNum =
     displayMode === "page" ? getSurahForPage(currentPage) : currentSurah;
   const surahMeta = getSurah(activeSurahNum);
   const centerTitle = showDuas
-    ? tr({
-        fr: "Douas",
-        en: "Duas",
-        ar: "\u0627\u0644\u0623\u062f\u0639\u064a\u0629",
-      })
+    ? i18nT("header.duasTitle", lang)
     : displayMode === "juz"
-      ? lang === "ar"
-        ? `\u062c\u0632\u0621 ${toAr(currentJuz)}`
-        : `Juz ${currentJuz}`
+      ? i18nT("header.juzTitle", lang).replace(
+          "{n}",
+          lang === "ar" ? toAr(currentJuz) : currentJuz,
+        )
       : lang === "ar"
         ? surahMeta?.ar || surahMeta?.en || ""
         : surahMeta?.en || surahMeta?.fr || "";
@@ -365,46 +349,23 @@ export default function Header({ immersiveHidden = false }) {
       : "";
   const centerTitleVariants = [
     centerArabicTitle,
-    centerTransliteration,
-    centerMeaning,
+    // The transliteration and the translated meaning exist for readers who
+    // cannot parse the Arabic name. In the Arabic UI they are Latin/French
+    // text inside a right-to-left interface, so the title shows the name only.
+    lang === "ar" ? "" : centerTransliteration,
+    lang === "ar" ? "" : centerMeaning,
   ].filter((value, index, values) => value && values.indexOf(value) === index);
   const centerTitleLabel = centerTitleVariants.length
     ? centerTitleVariants.join(" — ")
     : centerTitle;
 
   const headerLabels = {
-    menu: tr({
-      fr: "Menu",
-      en: "Menu",
-      ar: "\u0627\u0644\u0642\u0627\u0626\u0645\u0629",
-    }),
-    more: tr({
-      fr: "Plus d'options",
-      en: "More options",
-      ar: "\u062e\u064a\u0627\u0631\u0627\u062a \u0625\u0636\u0627\u0641\u064a\u0629",
-    }),
-    homeSummary: tr({
-      fr: "Reprendre la lecture",
-      en: "Continue reading",
-      ar: "\u0627\u0633\u062a\u0626\u0646\u0627\u0641 \u0627\u0644\u0642\u0631\u0627\u0621\u0629",
-    }),
-    homeMeta: `${riwaya.toUpperCase()} \u00b7 114 ${
-      lang === "fr"
-        ? "sourates"
-        : lang === "ar"
-          ? "\u0633\u0648\u0631\u0629"
-          : "surahs"
-    } \u00b7 ${lang === "ar" ? "\u0663\u0660 \u062c\u0632\u0621" : "30 Juz"}`,
-    quranNav: tr({
-      fr: "Navigation du Coran",
-      en: "Quran navigation",
-      ar: "\u0627\u0644\u062a\u0646\u0642\u0644 \u0641\u064a \u0627\u0644\u0642\u0631\u0622\u0646",
-    }),
-    riwayaToggle: tr({
-      fr: "Changer de riwaya",
-      en: "Switch riwaya",
-      ar: "\u062a\u0628\u062f\u064a\u0644 \u0627\u0644\u0631\u0648\u0627\u064a\u0629",
-    }),
+    menu: i18nT("nav.menu", lang),
+    more: i18nT("header.more", lang),
+    homeSummary: i18nT("header.continueReading", lang),
+    homeMeta: `${i18nT(riwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang)} \u00b7 114 ${i18nT("header.metaSurahs", lang)} \u00b7 ${i18nT("header.metaJuz", lang)}`,
+    quranNav: i18nT("header.quranNav", lang),
+    riwayaToggle: i18nT("header.riwayaToggle", lang),
   };
 
   const quickItems = [
@@ -412,37 +373,43 @@ export default function Header({ immersiveHidden = false }) {
       key: "search",
       Icon: Search,
       label: i18nT("nav.search", lang),
-      description: tr({
-        fr: "Sourate, verset ou mot-clé",
-        en: "Surah, verse or keyword",
-        ar: "سورة أو آية أو كلمة",
-      }),
+      description: i18nT("header.searchDesc", lang),
       action: openSearch,
       mobileOnly: true,
     },
     {
       key: "theme",
       Icon: SunMoon,
-      label: tr({ fr: "Thème", en: "Theme", ar: "المظهر" }),
-      description: tr({
-        fr: theme === "dark" ? "Mode sombre actif" : theme === "sepia" ? "Mode sépia actif" : "Mode clair actif",
-        en: `${theme || "light"} theme active`,
-        ar: "التبديل بين الفاتح والسيبيا والداكن",
-      }),
+      label: i18nT("header.theme", lang),
+      description: i18nT(
+        theme === "dark"
+          ? "header.themeDescDark"
+          : theme === "sepia"
+            ? "header.themeDescSepia"
+            : "header.themeDescLight",
+        lang,
+      ),
       action: cycleTheme,
     },
     {
       key: "settings",
       Icon: Settings,
       label: i18nT("nav.settings", lang),
-      description: tr({ fr: "Lecture, audio et apparence", en: "Reading, audio and appearance", ar: "القراءة والصوت والمظهر" }),
+      description: i18nT("header.settingsDesc", lang),
       action: openSettings,
+    },
+    {
+      key: "library",
+      Icon: BookOpen,
+      label: i18nT("library.title", lang),
+      description: i18nT("header.libraryDesc", lang),
+      action: openLibrary,
     },
     {
       key: "duas",
       Icon: HandHeart,
-      label: tr({ fr: "Invocations", en: "Supplications", ar: "الأدعية" }),
-      description: tr({ fr: "Invocations coraniques", en: "Quranic supplications", ar: "أدعية قرآنية" }),
+      label: i18nT("nav.duas", lang),
+      description: i18nT("header.duasDesc", lang),
       action: openDuas,
     },
   ];
@@ -512,9 +479,9 @@ export default function Header({ immersiveHidden = false }) {
             className="mp-header__brand"
             type="button"
             onClick={goHome}
-            title={lang === "ar" ? "العودة إلى الرئيسية" : lang === "en" ? "Back to home" : "Retour à l'accueil"}
+            title={i18nT("errors.backHome", lang)}
             data-testid="mobile-home-logo"
-            aria-label={lang === "ar" ? "MushafPlus — الرئيسية" : lang === "en" ? "MushafPlus — Home" : "MushafPlus — Accueil"}
+            aria-label={`MushafPlus \u2014 ${i18nT("nav.home", lang)}`}
           >
             <span className="mp-header__logo">
               <PlatformLogo
@@ -580,52 +547,74 @@ export default function Header({ immersiveHidden = false }) {
                       aria-hidden="true"
                     >
                       {centerTitleVariants.length > 1 ? (
-                        <span className="mp-header__title mp-header__title-cycle-viewport">
-                          <span className="mp-header__title-sub-track">
-                            <span
-                              className="mp-header__title-sub"
-                              dir="rtl"
-                              lang="ar"
-                            >
-                              {centerSurahLigature ? (
-                                <span
-                                  className="font-surah-names"
-                                  dir="ltr"
-                                  lang="en"
-                                  aria-hidden="true"
-                                >
-                                  {centerSurahLigature}
-                                </span>
-                              ) : (
-                                centerArabicTitle
-                              )}
-                            </span>
-                            <span className="mp-header__title-transliteration">
-                              {centerTransliteration}
-                            </span>
-                            <span className="mp-header__title-meaning">
-                              {centerMeaning}
-                            </span>
-                            <span
-                              className="mp-header__title-sub mp-header__title-cycle-copy"
-                              dir="rtl"
-                              lang="ar"
-                            >
-                              {centerSurahLigature ? (
-                                <span
-                                  className="font-surah-names"
-                                  dir="ltr"
-                                  lang="en"
-                                  aria-hidden="true"
-                                >
-                                  {centerSurahLigature}
-                                </span>
-                              ) : (
-                                centerArabicTitle
-                              )}
+                        <>
+                          <span className="mp-header__title mp-header__title-cycle-viewport">
+                            <span className="mp-header__title-sub-track">
+                              <span
+                                className="mp-header__title-sub"
+                                dir="rtl"
+                                lang="ar"
+                              >
+                                {centerSurahLigature ? (
+                                  <span
+                                    className="font-surah-names"
+                                    dir="ltr"
+                                    lang="en"
+                                    aria-hidden="true"
+                                  >
+                                    {centerSurahLigature}
+                                  </span>
+                                ) : (
+                                  centerArabicTitle
+                                )}
+                              </span>
+                              <span className="mp-header__title-transliteration">
+                                {centerTransliteration}
+                              </span>
+                              <span className="mp-header__title-meaning">
+                                {centerMeaning}
+                              </span>
+                              <span
+                                className="mp-header__title-sub mp-header__title-cycle-copy"
+                                dir="rtl"
+                                lang="ar"
+                              >
+                                {centerSurahLigature ? (
+                                  <span
+                                    className="font-surah-names"
+                                    dir="ltr"
+                                    lang="en"
+                                    aria-hidden="true"
+                                  >
+                                    {centerSurahLigature}
+                                  </span>
+                                ) : (
+                                  centerArabicTitle
+                                )}
+                              </span>
                             </span>
                           </span>
-                        </span>
+                          {/* Small screens: stable Arabic + transliteration lockup
+                              instead of the cycle, which reads as duplicate text. */}
+                          <span
+                            key={`${activeSurahNum}-${lang}`}
+                            className="mp-header__title-compact"
+                            aria-hidden="true"
+                          >
+                            {surahMeta?.ar ? (
+                              <span
+                                className="mp-header__title-compact-ar"
+                                dir="rtl"
+                                lang="ar"
+                              >
+                                {surahMeta.ar}
+                              </span>
+                            ) : null}
+                            <span className="mp-header__title-compact-la">
+                              {centerTransliteration}
+                            </span>
+                          </span>
+                        </>
                       ) : (
                         <span className="mp-header__title">{centerTitle}</span>
                       )}
@@ -662,11 +651,7 @@ export default function Header({ immersiveHidden = false }) {
                       <button
                         type="submit"
                         className="flex h-[44px] w-[44px] items-center justify-center rounded-xl bg-primary text-white transition-colors hover:bg-primary-dark"
-                        aria-label={tr({
-                          fr: "Aller",
-                          en: "Go",
-                          ar: "\u0627\u0646\u062a\u0642\u0644",
-                        })}
+                        aria-label={i18nT("header.go", lang)}
                       >
                         <ChevronRight size={16} strokeWidth={2.5} />
                       </button>
@@ -705,10 +690,10 @@ export default function Header({ immersiveHidden = false }) {
               const nextRiwaya = riwaya === "hafs" ? "warsh" : "hafs";
               selectRiwaya(nextRiwaya);
             }}
-            aria-label={`${headerLabels.riwayaToggle} — ${riwaya === "warsh" ? "Warsh" : "Hafs"}`}
+            aria-label={`${headerLabels.riwayaToggle} — ${i18nT(riwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang)}`}
             title={headerLabels.riwayaToggle}
           >
-            <span>{riwaya === "warsh" ? "Warsh" : "Hafs"}</span>
+            <span>{i18nT(riwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang)}</span>
           </button>
 
           {/* Search */}
@@ -740,11 +725,10 @@ export default function Header({ immersiveHidden = false }) {
             <PopoverContent
               align="end"
               sideOffset={10}
-              aria-label={tr({
-                fr: isReadingView ? "Menu de lecture" : "Menu principal",
-                en: isReadingView ? "Reading menu" : "Main menu",
-                ar: isReadingView ? "قائمة القراءة" : "القائمة الرئيسية",
-              })}
+              aria-label={i18nT(
+                isReadingView ? "header.menuReading" : "header.menuMain",
+                lang,
+              )}
               className={cn(
                 "mp-header-menu z-[300]",
                 isReadingView && "mp-header-menu--reader",
@@ -753,21 +737,13 @@ export default function Header({ immersiveHidden = false }) {
               <div className="mp-header-menu__header">
                 <span className="mp-header-menu__panel-title">
                   {isReadingView ? <Type size={13} strokeWidth={2.2} /> : <Shapes size={13} strokeWidth={2.2} />}
-                  {tr({
-                    fr: isReadingView ? "Lecture" : "Menu",
-                    en: isReadingView ? "Reading" : "Menu",
-                    ar: isReadingView ? "القراءة" : "القائمة",
-                  })}
+                  {i18nT(isReadingView ? "header.reading" : "nav.menu", lang)}
                 </span>
                 <button
                   className="mp-header-menu__close"
                   type="button"
                   onClick={() => setQuickMenuOpen(false)}
-                  aria-label={tr({
-                    fr: "Fermer",
-                    en: "Close",
-                    ar: "إغلاق",
-                  })}
+                  aria-label={i18nT("common.close", lang)}
                 >
                   <X size={15} strokeWidth={2.4} className="mp-header-menu__close-icon" aria-hidden="true" />
                 </button>
@@ -780,7 +756,7 @@ export default function Header({ immersiveHidden = false }) {
               {isReadingView ? (
                 <section
                   className="mp-header-menu__reader-tools"
-                  aria-label={tr({ fr: "Affichage de lecture", en: "Reading display", ar: "عرض القراءة" })}
+                  aria-label={i18nT("header.readerDisplay", lang)}
                 >
                   {/* Font size + layout toggle — compact inline row */}
                   <div className="mp-header-menu__controls-row">
@@ -790,11 +766,7 @@ export default function Header({ immersiveHidden = false }) {
                         data-testid="header-reader-font-decrease"
                         onClick={() => changeArabicFontSize(-2)}
                         disabled={quranFontSize <= ARABIC_FONT_SIZE_MIN}
-                        aria-label={tr({
-                          fr: "Réduire le texte arabe",
-                          en: "Decrease Arabic text size",
-                          ar: "تصغير النص العربي",
-                        })}
+                        aria-label={i18nT("header.fontDecrease", lang)}
                       >
                         <Minus size={12} strokeWidth={2.4} />
                       </button>
@@ -804,11 +776,7 @@ export default function Header({ immersiveHidden = false }) {
                         data-testid="header-reader-font-increase"
                         onClick={() => changeArabicFontSize(2)}
                         disabled={quranFontSize >= ARABIC_FONT_SIZE_MAX}
-                        aria-label={tr({
-                          fr: "Agrandir le texte arabe",
-                          en: "Increase Arabic text size",
-                          ar: "تكبير النص العربي",
-                        })}
+                        aria-label={i18nT("header.fontIncrease", lang)}
                       >
                         <Plus size={12} strokeWidth={2.4} />
                       </button>
@@ -817,7 +785,7 @@ export default function Header({ immersiveHidden = false }) {
                     <div
                       className="mp-header-menu__layout"
                       role="group"
-                      aria-label={tr({ fr: "Mode de lecture", en: "Reading mode", ar: "وضع القراءة" })}
+                      aria-label={i18nT("header.readingMode", lang)}
                     >
                       <button
                         type="button"
@@ -827,7 +795,7 @@ export default function Header({ immersiveHidden = false }) {
                         onClick={() => selectReadingLayout("mushaf")}
                       >
                         <BookOpen size={13} strokeWidth={2} />
-                        <span>Mushaf</span>
+                        <span>{i18nT("header.layoutMushaf", lang)}</span>
                       </button>
                       <button
                         type="button"
@@ -837,7 +805,7 @@ export default function Header({ immersiveHidden = false }) {
                         onClick={() => selectReadingLayout("list")}
                       >
                         <List size={13} strokeWidth={2} />
-                        <span>{tr({ fr: "Liste", en: "List", ar: "قائمة" })}</span>
+                        <span>{i18nT("header.layoutList", lang)}</span>
                       </button>
                     </div>
                   </div>
@@ -865,7 +833,7 @@ export default function Header({ immersiveHidden = false }) {
                           onFocus={() => warmRiwaya(option)}
                           onClick={() => selectRiwaya(option)}
                         >
-                          {option === "hafs" ? "Hafs" : "Warsh"}
+                          {i18nT(option === "hafs" ? "quran.hafs" : "quran.warsh", lang)}
                         </button>
                       ))}
                     </div>

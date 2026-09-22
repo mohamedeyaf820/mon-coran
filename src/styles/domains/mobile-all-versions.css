@@ -1184,9 +1184,14 @@
     }
 
     .app-root .app-view-home .hp-wrapper,
-    .app-root.premium-plus .app-view-home .hp-wrapper,
-    .app-root .app-view-duas .duas-page {
+    .app-root.premium-plus .app-view-home .hp-wrapper {
         padding-inline: 0;
+    }
+
+    /* The home wrapper is full-bleed by design; the supplication cards are
+       discrete surfaces and need a gutter to read as cards. */
+    .app-root .app-view-duas .duas-page {
+        padding-inline: clamp(0.58rem, 2vw, 0.88rem);
     }
 
     .app-root .app-view-home .hp-wrapper,
@@ -1655,7 +1660,7 @@
 }
 
 .app-root .ayah-action-sheet-backdrop {
-    z-index: 630;
+    z-index: calc(var(--z-modal) + 30);
     background:
         linear-gradient(rgba(8, 13, 20, 0.38), rgba(8, 13, 20, 0.46)),
         color-mix(in srgb, var(--bg-primary) 14%, transparent 86%);
@@ -1664,7 +1669,7 @@
 
 .app-root .ayah-action-sheet {
     position: fixed;
-    z-index: 631;
+    z-index: calc(var(--z-modal) + 31);
     top: 50%;
     left: 50%;
     width: min(92vw, 440px);

@@ -1,8 +1,9 @@
 import React, { useMemo } from "react";
 import SmartAyahRenderer from "./SmartAyahRenderer";
-import { toAr, getSurah } from "../../data/surahs";
+import { getSurah } from "../../data/surahs";
 import { getJuzForAyah } from "../../data/juz";
 import { shouldShowStandaloneBasmala } from "../../utils/quranUtils";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
 import MushafInlineHeader from "./MushafInlineHeader";
 import { getMushafFontClass, getRevelationBadge } from "./mushafInlineUtils";
 
@@ -40,7 +41,8 @@ export default function MushafInlineView({
     ayahs[0].numberInSurah === 1;
   const surahNameAr = surahMeta?.ar || "";
   const displayName = lang === "ar" ? surahNameAr : lang === "fr" ? surahMeta?.fr || surahNameAr : surahMeta?.en || surahNameAr;
-  const ayahCountLabel = surahMeta?.ayahs ?? "?";
+  const ayahCountLabel =
+    getSurahVerseCountByRiwaya(surahNum, riwaya) || surahMeta?.ayahs || "?";
   const basmalaTranslation = lang === "fr" ? "Au nom d'Allah, le Tout Misericordieux, le Tres Misericordieux" : lang === "ar" ? null : "In the Name of Allah, the Most Compassionate, the Most Merciful";
 
   return (

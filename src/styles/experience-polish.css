@@ -500,7 +500,7 @@ html body .rc-track__controls {
 html body .rc-btn--play {
   border-color: var(--primary);
   background: var(--primary);
-  color: #fff;
+  color: var(--theme-text-inverse, #fff);
 }
 
 html body .rc-progress {
@@ -632,8 +632,8 @@ html body .app-root[data-view="reading"] .tajweed-legend__rules {
   min-width: 0;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.38rem;
-  margin-top: 0.34rem;
-  padding-top: 0.46rem;
+  margin-top: 0.28rem;
+  padding-top: 0.42rem;
   border-top: 1px solid var(--border);
 }
 
@@ -688,7 +688,7 @@ html body .app-root[data-view="reading"] .tajwid-rule-segment[data-state="instan
 }
 
 html body .tajwid-rule-tooltip {
-  z-index: 420;
+  z-index: calc(var(--z-player) + 10);
   display: grid;
   width: max-content;
   max-width: min(18rem, calc(100vw - 1.25rem));
@@ -868,7 +868,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pa
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
   margin-top: 0.75rem;
   padding-top: 0.8rem;
-  border-top: 1px solid var(--border);
 }
 
 html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot p {
@@ -1063,7 +1062,7 @@ html:not([data-audio-mode="surah"]) body .app-root :is(
 /* Supprimer l'override de bg/color venu de home-audio-ux-refonte qui rendait le bouton gris */
 html body .app-root[data-view="home"] .hp-list .hp-card--list .hp-card-play {
   background: var(--primary) !important;
-  color: #ffffff !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
   border: none;
   box-shadow: 0 3px 10px color-mix(in srgb, var(--primary) 28%, transparent);
   width: 2.4rem !important;

@@ -174,7 +174,7 @@ function Toast({ type = "info", message, onClose, autoClose = 5000, lang }) {
       </div>
       <button
         onClick={onClose}
-        className="shrink-0 text-lg transition-opacity hover:opacity-70"
+        className="inline-flex shrink-0 items-center justify-center text-lg transition-opacity hover:opacity-70 min-w-[max(2.75rem,44px)] min-h-[max(2.75rem,44px)]"
         aria-label={
           lang === "ar" ? "إغلاق" : lang === "en" ? "Close" : "Fermer"
         }
@@ -212,6 +212,7 @@ export default function App() {
       warshStrictMode: current.warshStrictMode,
       mushafLayout: current.mushafLayout,
       showTranslation: current.showTranslation,
+      showTajwid: current.showTajwid,
       translationLangs: current.translationLangs,
       searchOpen: current.searchOpen,
       settingsOpen: current.settingsOpen,
@@ -317,7 +318,25 @@ export default function App() {
     return () => window.removeEventListener("mushafplus-open-shortcuts", openShortcuts);
   }, []);
 
+  const [isWideViewport, setIsWideViewport] = useState(
+    () => typeof window !== "undefined" && typeof window.matchMedia === "function"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : false,
+  );
+  useEffect(() => {
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
+    const mq = window.matchMedia("(min-width: 1024px)");
+    const onChange = (event) => setIsWideViewport(event.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+
   const immersiveActive = !showHome && !showDuas && !legalPage && !routeNotFound;
+  // From lg the drawer shifts <main> beside it (sidebarShiftClass below): the
+  // reading surface stays usable, so the click-out overlay and inert must not
+  // apply there — they belong to the phone/tablet drawer and to focusReading,
+  // where the panel still floats over unshifted content.
+  const sidebarLocksMain = sidebarOpen && !(isWideViewport && !focusReading);
   const sidebarShiftClass =
     !focusReading && sidebarOpen
       ? lang === "ar"
@@ -336,6 +355,45 @@ export default function App() {
       state.tafsirSidebarOpen ||
       showShortcuts,
   );
+
+  const lastControlRef = useRef(null);
+  const panelOpenerRef = useRef(null);
+
+  // Opening a blocking panel puts `inert` on the app root below, which blurs the
+  // trigger in the same commit — before the lazily loaded panel mounts. Neither
+  // Radix nor the panel can then see who opened it, and Escape left keyboard
+  // focus on <body>. Record the activated control at its source, on the events
+  // that still run before React commits the guard.
+  useEffect(() => {
+    const remember = (event) => {
+      const control = event.target?.closest?.(
+        "button,a[href],[role='button'],input,select,textarea",
+      );
+      if (control && !control.closest('[role="dialog"]')) {
+        lastControlRef.current = control;
+      }
+    };
+    document.addEventListener("pointerdown", remember, true);
+    document.addEventListener("keydown", remember, true);
+    return () => {
+      document.removeEventListener("pointerdown", remember, true);
+      document.removeEventListener("keydown", remember, true);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (blockingModalOpen) {
+      panelOpenerRef.current = lastControlRef.current;
+      return;
+    }
+    const opener = panelOpenerRef.current;
+    panelOpenerRef.current = null;
+    // A panel that moved focus somewhere itself (a search result opening the
+    // reader) keeps that focus: only take it back when nothing holds it.
+    if (!opener || !document.contains(opener)) return;
+    if (document.activeElement !== document.body) return;
+    opener.focus({ preventScroll: true });
+  }, [blockingModalOpen]);
 
   useEffect(() => {
     const handleToast = (event) => {
@@ -548,7 +606,7 @@ export default function App() {
         audioService.loadPlaylist(
           items,
           reciter.cdn,
-          reciter.cdnType || "islamic",
+          reciter.cdnType || "everyayah",
         );
       } catch {
         // The home page stays usable even if the preload fails.
@@ -735,6 +793,7 @@ export default function App() {
         className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
+        data-dir={lang === "ar" ? "rtl" : "ltr"}
         data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
         data-home-section={showHome ? state.homeSection || "surah" : undefined}
         data-display-mode={displayMode}
@@ -761,7 +820,7 @@ export default function App() {
             {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
           </Suspense>
 
-          {sidebarOpen && (
+          {sidebarLocksMain && (
             <div
               className="sidebar-clickout-overlay fixed inset-0 z-[999]"
               onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
@@ -773,8 +832,8 @@ export default function App() {
             ref={mainScrollRef}
             id="main-content"
             tabIndex={-1}
-            aria-hidden={sidebarOpen ? "true" : undefined}
-            inert={sidebarOpen ? "" : undefined}
+            aria-hidden={sidebarLocksMain ? "true" : undefined}
+            inert={sidebarLocksMain ? "" : undefined}
             aria-label={
               routeNotFound
                 ? lang === "fr"

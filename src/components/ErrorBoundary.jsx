@@ -1,33 +1,15 @@
 import React from "react";
 import { AlertTriangle, Home, RefreshCw } from "lucide-react";
+import { t } from "../i18n";
 
-const LABELS = {
-  fr: {
-    title: "Une erreur est survenue",
-    body: "Cette section a rencontré un problème inattendu.",
-    reload: "Recharger",
-    home: "Accueil",
-  },
-  en: {
-    title: "Something went wrong",
-    body: "This section encountered an unexpected error.",
-    reload: "Reload",
-    home: "Home",
-  },
-  ar: {
-    title: "حدث خطأ ما",
-    body: "واجه هذا القسم خطأً غير متوقع.",
-    reload: "إعادة التحميل",
-    home: "الرئيسية",
-  },
-};
+const SUPPORTED_LANGS = ["fr", "en", "ar"];
 
 function getLang() {
   const tag = document.documentElement.lang;
-  if (tag && LABELS[tag]) return tag;
+  if (tag && SUPPORTED_LANGS.includes(tag)) return tag;
   try {
     const stored = JSON.parse(localStorage.getItem("mushaf-plus-settings") || "{}");
-    if (stored.lang && LABELS[stored.lang]) return stored.lang;
+    if (stored.lang && SUPPORTED_LANGS.includes(stored.lang)) return stored.lang;
   } catch { /* ignore */ }
   return "fr";
 }
@@ -62,7 +44,6 @@ export class ErrorBoundary extends React.Component {
     if (!this.state.hasError) return this.props.children;
 
     const lang = getLang();
-    const t = LABELS[lang];
 
     return (
       <div
@@ -107,7 +88,7 @@ export class ErrorBoundary extends React.Component {
             letterSpacing: "-.012em",
           }}
         >
-          {t.title}
+          {t("errors.boundaryTitle", lang)}
         </h2>
 
         <p
@@ -119,7 +100,7 @@ export class ErrorBoundary extends React.Component {
             lineHeight: 1.65,
           }}
         >
-          {t.body}
+          {t("errors.boundaryBody", lang)}
         </p>
 
         {import.meta.env.DEV && this.state.error && (
@@ -161,7 +142,7 @@ export class ErrorBoundary extends React.Component {
             }}
           >
             <RefreshCw size={13} strokeWidth={2.5} aria-hidden="true" />
-            {t.reload}
+            {t("errors.boundaryReload", lang)}
           </button>
           <button
             type="button"
@@ -182,7 +163,7 @@ export class ErrorBoundary extends React.Component {
             }}
           >
             <Home size={13} strokeWidth={2.5} aria-hidden="true" />
-            {t.home}
+            {t("errors.boundaryHome", lang)}
           </button>
         </div>
       </div>

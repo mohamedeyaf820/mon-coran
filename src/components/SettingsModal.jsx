@@ -28,7 +28,7 @@ import {
 } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
 import { downloadExport, importFromFile } from "../services/exportService";
-import { clearCache } from "../services/quranAPI";
+import { clearCache, TRANSLATION_CHOICES } from "../services/quranAPI";
 import { clearAllLocalAppData } from "../services/localDataService";
 import { confirmAction } from "../services/interactionService";
 import { toast } from "../lib/utils";
@@ -46,10 +46,6 @@ import {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
 } from "../utils/arabicTypography";
-const TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"].map((id) => ({
-  id,
-  label: id.toUpperCase(),
-}));
 const TABS = [
   { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
@@ -190,6 +186,7 @@ export default function SettingsModal() {
     volume = 1,
   } = state;
 
+  const [cacheBusy, setCacheBusy] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
   const [reciterSearch, setReciterSearch] = useState("");
   const [privacyConfigured, setPrivacyConfigured] = useState(() =>
@@ -234,8 +231,10 @@ export default function SettingsModal() {
     );
   }, [reciterSearch, recitersList]);
 
-  const title = localText(lang, "Paramètres", "Settings", "الإعدادات");
-  const close = () => dispatch({ type: "TOGGLE_SETTINGS" });
+  const title = t("settings.title", lang);
+  // Escape fires onEscapeKeyDown and then Radix's own dismiss (onOpenChange), so
+  // a toggle here flipped the panel closed and straight back open again.
+  const close = () => dispatch({ type: "SET", payload: { settingsOpen: false } });
 
   const handleRiwayaChange = async (nextRiwaya) => {
     const targetRiwaya = nextRiwaya === "warsh" ? "warsh" : "hafs";
@@ -299,27 +298,30 @@ export default function SettingsModal() {
   };
 
   const handleClearCache = async () => {
+    if (cacheBusy) return;
+    const approved = await confirmAction({
+      message: t("settings.clearCacheConfirm", lang),
+      tone: "danger",
+    });
+    if (!approved) return;
+    setCacheBusy(true);
     try {
       await clearCache();
       toast(t("settings.cacheCleared", lang), "success");
-      setTimeout(() => window.location.reload(), 1200);
     } catch (error) {
       if (import.meta.env.DEV) console.warn("clearCache error:", error);
       toast(t("errors.generic", lang), "error");
+    } finally {
+      setCacheBusy(false);
     }
   };
 
   const handleDeleteLocalData = async () => {
     const approved = await confirmAction({
-      title: localText(lang, "Supprimer toutes les données ?", "Delete all data?", "حذف جميع البيانات؟"),
-      message: localText(
-        lang,
-        "Cette action supprime définitivement les réglages, favoris, notes, position de lecture, téléchargements et caches conservés sur cet appareil.",
-        "This permanently removes settings, bookmarks, notes, reading position, downloads and caches stored on this device.",
-        "سيؤدي هذا نهائياً إلى حذف الإعدادات والعلامات والملاحظات وموضع القراءة والتنزيلات والذاكرة المؤقتة من هذا الجهاز.",
-      ),
-      confirmLabel: localText(lang, "Tout supprimer", "Delete everything", "حذف الكل"),
-      cancelLabel: localText(lang, "Annuler", "Cancel", "إلغاء"),
+      title: t("settings.deleteAllTitle", lang),
+      message: t("settings.deleteAllMessage", lang),
+      confirmLabel: t("settings.deleteAllConfirm", lang),
+      cancelLabel: t("common.cancel", lang),
       tone: "danger",
     });
     if (!approved) return;
@@ -327,7 +329,7 @@ export default function SettingsModal() {
     setPrivacyBusy(true);
     try {
       await clearAllLocalAppData();
-      toast(localText(lang, "Données locales supprimées.", "Local data deleted.", "تم حذف البيانات المحلية."), "success");
+      toast(t("settings.dataDeletedToast", lang), "success");
       window.setTimeout(() => window.location.replace("/"), 350);
     } catch (error) {
       if (import.meta.env.DEV) console.warn("delete local data error:", error);
@@ -343,33 +345,21 @@ export default function SettingsModal() {
 
   const privacyFailureText = (error) => {
     if (error === "Current passphrase is invalid") {
-      return localText(
-        lang,
-        "La phrase secr\u00e8te actuelle est incorrecte.",
-        "The current passphrase is incorrect.",
-        "\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062d\u0627\u0644\u064a\u0629 \u063a\u064a\u0631 \u0635\u062d\u064a\u062d\u0629.",
-      );
+      return t("settings.passphraseInvalid", lang);
     }
     if (error === "Passphrase too short") {
-      return localText(
-        lang,
-        `Utilisez au moins ${MIN_PASSPHRASE_LENGTH} caract\u00e8res.`,
-        `Use at least ${MIN_PASSPHRASE_LENGTH} characters.`,
-        `\u0627\u0633\u062a\u062e\u062f\u0645 ${MIN_PASSPHRASE_LENGTH} \u0631\u0645\u0632\u064b\u0627 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0644.`,
+      return t("settings.passphraseTooShort", lang).replace(
+        "{min}",
+        MIN_PASSPHRASE_LENGTH,
       );
     }
-    return localText(
-      lang,
-      "La migration s\u00e9curis\u00e9e a \u00e9chou\u00e9 et a \u00e9t\u00e9 annul\u00e9e autant que possible. Exportez une sauvegarde avant de r\u00e9essayer.",
-      "The secure migration failed and was rolled back where possible. Export a backup before retrying.",
-      "\u0641\u0634\u0644 \u0627\u0644\u062a\u0631\u062d\u064a\u0644 \u0627\u0644\u0622\u0645\u0646 \u0648\u062a\u0645 \u0627\u0644\u062a\u0631\u0627\u062c\u0639 \u0639\u0646\u0647 \u0642\u062f\u0631 \u0627\u0644\u0625\u0645\u0643\u0627\u0646. \u0635\u062f\u0651\u0631 \u0646\u0633\u062e\u0629 \u0627\u062d\u062a\u064a\u0627\u0637\u064a\u0629 \u0642\u0628\u0644 \u0627\u0644\u0645\u062d\u0627\u0648\u0644\u0629 \u0645\u062c\u062f\u062f\u064b\u0627.",
-    );
+    return t("settings.migrationFailed", lang);
   };
 
   const handleEnableProtection = async (event) => {
     event.preventDefault();
     if (privacyFields.next !== privacyFields.confirm) {
-      setPrivacyError(localText(lang, "Les phrases ne correspondent pas.", "Passphrases do not match.", "\u0639\u0628\u0627\u0631\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u064a\u0646."));
+      setPrivacyError(t("settings.passphraseMismatch", lang));
       return;
     }
     setPrivacyBusy(true);
@@ -381,13 +371,13 @@ export default function SettingsModal() {
     }
     setPrivacyConfigured(true);
     setPrivacyFields({ current: "", next: "", confirm: "", disable: "" });
-    toast(localText(lang, "Mode prot\u00e9g\u00e9 activ\u00e9.", "Protected mode enabled.", "\u062a\u0645 \u062a\u0641\u0639\u064a\u0644 \u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a."), "success");
+    toast(t("settings.protectedEnabledToast", lang), "success");
   };
 
   const handleChangeProtection = async (event) => {
     event.preventDefault();
     if (privacyFields.next !== privacyFields.confirm) {
-      setPrivacyError(localText(lang, "Les phrases ne correspondent pas.", "Passphrases do not match.", "\u0639\u0628\u0627\u0631\u062a\u0627 \u0627\u0644\u0645\u0631\u0648\u0631 \u063a\u064a\u0631 \u0645\u062a\u0637\u0627\u0628\u0642\u062a\u064a\u0646."));
+      setPrivacyError(t("settings.passphraseMismatch", lang));
       return;
     }
     setPrivacyBusy(true);
@@ -402,7 +392,7 @@ export default function SettingsModal() {
       return;
     }
     setPrivacyFields({ current: "", next: "", confirm: "", disable: "" });
-    toast(localText(lang, "Phrase secr\u00e8te modifi\u00e9e.", "Passphrase changed.", "\u062a\u0645 \u062a\u063a\u064a\u064a\u0631 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631."), "success");
+    toast(t("settings.passphraseChangedToast", lang), "success");
   };
 
   const handleDisableProtection = async (event) => {
@@ -416,7 +406,7 @@ export default function SettingsModal() {
     }
     setPrivacyConfigured(false);
     setPrivacyFields({ current: "", next: "", confirm: "", disable: "" });
-    toast(localText(lang, "Mode prot\u00e9g\u00e9 d\u00e9sactiv\u00e9.", "Protected mode disabled.", "\u062a\u0645 \u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a."), "success");
+    toast(t("settings.protectedDisabledToast", lang), "success");
   };
 
   const handleImport = async (event) => {
@@ -464,8 +454,8 @@ export default function SettingsModal() {
             const isActive = theme === item.id;
             const periodLabel =
               item.period === "night"
-                ? localText(lang, "Nuit", "Night", "\u0644\u064a\u0644\u064a")
-                : localText(lang, "Jour", "Day", "\u0646\u0647\u0627\u0631\u064a");
+                ? t("settings.periodNight", lang)
+                : t("settings.periodDay", lang);
             return (
               <button
                 type="button"
@@ -545,7 +535,7 @@ export default function SettingsModal() {
 
   const renderReadingTab = () => (
     <div className="settings-panel-stack">
-      <Section title={localText(lang, "Riwaya par défaut", "Default riwaya", "الرواية الافتراضية")}>
+      <Section title={t("settings.riwayaDefault", lang)}>
         <Segmented
           ariaLabel="Riwaya"
           value={activeRiwaya}
@@ -585,7 +575,7 @@ export default function SettingsModal() {
         </div>
       </Section>
 
-      <Section title={localText(lang, "Tailles de texte", "Text sizes", "حجم النص")}>
+      <Section title={t("settings.textSizes", lang)}>
         <SliderRow
           id="settings-font-size-quran"
           label={t("settings.arabicFontSize", lang)}
@@ -607,7 +597,7 @@ export default function SettingsModal() {
 
       <Section title={t("settings.translationLang", lang)}>
         <div className="settings-chip-grid" role="group" aria-label={t("settings.translationLang", lang)}>
-          {TRANSLATION_LANGS.map((item) => {
+          {TRANSLATION_CHOICES.map((item) => {
             const isActive = translationLangs.includes(item.id);
             return (
               <button
@@ -618,11 +608,16 @@ export default function SettingsModal() {
                 onClick={() => handleTranslationToggle(item.id)}
                 aria-pressed={isActive}
               >
-                {item.label}
+                {item.labelKey ? t(item.labelKey, lang) : item.label}
               </button>
             );
           })}
         </div>
+        {translationLangs.some((id) =>
+          TRANSLATION_CHOICES.find((item) => item.id === id)?.riwaya === "warsh",
+        ) && (
+          <p className="settings-hint">{t("settings.translationWarshHint", lang)}</p>
+        )}
       </Section>
 
       <Section title={t("settings.readingHelpers", lang)}>
@@ -653,10 +648,10 @@ export default function SettingsModal() {
 
   const renderAudioTab = () => (
     <div className="settings-panel-stack">
-      <Section title={localText(lang, "Lecture audio", "Audio playback", "تشغيل الصوت")}>
+      <Section title={t("settings.audioPlayback", lang)}>
         <SliderRow
           id="settings-audio-speed"
-          label={localText(lang, "Vitesse", "Speed", "السرعة")}
+          label={t("audio.speed", lang)}
           min={0.5}
           max={2}
           step={0.25}
@@ -666,7 +661,7 @@ export default function SettingsModal() {
         />
         <SliderRow
           id="settings-audio-volume"
-          label={localText(lang, "Volume", "Volume", "مستوى الصوت")}
+          label={t("audio.volume", lang)}
           min={0}
           max={100}
           value={Math.round(volume * 100)}
@@ -726,13 +721,13 @@ export default function SettingsModal() {
       </Section>
 
       <details className="settings-advanced-disclosure">
-        <summary>{localText(lang, "Dépannage", "Troubleshooting", "استكشاف الأخطاء")}</summary>
+        <summary>{t("settings.troubleshooting", lang)}</summary>
         <Section title={t("settings.clearCache", lang)}>
           <div className="settings-cache-note">
             <Info size={16} />
             <span>{t("settings.cacheInfo", lang)}</span>
           </div>
-          <button type="button" className="settings-danger-button" onClick={handleClearCache}>
+          <button type="button" className="settings-danger-button" onClick={handleClearCache} disabled={cacheBusy} aria-busy={cacheBusy}>
             <Trash2 size={16} />
             <span>{t("settings.clearCache", lang)}</span>
           </button>
@@ -743,10 +738,10 @@ export default function SettingsModal() {
 
   const renderPrivacyTab = () => (
     <div className="settings-panel-stack">
-      <Section title={localText(lang, "Données et confidentialité", "Data and privacy", "البيانات والخصوصية")}>
+      <Section title={t("settings.dataPrivacy", lang)}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />
-          <span>{localText(lang, "Sauvegardez ou restaurez vos réglages, favoris, notes et listes d’écoute.", "Back up or restore settings, bookmarks, notes and listening lists.", "احفظ أو استعد الإعدادات والمفضلة والملاحظات وقوائم الاستماع.")}</span>
+          <span>{t("settings.backupRestoreHint", lang)}</span>
         </div>
         <div className="settings-action-grid">
           <button type="button" className="settings-action-button" onClick={downloadExport}>
@@ -768,61 +763,32 @@ export default function SettingsModal() {
       </Section>
 
       <details className="settings-advanced-disclosure">
-        <summary>{localText(lang, "Protection locale avancée", "Advanced local protection", "الحماية المحلية المتقدمة")}</summary>
-      <Section
-        title={localText(
-          lang,
-          "Protection locale",
-          "Local protection",
-          "\u0627\u0644\u062d\u0645\u0627\u064a\u0629 \u0627\u0644\u0645\u062d\u0644\u064a\u0629",
-        )}
-      >
+        <summary>{t("settings.advancedProtection", lang)}</summary>
+      <Section title={t("settings.localProtection", lang)}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />
           <span>
-            {localText(
-              lang,
-              "Le mode prot\u00e9g\u00e9 chiffre les r\u00e9glages, la position de lecture, les notes et les favoris avec une cl\u00e9 d\u00e9riv\u00e9e de votre phrase secr\u00e8te.",
-              "Protected mode encrypts settings, reading position, notes and bookmarks with a key derived from your passphrase.",
-              "\u064a\u0634\u0641\u0651\u0631 \u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0648\u0645\u0648\u0636\u0639 \u0627\u0644\u0642\u0631\u0627\u0621\u0629 \u0648\u0627\u0644\u0645\u0644\u0627\u062d\u0638\u0627\u062a \u0648\u0627\u0644\u0625\u0634\u0627\u0631\u0627\u062a \u0628\u0645\u0641\u062a\u0627\u062d \u0645\u0634\u062a\u0642 \u0645\u0646 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.",
-            )}
+            {t("settings.protectionExplain", lang)}
           </span>
         </div>
         {privacyConfigured ? (
           <div className="settings-tool-link">
             <span>
-              {localText(
-                lang,
-                "Mode prot\u00e9g\u00e9 actif",
-                "Protected mode is active",
-                "\u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a \u0645\u0641\u0639\u0651\u0644",
-              )}
+              {t("settings.protectionActive", lang)}
             </span>
             <small>
-              {localText(
-                lang,
-                "La cl\u00e9 reste seulement en m\u00e9moire jusqu\u2019au verrouillage ou au rechargement.",
-                "The key remains in memory only until you lock or reload.",
-                "\u064a\u0628\u0642\u0649 \u0627\u0644\u0645\u0641\u062a\u0627\u062d \u0641\u064a \u0627\u0644\u0630\u0627\u0643\u0631\u0629 \u0641\u0642\u0637 \u062d\u062a\u0649 \u0627\u0644\u0642\u0641\u0644 \u0623\u0648 \u0625\u0639\u0627\u062f\u0629 \u0627\u0644\u062a\u062d\u0645\u064a\u0644.",
-              )}
+              {t("settings.protectionKeyHint", lang)}
             </small>
           </div>
         ) : null}
       </Section>
 
       {!privacyConfigured ? (
-        <Section
-          title={localText(
-            lang,
-            "Activer",
-            "Enable",
-            "\u062a\u0641\u0639\u064a\u0644",
-          )}
-        >
+        <Section title={t("settings.enableSection", lang)}>
           <form className="settings-panel-stack" onSubmit={handleEnableProtection}>
             <div className="settings-time-grid">
               <label htmlFor="settings-protection-new">
-                <span>{localText(lang, "Phrase secr\u00e8te", "Passphrase", "\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631")}</span>
+                <span>{t("settings.passphraseLabel", lang)}</span>
                 <input
                   id="settings-protection-new"
                   type="password"
@@ -835,7 +801,7 @@ export default function SettingsModal() {
                 />
               </label>
               <label htmlFor="settings-protection-confirm">
-                <span>{localText(lang, "Confirmer", "Confirm", "\u062a\u0623\u0643\u064a\u062f")}</span>
+                <span>{t("confirm.confirm", lang)}</span>
                 <input
                   id="settings-protection-confirm"
                   type="password"
@@ -850,57 +816,57 @@ export default function SettingsModal() {
             </div>
             <button type="submit" className="settings-action-button" disabled={privacyBusy}>
               <ShieldCheck size={16} aria-hidden="true" />
-              <span>{privacyBusy ? localText(lang, "Migration\u2026", "Migrating\u2026", "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u0631\u062d\u064a\u0644\u2026") : localText(lang, "Activer le mode prot\u00e9g\u00e9", "Enable protected mode", "\u062a\u0641\u0639\u064a\u0644 \u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a")}</span>
+              <span>{privacyBusy ? t("settings.migrating", lang) : t("settings.enableProtected", lang)}</span>
             </button>
           </form>
         </Section>
       ) : (
         <>
-          <Section title={localText(lang, "Session", "Session", "\u0627\u0644\u062c\u0644\u0633\u0629")}>
+          <Section title={t("settings.session", lang)}>
             <button type="button" className="settings-action-button" onClick={lockProtectedModeNow}>
               <LockKeyhole size={16} aria-hidden="true" />
-              <span>{localText(lang, "Verrouiller maintenant", "Lock now", "\u0642\u0641\u0644 \u0627\u0644\u0622\u0646")}</span>
+              <span>{t("settings.lockNow", lang)}</span>
             </button>
           </Section>
 
-          <Section title={localText(lang, "Modifier la phrase secr\u00e8te", "Change passphrase", "\u062a\u063a\u064a\u064a\u0631 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631")}>
+          <Section title={t("settings.changePassphrase", lang)}>
             <form className="settings-panel-stack" onSubmit={handleChangeProtection}>
               <div className="settings-time-grid">
                 <label htmlFor="settings-protection-current">
-                  <span>{localText(lang, "Phrase actuelle", "Current passphrase", "\u0627\u0644\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u062d\u0627\u0644\u064a\u0629")}</span>
+                  <span>{t("settings.currentPassphrase", lang)}</span>
                   <input id="settings-protection-current" type="password" autoComplete="current-password" maxLength={256} value={privacyFields.current} onChange={(event) => setPrivacyField("current", event.target.value)} required />
                 </label>
                 <label htmlFor="settings-protection-replacement">
-                  <span>{localText(lang, "Nouvelle phrase", "New passphrase", "\u0627\u0644\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629")}</span>
+                  <span>{t("settings.newPassphrase", lang)}</span>
                   <input id="settings-protection-replacement" type="password" autoComplete="new-password" minLength={MIN_PASSPHRASE_LENGTH} maxLength={256} value={privacyFields.next} onChange={(event) => setPrivacyField("next", event.target.value)} required />
                 </label>
               </div>
               <div className="settings-time-grid">
                 <label htmlFor="settings-protection-replacement-confirm">
-                  <span>{localText(lang, "Confirmer la nouvelle phrase", "Confirm new passphrase", "\u062a\u0623\u0643\u064a\u062f \u0627\u0644\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u062c\u062f\u064a\u062f\u0629")}</span>
+                  <span>{t("settings.confirmNewPassphrase", lang)}</span>
                   <input id="settings-protection-replacement-confirm" type="password" autoComplete="new-password" minLength={MIN_PASSPHRASE_LENGTH} maxLength={256} value={privacyFields.confirm} onChange={(event) => setPrivacyField("confirm", event.target.value)} required />
                 </label>
               </div>
               <button type="submit" className="settings-action-button" disabled={privacyBusy}>
-                {localText(lang, "Modifier", "Change", "\u062a\u063a\u064a\u064a\u0631")}
+                {t("settings.changeButton", lang)}
               </button>
             </form>
           </Section>
 
-          <Section title={localText(lang, "D\u00e9sactiver", "Disable", "\u0625\u064a\u0642\u0627\u0641")}>
+          <Section title={t("settings.disableSection", lang)}>
             <div className="settings-cache-note">
               <Info size={16} aria-hidden="true" />
-              <span>{localText(lang, "Les donn\u00e9es seront rechiffr\u00e9es avec la cl\u00e9 locale de ce navigateur.", "Data will be re-encrypted with this browser's local device key.", "\u0633\u062a\u0639\u0627\u062f \u062a\u0634\u0641\u064a\u0631 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0628\u0645\u0641\u062a\u0627\u062d \u0647\u0630\u0627 \u0627\u0644\u0645\u062a\u0635\u0641\u062d \u0627\u0644\u0645\u062d\u0644\u064a.")}</span>
+              <span>{t("settings.disableNote", lang)}</span>
             </div>
             <form className="settings-panel-stack" onSubmit={handleDisableProtection}>
               <div className="settings-time-grid">
                 <label htmlFor="settings-protection-disable">
-                  <span>{localText(lang, "Phrase secr\u00e8te actuelle", "Current passphrase", "\u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631 \u0627\u0644\u062d\u0627\u0644\u064a\u0629")}</span>
+                  <span>{t("settings.disableCurrentPassphrase", lang)}</span>
                   <input id="settings-protection-disable" type="password" autoComplete="current-password" maxLength={256} value={privacyFields.disable} onChange={(event) => setPrivacyField("disable", event.target.value)} required />
                 </label>
               </div>
               <button type="submit" className="settings-danger-button" disabled={privacyBusy}>
-                {localText(lang, "D\u00e9sactiver le mode prot\u00e9g\u00e9", "Disable protected mode", "\u0625\u064a\u0642\u0627\u0641 \u0627\u0644\u0648\u0636\u0639 \u0627\u0644\u0645\u062d\u0645\u064a")}
+                {t("settings.disableProtected", lang)}
               </button>
             </form>
           </Section>
@@ -910,17 +876,17 @@ export default function SettingsModal() {
       <p className="settings-cache-note" role="alert" aria-live="polite">
         {privacyError}
       </p>
-      <Section title={localText(lang, "Limites", "Limits", "\u0627\u0644\u062d\u062f\u0648\u062f")}>
+      <Section title={t("settings.limits", lang)}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />
-          <span>{localText(lang, "Cette protection r\u00e9duit l\u2019exposition des donn\u00e9es au repos, mais ne prot\u00e8ge pas un appareil compromis ni une page d\u00e9j\u00e0 d\u00e9verrouill\u00e9e. Il n\u2019existe aucune r\u00e9cup\u00e9ration de phrase secr\u00e8te.", "This reduces exposure of data at rest, but cannot protect a compromised device or an already unlocked page. Passphrases cannot be recovered.", "\u062a\u0642\u0644\u0644 \u0647\u0630\u0647 \u0627\u0644\u062d\u0645\u0627\u064a\u0629 \u0645\u0646 \u0643\u0634\u0641 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0645\u062e\u0632\u0646\u0629\u060c \u0644\u0643\u0646\u0647\u0627 \u0644\u0627 \u062a\u062d\u0645\u064a \u062c\u0647\u0627\u0632\u064b\u0627 \u0645\u062e\u062a\u0631\u0642\u064b\u0627 \u0623\u0648 \u0635\u0641\u062d\u0629 \u0645\u0641\u062a\u0648\u062d\u0629. \u0644\u0627 \u064a\u0645\u0643\u0646 \u0627\u0633\u062a\u0639\u0627\u062f\u0629 \u0639\u0628\u0627\u0631\u0629 \u0627\u0644\u0645\u0631\u0648\u0631.")}</span>
+          <span>{t("settings.limitsNote", lang)}</span>
         </div>
       </Section>
       </details>
-      <Section title={localText(lang, "Suppression des données", "Data deletion", "حذف البيانات")}>
+      <Section title={t("settings.dataDeletion", lang)}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />
-          <span>{localText(lang, "Supprime les données personnelles et les caches de ce navigateur. Cette action est irréversible.", "Removes personal data and caches from this browser. This cannot be undone.", "يحذف البيانات الشخصية والذاكرة المؤقتة من هذا المتصفح ولا يمكن التراجع عنه.")}</span>
+          <span>{t("settings.deletionNote", lang)}</span>
         </div>
         <button
           type="button"
@@ -930,7 +896,7 @@ export default function SettingsModal() {
           data-testid="delete-local-data"
         >
           <Trash2 size={16} aria-hidden="true" />
-          <span>{localText(lang, "Supprimer toutes mes données locales", "Delete all my local data", "حذف جميع بياناتي المحلية")}</span>
+          <span>{t("settings.deleteAllButton", lang)}</span>
         </button>
       </Section>
     </div>
@@ -961,12 +927,7 @@ export default function SettingsModal() {
               <button
                 type="button"
                 className="settings-close-button"
-                aria-label={localText(
-                  lang,
-                  "Fermer les param\u00e8tres",
-                  "Close settings",
-                  "\u0625\u063a\u0644\u0627\u0642 \u0627\u0644\u0625\u0639\u062f\u0627\u062f\u0627\u062a",
-                )}
+                aria-label={t("settings.closeAria", lang)}
               >
                 <X size={20} strokeWidth={2.4} />
               </button>
@@ -976,7 +937,7 @@ export default function SettingsModal() {
           <nav
             className="settings-drawer__tabs"
             role="tablist"
-            aria-label={localText(lang, "Onglets des paramètres", "Settings tabs", "تبويبات الإعدادات")}
+            aria-label={t("settings.tabsAria", lang)}
             onKeyDown={handleTabKeyDown}
           >
             {TABS.map((tab) => {

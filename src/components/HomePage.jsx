@@ -112,12 +112,11 @@ function ReciterDetailFallback({ lang }) {
 }
 
 import { t as i18nT } from "../i18n";
+import { filterSurahDirectory, foldSearchText } from "../utils/searchIntelligence";
 import {
   HOME_INITIAL_SURAHS,
   HOME_INITIAL_SURAHS_LOW,
   HOME_SURAHS_BATCH,
-  HOME_FOOTER_SECTION_STYLE,
-  SURAH_SEARCH_INDEX,
   DAILY_VERSES,
   getDailyVerseIndex,
   getSuggestedSurahs,
@@ -325,24 +324,14 @@ export default function HomePage({ lowPerfMode = false }) {
     };
   }, [selectedReciter]);
 
-  const trimmedDeferredFilter = deferredFilter.trim();
-  const normalizedDeferredFilter = trimmedDeferredFilter.toLowerCase();
+  const normalizedDeferredFilter = foldSearchText(deferredFilter);
   const hasSurahFilter = normalizedDeferredFilter.length > 0;
 
   const filteredSurahs = useMemo(() => {
-    const source = !trimmedDeferredFilter
-      ? SURAH_SEARCH_INDEX
-      : SURAH_SEARCH_INDEX.filter(
-          (entry) =>
-            entry.ar.includes(trimmedDeferredFilter) ||
-            entry.enLower.includes(normalizedDeferredFilter) ||
-            entry.frLower.includes(normalizedDeferredFilter) ||
-            entry.number === trimmedDeferredFilter,
-        );
-    const surahs = source.map((entry) => entry.surah);
+    const surahs = filterSurahDirectory(deferredFilter);
     surahs.sort((a, b) => (sortDir === "asc" ? a.n - b.n : b.n - a.n));
     return surahs;
-  }, [normalizedDeferredFilter, sortDir, trimmedDeferredFilter]);
+  }, [deferredFilter, sortDir]);
 
   const filteredReciters = useMemo(() => {
     const favorites = new Set(state.favoriteReciters || []);
@@ -353,18 +342,13 @@ export default function HomePage({ lowPerfMode = false }) {
         String(reciter.style || "").toLowerCase() === reciterStyleFilter;
       if (!styleMatch) return false;
       if (!normalizedDeferredFilter) return true;
-      const fr = String(reciter.nameFr || "").toLowerCase();
-      const en = String(reciter.nameEn || "").toLowerCase();
-      const ar = String(reciter.name || "");
-      const aliases = (reciter.searchAliases || [])
-        .map((alias) => String(alias).toLowerCase())
-        .join(" ");
-      return (
-        fr.includes(normalizedDeferredFilter) ||
-        en.includes(normalizedDeferredFilter) ||
-        ar.includes(trimmedDeferredFilter) ||
-        aliases.includes(normalizedDeferredFilter)
-      );
+      const fields = [
+        reciter.nameFr,
+        reciter.nameEn,
+        reciter.name,
+        (reciter.searchAliases || []).join(" "),
+      ].map((field) => foldSearchText(field));
+      return fields.some((field) => field.includes(normalizedDeferredFilter));
     });
     return list.sort((a, b) => {
       const aFav = favorites.has(a.id) ? 1 : 0;
@@ -382,7 +366,6 @@ export default function HomePage({ lowPerfMode = false }) {
     normalizedDeferredFilter,
     reciterStyleFilter,
     state.favoriteReciters,
-    trimmedDeferredFilter,
   ]);
 
   const renderedSurahs = useMemo(
@@ -448,7 +431,7 @@ export default function HomePage({ lowPerfMode = false }) {
       try {
         const items = await buildAudioPlaylistForSurah(surahNum, state.riwaya);
         if (items.length === 0) return;
-        audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "islamic");
+        audioService.loadPlaylist(items, rec.cdn, rec.cdnType || "everyayah");
         await audioService.play();
         set({
           displayMode: "surah",
@@ -602,7 +585,7 @@ export default function HomePage({ lowPerfMode = false }) {
         const items = await buildSurahPlaylistForRiwaya(
           surahNum,
           riwaya,
-          targetReciter.cdnType || "islamic",
+          targetReciter.cdnType || "everyayah",
         );
         if (!items.length) return;
         const played = playPlaylistWithReciter({
@@ -641,7 +624,7 @@ export default function HomePage({ lowPerfMode = false }) {
         const stationItems = await buildContinuousRadioPlaylist(
           1,
           riwaya,
-          targetReciter.cdnType || "islamic",
+          targetReciter.cdnType || "everyayah",
         );
         if (!stationItems.length) return;
         const played = playPlaylistWithReciter({
@@ -670,7 +653,7 @@ export default function HomePage({ lowPerfMode = false }) {
         const items = await buildStationPlaylistForRiwaya(
           station.surahs,
           riwaya,
-          stationReciter.cdnType || "islamic",
+          stationReciter.cdnType || "everyayah",
         );
         if (!items.length) return;
         const played = playPlaylistWithReciter({
@@ -969,10 +952,10 @@ export default function HomePage({ lowPerfMode = false }) {
       {selectedReciter && typeof document !== "undefined"
         ? createPortal(
             <div
-              className="reciter-detail-overlay fixed inset-0 z-40 flex items-center justify-center p-4"
+              className="reciter-detail-overlay fixed inset-0 flex items-center justify-center p-4"
               role="dialog"
               aria-modal="true"
-              aria-label={lang === "fr" ? "Détail récitateur" : lang === "ar" ? "تفاصيل القارئ" : "Reciter detail"}
+              aria-label={translate("home.reciterDetailAria")}
               onClick={() => setSelectedReciterId(null)}
             >
               <Suspense fallback={<ReciterDetailFallback lang={lang} />}>

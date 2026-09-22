@@ -2,19 +2,13 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { TriangleAlert, X } from "lucide-react";
 import { useAppLocale } from "../context/AppContext";
+import { t } from "../i18n";
 import { APP_CONFIRM_EVENT } from "../services/interactionService";
-
-const LABELS = {
-  fr: { title: "Confirmer l’action", confirm: "Confirmer", cancel: "Annuler", close: "Fermer" },
-  en: { title: "Confirm action", confirm: "Confirm", cancel: "Cancel", close: "Close" },
-  ar: { title: "تأكيد الإجراء", confirm: "تأكيد", cancel: "إلغاء", close: "إغلاق" },
-};
 
 export default function ConfirmDialogHost() {
   const { lang } = useAppLocale();
   const [request, setRequest] = useState(null);
   const requestRef = useRef(null);
-  const labels = LABELS[lang] || LABELS.fr;
 
   const finish = useCallback((approved) => {
     const active = requestRef.current;
@@ -52,23 +46,23 @@ export default function ConfirmDialogHost() {
             </span>
             <div className="min-w-0 flex-1">
               <Dialog.Title className="text-base font-black leading-tight">
-                {request?.title || labels.title}
+                {request?.title || t("confirm.title", lang)}
               </Dialog.Title>
               <Dialog.Description id="app-confirm-description" className="mt-2 text-sm leading-6 text-[var(--text-secondary)]">
                 {request?.message}
               </Dialog.Description>
             </div>
-            <button type="button" onClick={() => finish(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]" aria-label={labels.close}>
+            <button type="button" onClick={() => finish(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-primary)]" aria-label={t("common.close", lang)}>
               <X size={16} aria-hidden="true" />
             </button>
           </div>
 
           <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button type="button" onClick={() => finish(false)} className="min-h-11 rounded-xl border border-[var(--border)] px-4 text-sm font-bold hover:bg-[var(--bg-secondary)]">
-              {request?.cancelLabel || labels.cancel}
+              {request?.cancelLabel || t("confirm.cancel", lang)}
             </button>
             <button type="button" onClick={() => finish(true)} className={`min-h-11 rounded-xl px-4 text-sm font-bold text-white shadow-sm ${request?.tone === "danger" ? "bg-red-600 hover:bg-red-700" : "bg-[var(--primary)] hover:brightness-110"}`}>
-              {request?.confirmLabel || labels.confirm}
+              {request?.confirmLabel || t("confirm.confirm", lang)}
             </button>
           </div>
         </Dialog.Content>

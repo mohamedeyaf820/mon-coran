@@ -17,6 +17,8 @@ import {
   Type,
 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import { useApp } from "../../context/AppContext";
 import audioService from "../../services/audioService";
@@ -33,11 +35,6 @@ function readReaderToolsState() {
   } catch {
     return false;
   }
-}
-
-function lbl(lang, fr, en, ar = en) {
-  if (lang === "ar") return ar;
-  return lang === "fr" ? fr : en;
 }
 
 export default function SurahReaderHeader({
@@ -100,14 +97,16 @@ export default function SurahReaderHeader({
   const s = getSurah(surahNum);
   if (!s) return null;
 
+  const verseCount = getSurahVerseCountByRiwaya(surahNum, state.riwaya) || s.ayahs;
+
   const surahLigature = String(surahNum).padStart(3, "0");
 
   const isMeccan = s.type === "Meccan";
   const translatedName =
     lang === "ar" ? s.ar : lang === "fr" ? s.fr || s.en : s.en;
   const revelationLabel = isMeccan
-    ? lbl(lang, "Mecquoise", "Meccan", "مكية")
-    : lbl(lang, "Médinoise", "Medinan", "مدنية");
+    ? t("quran.meccan", lang)
+    : t("quran.medinan", lang);
 
   const isPreparing = Boolean(preparingSurah && preparingSurah === surahNum);
   const mushafIsOn = mushafLayout === "mushaf";
@@ -136,31 +135,26 @@ export default function SurahReaderHeader({
     {
       key: "mushaf",
       icon: <BookOpen size={13} />,
-      label: lbl(lang, "Mushaf", "Mushaf", "مصحف"),
+      label: t("reader.mushaf", lang),
       active: mushafIsOn,
       onClick: setMushafLayout,
     },
     {
       key: "list",
       icon: <List size={13} />,
-      label: lbl(lang, "Liste", "List", "قائمة"),
+      label: t("reader.list", lang),
       active: !mushafIsOn,
       onClick: setListLayout,
     },
   ];
 
   /* ── Study toggles ── */
-  const translationMushafHint = lbl(
-    lang,
-    "Traduction indisponible en mode Mushaf \u2014 passer en mode Liste",
-    "Translation is unavailable in Mushaf mode \u2014 switch to List mode",
-    "\u0627\u0644\u062a\u0631\u062c\u0645\u0629 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d\u0629 \u0641\u064a \u0648\u0636\u0639 \u0627\u0644\u0645\u0635\u062d\u0641 \u2014 \u0627\u0633\u062a\u062e\u062f\u0645 \u0648\u0636\u0639 \u0627\u0644\u0642\u0627\u0626\u0645\u0629",
-  );
+  const translationMushafHint = t("reader.translationMushafHint", lang);
   const studyToggles = [
     {
       key: "translation",
       icon: <Languages size={13} />,
-      label: lbl(lang, "Traduction", "Translation", "ترجمة"),
+      label: t("reader.translationToggle", lang),
       active: showTranslation,
       onClick: toggleTranslation,
       hidden: false,
@@ -170,7 +164,7 @@ export default function SurahReaderHeader({
     {
       key: "tajweed",
       icon: <Palette size={13} />,
-      label: lbl(lang, "Tajweed", "Tajweed", "تجويد"),
+      label: t("reader.tajweedToggle", lang),
       active: showTajwid,
       onClick: toggleTajweed,
       hidden: false,
@@ -179,7 +173,7 @@ export default function SurahReaderHeader({
   const visibleToggles = studyToggles.filter((toggle) => !toggle.hidden);
 
   return (
-    <div className="reader-command-bar srh-root" aria-label={lbl(lang, "En-tête de lecture", "Reading header", "رأس القراءة")}>
+    <div className="reader-command-bar srh-root" aria-label={t("reader.headerAria", lang)}>
       {/* ══ ROW 1 — Identity ════════════════════════════════════ */}
       <div className="srh-identity">
         <div
@@ -195,11 +189,9 @@ export default function SurahReaderHeader({
           }}
           aria-expanded={readerToolsOpen}
           aria-controls="srh-reader-tools"
-          aria-label={lbl(
+          aria-label={t(
+            readerToolsOpen ? "reader.hideControls" : "reader.showControls",
             lang,
-            readerToolsOpen ? "Masquer les réglages de lecture" : "Afficher les réglages de lecture",
-            readerToolsOpen ? "Hide reading controls" : "Show reading controls",
-            readerToolsOpen ? "إخفاء إعدادات القراءة" : "إظهار إعدادات القراءة",
           )}
         >
         {/* Arabic name */}
@@ -221,18 +213,13 @@ export default function SurahReaderHeader({
                 {revelationLabel}
               </span>
               <span className="srh-badge">
-                {s.ayahs} {lbl(lang, "versets", "verses", "آيات")}
+                {verseCount} {t("reader.verses", lang)}
               </span>
             </div>
           </div>
           <p className="srh-sub">{s.en}</p>
           <p className="srh-desc">
-            {lbl(
-              lang,
-              `Lisez et écoutez la Sourate ${s.fr || s.en} — traduction, tafsir, récitation audio.`,
-              `Read and listen to Surah ${s.en} — translation, tafsir, audio recitation.`,
-              `اقرأ واستمع إلى سورة ${s.ar} — تفسير، تلاوة.`,
-            )}
+            {t("reader.description", lang).replace("{name}", translatedName)}
           </p>
         </div>
           <ChevronDown className="srh-identity__chevron" size={15} aria-hidden="true" />
@@ -245,11 +232,11 @@ export default function SurahReaderHeader({
               type="button"
               className="srh-info-btn srh-fullscreen-btn"
               onClick={onOpenFullscreen}
-              aria-label={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
-              title={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
+              aria-label={t("reader.immersive", lang)}
+              title={t("reader.immersive", lang)}
             >
               <Maximize2 size={15} aria-hidden="true" />
-              <span className="srh-info-btn__label">{lbl(lang, "Plein écran", "Full screen", "ملء الشاشة")}</span>
+              <span className="srh-info-btn__label">{t("reader.fullscreen", lang)}</span>
             </button>
           ) : null}
           <button
@@ -257,7 +244,7 @@ export default function SurahReaderHeader({
             className={cn("srh-play-btn", isPlaying && "srh-play-btn--playing")}
             onClick={handlePlay}
             disabled={isPreparing}
-            aria-label={isPlaying ? lbl(lang, "Pause", "Pause", "إيقاف") : lbl(lang, "Écouter", "Listen", "استمع")}
+            aria-label={isPlaying ? t("audio.pause", lang) : t("actions.listen", lang)}
             data-testid="surah-play"
           >
             {isPreparing ? (
@@ -269,10 +256,10 @@ export default function SurahReaderHeader({
             )}
             <span className="srh-play-btn__label">
               {isPreparing
-                ? lbl(lang, "Chargement...", "Loading...", "جارٍ...")
+                ? t("reader.loading", lang)
                 : isPlaying
-                ? lbl(lang, "Pause", "Pause", "إيقاف")
-                : lbl(lang, "Écouter", "Listen", "استمع")}
+                ? t("audio.pause", lang)
+                : t("actions.listen", lang)}
             </span>
           </button>
 
@@ -282,10 +269,10 @@ export default function SurahReaderHeader({
             onClick={openInfo}
             aria-expanded={showInfo}
             aria-haspopup="dialog"
-            aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
+            aria-label={t("reader.infoAria", lang)}
           >
             <Info size={15} />
-            <span className="srh-info-btn__label">Info</span>
+            <span className="srh-info-btn__label">{t("reader.infoShort", lang)}</span>
           </button>
         </div>
       </div>
@@ -304,11 +291,9 @@ export default function SurahReaderHeader({
           }}
           aria-expanded={readerToolsOpen}
           aria-controls="srh-reader-tools"
-          aria-label={lbl(
+          aria-label={t(
+            readerToolsOpen ? "reader.hideControls" : "reader.showControls",
             lang,
-            readerToolsOpen ? "Masquer les réglages de lecture" : "Afficher les réglages de lecture",
-            readerToolsOpen ? "Hide reading controls" : "Show reading controls",
-            readerToolsOpen ? "إخفاء إعدادات القراءة" : "إظهار إعدادات القراءة",
           )}
         >
           <span className="srh-mobile-bar__name" dir="rtl" lang="ar" aria-label={s.ar} role="img">
@@ -318,7 +303,7 @@ export default function SurahReaderHeader({
           </span>
           <span className="srh-mobile-bar__title">
             <strong>{translatedName}</strong>
-            <small>{surahNum} · {s.ayahs} {lbl(lang, "versets", "verses", "آيات")}</small>
+            <small>{surahNum} · {verseCount} {t("reader.verses", lang)}</small>
           </span>
           <ChevronDown className="srh-mobile-bar__chevron" size={13} aria-hidden="true" />
         </button>
@@ -328,7 +313,7 @@ export default function SurahReaderHeader({
               type="button"
               className="srh-info-btn srh-fullscreen-btn"
               onClick={onOpenFullscreen}
-              aria-label={lbl(lang, "Lecture immersive", "Immersive reading", "قراءة بملء الشاشة")}
+              aria-label={t("reader.immersive", lang)}
             >
               <Maximize2 size={15} aria-hidden="true" />
             </button>
@@ -338,7 +323,7 @@ export default function SurahReaderHeader({
             className={cn("srh-play-btn", isPlaying && "srh-play-btn--playing")}
             onClick={handlePlay}
             disabled={isPreparing}
-            aria-label={isPlaying ? lbl(lang, "Pause", "Pause", "إيقاف") : lbl(lang, "Écouter", "Listen", "استمع")}
+            aria-label={isPlaying ? t("audio.pause", lang) : t("actions.listen", lang)}
             data-testid="surah-play"
           >
             {isPreparing ? (
@@ -355,7 +340,7 @@ export default function SurahReaderHeader({
             onClick={openInfo}
             aria-expanded={showInfo}
             aria-haspopup="dialog"
-            aria-label={lbl(lang, "Informations sur la sourate", "Surah info", "معلومات السورة")}
+            aria-label={t("reader.infoAria", lang)}
           >
             <Info size={15} />
           </button>
@@ -365,7 +350,7 @@ export default function SurahReaderHeader({
       <Modal
         open={showInfo}
         onClose={closeInfo}
-        title={lbl(lang, "Informations sur la sourate", "Surah information", "معلومات السورة")}
+        title={t("reader.infoTitle", lang)}
         size="lg"
         portal
         className="surah-info-modal"
@@ -387,7 +372,7 @@ export default function SurahReaderHeader({
       {/* ══ ROW 2 — View controls ═══════════════════════════════ */}
       <div className="srh-controls">
         {/* Left cluster: view mode (Mushaf / Liste) */}
-        <div className="srh-view-pills" role="radiogroup" aria-label={lbl(lang, "Mode d'affichage", "Display mode", "وضع العرض")}>
+        <div className="srh-view-pills" role="radiogroup" aria-label={t("reader.displayModeAria", lang)}>
           {viewPills.map((pill) => (
             <button
               key={pill.key}
@@ -408,7 +393,7 @@ export default function SurahReaderHeader({
         <div className="srh-vsep" aria-hidden="true" />
 
         {/* Right cluster: study toggles */}
-        <div className="srh-study-toggles" role="group" aria-label={lbl(lang, "Options d'étude", "Study options", "خيارات الدراسة")}>
+        <div className="srh-study-toggles" role="group" aria-label={t("reader.studyOptions", lang)}>
           {visibleToggles.map((toggle) => (
             <button
               key={toggle.key}
@@ -442,7 +427,7 @@ export default function SurahReaderHeader({
             aria-controls="srh-typography-panel"
           >
             <Type size={14} aria-hidden="true" />
-            <span>{lbl(lang, "Texte et taille", "Text size", "حجم الخط")}</span>
+            <span>{t("reader.textSize", lang)}</span>
           </button>
           <div id="srh-typography-panel" className="srh-typography-panel">
             <ArabicFontControls lang={lang} compact />

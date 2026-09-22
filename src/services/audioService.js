@@ -10,8 +10,18 @@ import {
   resolveSurahStreamAyah,
 } from "../utils/surahStreamSync.js";
 
-import { isTrustedAudioUrl, ISLAMIC_FALLBACK_MAP } from "./audioSources.js";
+import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
 import { observeNativePlayback, preparePlaybackSession } from "./audioSession.js";
+import {
+  buildLatencyKey,
+  buildPlaylistSignature,
+  buildUrl,
+  buildUrlCandidates,
+  hafsFileNumber,
+  isSurahStreamCdn,
+  normalizePlaylistAyahs,
+  withQuranComPrimary,
+} from "./audioUrlBuilder.js";
 
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
@@ -24,32 +34,9 @@ function devLog(method, ...args) {
 }
 
 class AudioService {
-  static isSurahStreamCdn(cdnType = "islamic") {
-    return cdnType === "mp3quran-surah";
-  }
-
-  static normalizePlaylistAyahs(ayahs, cdnType = "islamic") {
-    if (!Array.isArray(ayahs)) return [];
-    if (!AudioService.isSurahStreamCdn(cdnType)) return ayahs;
-
-    const seenSurahs = new Set();
-    return ayahs.reduce((acc, ayah) => {
-      const surah = ayah?.surah || ayah?.surahNumber;
-      if (!surah || seenSurahs.has(surah)) return acc;
-      seenSurahs.add(surah);
-      acc.push({
-        ...ayah,
-        surah,
-        ayah: null,
-        numberInSurah: null,
-      });
-      return acc;
-    }, []);
-  }
-
   constructor() {
     this.audio = new Audio();
-    this.audio.preload = "metadata"; // Keep startup light while enabling faster first play
+    this.audio.preload = "metadata";
     this.audio.playsInline = true;
     if (typeof this.audio.setAttribute === "function") {
       this.audio.setAttribute("playsinline", "");
@@ -71,8 +58,8 @@ class AudioService {
     this._reciterSwitchRequestId = 0;
     this._reciterSwitchQueue = Promise.resolve();
     this._currentReciterCdn = "";
-    this._currentCdnType = "islamic";
-    this._activeReciterKey = "islamic:";
+    this._currentCdnType = "everyayah";
+    this._activeReciterKey = "everyayah:";
     this._playlistSignature = "";
     this._playlistIndexByAyahKey = new Map();
     this._pendingSurahStreamAyah = null;
@@ -81,6 +68,11 @@ class AudioService {
     this._reciterLatencyByKey = Object.create(null);
     this._latencyListeners = [];
     this._oneShotMode = false;
+    // What the user asked for, independent of what the element is actually
+    // doing: an OS suspension or a background load failure flips `isPlaying`,
+    // and recovery must not mistake that for an intentional pause.
+    this._playbackIntent = "stopped";
+    this._pendingBackgroundIndex = null;
 
     // Surah/playlist repeat
     // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
@@ -122,20 +114,23 @@ class AudioService {
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
     this._boundTimeUpdate = () => {
-      // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF
+      // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF.
+      // rAF is suspended while the page is hidden, so background playback runs
+      // the same pipeline on a timer instead of freezing the lock screen.
       if (this._rafId) return;
+      const hidden =
+        typeof document !== "undefined" && document.visibilityState === "hidden";
+      if (hidden) {
+        this._rafId = setTimeout(() => {
+          this._rafId = null;
+          this._emitTimeUpdate();
+        }, 500);
+        return;
+      }
       const raf = typeof requestAnimationFrame !== "undefined" ? requestAnimationFrame : (fn) => (fn(), 0);
       this._rafId = raf(() => {
         this._rafId = null;
-        this._syncSurahStreamAyah(
-          this.audio.currentTime,
-          this.audio.duration,
-        );
-        this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
-        this._captureLatencySample(this.audio.currentTime);
-        for (const fn of this._timeUpdateListeners) {
-          fn(this.audio.currentTime, this.audio.duration);
-        }
+        this._emitTimeUpdate();
       });
     };
     this._boundError = (e) => {
@@ -156,94 +151,35 @@ class AudioService {
     this.audio.addEventListener("canplay", this._boundCanPlay);
     this.audio.addEventListener("playing", this._boundPlaying);
     this._releaseNativePlayback = observeNativePlayback(this);
-  }
 
-  /* ── Build Audio URL ───────────────────────── */
-
-  /**
-   * Build a playable audio URL.
-   */
-  static buildUrl(reciterCdn, ayah, cdnType = "islamic") {
-    if (AudioService.isSurahStreamCdn(cdnType)) {
-      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
-      const s = String(surah).padStart(3, "0");
-      return `${reciterCdn}${s}.mp3`;
-    }
-    if (cdnType === "everyayah") {
-      const surah = typeof ayah === "object" ? ayah.surah : 1;
-      const num =
-        typeof ayah === "object" ? ayah.numberInSurah || ayah.ayah || 1 : ayah;
-      const s = String(surah).padStart(3, "0");
-      const a = String(num).padStart(3, "0");
-      return `https://everyayah.com/data/${reciterCdn}/${s}${a}.mp3`;
-    }
-    // Islamic Network: global ayah number
-    const globalNum = typeof ayah === "object" ? ayah.number : ayah;
-    return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalNum}.mp3`;
-  }
-
-  static buildUrlCandidates(reciterCdn, ayah, cdnType = "islamic") {
-    const primary = AudioService.buildUrl(reciterCdn, ayah, cdnType);
-    if (cdnType === "everyayah") {
-      const mirror = primary.includes("://everyayah.com/")
-        ? primary.replace("://everyayah.com/", "://www.everyayah.com/")
-        : primary.replace("://www.everyayah.com/", "://everyayah.com/");
-      return [...new Set([primary, mirror])];
-    }
-    if (cdnType === "islamic") {
-      const candidates = [primary];
-      const fallbackFolder = ISLAMIC_FALLBACK_MAP[reciterCdn];
-      const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber : null;
-      const ayahNum = typeof ayah === "object" ? ayah.numberInSurah || ayah.ayahNumber : null;
-      if (fallbackFolder && surah && ayahNum) {
-        const s = String(surah).padStart(3, "0");
-        const a = String(ayahNum).padStart(3, "0");
-        candidates.push(`https://everyayah.com/data/${fallbackFolder}/${s}${a}.mp3`);
+    // Android lock screens suspend the page and reject play; resume on
+    // visibility instead of silently stopping. Recovery is driven by the
+    // playback intent, because an OS suspension clears `isPlaying` first.
+    this._boundVisibilityChange = () => {
+      if (document.hidden || this._playbackIntent !== "playing") return;
+      if (this._audioCtx?.state === "suspended") {
+        this._audioCtx.resume().catch(() => {});
       }
-      return candidates;
+      if (this._pendingBackgroundIndex != null) {
+        const index = this._pendingBackgroundIndex;
+        this._pendingBackgroundIndex = null;
+        if (index !== this.playlistIndex || this.audio.paused) {
+          this._loadAndPlay(index);
+          return;
+        }
+      }
+      if (this.audio?.paused && this.audio.src) this.resume();
+    };
+    if (typeof document !== "undefined") {
+      document.addEventListener("visibilitychange", this._boundVisibilityChange);
     }
-    if (!AudioService.isSurahStreamCdn(cdnType)) return [primary];
-
-    const surah = typeof ayah === "object" ? ayah.surah || ayah.surahNumber || 1 : 1;
-    const unpadded = `${reciterCdn}${Number(surah)}.mp3`;
-    return [...new Set([primary, unpadded])];
-  }
-
-  static withQuranComPrimary(candidates, timing) {
-    const quranComUrl =
-      timing &&
-      Array.isArray(timing.segments) &&
-      timing.segments.length > 0 &&
-      typeof timing.url === "string"
-        ? timing.url
-        : null;
-    return quranComUrl ? [...new Set([quranComUrl, ...candidates])] : candidates;
-  }
-
-  static buildPlaylistSignature(ayahs, reciterCdn, cdnType = "islamic") {
-    const base = `${cdnType}:${reciterCdn || ""}`;
-    const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
-    if (!Array.isArray(preparedAyahs) || preparedAyahs.length === 0) return base;
-    return `${base}|${preparedAyahs
-      .map((ayah) => {
-        const surah = ayah.surah || ayah.surahNumber || 0;
-        const ayahNum = ayah.ayah || ayah.numberInSurah || 0;
-        const globalNum = ayah.number || ayah.globalNumber || 0;
-        return `${surah}:${ayahNum}:${globalNum}`;
-      })
-      .join("|")}`;
-  }
-
-  static buildLatencyKey(reciterCdn, cdnType = "islamic") {
-    return `${cdnType || "islamic"}:${reciterCdn || ""}`;
   }
 
   /* ── Playlist Management ───────────────────── */
 
-  loadPlaylist(ayahs, reciterCdn, cdnType = "islamic") {
-    this._playlistSourceAyahs = Array.isArray(ayahs)
-      ? ayahs.map((ayah) => ({ ...ayah }))
-      : [];
+  loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah") {
+    ayahs = filterAyahAudioGaps(ayahs, cdnType, reciterCdn);
+    this._playlistSourceAyahs = ayahs.map((ayah) => ({ ...ayah }));
     const preparedAyahs = AudioService.normalizePlaylistAyahs(ayahs, cdnType);
     const nextSignature = AudioService.buildPlaylistSignature(
       preparedAyahs,
@@ -289,7 +225,7 @@ class AudioService {
     const previousSrc = this.audio.src;
     this._playlistSignature = nextSignature;
     this._currentReciterCdn = reciterCdn || "";
-    this._currentCdnType = cdnType || "islamic";
+    this._currentCdnType = cdnType || "everyayah";
     this._activeReciterKey = AudioService.buildLatencyKey(
       this._currentReciterCdn,
       this._currentCdnType,
@@ -298,15 +234,7 @@ class AudioService {
     this.playlist = preparedAyahs.map((a) => {
       const timing = a.quranComAudioTiming || null;
       const urlCandidates = AudioService.withQuranComPrimary(
-        AudioService.buildUrlCandidates(
-        reciterCdn,
-        {
-          surah: a.surah || a.surahNumber,
-          numberInSurah: a.ayah || a.numberInSurah,
-          number: a.number,
-        },
-        cdnType,
-        ),
+        AudioService.buildUrlCandidates(reciterCdn, a, cdnType),
         timing,
       );
       return {
@@ -314,6 +242,7 @@ class AudioService {
         ayah: AudioService.isSurahStreamCdn(cdnType)
           ? null
           : a.ayah || a.numberInSurah,
+        hafsNumber: a.hafsNumber ?? null,
         globalNumber: a.number,
         urls: urlCandidates,
         url: urlCandidates[0],
@@ -390,7 +319,7 @@ class AudioService {
    * Instantly switch the active reciter for the current playlist while preserving
    * current ayah and playback position when possible.
    */
-  switchReciter(reciterCdn, cdnType = "islamic") {
+  switchReciter(reciterCdn, cdnType = "everyayah") {
     const requestId = ++this._reciterSwitchRequestId;
     const runSwitch = async () => {
       // Collapse queued intermediate selections: only the latest request should
@@ -407,7 +336,7 @@ class AudioService {
     return queuedSwitch;
   }
 
-  async _switchReciterNow(reciterCdn, cdnType = "islamic") {
+  async _switchReciterNow(reciterCdn, cdnType = "everyayah") {
     if (!reciterCdn) {
       return false;
     }
@@ -432,6 +361,7 @@ class AudioService {
         : this.playlist.map((item) => ({
             surah: item.surah,
             ayah: item.ayah,
+            hafsNumber: item.hafsNumber,
             number: item.globalNumber,
             text: item.text,
             quranComAudioTiming: null,
@@ -488,10 +418,13 @@ class AudioService {
       this.playlistIndex = 0;
     }
 
+    this._playbackIntent = "playing";
     await this._loadAndPlay(this.playlistIndex);
   }
 
   pause() {
+    this._playbackIntent = "paused";
+    this._pendingBackgroundIndex = null;
     this.audio.pause();
     this.isPlaying = false;
     this._notifyPause(this.currentAyah);
@@ -502,6 +435,7 @@ class AudioService {
     if (this.audio.src && this.audio.src !== window.location.href) {
       this.audio.play()
         .then(() => {
+          this._playbackIntent = "playing";
           this.isPlaying = true;
           this._notifyPlay(
             this.currentAyah || this.playlist[this.playlistIndex],
@@ -510,7 +444,9 @@ class AudioService {
         .catch((err) => {
           this.isPlaying = false;
           this._notifyPause(this.currentAyah);
-          this.onError?.(err);
+          // A blocked gesture is not a dead CDN: the UI must not switch
+          // reciters over it, it just needs another tap.
+          if (err?.name !== "NotAllowedError") this.onError?.(err);
         });
     }
   }
@@ -531,6 +467,8 @@ class AudioService {
 
   stop() {
     const wasPlaying = this.isPlaying;
+    this._playbackIntent = "stopped";
+    this._pendingBackgroundIndex = null;
     this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
@@ -628,7 +566,6 @@ class AudioService {
    */
   async playSingle(url, meta = {}) {
     try {
-      this._oneShotMode = true;
       this.onNetworkState?.("loading");
       await this._loadUrlWithRetry(url);
       if (this.audio.paused) {
@@ -636,12 +573,16 @@ class AudioService {
         this.onNetworkState?.("error");
         return false;
       }
+      // Set only once playing: a failed one-shot must never truncate a playlist.
+      this._oneShotMode = true;
       this.isPlaying = true;
       this.onNetworkState?.("playing");
       this._notifyPlay({ url, ...meta });
       return true;
     } catch (err) {
+      // Aborted loads were superseded: the newer load owns the flag.
       if (err?.name === "AbortError") return false;
+      this._oneShotMode = false;
       this.onNetworkState?.("error");
       this.onError?.(err);
       return false;
@@ -706,6 +647,15 @@ class AudioService {
     }
   }
 
+  _emitTimeUpdate() {
+    this._syncSurahStreamAyah(this.audio.currentTime, this.audio.duration);
+    this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
+    this._captureLatencySample(this.audio.currentTime);
+    for (const fn of this._timeUpdateListeners) {
+      fn(this.audio.currentTime, this.audio.duration);
+    }
+  }
+
   _captureLatencySample(currentTime = 0) {
     if (this._hasCapturedLatency) return;
     if (!this._playRequestedAt) return;
@@ -718,7 +668,7 @@ class AudioService {
       return;
     }
 
-    const key = this._activeReciterKey || "islamic:";
+    const key = this._activeReciterKey || "everyayah:";
     const prev = this._reciterLatencyByKey[key];
     const next =
       Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
@@ -744,7 +694,7 @@ class AudioService {
    * Positive values add lead to compensate rendering/audio pipeline lag.
    */
   getReciterTimingBiasSec() {
-    const key = this._activeReciterKey || "islamic:";
+    const key = this._activeReciterKey || "everyayah:";
     const measured = this._reciterLatencyByKey[key];
     const measuredBias = Number.isFinite(measured) ? measured * 0.52 : 0;
     const cdnBias =
@@ -939,6 +889,11 @@ class AudioService {
     if (!url) return;
     if (!isTrustedAudioUrl(url)) return;
     if (this._preloadPool.some((p) => p.url === url)) return;
+    // A media load started while hidden gets suspended by iOS and competes
+    // with the active stream; foreground resumes preloading on the next track.
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+      return;
+    }
 
     try {
       const preloadAudio = new Audio();
@@ -988,6 +943,7 @@ class AudioService {
     if (index < 0 || index >= this.playlist.length) return;
 
     this.playlistIndex = index;
+    this._oneShotMode = false; // playlist playback is never one-shot
     const item = this.playlist[index];
     this.currentAyah = item;
     this.memCurrentRepeat = 0;
@@ -1050,6 +1006,8 @@ class AudioService {
       }
       this.currentAyah = activeItem;
       this.isPlaying = true;
+      this._playbackIntent = "playing";
+      this._pendingBackgroundIndex = null;
       this.onNetworkState?.("playing");
       this._notifyPlay(activeItem);
       this._emitAyahChange(activeItem);
@@ -1058,6 +1016,17 @@ class AudioService {
       this._preloadAhead(index + 1, 3);
     } catch (err) {
       if (err?.name === "AbortError") return;
+      const hidden =
+        typeof document !== "undefined" && document.visibilityState === "hidden";
+      if (hidden && this._playbackIntent === "playing") {
+        // Backgrounded loads get suspended by the browser all the time. Keep
+        // the intent and retry when the page is visible again instead of
+        // reporting an error nobody can see.
+        this._pendingBackgroundIndex = index;
+        this.isPlaying = false;
+        this._notifyPause(this.currentAyah);
+        return;
+      }
       devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);
@@ -1071,14 +1040,17 @@ class AudioService {
   }
 
   _handleEnded() {
-    if (this.playlist.length === 0) return;
+    // One-shots often play without a playlist: clearing the flag here would
+    // truncate the next playlist.
     if (this._oneShotMode) {
       this._oneShotMode = false;
       this.isPlaying = false;
+      this._playbackIntent = "stopped";
       this.onEnd?.();
       for (const fn of this._endListeners) fn();
       return;
     }
+    if (this.playlist.length === 0) return;
 
     // A-B Repeat: if we've reached end point B, loop back to A
     if (this.abRepeatStart >= 0 && this.abRepeatEnd >= 0) {
@@ -1106,6 +1078,7 @@ class AudioService {
 
       this.surahCurrentCycle = 1;
       this.isPlaying = false;
+      this._playbackIntent = "stopped";
       this.onEnd?.();
       for (const fn of this._endListeners) fn();
     }
@@ -1191,58 +1164,25 @@ class AudioService {
     }
   }
 
-  /** Subscribe to playback-start events without replacing the main UI callback. */
-  addPlayListener(fn) {
-    this._playListeners.push(fn);
+  _addListener(list, fn) {
+    list.push(fn);
     return () => {
-      const i = this._playListeners.indexOf(fn);
-      if (i !== -1) this._playListeners.splice(i, 1);
+      const i = list.indexOf(fn);
+      if (i !== -1) list.splice(i, 1);
     };
   }
 
-  /** Subscribe an extra time-update listener. Returns unsubscribe fn. */
-  addTimeUpdateListener(fn) {
-    this._timeUpdateListeners.push(fn);
-    return () => {
-      const i = this._timeUpdateListeners.indexOf(fn);
-      if (i !== -1) this._timeUpdateListeners.splice(i, 1);
-    };
-  }
-
-  /** Subscribe to playlist-end events. Returns unsubscribe fn. */
-  addEndListener(fn) {
-    this._endListeners.push(fn);
-    return () => {
-      const i = this._endListeners.indexOf(fn);
-      if (i !== -1) this._endListeners.splice(i, 1);
-    };
-  }
-
-  /** Subscribe to pause events without replacing the main UI callback. */
-  addPauseListener(fn) {
-    this._pauseListeners.push(fn);
-    return () => {
-      const i = this._pauseListeners.indexOf(fn);
-      if (i !== -1) this._pauseListeners.splice(i, 1);
-    };
-  }
-
-  /** Subscribe to ayah-change events. Returns unsubscribe fn. */
-  addAyahChangeListener(fn) {
-    this._ayahChangeListeners.push(fn);
-    return () => {
-      const i = this._ayahChangeListeners.indexOf(fn);
-      if (i !== -1) this._ayahChangeListeners.splice(i, 1);
-    };
-  }
+  /* Subscribe without replacing the main UI callback; each returns an
+     unsubscribe function. */
+  addPlayListener(fn) { return this._addListener(this._playListeners, fn); }
+  addTimeUpdateListener(fn) { return this._addListener(this._timeUpdateListeners, fn); }
+  addEndListener(fn) { return this._addListener(this._endListeners, fn); }
+  addPauseListener(fn) { return this._addListener(this._pauseListeners, fn); }
+  addAyahChangeListener(fn) { return this._addListener(this._ayahChangeListeners, fn); }
 
   subscribeLatency(fn) {
     if (typeof fn !== "function") return () => {};
-    this._latencyListeners.push(fn);
-    return () => {
-      const i = this._latencyListeners.indexOf(fn);
-      if (i !== -1) this._latencyListeners.splice(i, 1);
-    };
+    return this._addListener(this._latencyListeners, fn);
   }
 
   setLatencySnapshot(snapshot = {}) {
@@ -1349,6 +1289,7 @@ class AudioService {
     this._releaseNativePlayback();
     if (this._rafId) {
       cancelAnimationFrame(this._rafId);
+      clearTimeout(this._rafId);
       this._rafId = null;
     }
     this._clearLoadTimeout();
@@ -1369,8 +1310,25 @@ class AudioService {
       this.audio.removeAttribute("src");
       this.audio = null;
     }
+    if (typeof document !== "undefined") {
+      document.removeEventListener("visibilitychange", this._boundVisibilityChange);
+    }
   }
 }
+
+// The URL and identity helpers live in audioUrlBuilder.js so the player and
+// the downloader provably share one implementation; they stay reachable here
+// because callers, tests and the fallback audits address them on the service.
+Object.assign(AudioService, {
+  buildLatencyKey,
+  buildPlaylistSignature,
+  buildUrl,
+  buildUrlCandidates,
+  hafsFileNumber,
+  isSurahStreamCdn,
+  normalizePlaylistAyahs,
+  withQuranComPrimary,
+});
 
 // Singleton
 const audioService = new AudioService();

@@ -1,6 +1,8 @@
 import React, { memo } from "react";
 import RowActions from "./RowActions";
 import { toAr } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
+import { t } from "../../i18n";
 
 const SurahRecitationRow = memo(function SurahRecitationRow({
   surah,
@@ -12,12 +14,10 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
   riwaya,
 }) {
   const label = lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
-  const ayahLabel =
-    lang === "fr" ? "versets" : lang === "ar" ? "آيات" : "verses";
+  const ayahLabel = t("quran.versesWord", lang);
+  const verseCount = getSurahVerseCountByRiwaya(surah.n, riwaya) || surah.ayahs;
   const isMeccan = surah.type === "Meccan";
-  const typeLabel = isMeccan
-    ? (lang === "ar" ? "مكية" : lang === "fr" ? "Mak." : "Mak.")
-    : (lang === "ar" ? "مدنية" : lang === "fr" ? "Méd." : "Med.");
+  const typeLabel = t(isMeccan ? "quran.meccanShort" : "quran.medinanShort", lang);
 
   return (
     <div className="recitation-row group" role="listitem">
@@ -30,7 +30,7 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
           <span className="recitation-row__name">{label}</span>
           <span
             className={`recitation-row__type${isMeccan ? " recitation-row__type--meccan" : " recitation-row__type--medinan"}`}
-            aria-label={isMeccan ? (lang === "ar" ? "مكية" : "Meccan") : (lang === "ar" ? "مدنية" : "Medinan")}
+            aria-label={t(isMeccan ? "quran.meccanAria" : "quran.medinanAria", lang)}
           >
             {typeLabel}
           </span>
@@ -40,7 +40,7 @@ const SurahRecitationRow = memo(function SurahRecitationRow({
             {surah.ar}
           </span>
           <span aria-hidden="true">·</span>
-          <span>{surah.ayahs} {ayahLabel}</span>
+          <span>{lang === "ar" ? toAr(verseCount) : verseCount} {ayahLabel}</span>
         </div>
       </div>
 

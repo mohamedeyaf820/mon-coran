@@ -1,11 +1,13 @@
 import React from "react";
 import {
+  AlertCircle,
   ChevronDown,
   ChevronUp,
   Gauge,
   Loader2,
   Pause,
   Play,
+  RotateCw,
   Settings2,
   SkipBack,
   SkipForward,
@@ -21,7 +23,15 @@ function playerShellProps(props) {
   return { "data-player-state": props.minimized ? "compact" : "expanded" };
 }
 
-function IconButton({ className, label, onClick, pressed, children }) {
+function IconButton({
+  className,
+  label,
+  onClick,
+  pressed,
+  children,
+  ariaHidden,
+  tabIndex,
+}) {
   return (
     <button
       type="button"
@@ -30,6 +40,8 @@ function IconButton({ className, label, onClick, pressed, children }) {
       aria-label={label}
       title={label}
       aria-pressed={pressed}
+      aria-hidden={ariaHidden ? "true" : undefined}
+      tabIndex={tabIndex}
     >
       {children}
     </button>
@@ -94,6 +106,19 @@ function NetworkStatus({ networkBadge, networkState }) {
   );
 }
 
+function RetryAudioAction({ onRetryAudio, retryLabel }) {
+  return (
+    <button
+      type="button"
+      onClick={onRetryAudio}
+      className="my-1 inline-flex min-h-[max(2.75rem,44px)] items-center gap-2 self-center rounded-full border border-white/15 bg-white/[0.06] px-4 text-xs font-semibold text-[color-mix(in_srgb,var(--theme-text-inverse)_92%,transparent_8%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
+    >
+      <RotateCw size={14} aria-hidden="true" />
+      {retryLabel}
+    </button>
+  );
+}
+
 function TrackMeta({
   currentArabicName,
   currentAyahPreview,
@@ -130,16 +155,21 @@ function TrackMeta({
 
 function CompactPlayer(props) {
   const {
+    audioFailed,
+    closeLabel,
     currentArabicName,
     currentTime,
     duration,
+    errorLabel,
     expandLabel,
     isMobile,
     isPlaying,
+    onDismissError,
     onExpand,
     onProgressClick,
     onProgressKeyDown,
     onProgressPointerDown,
+    onRetryAudio,
     onToggle,
     playPauseLabel,
     progress,
@@ -148,6 +178,7 @@ function CompactPlayer(props) {
     progressRef,
     reciter,
     reciterLabel,
+    retryLabel,
     surahNum,
     title,
   } = props;
@@ -194,7 +225,17 @@ function CompactPlayer(props) {
                 </span>
               )}
             </span>
-            <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
+            {audioFailed ? (
+              <span
+                className="simple-player__compact-reciter simple-player__compact-error"
+                role="alert"
+              >
+                <AlertCircle size={11} aria-hidden="true" />
+                <span>{errorLabel}</span>
+              </span>
+            ) : (
+              <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
+            )}
           </span>
         </button>
         <div className="simple-player__compact-actions">
@@ -206,15 +247,36 @@ function CompactPlayer(props) {
           >
             {isPlaying ? <Pause size={18} strokeWidth={2.4} /> : <Play size={18} strokeWidth={2.4} className="simple-player__play-glyph" />}
           </IconButton>
-          <IconButton
-            className="simple-player__expand-btn"
-            label={expandLabel}
-            onClick={onExpand}
-            aria-hidden="true"
-            tabIndex={-1}
-          >
-            <ChevronUp size={18} strokeWidth={2.2} />
-          </IconButton>
+          {audioFailed ? (
+            <>
+              <IconButton
+                className="simple-player__expand-btn"
+                label={retryLabel}
+                onClick={onRetryAudio}
+              >
+                <RotateCw size={16} strokeWidth={2.2} />
+              </IconButton>
+              <button
+                type="button"
+                className="simple-player__icon-button simple-player__expand-btn simple-player__expand-btn--alert"
+                onClick={onDismissError}
+                aria-label={`${errorLabel} · ${closeLabel}`}
+                title={closeLabel}
+              >
+                <X size={16} strokeWidth={2.2} aria-hidden="true" />
+              </button>
+            </>
+          ) : (
+            <IconButton
+              className="simple-player__expand-btn"
+              label={expandLabel}
+              onClick={onExpand}
+              ariaHidden
+              tabIndex={-1}
+            >
+              <ChevronUp size={18} strokeWidth={2.2} />
+            </IconButton>
+          )}
         </div>
       </div>
     </section>
@@ -223,6 +285,7 @@ function CompactPlayer(props) {
 
 function MobileOpenPlayer(props) {
   const {
+    audioFailed,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -243,6 +306,7 @@ function MobileOpenPlayer(props) {
     onProgressClick,
     onProgressKeyDown,
     onProgressPointerDown,
+    onRetryAudio,
     onToggle,
     optionsLabel,
     optionsOpen,
@@ -255,6 +319,7 @@ function MobileOpenPlayer(props) {
     reciter,
     reciterLabel,
     regionLabel,
+    retryLabel,
     riwaya,
     speedLabel,
     title,
@@ -349,6 +414,9 @@ function MobileOpenPlayer(props) {
       </div>
 
       <div className="simple-player__mobile-status" aria-live="polite">
+        {audioFailed && (
+          <RetryAudioAction onRetryAudio={onRetryAudio} retryLabel={retryLabel} />
+        )}
         <AudioLoadingIndicator
           state={audioIndicatorState}
           isPlaying={isPlaying}
@@ -361,6 +429,7 @@ function MobileOpenPlayer(props) {
 
 function OpenPlayer(props) {
   const {
+    audioFailed,
     audioIndicatorState,
     audioSpeed,
     closeLabel,
@@ -383,6 +452,7 @@ function OpenPlayer(props) {
     onProgressClick,
     onProgressKeyDown,
     onProgressPointerDown,
+    onRetryAudio,
     onToggle,
     optionsLabel,
     optionsOpen,
@@ -395,6 +465,7 @@ function OpenPlayer(props) {
     reciter,
     reciterLabel,
     regionLabel,
+    retryLabel,
     riwaya,
     speedLabel,
     surahNum,
@@ -503,6 +574,9 @@ function OpenPlayer(props) {
       </div>
 
       <div className="simple-player__footer">
+        {audioFailed && (
+          <RetryAudioAction onRetryAudio={onRetryAudio} retryLabel={retryLabel} />
+        )}
         <AudioLoadingIndicator
           state={audioIndicatorState}
           isPlaying={isPlaying}

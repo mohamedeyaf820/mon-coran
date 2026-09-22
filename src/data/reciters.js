@@ -1,9 +1,11 @@
 /**
  * Reciters catalogue for Hafs + Warsh riwayat.
  *
- * CDN types:
- *   - 'islamic'   → cdn.islamic.network/quran/audio/128/{cdn}/{globalAyahNum}.mp3
- *   - 'everyayah' → everyayah.com/data/{cdn}/{SSSAAA}.mp3  (SSS=surah, AAA=ayahInSurah)
+ * CDN types (all per-ayah unless noted):
+ *   - 'everyayah'  → everyayah.com/data/{cdn}/{SSSAAA}.mp3  (AAA = Hafs verse number)
+ *   - 'quran-cdn'  → audio.qurancdn.com/{cdn}/{SSSAAA}.mp3  (Quran.com CDN; cdn ends with '/')
+ *   - 'quranpedia' → files.quranpedia.net/recitations/{cdn}/{SSSAAA}.mp3  (AAA = riwaya verse number)
+ *   - 'mp3quran-surah' → {cdn}{SSS}.mp3 whole-surah streams (legacy, no catalog entry)
  */
 
 const SUPPLEMENTAL_HAFS_RECITERS = [
@@ -89,18 +91,6 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     cdnType: "everyayah",
     audioMode: "ayah",
     country: "KSA",
-    source: "everyayah",
-  },
-  {
-    id: "mustafa_ismail",
-    name: "مصطفى إسماعيل",
-    nameEn: "Mustafa Ismail",
-    nameFr: "Mustafa Ismail",
-    style: "mujawwad",
-    cdn: "Mustafa_Ismail_48kbps",
-    cdnType: "everyayah",
-    audioMode: "ayah",
-    country: "Egypt",
     source: "everyayah",
   },
   {
@@ -236,90 +226,40 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     source: "everyayah",
   },
   {
-    id: "idris_abkar",
-    name: "إدريس أبكر",
-    nameEn: "Idris Abkar",
-    nameFr: "Idris Abkar",
+    id: "abdulbar_althubaity",
+    name: "عبدالبارئ الثبيتي",
+    nameEn: "Abdul Bara Al-Thubaiti",
+    nameFr: "Abdul Bara Al-Thubaiti",
     style: "murattal",
-    cdn: "https://server6.mp3quran.net/abkr/",
+    cdn: "https://server6.mp3quran.net/thubti/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
     source: "mp3quran",
   },
   {
-    id: "bandar_baleela",
-    name: "بندر بليلة",
-    nameEn: "Bandar Baleela",
-    nameFr: "Bandar Baleela",
+    id: "saad_almoqren",
+    name: "سعد المقرن",
+    nameEn: "Saad Al-Meqren",
+    nameFr: "Saad Al-Meqren",
     style: "murattal",
-    cdn: "https://server6.mp3quran.net/balilah/",
+    cdn: "https://server16.mp3quran.net/saad/Rewayat-Hafs-A-n-Assem/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
     source: "mp3quran",
   },
   {
-    id: "ahmad_al_hawashi",
-    name: "أحمد الحواشي",
-    nameEn: "Ahmad Al-Hawashi",
-    nameFr: "Ahmad Al-Hawashi",
+    id: "ali_hajjaj_alsoaesi",
+    name: "علي حجاج السويسي",
+    nameEn: "Ali Hajjaj Al-Souaessi",
+    nameFr: "Ali Hajjaj Al-Souaessi",
     style: "murattal",
-    cdn: "https://server11.mp3quran.net/hawashi/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    country: "KSA",
-    source: "mp3quran",
-  },
-  {
-    id: "ibrahim_al_akhdar",
-    name: "إبراهيم الأخضر",
-    nameEn: "Ibrahim Al-Akhdar",
-    nameFr: "Ibrahim Al-Akhdar",
-    style: "murattal",
-    cdn: "https://server6.mp3quran.net/akdr/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    country: "KSA",
-    source: "mp3quran",
-  },
-  {
-    id: "mohamed_al_luhaidan",
-    name: "محمد اللحيدان",
-    nameEn: "Mohamed Al-Luhaidan",
-    nameFr: "Mohamed Al-Luhaidan",
-    style: "murattal",
-    cdn: "https://server8.mp3quran.net/lhdan/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    country: "KSA",
-    source: "mp3quran",
-  },
-  {
-    id: "khaled_al_jalil",
-    name: "خالد الجليل",
-    nameEn: "Khaled Al-Jalil",
-    nameFr: "Khaled Al-Jalil",
-    style: "murattal",
-    cdn: "https://server10.mp3quran.net/jleel/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    country: "KSA",
-    source: "mp3quran",
-  },
-  {
-    id: "adel_al_kalbani",
-    name: "عادل الكلباني",
-    nameEn: "Adel Al-Kalbani",
-    nameFr: "Adel Al-Kalbani",
-    searchAliases: ["Adil Al-Kalbani", "Kalbani", "Kelbani", "الكلباني"],
-    cataloguePriority: 14,
-    style: "murattal",
-    cdn: "https://server8.mp3quran.net/a_klb/",
-    cdnType: "mp3quran-surah",
-    audioMode: "surah",
-    country: "KSA",
-    source: "mp3quran",
+    cdn: "Ali_Hajjaj_AlSuesy_128kbps",
+    cdnType: "everyayah",
+    audioMode: "ayah",
+    country: "Egypt",
+    source: "everyayah",
   },
 ];
 
@@ -331,8 +271,8 @@ const RECITERS = {
       nameEn: "Mishary Rashid Alafasy",
       nameFr: "Mishary Rashid Alafasy",
       style: "murattal",
-      cdn: "ar.alafasy",
-      cdnType: "islamic",
+      cdn: "Alafasy/mp3/",
+      cdnType: "quran-cdn",
       country: "Kuwait",
     },
     {
@@ -361,8 +301,8 @@ const RECITERS = {
       nameEn: "Mahmoud Khalil Al-Husary",
       nameFr: "Mahmoud Khalil Al-Husary",
       style: "murattal",
-      cdn: "ar.husary",
-      cdnType: "islamic",
+      cdn: "Husary_128kbps",
+      cdnType: "everyayah",
       country: "Egypt",
     },
     {
@@ -373,8 +313,8 @@ const RECITERS = {
       style: "murattal",
       searchAliases: ["Minshawi", "Manshawi", "Menchaoui", "المنشاوي"],
       cataloguePriority: 10,
-      cdn: "ar.minshawi",
-      cdnType: "islamic",
+      cdn: "Minshawi/Murattal/mp3/",
+      cdnType: "quran-cdn",
       country: "Egypt",
     },
     {
@@ -568,13 +508,23 @@ const RECITERS = {
   warsh: [
     {
       id: "warsh_abdulbasit",
-      name: "عبد الباسط (ورش)",
+      name: "عبد الباسط عبد الصمد (ورش)",
       nameEn: "Abdul Basit (Warsh)",
       nameFr: "Abdul Basit (Warsh)",
       style: "murattal",
-      cdn: "https://server7.mp3quran.net/basit/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
+      cdn: "262",
+      cdnType: "quranpedia",
+      country: "Egypt",
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_hussary",
+      name: "محمود خليل الحصري (ورش)",
+      nameEn: "Mahmoud Khalil Al-Husary (Warsh)",
+      nameFr: "Mahmoud Khalil Al-Husary (Warsh)",
+      style: "murattal",
+      cdn: "261",
+      cdnType: "quranpedia",
       country: "Egypt",
       verifiedWarsh: true,
     },
@@ -584,22 +534,10 @@ const RECITERS = {
       nameEn: "Ibrahim Al-Dosari (Warsh)",
       nameFr: "Ibrahim Al-Dosari (Warsh)",
       style: "murattal",
-      cdn: "https://server10.mp3quran.net/ibrahim_dosri/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
+      cdn: "warsh/warsh_ibrahim_aldosary_128kbps",
+      cdnType: "everyayah",
+      audioMode: "ayah",
       country: "KSA",
-      verifiedWarsh: true,
-    },
-    {
-      id: "warsh_abdelmoujib_benkirane",
-      name: "عبد المجيب بن كيران (ورش)",
-      nameEn: "Abdelmoujib Benkirane (Warsh)",
-      nameFr: "Abdelmoujib Benkirane (Warsh)",
-      style: "murattal",
-      cdn: "https://server16.mp3quran.net/A-Benkirane/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
-      country: "Morocco",
       verifiedWarsh: true,
     },
     {
@@ -615,51 +553,14 @@ const RECITERS = {
       verifiedWarsh: true,
     },
     {
-      id: "warsh_hussary",
-      name: "محمود خليل الحصري (ورش)",
-      nameEn: "Mahmoud Khalil Al-Husary (Warsh)",
-      nameFr: "Mahmoud Khalil Al-Husary (Warsh)",
+      id: "warsh_dagous",
+      name: "عبد الكريم الدغوش (ورش)",
+      nameEn: "Abdelkrim Ad-Dagous (Warsh)",
+      nameFr: "Abdelkrim Ad-Dagous (Warsh)",
       style: "murattal",
-      cdn: "https://server13.mp3quran.net/husr/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
-      country: "Egypt",
-      verifiedWarsh: true,
-    },
-    {
-      id: "warsh_omar_al_qazabri",
-      name: "عمر القزابري (ورش)",
-      nameEn: "Omar Al-Qazabri (Warsh)",
-      nameFr: "Omar Al-Qazabri (Warsh)",
-      style: "murattal",
-      cdn: "https://server9.mp3quran.net/omar_warsh/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
-      country: "Morocco",
-      verifiedWarsh: true,
-    },
-    {
-      id: "warsh_mohammad_saayed",
-      name: "محمد السايد (ورش)",
-      nameEn: "Mohammad Saayed (Warsh)",
-      nameFr: "Mohammad Saayed (Warsh)",
-      style: "murattal",
-      cdn: "https://server16.mp3quran.net/m_sayed/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
-      country: "Morocco",
-      verifiedWarsh: true,
-    },
-    {
-      id: "warsh_al_qaria_yassen",
-      name: "القارئ ياسين (ورش)",
-      nameEn: "Al-Qaria Yassen (Warsh)",
-      nameFr: "Al-Qaria Yassen (Warsh)",
-      style: "murattal",
-      cdn: "https://server11.mp3quran.net/qari/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
-      country: "Algeria",
+      cdn: "264",
+      cdnType: "quranpedia",
+      country: null,
       verifiedWarsh: true,
     },
     {
@@ -668,21 +569,30 @@ const RECITERS = {
       nameEn: "Aloyoon Al-Koshi (Warsh)",
       nameFr: "Aloyoon Al-Koshi (Warsh)",
       style: "murattal",
-      cdn: "https://server11.mp3quran.net/koshi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
+      cdn: "265",
+      cdnType: "quranpedia",
       country: "Morocco",
       verifiedWarsh: true,
     },
     {
-      id: "warsh_rachid_belalya",
-      name: "رشيد بلعالية (ورش)",
-      nameEn: "Rachid Belalia (Warsh)",
-      nameFr: "Rachid Belalia (Warsh)",
+      id: "warsh_mohamed_abdulkarim",
+      name: "محمد عبد الكريم (ورش)",
+      nameEn: "Mohamed Abdul Karim (Warsh)",
+      nameFr: "Mohamed Abdelkarim (Warsh)",
       style: "murattal",
-      cdn: "https://server6.mp3quran.net/bl3/Rewayat-Warsh-A-n-Nafi/",
-      cdnType: "mp3quran-surah",
-      audioMode: "surah",
+      cdn: "267",
+      cdnType: "quranpedia",
+      country: null,
+      verifiedWarsh: true,
+    },
+    {
+      id: "warsh_rachid_belalaya",
+      name: "رشيد بلعالية (ورش)",
+      nameEn: "Rachid Belalaya (Warsh)",
+      nameFr: "Rachid Belalaya (Warsh)",
+      style: "murattal",
+      cdn: "266",
+      cdnType: "quranpedia",
       country: "Algeria",
       verifiedWarsh: true,
     },
@@ -690,15 +600,21 @@ const RECITERS = {
 };
 
 export const RECITER_SOURCE_INFO = Object.freeze({
-  islamic: Object.freeze({
-    id: "islamic",
-    label: "Islamic Network",
-    audioMode: "ayah",
-    directDownload: false,
-  }),
   everyayah: Object.freeze({
     id: "everyayah",
     label: "EveryAyah",
+    audioMode: "ayah",
+    directDownload: false,
+  }),
+  "quran-cdn": Object.freeze({
+    id: "quran",
+    label: "Quran.com",
+    audioMode: "ayah",
+    directDownload: false,
+  }),
+  quranpedia: Object.freeze({
+    id: "quranpedia",
+    label: "QuranPedia",
     audioMode: "ayah",
     directDownload: false,
   }),
@@ -714,8 +630,8 @@ const TRUSTED_MP3QURAN_HOST = /^server\d+\.mp3quran\.net$/i;
 const SAFE_CDN_PATH = /^[a-z0-9._/-]+$/i;
 
 function normalizeReciterProfile(reciter, riwaya) {
-  const cdnType = reciter.cdnType || "islamic";
-  const sourceInfo = RECITER_SOURCE_INFO[cdnType] || RECITER_SOURCE_INFO.islamic;
+  const cdnType = reciter.cdnType || "everyayah";
+  const sourceInfo = RECITER_SOURCE_INFO[cdnType] || RECITER_SOURCE_INFO.everyayah;
 
   return {
     ...reciter,
@@ -763,7 +679,6 @@ export const RECITER_PHOTOS_MAP = {
   "ar.muhammadjibreel": quranPhoto("10/muhammad-jebril-profile.jpeg"),
   khalefa_al_tunaiji: quranPhoto("11/khalifa-al-tunaiji-profile.jpeg"),
   ali_jabir: quranPhoto("23/Abdullah-Ali-Jabir-profile.png"),
-  bandar_baleela: quranPhoto("24/Bandar-Baleela-profile.png"),
   maher_almuaiqly: quranPhoto("25/Maher-al-Muaiqly-profile.png"),
   ahmed_ajmy: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
   ahmed_ibn_ali_al_ajamy_64: quranPhoto("22/Ahmed-ibn-Ali-al-Ajmy-profile.png"),
@@ -780,7 +695,6 @@ export const RECITER_PHOTOS_MAP = {
   ahmed_neana: assabilePhoto("ahmed-nuinaa.png"),
   akram_alalaqimy: assabilePhoto("akram-al-aalakmi.png"),
   khalid_abdullaah_qahtani_hafs: assabilePhoto("khaled-al-qahtani.png"),
-  mustafa_ismail: assabilePhoto("mustapha-ismail.png"),
   nabil_rifai: assabilePhoto("nabil-ar-rifai.png"),
   salah_al_budair: assabilePhoto("salah-al-budair.png"),
   mahmoud_ali_al_banna: assabilePhoto("mahmud-ali-al-banna.png"),
@@ -790,31 +704,14 @@ export const RECITER_PHOTOS_MAP = {
   yaser_salamah: assabilePhoto("yasser-salama.jpg"),
   aziz_alili: assabilePhoto("aziz-alili.jpg"),
   abdullah_awwad_al_juhaynee: assabilePhoto("abdullah-awad-al-juhani.png"),
-  idris_abkar: assabilePhoto("idriss-abkar.png"),
-  ahmad_al_hawashi: assabilePhoto("ahmad-al-hawashy.png"),
-  ibrahim_al_akhdar: assabilePhoto("ibrahim-al-akhdar.png"),
-  mohamed_al_luhaidan: assabilePhoto("mohamed-al-haidan.png"),
-  khaled_al_jalil: assabilePhoto("khalid-al-jalil.jpg"),
-  adel_al_kalbani:
-    "https://upload.wikimedia.org/wikipedia/commons/thumb/8/82/Kalbani.jpg/250px-Kalbani.jpg",
   warsh_abdulbasit: quranPhoto("1/abdelbasset-profile.jpeg"),
   warsh_ibrahim_aldosari:
     "https://storage.googleapis.com/way2quran_storage/imgs/ibrahim-al-dosari.png",
-  warsh_abdelmoujib_benkirane:
-    "https://static.suratmp3.com/pics/reciters/80.jpg",
-  warsh_yassin:
-    "https://www.assabile.com/media/person/200x256/al-qari-yassen.png",
   warsh_hussary: quranPhoto("5/mahmoud-khalil-al-hussary-profile.png"),
-  warsh_omar_al_qazabri:
-    "https://www.assabile.com/media/person/200x256/omar-al-kazabri.png",
-  warsh_mohammad_saayed:
-    "https://www.assabile.com/media/person/200x256/mohamed-sayed.jpg",
-  warsh_al_qaria_yassen:
-    "https://www.assabile.com/media/person/200x256/al-qari-yassen.png",
   warsh_aloyoon_al_koshi:
     "https://www.assabile.com/media/person/200x256/laayoun-el-kouchi.png",
-  warsh_rachid_belalya:
-    "https://surahquran.com/img/quraa/50.png",
+  abdulbar_althubaity: assabilePhoto("abdul-bari-ath-thobaity.png"),
+  ali_hajjaj_alsoaesi: assabilePhoto("ali-hajjaj-souissi.png"),
 };
 
 const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
@@ -832,7 +729,6 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
   ahmed_neana: assabileProfile("/ahmed-nuinaa-75/ahmed-nuinaa.htm"),
   akram_alalaqimy: assabileProfile("/akram-al-aalakmi-80/akram-al-aalakmi.htm"),
   khalid_abdullaah_qahtani_hafs: assabileProfile("/khaled-al-qahtani-46/khaled-al-qahtani.htm"),
-  mustafa_ismail: assabileProfile("/mustafa-ismail-48/mustafa-ismail.htm"),
   nabil_rifai: assabileProfile("/nabil-ar-rifai-36/nabil-ar-rifai.htm"),
   salah_al_budair: assabileProfile("/salah-al-budair-17/salah-al-budair.htm"),
   mahmoud_ali_al_banna: assabileProfile("/mahmoud-ali-al-banna-25/mahmoud-ali-al-banna.htm"),
@@ -842,17 +738,9 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
   yaser_salamah: assabileProfile("/yasser-salama-314/yasser-salama.htm"),
   aziz_alili: assabileProfile("/aziz-alili-507/aziz-alili.htm"),
   abdullah_awwad_al_juhaynee: assabileProfile("/abdullah-awad-al-juhani-93/abdullah-awad-al-juhani.htm"),
-  idris_abkar: assabileProfile("/idriss-abkar-90/idriss-abkar.htm"),
-  ahmad_al_hawashi: assabileProfile("/ahmad-al-hawashy-71/ahmad-al-hawashy.htm"),
-  ibrahim_al_akhdar: assabileProfile("/ibrahim-al-akhdar-16/ibrahim-al-akhdar.htm"),
-  mohamed_al_luhaidan: assabileProfile(
-    "/muhammad-al-luhaidan-95/muhammad-al-luhaidan.htm",
-  ),
-  khaled_al_jalil: assabileProfile("/khalid-al-jalil-307/khalid-al-jalil.htm"),
-  adel_al_kalbani: assabileProfile("/adel-al-kalbani-44/adel-al-kalbani.htm"),
-  warsh_abdelmoujib_benkirane: assabileProfile(
-    "/abdelmoujib-benkirane-310/abdelmoujib-benkirane.htm",
-  ),
+  abdulbar_althubaity: assabileProfile("/abdul-bari-ath-thobaity-38/abdul-bari-ath-thobaity.htm"),
+  ali_hajjaj_alsoaesi: assabileProfile("/ali-hajjaj-souissi-78/ali-hajjaj-souissi.htm"),
+  warsh_aloyoon_al_koshi: assabileProfile("/laayoun-el-kouchi-22/laayoun-el-kouchi.htm"),
 });
 
 const RECITER_PHOTO_SOURCES = Object.freeze({
@@ -864,29 +752,20 @@ const RECITER_PHOTO_SOURCES = Object.freeze({
     provider: "Way2Quran",
     url: "https://way2quran.com/ar/reciters/ibrahim-al-dosari?recitationSlug=warsh-an-nafi",
   }),
-  warsh_abdelmoujib_benkirane: Object.freeze({
-    provider: "SuratMP3",
-    url: "https://suratmp3.com/fr/quran/reciters/80",
-  }),
-  warsh_rachid_belalya: Object.freeze({
-    provider: "SurahQuran",
-    url: "https://surahquran.com/mp3/Rachid-Belalia/",
-  }),
-  adel_al_kalbani: Object.freeze({
-    provider: "Wikimedia Commons",
-    url: "https://commons.wikimedia.org/wiki/File:Kalbani.jpg",
-  }),
 });
 
+// Fallback discs only: a real photo covers these (see getReciterPhoto). They stay
+// inside the manuscript's green/teal/brass family so an avatar never fights the
+// mushaf palette, and every entry keeps white initials above AA contrast.
 const AVATAR_COLORS = [
+  "#0b6235",
   "#0f766e",
-  "#2563eb",
-  "#7c3aed",
-  "#be123c",
-  "#b45309",
-  "#047857",
-  "#4338ca",
-  "#0369a1",
+  "#166534",
+  "#155e75",
+  "#3f6212",
+  "#7c5a12",
+  "#134e4a",
+  "#1e4d2b",
 ];
 
 const COUNTRY_LABELS = Object.freeze({
@@ -976,9 +855,6 @@ const RECITER_PHOTO_FOCUS = Object.freeze({
   husary_mujawwad_hafs: "50% 30%",
   warsh_hussary: "50% 30%",
   abdullaah_matrood: "50% 24%",
-  warsh_abdelmoujib_benkirane: "50% 22%",
-  warsh_rachid_belalya: "50% 24%",
-  adel_al_kalbani: "50% 28%",
 });
 
 export function getReciterPhotoFocus(reciterOrId, photo = null) {
@@ -1048,7 +924,7 @@ export function getReciterSourceInfo(reciterOrId, riwaya = null) {
     typeof reciterOrId === "string"
       ? getReciter(reciterOrId, riwaya) || getReciter(reciterOrId)
       : reciterOrId;
-  const cdnType = reciter?.cdnType || "islamic";
+  const cdnType = reciter?.cdnType || "everyayah";
   const sourceInfo = RECITER_SOURCE_INFO[cdnType] || null;
   return sourceInfo ? { ...sourceInfo, cdnType } : null;
 }
@@ -1080,12 +956,15 @@ export function validateReciterAudioConfig(reciter) {
     } catch {
       errors.push("cdn");
     }
+  } else if (sourceInfo.cdnType === "quranpedia") {
+    if (!/^\d+$/.test(cdn)) errors.push("cdn");
   } else if (
     !cdn ||
     !SAFE_CDN_PATH.test(cdn) ||
     cdn.startsWith("/") ||
     cdn.includes("..") ||
-    cdn.includes("//")
+    cdn.includes("//") ||
+    (sourceInfo.cdnType === "quran-cdn" && !cdn.endsWith("/"))
   ) {
     errors.push("cdn");
   }
@@ -1143,11 +1022,13 @@ export function getReciterBio(reciter, lang = "fr") {
         ? "مرتل"
         : "murattal";
   const sourceLabel =
-    reciter.source === "mp3quran"
-      ? "MP3Quran"
-      : reciter.source === "everyayah"
-        ? "EveryAyah"
-        : reciter.cdnType || "audio";
+    reciter.source === "quran"
+      ? "Quran.com"
+      : reciter.source === "quranpedia"
+        ? "QuranPedia"
+        : reciter.source === "everyayah"
+          ? "EveryAyah"
+          : reciter.cdnType || "audio";
 
   if (lang === "ar") {
     return `${name} قارئ متاح في MushafPlus بنمط ${style}. مصدر الصوت: ${sourceLabel}.`;

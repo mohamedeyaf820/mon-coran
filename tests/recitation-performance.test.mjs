@@ -55,8 +55,10 @@ test("recitation performance: Warsh playlists are built locally without text fet
   };
 
   try {
+    // Warsh Al-Baqara has 285 verses (Hafs has 286): the playlist must follow
+    // the Warsh mushaf while keeping Hafs-keyed audio numbering.
     const playlist = await playlistModule.buildAudioPlaylistForSurah(2, "warsh");
-    assert.equal(playlist.length, 286);
+    assert.equal(playlist.length, 285);
     assert.deepEqual(
       {
         surah: playlist[0].surah,
@@ -65,7 +67,9 @@ test("recitation performance: Warsh playlists are built locally without text fet
       },
       { surah: 2, ayah: 1, number: 8 },
     );
-    assert.equal(playlist.at(-1).ayah, 286);
+    assert.equal(playlist.at(-1).ayah, 285);
+    assert.equal(playlist.at(-1).hafsNumber, 286);
+    assert.equal(playlist.at(-1).number, 293);
     assert.equal(fetchCount, 0);
   } finally {
     globalThis.fetch = previousFetch;
@@ -209,8 +213,8 @@ test("audio correctness: switching reciter never reuses the previous reciter tim
         },
       },
     ],
-    "ar.alafasy",
-    "islamic",
+    "Alafasy/mp3/",
+    "quran-cdn",
   );
 
   assert.equal(

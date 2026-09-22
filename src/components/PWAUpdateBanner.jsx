@@ -10,15 +10,30 @@ export default function PWAUpdateBanner() {
     if (!('serviceWorker' in navigator)) return;
     let cancelled = false;
     let registration;
+    let installingWorker = null;
+    let onStateChange = null;
+
+    const detachStateChange = () => {
+      if (installingWorker && onStateChange) {
+        installingWorker.removeEventListener('statechange', onStateChange);
+      }
+      installingWorker = null;
+      onStateChange = null;
+    };
 
     const handleUpdateFound = () => {
       const sw = registration?.installing;
       if (!sw) return;
-      sw.addEventListener('statechange', () => {
-        if (!cancelled && sw.state === 'installed' && navigator.serviceWorker.controller) {
+      detachStateChange();
+      installingWorker = sw;
+      onStateChange = () => {
+        if (sw.state !== 'installed') return;
+        detachStateChange();
+        if (!cancelled && navigator.serviceWorker.controller && registration?.waiting === sw) {
           setWaiting(true);
         }
-      });
+      };
+      sw.addEventListener('statechange', onStateChange);
     };
 
     navigator.serviceWorker.getRegistration().then((existing) => (
@@ -36,6 +51,7 @@ export default function PWAUpdateBanner() {
     return () => {
       cancelled = true;
       registration?.removeEventListener('updatefound', handleUpdateFound);
+      detachStateChange();
     };
   }, []);
 
@@ -54,8 +70,9 @@ export default function PWAUpdateBanner() {
     <div
       role="alert"
       aria-live="polite"
+      className="pwa-update-banner"
       style={{
-        position: 'fixed', bottom: 'calc(var(--space-5) + env(safe-area-inset-bottom))', left: '50%', transform: 'translateX(-50%)',
+        position: 'fixed', left: '50%', transform: 'translateX(-50%)',
         zIndex: 9999, background: 'var(--bg-card)', border: '1px solid var(--border)',
         borderRadius: 'var(--r-lg)', padding: 'var(--space-2) var(--space-4)', display: 'flex',
         alignItems: 'center', gap: 'var(--space-3)', boxShadow: 'var(--shadow-md)',

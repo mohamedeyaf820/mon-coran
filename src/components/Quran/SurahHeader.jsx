@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Info, Play, Loader2 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
+import { useAppLocale } from "../../context/AppContext";
 import { cn } from "../../lib/utils";
 import SurahInfoPanel from "../QuranDisplay/SurahInfoPanel";
 
@@ -18,8 +20,11 @@ const SurahHeader = React.memo(function SurahHeader({
 }) {
   const s = getSurah(surahNum);
   const [showInfo, setShowInfo] = useState(false);
+  const { riwaya } = useAppLocale();
 
   if (!s) return null;
+
+  const verseCount = getSurahVerseCountByRiwaya(surahNum, riwaya) || s.ayahs;
 
   const isMeccan = s.type === "Meccan";
   const translatedName =
@@ -84,7 +89,7 @@ const SurahHeader = React.memo(function SurahHeader({
               {revelationLabel}
             </span>
             <span className="qc-surah-banner__badge">
-              {s.ayahs} {ayahLabel}
+              {verseCount} {ayahLabel}
             </span>
           </div>
 

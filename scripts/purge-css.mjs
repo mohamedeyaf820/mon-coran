@@ -37,6 +37,10 @@ async function purgeCSS() {
   const contentFiles = await expandContentFiles();
   console.log(`[purge-css] Found ${contentFiles.length} content files`);
 
+  const dynamicAttrPattern = /\[(?:dir|lang|type)[=~]/;
+  const attrRuleSplit = /([^{}]+)\{[^{}]*\}/g;
+  const attrPairs = [];
+
   for (const cssFile of cssFiles) {
     const cssFilePath = path.join(cssPath, cssFile);
     const originalSize = fs.statSync(cssFilePath).size;
@@ -61,6 +65,7 @@ async function purgeCSS() {
       }
 
       fs.writeFileSync(cssFilePath, result.css);
+      attrPairs.push({ cssFile, raw: cssRaw, out: result.css });
 
       const newSize = fs.statSync(cssFilePath).size;
       const reduction = ((originalSize - newSize) / originalSize) * 100;
@@ -72,6 +77,54 @@ async function purgeCSS() {
       process.exitCode = 1;
     }
   }
+
+  const contentBlob = contentFiles
+    .map((file) => {
+      try {
+        return fs.readFileSync(file, "utf8");
+      } catch {
+        return "";
+      }
+    })
+    .join("\n");
+
+  // PurgeCSS cannot see runtime attribute values, so [dir=]/[lang=]/[type=]
+  // rules are protected via CSS_SAFELIST. Fail the build when a rule whose
+  // class tokens are ALL still live in the bundle disappears: that is the
+  // silent-RTL-regression signature this gate exists to catch. Rules with a
+  // dead class token are legitimately dropped (dead CSS cleanup).
+  const liveAttrViolations = [];
+  const normalizeSelector = (value) =>
+    value.replace(/\s+/g, "").replace(/["']/g, "");
+  for (const { cssFile, raw, out } of attrPairs) {
+    const outNormalized = normalizeSelector(out);
+    for (const [, head] of raw.matchAll(attrRuleSplit)) {
+      const selector = head.trim();
+      if (!dynamicAttrPattern.test(selector)) continue;
+      const classTokens = selector.match(/\.[^\s.,:>()[\]\\]+(?:\\.[^\s.,:>()[\]\\]*)*/g) || [];
+      if (!classTokens.length) continue;
+      // Token-exact like PurgeCSS: `audio-player__x` does not make
+      // `.audio-player` live.
+      const allLive = classTokens.every((token) => {
+        const name = token.replace(/^\./, "").replace(/\\/g, "");
+        const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        return new RegExp(`(^|[^\\w-])${escaped}([^\\w-]|$)`).test(contentBlob);
+      });
+      if (allLive && !outNormalized.includes(normalizeSelector(selector))) {
+        liveAttrViolations.push(`${cssFile}: ${selector.slice(0, 140)}`);
+      }
+    }
+  }
+  if (liveAttrViolations.length > 0) {
+    throw new Error(
+      `Dynamic attribute selectors with live tokens were purged (${liveAttrViolations.length}):\n` +
+        liveAttrViolations.join("\n") +
+        "\nAdd the attribute name to CSS_SAFELIST in scripts/cssPurgeConfig.mjs.",
+    );
+  }
+  console.log(
+    `[purge-css] Live dynamic attribute selectors preserved across ${attrPairs.length} files.`,
+  );
 
   const purgedCss = cssFiles
     .map((cssFile) => fs.readFileSync(path.join(cssPath, cssFile), "utf8"))

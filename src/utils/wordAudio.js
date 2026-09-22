@@ -1,4 +1,29 @@
 let _audioInstance = null;
+let _warshFallbackNoticeShown = false;
+
+export function resetWarshFallbackNotice() {
+  _warshFallbackNoticeShown = false;
+}
+
+function activeRiwayaIsWarsh() {
+  if (typeof document === "undefined") return false;
+  const root = document.querySelector("[data-riwaya]");
+  return root?.getAttribute("data-riwaya") === "warsh";
+}
+
+// The qurancdn /wbw/ library is keyed on Hafs surah/ayah/word numbers, so a
+// Warsh word tap always recites the neighbouring Hafs recording. Keep the
+// playback, but disclose once per session that it is not Warsh audio.
+function notifyWarshWordAudioFallback() {
+  if (_warshFallbackNoticeShown) return;
+  _warshFallbackNoticeShown = true;
+  Promise.all([import("../i18n/index.js"), import("../lib/utils.js")])
+    .then(([{ t }, { toast }]) => {
+      const lang = document.documentElement?.getAttribute("lang") || "fr";
+      toast(t("errors.warshWordAudioHafs", lang), "info");
+    })
+    .catch(() => {});
+}
 
 function getOrCreateAudio() {
   if (!_audioInstance && typeof window !== "undefined" && typeof Audio !== "undefined") {
@@ -32,6 +57,8 @@ export function playWordAudio(input, ayah = null, wordPosition = null) {
   }
 
   if (!url) return;
+
+  if (activeRiwayaIsWarsh()) notifyWarshWordAudioFallback();
 
   try {
     const audio = getOrCreateAudio() || new Audio();
