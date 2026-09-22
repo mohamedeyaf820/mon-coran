@@ -23,6 +23,7 @@ import {
 } from "../src/data/reciters.js";
 
 import { RECITER_PORTRAITS } from "../src/data/reciterPortraits.js";
+import { foldSearchText } from "../src/utils/searchIntelligence.js";
 
 const RESEARCHED_PROFILES = JSON.parse(
   readFileSync(new URL("../public/data/reciter-profiles.json", import.meta.url), "utf8"),
@@ -79,6 +80,7 @@ const EXPECTED_HAFS_IDS = [
   "abdullah_awwad_al_juhaynee",
   "abdulbar_althubaity",
   "saad_almoqren",
+  "adel_al_kalbani",
   "ali_hajjaj_alsoaesi",
 ];
 
@@ -110,7 +112,6 @@ const REMOVED_RECITER_IDS = [
   "ibrahim_al_akhdar",
   "mohamed_al_luhaidan",
   "khaled_al_jalil",
-  "adel_al_kalbani",
   "warsh_abdelmoujib_benkirane",
   "warsh_rachid_belalya",
   ...RETIRED_WARSH_SURAH_STREAM_IDS,
@@ -137,9 +138,9 @@ test("reciters: Hafs and Warsh catalogues are complete", () => {
     assert.ok(getReciter(id, "warsh"), `missing Warsh reciter: ${id}`);
   }
 
-  assert.equal(getRecitersByRiwaya("hafs").length, 44);
+  assert.equal(getRecitersByRiwaya("hafs").length, 45);
   assert.equal(getRecitersByRiwaya("warsh").length, 8);
-  assert.equal(allReciters().length, 52);
+  assert.equal(allReciters().length, 53);
 });
 
 test("reciters: removed voices no longer resolve", () => {
@@ -162,7 +163,8 @@ test("reciters: Hafs streams only from the Quran.com CDN, EveryAyah or approved 
   }
 });
 
-const SURAH_STREAM_IDS = ["abdulbar_althubaity", "saad_almoqren"];
+// The three Hafs voices MP3Quran publishes only as a surah-long stream.
+const SURAH_STREAM_IDS = ["abdulbar_althubaity", "saad_almoqren", "adel_al_kalbani"];
 
 test("reciters: only the approved voices stream whole surahs", () => {
   for (const reciter of allReciters()) {
@@ -311,8 +313,8 @@ test("reciters: curated portraits cover the catalogue and ship as local files", 
   const withPhotos = allReciters().filter(
     (reciter) => !AVATAR_ONLY_IDS.includes(reciter.id),
   );
-  assert.equal(withPhotos.length, 51);
-  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 51);
+  assert.equal(withPhotos.length, 52);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 52);
 
   for (const reciter of withPhotos) {
     assert.equal(getReciterVisual(reciter).type, "photo", reciter.id);
@@ -417,8 +419,39 @@ test("reciters: requested voices are discoverable through common spellings", () 
   assert.ok(requested["ar.minshawi"].searchAliases.includes("Menchaoui"));
 });
 
+// The hub searches the folded names and aliases as substrings, so a hyphen in
+// the catalogue spelling ("Al-Banna") hides the voice from the form readers
+// actually type. These are the queries that used to return nothing.
+test("reciters: the hub finds each voice under the spellings readers type", () => {
+  const haystacks = new Map(
+    getRecitersByRiwaya("hafs").map((reciter) => [
+      reciter.id,
+      [reciter.nameFr, reciter.nameEn, reciter.name, (reciter.searchAliases || []).join(" ")]
+        .map(foldSearchText)
+        .join(" "),
+    ]),
+  );
+
+  const queries = {
+    albanna: "mahmoud_ali_al_banna",
+    banna: "mahmoud_ali_al_banna",
+    "mahmoud banna": "mahmoud_ali_al_banna",
+    minshawwi: "ar.minshawi",
+    minshawy: "ar.minshawi",
+    kalbanni: "adel_al_kalbani",
+    kalbani: "adel_al_kalbani",
+    "adel kalbani": "adel_al_kalbani",
+  };
+
+  for (const [query, expectedId] of Object.entries(queries)) {
+    const folded = foldSearchText(query);
+    const hits = [...haystacks].filter(([, h]) => h.includes(folded)).map(([id]) => id);
+    assert.ok(hits.includes(expectedId), `"${query}" found ${JSON.stringify(hits)}`);
+  }
+});
+
 test("reciters: every biography exposes a reviewed HTTPS source", () => {
-  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 52);
+  assert.equal(Object.keys(RESEARCHED_PROFILES).length, 53);
 
   for (const [id, profile] of Object.entries(RESEARCHED_PROFILES)) {
     assert.match(profile.bioSource?.url || "", /^https:\/\//, id);
@@ -661,6 +694,7 @@ test("audio: fallback candidates stay within the approved sources", async () => 
     "audio.qurancdn.com",
     "files.quranpedia.net",
     "server6.mp3quran.net",
+    "server8.mp3quran.net",
     "server9.mp3quran.net",
     "server11.mp3quran.net",
     "server16.mp3quran.net",

@@ -128,6 +128,9 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     nameEn: "Mahmoud Ali Al-Banna",
     nameFr: "Mahmoud Ali Al-Banna",
     style: "mujawwad",
+    // The catalogue spells his name with a hyphen, but readers search the
+    // unhyphenated and shortened forms they heard.
+    searchAliases: ["Albanna", "Al Banna", "Banna", "Mahmoud Banna", "البنا"],
     cdn: "mahmoud_ali_al_banna_32kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
@@ -249,6 +252,21 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     nameFr: "Saad Al-Meqren",
     style: "murattal",
     cdn: "https://server16.mp3quran.net/saad/Rewayat-Hafs-A-n-Assem/",
+    cdnType: "mp3quran-surah",
+    audioMode: "surah",
+    country: "KSA",
+    source: "mp3quran",
+  },
+  {
+    id: "adel_al_kalbani",
+    name: "عادل الكلباني",
+    nameEn: "Adel Al-Kalbani",
+    nameFr: "Adel Al-Kalbani",
+    style: "murattal",
+    // No approved provider publishes him verse by verse, so he streams whole
+    // surahs from MP3Quran and the reader cannot follow along ayah per ayah.
+    searchAliases: ["Kalbani", "Kalbanni", "Al Kalbani", "Adel Kalbani", "الكلباني"],
+    cdn: "https://server8.mp3quran.net/a_klb/",
     cdnType: "mp3quran-surah",
     audioMode: "surah",
     country: "KSA",
@@ -712,6 +730,7 @@ export const RECITER_PHOTOS_MAP = {
   nabil_rifai: assabilePhoto("nabil-ar-rifai.png"),
   salah_al_budair: assabilePhoto("salah-al-budair.png"),
   mahmoud_ali_al_banna: assabilePhoto("mahmud-ali-al-banna.png"),
+  adel_al_kalbani: assabilePhoto("adel-al-kalbani.png"),
   karim_mansoori: assabilePhoto("karim-mansouri.jpg"),
   muhsin_al_qasim: assabilePhoto("abdulmohsen-al-qasim.png"),
   salaah_bukhatir: assabilePhoto("salah-bukhatir.png"),
@@ -763,6 +782,7 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
   aziz_alili: assabileProfile("/aziz-alili-507/aziz-alili.htm"),
   abdullah_awwad_al_juhaynee: assabileProfile("/abdullah-awad-al-juhani-93/abdullah-awad-al-juhani.htm"),
   abdulbar_althubaity: assabileProfile("/abdul-bari-ath-thobaity-38/abdul-bari-ath-thobaity.htm"),
+  adel_al_kalbani: assabileProfile("/adel-al-kalbani-44/adel-al-kalbani.htm"),
   ali_hajjaj_alsoaesi: assabileProfile("/ali-hajjaj-souissi-78/ali-hajjaj-souissi.htm"),
   warsh_aloyoon_al_koshi: assabileProfile("/laayoun-el-kouchi-22/laayoun-el-kouchi.htm"),
   warsh_yassin: assabileProfile("/yassen-al-jazairi-37/yassen-al-jazairi.htm"),
