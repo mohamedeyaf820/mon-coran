@@ -395,26 +395,33 @@
   color: var(--reader-page-muted);
 }
 
-/* Running head in a gilded cartouche, mirroring the in-app sheet. */
+/* Running head: quiet type on the paper, not a second cartouche. The surah
+   band below is the page's one gilded ornament; a filled pill above it put the
+   navigation metadata and the title on the same visual rank, and the reader
+   could not tell which one named the page. */
 #root ~ .mfp-portal-root .qcm-page-header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: clamp(0.4rem, 1vw, 0.7rem);
   margin-top: 0.1rem;
-  padding: 0.16rem 0.9rem;
-  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 62%, transparent);
-  border-radius: 999px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--mushaf-gold) 5%, transparent),
-    color-mix(in srgb, var(--mushaf-gold) 11%, transparent)
-  );
+  padding: 0.16rem 0.2rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
 }
 
 #root ~ .mfp-portal-root .qcm-page-header strong {
   font-weight: 600;
   letter-spacing: 0;
   color: var(--reader-page-ink);
+}
+
+/* The outer rubrics (juz, hizb, rub', folio) are the print's structural marks.
+   Kept at the ink rather than the muted grey, they read as part of the leaf;
+   at 55 % they read as stray labels floating beside the frame. */
+#root ~ .mfp-portal-root .qcm-edge span {
+  color: color-mix(in srgb, var(--reader-page-ink) 72%, var(--reader-page-muted));
+  font-size: 0.74rem;
 }
 
 #root ~ .mfp-portal-root .qcm-page-footer {
@@ -450,18 +457,21 @@
   --mfp-cols: 1;
   --mfp-line-measure: 16.7em;
   --mfp-line-pitch: 1.62em;
-  /* Vertical room taken by the overlay bar, the running head, the folio and
-     the sheet margins; horizontal room taken by the gutters and the frame.
-     The vertical figure includes --mfp-header-room, which the sheet must
-     clear before the fifteen lines start. */
-  --mfp-chrome: 266px;
+  /* Vertical room taken by the overlay bar and the sheet margins (measured:
+     71 px of bar plus ~80 px of fold), and horizontal room for the gutters,
+     the frame padding and the outer rubric column. The em divisor is the whole
+     leaf, not just its fifteen lines: grid 24.3 em + head, folio and padding
+     ~4.5 em. Budgeting only the grid let the floor bind and the sheet scroll
+     a few lines past the window on a 720 px screen. */
+  --mfp-chrome: 150px;
   --mfp-hchrome: 260px;
-  --mfp-min-font: 22px;
+  --mfp-min-font: 18px;
+  --mfp-leaf-em: 29.8;
   --mfp-font: clamp(
     var(--mfp-min-font),
     min(
       calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
-      calc((100vh - var(--mfp-chrome)) / 24.8)
+      calc((100vh - var(--mfp-chrome)) / var(--mfp-leaf-em))
     ),
     64px
   );
@@ -469,7 +479,7 @@
     var(--mfp-min-font),
     min(
       calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
-      calc((100dvh - var(--mfp-chrome)) / 24.8)
+      calc((100dvh - var(--mfp-chrome)) / var(--mfp-leaf-em))
     ),
     64px
   );
@@ -491,8 +501,22 @@
    viewport, and the shared --mfp-font keeps them at one scale. */
 .mfp-portal-root[data-layout="double"] {
   --mfp-cols: 2;
-  --mfp-hchrome: 350px;
-  --mfp-page-gutter: 2.5rem;
+  /* One leaf costs its 16.7 em measure plus ~130 px of frame padding and outer
+     rubric column, and the spread a 26 px fold: the width cap has to subtract
+     that fixed cost or the two leaves run past the window. */
+  --mfp-hchrome: 340px;
+  /* The spine is a fold, not a moat: at 2.5rem the two leaves read as separate
+     cards and the pair lost ~110 px of width the type could have used. */
+  --mfp-page-gutter: 1.6rem;
+}
+
+/* On the spread, the two edges that face the fold are dropped: their juz, hizb
+   and folio already print on the outer edge of the same leaf and in the overlay
+   bar, and a label floating in the gutter belongs to neither page. Anchored on
+   #root because the display rule that owns these columns lives there. */
+#root ~ .mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:first-child .qcm-edge--end,
+#root ~ .mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:last-child .qcm-edge--start {
+  display: none;
 }
 
 /* ─── Single-page layout (mobile / tablet portrait) ────────────────── */
@@ -529,12 +553,42 @@
   padding-block: 0.75rem 1rem;
 }
 
+/* On the spread each shell is its own grid track: a 100 % floor makes the
+   track wider than its leaf and the outer rubrics drift to the screen edge,
+   reading as labels attached to nothing. */
+#root ~ .mfp-portal-root[data-layout="double"] .mfp-book .qcm-page-shell {
+  min-width: 0;
+}
+
 #root ~ .mfp-portal-root .mfp-book .qcm-page {
   width: max-content;
   max-width: none;
   min-height: 0;
+  /* The leaf IS the printed sheet: one fixed frame per spread, as tall as the
+     screen allows. Sized by its ink, the two faces of a spread came out 30 px
+     apart and a phone page read as a square card instead of a folio; with the
+     frame fixed, the ink sits inside it and both faces are one size by
+     construction. It stays a floor rather than a hard height: a page whose fit
+     loop cannot reach fifteen lines grows its own paper instead of printing
+     over the running head. */
+  min-height: calc(100dvh - var(--mfp-chrome));
+  min-height: calc(100vh - var(--mfp-chrome));
+  display: flex;
+  flex-direction: column;
   /* Padding = QuranSafeArea inset: no text may enter the frame ornaments. */
   padding: 1.1rem clamp(1.3rem, 4vw, 2.4rem) 0.9rem;
+}
+
+/* The body takes the frame below the running head and keeps the folio at the
+   foot of the page; a short page settles in the middle of its paper rather
+   than hanging from the head. */
+#root ~ .mfp-portal-root .mfp-book .qcm-lines {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-footer {
+  margin-top: auto;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-edge {
@@ -615,26 +669,29 @@
      or pushes its last lines past the fold (height). */
   font-size: min(
     calc(var(--mfp-font) * 1.08),
-    calc((100vw - var(--mfp-hchrome)) / 18.05),
-    calc((100vh - var(--mfp-chrome)) / 28.6)
+    calc((100vw - var(--mfp-hchrome)) / (18.05 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 31.7)
   );
   font-size: min(
     calc(var(--mfp-font) * 1.08),
-    calc((100vw - var(--mfp-hchrome)) / 18.05),
-    calc((100dvh - var(--mfp-chrome)) / 28.6)
+    calc((100vw - var(--mfp-hchrome)) / (18.05 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 31.7)
   );
 }
 
+/* The two illuminated leaves are display pages: the Madani sets al-Fatiha and
+   the opening of al-Baqarah in a few large lines, not in the fifteen-line grid
+   of a full page, so their body is sized for the eight lines either leaf
+   carries instead of being shrunk until fifteen fit. The width cap counts both
+   columns, or the spread would run past the window. */
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   font-size: min(
-    calc(var(--mfp-font) * 1.04),
-    calc((100vw - var(--mfp-hchrome)) / 17.4),
-    calc((100vh - var(--mfp-chrome)) / 25.9)
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 18.5)
   );
   font-size: min(
-    calc(var(--mfp-font) * 1.04),
-    calc((100vw - var(--mfp-hchrome)) / 17.4),
-    calc((100dvh - var(--mfp-chrome)) / 25.9)
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 18.5)
   );
 }
 
@@ -752,15 +809,14 @@
   min-height: 24.3em;
 }
 
-/* A short opening page cannot fill the fifteen lines even at the fit ceiling.
-   The printed leaf does not answer that by centring the body: the text starts
-   under the running head and the unused height stays above the folio, so the
-   reader sees the same page shape as in the in-app sheet. */
+/* A short opening page cannot fill the fifteen lines even at the fit ceiling,
+   and the print does not answer that with a page two-thirds empty: the plate
+   settles in the middle of its frame, so the gilded leaf reads as composed
+   rather than as a header stuck to the top. */
 #root ~ .mfp-portal-root .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;
-  min-height: 24.3em;
+  justify-content: center;
 }
 
 /* Warsh justifies every row to the full block width, so the continuous body
@@ -858,14 +914,20 @@
    grid: the surah openings (one .qcm-line each) and the wrapped body share
    the same constant row pitch, so the sheet never drifts off the grid. */
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-flow="true"] {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   width: var(--mfp-line-measure);
-  /* The fit loop never inflates a short page to fifteen lines, so the block
-     reserves the rest of the grid as blank paper: both leaves of one spread
-     keep the printed page height instead of ending where their ink does. */
-  min-height: calc(15 * var(--mfp-line-pitch));
   font-size: var(--mfp-font);
   line-height: var(--mfp-line-pitch);
+}
+
+/* The rows must keep their natural height: a flex child shrinks to its
+   container, and the line-fit loop reads that height as the row count. A
+   squeezed sheet then measured fifteen lines while printing sixteen, and
+   overflowed its own frame. */
+#root ~ .mfp-portal-root .mfp-book .qcm-lines[data-flow="true"] > * {
+  flex: 0 0 auto;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-lines[data-flow="true"] .qcm-line {
@@ -1196,7 +1258,10 @@
 .mfp-portal-root[data-layout="double"] .mfp-book--exact {
   display: grid;
   grid-template-columns: repeat(2, max-content);
-  align-items: start;
+  /* One row, stretched: both faces of the spread are as tall as the taller of
+     them, so a page whose line-fit runs past fifteen never leaves its partner
+     shorter and the open book stops reading as two cards. */
+  align-items: stretch;
   justify-content: center;
   column-gap: var(--mfp-page-gutter);
   width: max-content;

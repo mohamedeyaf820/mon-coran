@@ -53,10 +53,10 @@ export default function MushafPageShell({
         <span className="qcm-corner qcm-corner--bl" aria-hidden="true" />
         <span className="qcm-corner qcm-corner--br" aria-hidden="true" />
         {/* The running head is part of the printed page: always Arabic, like
-            the Madani folio. The translated surah name stays available on
-            hover and in the reader chrome around the sheet. */}
+            the Madani folio. It names the surah and the folio only — the juz,
+            hizb and rub' are structural marks and live in the outer margin,
+            where the print sets them, rather than being printed twice. */}
         <header className="qcm-page-header" lang="ar" dir="rtl">
-          <span className="qcm-page-header__meta">{meta.sideA}</span>
           <strong className="qcm-page-header__name" title={meta.surahNameLocalized}>
             {meta.surahName}
           </strong>
@@ -70,7 +70,7 @@ export default function MushafPageShell({
         </footer>
       </div>
       <div className="qcm-edge qcm-edge--end" lang="ar" dir="rtl">
-        <span>{meta.sideC || meta.sideB}</span>
+        {meta.sideC && <span>{meta.sideC}</span>}
         <span>{meta.folio ?? meta.page}</span>
       </div>
     </section>

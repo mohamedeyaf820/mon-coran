@@ -316,13 +316,21 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   // below 15 px before the fit runs.
   assert.match(flowRenderer, /Math\.max\(floor, Math\.min\(MAX_LINE_FIT/);
   const sheetStyles = source("src/styles/mushaf-page-polish.css");
-  for (const [name, css] of [["sheet", sheetStyles], ["book", book]]) {
-    assert.match(
-      css,
-      /\[data-flow="true"\] \{[^}]*justify-content: flex-start/,
-      `${name}: an opening page must start under the running head`,
-    );
-  }
+  // The reading pane has no frame, so its leaf starts under the head and grows
+  // as tall as its text.
+  assert.match(
+    sheetStyles,
+    /\[data-flow="true"\] \{[^}]*justify-content: flex-start/,
+    "sheet: an opening page must start under the running head",
+  );
+  // The immersive leaf IS a framed sheet: a page that cannot reach fifteen
+  // lines settles in the middle of its own paper instead of hanging from the
+  // head with the lower half of the frame empty.
+  assert.match(
+    book,
+    /\[data-flow="true"\] \{[^}]*justify-content: center/,
+    "book: a short page centres its plate inside the frame",
+  );
   // The reader's own face must reach the printed word: the Warsh display
   // element re-declares --font-quran above the inline stamp, so reading it
   // alone printed every Warsh choice as KFGQPC Warsh.

@@ -1388,10 +1388,12 @@ html body .app-root .quran-mode-pane--mushaf .qcm-line
   fill: rgba(var(--primary-rgb), 0.1);
 }
 
-/* The folio rosette is set small, like the print's quiet page number. */
+/* The folio rosette is the print's quiet page number, but it is still the only
+   thing that tells the reader which leaf they hold: below ~30 px the digit
+   inside the ring stops resolving on a phone. */
 :is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette--folio {
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 2.05rem;
+  height: 2.05rem;
 }
 
 /* Hafs tajweed comes from the coloured QCF v4 glyphs — the same letter-painted
