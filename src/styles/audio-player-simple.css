@@ -1075,6 +1075,23 @@ html body > .audio-player-modal--simple .audio-player-modal__backdrop {
   backdrop-filter: blur(10px);
 }
 
+/* The dismiss target is a <button>, and the global button reset pins every
+   button to position:relative with a 44px floor — which collapses this
+   inset-0 scrim into a 44px box in the middle of the sheet. Tapping the grey
+   around the dialog then hit the container and did nothing. The sheet keeps
+   its own z-index, so a full-bleed backdrop still stays underneath it. */
+html body > .audio-player-modal--simple button.audio-player-modal__backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
+}
+
 html body > .audio-player-modal--simple .audio-player-modal__surface--simple {
   width: min(92vw, 54rem) !important;
   height: min(82dvh, 42rem) !important;
@@ -1213,7 +1230,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
   }
 
   html body > .audio-player-modal--simple .audio-player-modal__tabs button {
-    min-height: 2.5rem !important;
+    min-height: 2.75rem !important;
     border: 0;
     border-radius: .65rem;
     background: transparent !important;

@@ -31,9 +31,9 @@ const ROSETTE_D = (() => {
  * the glyph fonts stretched their rosette around the number, this one scales
  * the number instead.
  */
-export function AyahRosette({ number, className = "" }) {
-  const digits = toArabicNumeral(number);
-  const fontSize = digits.length >= 4 ? 6.4 : digits.length === 3 ? 7.4 : digits.length === 2 ? 8.8 : 10;
+export function AyahRosette({ number, digits, className = "" }) {
+  const label = digits ?? toArabicNumeral(number);
+  const fontSize = label.length >= 4 ? 6.4 : label.length === 3 ? 7.4 : label.length === 2 ? 8.8 : 10;
   return (
     <svg
       className={`qcm-rosette${className ? ` ${className}` : ""}`}
@@ -51,7 +51,7 @@ export function AyahRosette({ number, className = "" }) {
         dominantBaseline="central"
         style={{ fontSize: `${fontSize}px` }}
       >
-        {digits}
+        {label}
       </text>
     </svg>
   );

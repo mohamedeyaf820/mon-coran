@@ -861,20 +861,19 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   color: var(--reader-page-muted);
 }
 
-/* The running head sits in a cartouche — the gilded band the Madani print
-   closes around the juz and surah line — instead of resting on a bare rule. */
+/* The running head is metadata, not a second title: quiet type on the paper,
+   the juz label on the reading edge and the surah name opposite it. The
+   gilded cartouche it used to wear competed with the surah band below, which
+   is the page's one ornament, and at phone width the pill ate the line. */
 .quran-mode-pane--mushaf .qcm-page-header {
+  flex-direction: row-reverse;
   justify-content: space-between;
   gap: clamp(0.4rem, 1vw, 0.7rem);
   margin-top: 0.1rem;
-  padding: 0.16rem 0.9rem;
-  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 62%, transparent);
-  border-radius: 999px;
-  background: linear-gradient(
-    to bottom,
-    color-mix(in srgb, var(--mushaf-gold) 5%, transparent),
-    color-mix(in srgb, var(--mushaf-gold) 11%, transparent)
-  );
+  padding: 0.1rem 0.15rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
 }
 
 .quran-mode-pane--mushaf .qcm-page-header strong {
@@ -884,7 +883,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 }
 
 .quran-mode-pane--mushaf .qcm-page-header__meta {
-  color: color-mix(in srgb, var(--mushaf-gold-deep) 55%, var(--reader-page-muted));
+  color: var(--reader-page-muted);
   font-size: 0.68rem;
   font-weight: 600;
   letter-spacing: 0.02em;
@@ -901,29 +900,33 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   white-space: nowrap;
 }
 
-/* Twin gilled lozenges flanking the surah name — the running-head ornament
-   of the Madinah folios. Pseudo-elements sit inside the name box, so a very
-   long name simply clips them before it ever overflows the sheet. */
-.quran-mode-pane--mushaf .qcm-page-header__name::before,
-.quran-mode-pane--mushaf .qcm-page-header__name::after {
-  content: "";
-  display: inline-block;
-  width: 0.28rem;
-  height: 0.28rem;
-  margin-inline: 0.42rem;
-  vertical-align: 0.12em;
-  transform: rotate(45deg);
-  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 75%, transparent);
-  background: color-mix(in srgb, var(--mushaf-gold) 30%, transparent);
-}
-
-/* The folio is the printed page's quiet number: the Madani mushaf sets it in
-   a small rosette below the text block, without a rule above it. */
+/* The folio closes the page between two fading rules, the way the reader's
+   apps mark the foot of a folio; the number itself stays in the khatam. */
 .quran-mode-pane--mushaf .qcm-page-footer {
   justify-content: center;
-  gap: 0.6rem;
-  margin-top: 0.6rem;
+  gap: 0.7rem;
+  margin-top: 0.7rem;
   padding-top: 0.1rem;
+}
+
+.quran-mode-pane--mushaf .qcm-page-footer::before,
+.quran-mode-pane--mushaf .qcm-page-footer::after {
+  content: "";
+  flex: 1 1 auto;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--mushaf-gold) 45%, transparent)
+  );
+}
+
+.quran-mode-pane--mushaf .qcm-page-footer::after {
+  background: linear-gradient(
+    to left,
+    transparent,
+    color-mix(in srgb, var(--mushaf-gold) 45%, transparent)
+  );
 }
 
 .quran-mode-pane--mushaf .qcm-page-footer .qcm-page-folio {
@@ -971,12 +974,28 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   justify-content: center;
 }
 
+/* Hairlines run out from the band and the basmala to the sheet margins, so
+   the two lines read as page furniture rather than as floating text. */
+.quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::before,
+.quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::after {
+  content: "";
+  flex: 0 1 3.2em;
+  height: 1px;
+  margin-inline: 0.5em;
+  background: linear-gradient(
+    to right,
+    transparent,
+    color-mix(in srgb, var(--mushaf-gold) 52%, transparent),
+    transparent
+  );
+}
+
 .quran-mode-pane--mushaf .qcm-surah-title {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
-  height: 1.55em;
+  min-height: 1.55em;
   border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
   border-radius: 0.9em;
   background: linear-gradient(
@@ -1005,11 +1024,33 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 
 /* Readable name + numbered rosette, mirroring the immersive band: the
    "surahnames" digit ligature read as ornament, not as the surah's name. */
+.quran-mode-pane--mushaf .qcm-surah-title__stack {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12em;
+}
+
 .quran-mode-pane--mushaf .qcm-surah-title__name {
   font-family: var(--font-quran, "Amiri Quran"), serif;
   font-size: 1.05em;
   line-height: 1.2;
   color: var(--mushaf-gold-deep);
+}
+
+/* The translated name is the reader's own handle on the surah, so it is set
+   in the interface face at a clearly subordinate size — never competing with
+   the Arabic name above it. */
+.quran-mode-pane--mushaf .qcm-surah-title__localized {
+  color: var(--reader-page-muted);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: max(0.62em, 11px);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  max-width: 100%;
+  white-space: normal;
 }
 
 .quran-mode-pane--mushaf .qcm-surah-title__num {
@@ -1030,10 +1071,36 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   line-height: 1;
 }
 
+.quran-mode-pane--mushaf .qcm-basmala__stack {
+  display: flex;
+  flex: 1 1 auto;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.18em;
+}
+
 .quran-mode-pane--mushaf .qcm-basmala {
   font-size: 1em;
   line-height: 1;
   color: var(--reader-page-ink);
+}
+
+/* The meaning of the basmala belongs to the reader's language, but it is a
+   gloss on the Arabic, not a second line of Quran: interface face, half the
+   size, muted ink, no weight claim on the page. */
+.quran-mode-pane--mushaf .qcm-basmala__translation {
+  color: var(--reader-page-muted);
+  font-family: var(--font-ui, system-ui, sans-serif);
+  font-size: max(0.42em, 11px);
+  font-style: italic;
+  font-weight: 500;
+  line-height: 1.35;
+  max-width: 100%;
+  text-align: center;
+  /* The mushaf line forbids wrapping so a printed row stays whole; the gloss
+     is prose, and on a phone it is longer than the Arabic it sits under. */
+  white-space: normal;
 }
 
 /* Illuminated opening leaves (pages 1-2): mirrors the portal treatment so
@@ -1140,15 +1207,14 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   min-height: 24.3em;
 }
 
-/* A printed page starts under its running head and keeps whatever space the
-   text does not use at the foot of the leaf, where the page number sits.
-   Centring a short opening (page 1, a closing surah) put the void above the
-   text instead, which reads as a broken page. */
+/* The reader's page is not a printed plate: it ends under its last line, the
+   way the reading apps page the mushaf. Reserving the fifteen-line height here
+   left the two opening leaves two-thirds empty inside their frame, and the
+   pane has no facing page to keep level with. */
 .quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  min-height: calc(15 * var(--mfp-line-pitch));
 }
 
 .quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-flow="true"] .qcm-flow {
@@ -1201,6 +1267,15 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   align-items: center;
   justify-content: center;
   height: var(--mfp-line-pitch);
+}
+
+/* The band and the basmala carry a second line on the reader's page — the
+   surah in their own language, the meaning of the basmala. Held to one
+   printed pitch, that line printed over the verse below it. */
+.quran-mode-pane--mushaf .qcm-lines[data-flow="true"] :is(.qcm-line--surah-header, .qcm-line--basmala) {
+  height: auto;
+  min-height: var(--mfp-line-pitch);
+  padding-block: 0.16em;
 }
 
 .quran-mode-pane--mushaf .qcm-flow {

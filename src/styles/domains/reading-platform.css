@@ -4087,6 +4087,30 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
         padding-inline: 0.5rem;
         font-size: 0.72rem;
     }
+
+    /* Four labelled chips plus the mode pair cannot fit a phone width: the row
+       overflows its own card and the last chip is cut off. The mode switch and
+       the play control keep their words because they carry no unambiguous
+       icon; the secondary toggles fall back to the icon they already have. */
+    html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger) > span {
+        display: none;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger) {
+        gap: 0;
+        padding-inline: 0.62rem;
+    }
+
+    /* A group that refuses to shrink keeps the overflow even then: both groups
+       give way and wrap inside the card. */
+    .quran-display--platform .reader-control-deck .qc-reader-toolbar__modes {
+        flex: 0 1 auto;
+        min-width: 0;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .reader-control-deck .qc-reader-toolbar__utilities {
+        flex: 0 1 auto !important;
+    }
 }
 
 /* Immersive Mushaf viewport: reflow-free page zoom, native panning and calm UI. */

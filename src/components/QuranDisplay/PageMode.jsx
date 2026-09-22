@@ -221,6 +221,7 @@ function PageMode({
                 onToggleActive={onToggleActive}
                 riwaya={riwaya}
                 showTajwid={showTajwid}
+                surface="pane"
               />
             ) : (
               <QCVerseByVerseView

@@ -1,16 +1,12 @@
 import React from "react";
-import { Check, ChevronDown, LoaderCircle, Search, Server, Star, X } from "lucide-react";
+import { Check, LoaderCircle, Search, Star, X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { formatCooldownLabel } from "../../utils/formatUtils";
-import {
-  getLatencyForReciter,
-  getReciterUnavailableRemainingMs,
-} from "../../utils/reciterRanking";
+import { getReciterUnavailableRemainingMs } from "../../utils/reciterRanking";
 import {
   getReciterBio,
   getReciterPhoto,
   getReciterAvatar,
-  getReciterSourceInfo,
 } from "../../data/reciters";
 import { ReciterPhoto } from "./AudioPlayerPrimitives";
 
@@ -71,7 +67,6 @@ export default function ReciterOptionsList(props) {
     playerSoftSurfaceClass,
     reciter,
     reciterAvailabilityById,
-    reciterLatencyByKey,
     reciterSearch,
     reciterSwitchingId,
     setReciterSearch,
@@ -136,13 +131,6 @@ export default function ReciterOptionsList(props) {
   };
 
   const isAnyReciterSwitching = Boolean(reciterSwitchingId);
-  const activeReciter = currentReciters.find((item) => item.id === reciter);
-  const activeLatency = activeReciter
-    ? getLatencyForReciter(activeReciter, reciterLatencyByKey)
-    : null;
-  const activeSource = activeReciter
-    ? getReciterSourceInfo(activeReciter).label
-    : "EveryAyah";
 
   return (
     <section
@@ -324,33 +312,6 @@ export default function ReciterOptionsList(props) {
           </div>
         )}
       </div>
-      {activeReciter && (
-        <details className="audio-reciter-options__technical">
-          <summary>
-            <span>
-              <Server size={13} aria-hidden="true" />
-              {pick(lang, {
-                fr: "Informations techniques",
-                en: "Technical information",
-                ar: "معلومات تقنية",
-              })}
-            </span>
-            <ChevronDown size={13} aria-hidden="true" />
-          </summary>
-          <div>
-            <span>{pick(lang, { fr: "Source active", en: "Active source", ar: "المصدر النشط" })}</span>
-            <strong>{activeSource}</strong>
-            <span>{pick(lang, { fr: "Disponibilité", en: "Availability", ar: "التوفر" })}</span>
-            <strong>{networkState === "error" ? labels.unavailable : pick(lang, { fr: "Opérationnelle", en: "Operational", ar: "متاح" })}</strong>
-            {activeLatency && (
-              <>
-                <span>{pick(lang, { fr: "Latence mesurée", en: "Measured latency", ar: "زمن الاستجابة" })}</span>
-                <strong>{Math.round(activeLatency * 1000)} ms</strong>
-              </>
-            )}
-          </div>
-        </details>
-      )}
     </section>
   );
 }

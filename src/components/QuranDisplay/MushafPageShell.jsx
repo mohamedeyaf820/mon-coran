@@ -1,6 +1,9 @@
 import React from "react";
 import { toAr } from "../../data/surahs";
+import { fromArabicNumeral } from "../../utils/arabicNumerals";
+import { t } from "../../i18n";
 import { AyahRosette } from "./MushafAyahMarker";
+import { useMushafSurface } from "./mushafSurface";
 import MushafOpeningFrame from "./MushafOpeningFrame";
 
 // The Madani mushaf illuminates its two opening leaves (al-Fatiha and the
@@ -27,11 +30,27 @@ export default function MushafPageShell({
   meta,
 }) {
   const isOpening = Number(currentPage) <= OPENING_PAGE_LAST;
+  const surface = useMushafSurface();
+  const isPane = surface === "pane";
+  // The reader's page names the surah the way the reader speaks: the running
+  // head drops the "sūrat" prefix the print carries and swaps the Arabic juz
+  // rubric for the interface label. meta.surahName is always "<prefix> <name>",
+  // so the first token is the prefix.
+  const surahTokens = meta.surahName.split(" ");
+  const headName = isPane && surahTokens.length > 1
+    ? surahTokens.slice(1).join(" ")
+    : meta.surahName;
+  const juzNumber = isPane ? fromArabicNumeral(meta.sideA) : Number.NaN;
+  const headStart = Number.isFinite(juzNumber)
+    ? `${t("settings.juzMode", lang)} ${juzNumber}`
+    : meta.top;
+  const folioDigits = lang === "ar" ? toAr(Number(currentPage)) : String(currentPage);
   return (
     <section
       className="qcm-page-shell"
       data-page={currentPage}
       data-page-kind={isOpening ? "opening" : undefined}
+      data-surface={surface}
       aria-label={`${lang === "ar" ? "صفحة" : "Page"} ${lang === "ar" ? toAr(currentPage) : currentPage}`}
     >
       {fontFailed && fontWarningText && (
@@ -56,16 +75,16 @@ export default function MushafPageShell({
             the Madani folio. It names the surah and the folio only — the juz,
             hizb and rub' are structural marks and live in the outer margin,
             where the print sets them, rather than being printed twice. */}
-        <header className="qcm-page-header" lang="ar" dir="rtl">
-          <strong className="qcm-page-header__name" title={meta.surahNameLocalized}>
-            {meta.surahName}
+        <header className="qcm-page-header" lang={isPane ? lang : "ar"} dir="rtl">
+          <strong className="qcm-page-header__name" lang="ar" title={meta.surahNameLocalized}>
+            {headName}
           </strong>
-          <span className="qcm-page-header__meta">{meta.top}</span>
+          <span className="qcm-page-header__meta">{headStart}</span>
         </header>
         {children}
         <footer className="qcm-page-footer" aria-hidden="true">
           <span className="qcm-page-folio">
-            <AyahRosette className="qcm-rosette--folio" number={Number(currentPage)} />
+            <AyahRosette className="qcm-rosette--folio" digits={folioDigits} number={Number(currentPage)} />
           </span>
         </footer>
       </div>
