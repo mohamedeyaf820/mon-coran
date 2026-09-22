@@ -28,23 +28,24 @@ export default function Sidebar() {
   const availableTabs = ["surah", "juz", "page"];
   const [tab, setTab] = useState("surah");
 
-  // From lg the shell shifts <main> beside the panel (see App.jsx
-  // sidebarShiftClass): it is a docked rail, not a modal — no focus trap, no
-  // dialog semantics. focusReading keeps the drawer behaviour at any width
-  // because there the panel floats over unshifted content.
-  const [isWideViewport, setIsWideViewport] = useState(
+  // sidebar-enhanced.css makes the panel an in-flow rail from 1280px; below
+  // that it floats over the reading column (App.jsx adds the click-out
+  // overlay there): it is a modal — focus trap and dialog semantics — not a
+  // docked rail. focusReading keeps the drawer behaviour at any width because
+  // there the panel floats over unshifted content.
+  const [isRailViewport, setIsRailViewport] = useState(
     () => typeof window !== "undefined" && typeof window.matchMedia === "function"
-      ? window.matchMedia("(min-width: 1024px)").matches
+      ? window.matchMedia("(min-width: 1280px)").matches
       : false,
   );
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const onChange = (event) => setIsWideViewport(event.matches);
+    const mq = window.matchMedia("(min-width: 1280px)");
+    const onChange = (event) => setIsRailViewport(event.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
-  const sidebarIsModal = sidebarOpen && !(isWideViewport && !state.focusReading);
+  const sidebarIsModal = sidebarOpen && !(isRailViewport && !state.focusReading);
 
   const [filter, setFilter] = useState("");
   const [pageInput, setPageInput] = useState("");

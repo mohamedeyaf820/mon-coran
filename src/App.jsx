@@ -318,31 +318,31 @@ export default function App() {
     return () => window.removeEventListener("mushafplus-open-shortcuts", openShortcuts);
   }, []);
 
-  const [isWideViewport, setIsWideViewport] = useState(
+  // sidebar-enhanced.css turns the panel into an in-flow rail at 1280px and
+  // leaves it a fixed sheet below that. The threshold has to match the sheet,
+  // not Tailwind's `lg`: measured at 1100 and 1247px the panel floats over the
+  // reading column while a 1024px test called it docked, so it got neither the
+  // click-out overlay nor `inert`, and the only way to dismiss it was the
+  // close button.
+  const [isRailViewport, setIsRailViewport] = useState(
     () => typeof window !== "undefined" && typeof window.matchMedia === "function"
-      ? window.matchMedia("(min-width: 1024px)").matches
+      ? window.matchMedia("(min-width: 1280px)").matches
       : false,
   );
   useEffect(() => {
     if (typeof window === "undefined" || typeof window.matchMedia !== "function") return;
-    const mq = window.matchMedia("(min-width: 1024px)");
-    const onChange = (event) => setIsWideViewport(event.matches);
+    const mq = window.matchMedia("(min-width: 1280px)");
+    const onChange = (event) => setIsRailViewport(event.matches);
     mq.addEventListener("change", onChange);
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
   const immersiveActive = !showHome && !showDuas && !legalPage && !routeNotFound;
-  // From lg the drawer shifts <main> beside it (sidebarShiftClass below): the
-  // reading surface stays usable, so the click-out overlay and inert must not
-  // apply there — they belong to the phone/tablet drawer and to focusReading,
-  // where the panel still floats over unshifted content.
-  const sidebarLocksMain = sidebarOpen && !(isWideViewport && !focusReading);
-  const sidebarShiftClass =
-    !focusReading && sidebarOpen
-      ? lang === "ar"
-        ? "lg:mr-[23rem]"
-        : "lg:ml-[23rem]"
-      : "";
+  // While the panel is the floating sheet it covers the reading column, so the
+  // click-out overlay and inert apply; they stop where the rail takes its own
+  // space in the layout, and come back for focusReading, which floats the
+  // panel over unshifted content at any width.
+  const sidebarLocksMain = sidebarOpen && !(isRailViewport && !focusReading);
   const shouldMountAudioPlayer =
     (!showHome && !showDuas && !legalPage && !routeNotFound) ||
     state.isPlaying ||
@@ -871,7 +871,7 @@ export default function App() {
                       ? "المحتوى الرئيسي - القراءة"
                       : "Main content - Reading"
             }
-            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${sidebarShiftClass} ${showHome ? "app-main--home" : ""}`}
+            className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${showHome ? "app-main--home" : ""}`}
             style={{
               paddingBottom: immersiveHidden
                 ? "env(safe-area-inset-bottom, 0px)"
