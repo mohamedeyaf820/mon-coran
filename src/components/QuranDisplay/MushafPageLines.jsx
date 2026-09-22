@@ -1,8 +1,7 @@
 import React from "react";
 import { useAppLocale } from "../../context/AppContext";
-import { toAr } from "../../data/surahs";
+import { getSurahLigature } from "../../data/surahs";
 import { getBasmalaText } from "../../data/basmala";
-import { t } from "../../i18n";
 import { getSurahMeta } from "./mushafPageComposition";
 import { useMushafSurface } from "./mushafSurface";
 
@@ -13,21 +12,21 @@ import { useMushafSurface } from "./mushafSurface";
  * fit style.
  */
 /**
- * The surah band is the page's one piece of non-Quran furniture, and readers
- * must be able to *read* it: the band carries the plain Arabic name ("سورة
- * الحاقة") plus its number in a small gilded rosette, the way the Madani
- * print closes the band. The old "surahnames" ligature set the name from a
- * Latin digit code ("069"); at phone sizes it read as unreadable ornament,
- * so it is no longer part of the band.
+ * The surah band is the page's one piece of non-Quran furniture. It carries
+ * the name and nothing else: the number it used to hold repeated the running
+ * head and the player badge. The name is the calligraphic surah-name face the
+ * reader already sees in the header, the player and the sidebar -- a glyph
+ * keyed by the surah number, with the plain Arabic name as its fallback --
+ * and the accessible name of the band stays the full 'surah + name' phrase.
  *
- * On the reader's own page the band answers the question the print assumes
- * away — what is this surah called in my language — so the translated name
- * sits under the calligraphic one, and the "سورة" prefix goes with it: the
- * two lines read as one title, not as a label and its duplicate.
+ * On the reader's own page the band adds the question the print assumes away
+ * -- what is this surah called in my language -- as a caption under the
+ * calligraphy, in the interface face at clearly subordinate size.
  */
 export function SurahHeaderLine({ surah, lineNumber }) {
   const surahMeta = getSurahMeta(surah);
   const name = surahMeta?.ar || surah;
+  const ligature = getSurahLigature(surah);
   const { lang } = useAppLocale();
   const localized = useMushafSurface() === "pane" && lang !== "ar"
     ? (lang === "en" ? surahMeta?.en : surahMeta?.fr)
@@ -45,7 +44,18 @@ export function SurahHeaderLine({ surah, lineNumber }) {
       >
         <span className="qcm-surah-title__stack">
           <span className="qcm-surah-title__name" dir="rtl" lang="ar">
-            {localized ? name : `سورة ${name}`}
+            {ligature ? (
+              <span
+                className="qcm-surah-title__glyph font-surah-names"
+                dir="ltr"
+                lang="en"
+                aria-hidden="true"
+              >
+                {ligature}
+              </span>
+            ) : (
+              localized ? name : `سورة ${name}`
+            )}
           </span>
           {localized ? (
             <span className="qcm-surah-title__localized" lang={lang}>
@@ -53,35 +63,23 @@ export function SurahHeaderLine({ surah, lineNumber }) {
             </span>
           ) : null}
         </span>
-        <span className="qcm-surah-title__num" dir="rtl" aria-hidden="true">
-          {toAr(Number(surah))}
-        </span>
       </span>
     </div>
   );
 }
 
-export function BasmalaLine({ surah, lineNumber, riwaya, fallbackFontFamily }) {
-  const { lang } = useAppLocale();
-  const showTranslation = useMushafSurface() === "pane" && lang !== "ar";
+export function BasmalaLine({ lineNumber, riwaya, fallbackFontFamily }) {
   return (
     <div
       className="qcm-line qcm-line--basmala"
       data-line-number={lineNumber}
     >
-      <span className="qcm-basmala__stack">
-        <span
-          className="qcm-basmala"
-          lang="ar"
-          style={{ fontFamily: fallbackFontFamily }}
-        >
-          {getBasmalaText(riwaya)}
-        </span>
-        {showTranslation ? (
-          <span className="qcm-basmala__translation" lang={lang}>
-            {t("quran.bismillah", lang)}
-          </span>
-        ) : null}
+      <span
+        className="qcm-basmala"
+        lang="ar"
+        style={{ fontFamily: fallbackFontFamily }}
+      >
+        {getBasmalaText(riwaya)}
       </span>
     </div>
   );
@@ -116,7 +114,6 @@ export default function MushafPageLines({
           return (
             <BasmalaLine
               key={line.lineNumber}
-              surah={line.surah}
               lineNumber={line.lineNumber}
               riwaya={riwaya}
               fallbackFontFamily={fallbackFontFamily}

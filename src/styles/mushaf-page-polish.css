@@ -990,12 +990,18 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   );
 }
 
+/* The cartouche is the page's one ornament, so it carries the name and nothing
+   else: the number it used to hold repeated the running head and the player
+   badge. The calligraphy is centred and the gilded diamonds are pushed to the
+   ends, so the band reads as one frame rather than a label with bullets. */
 .quran-mode-pane--mushaf .qcm-surah-title {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   min-height: 1.55em;
+  padding-block: 0.16em;
+  padding-inline: 1.15em;
   border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
   border-radius: 0.9em;
   background: linear-gradient(
@@ -1009,21 +1015,18 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   color: var(--reader-page-ink);
 }
 
-/* Gilded diamonds close the band at each end of the name. */
+/* Gilded diamonds close the band at each end. */
 .quran-mode-pane--mushaf .qcm-surah-title::before,
 .quran-mode-pane--mushaf .qcm-surah-title::after {
   content: "";
   flex: 0 0 auto;
-  width: 0.22em;
-  height: 0.22em;
-  margin-inline: 0.55em;
+  width: 0.26em;
+  height: 0.26em;
   background: color-mix(in srgb, var(--mushaf-gold) 85%, var(--mushaf-gold-deep));
   transform: rotate(45deg);
   opacity: 0.85;
 }
 
-/* Readable name + numbered rosette, mirroring the immersive band: the
-   "surahnames" digit ligature read as ornament, not as the surah's name. */
 .quran-mode-pane--mushaf .qcm-surah-title__stack {
   display: flex;
   min-width: 0;
@@ -1032,75 +1035,46 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   gap: 0.12em;
 }
 
+/* The name is the calligraphic surah-name face the reader already sees in the
+   header, the player badge and the sidebar — not the body-text Quran face, so
+   the cartouche matches them. The em box of that face is shorter than its
+   neighbours', so the line box is tightened to keep the band on one row. */
 .quran-mode-pane--mushaf .qcm-surah-title__name {
-  font-family: var(--font-quran, "Amiri Quran"), serif;
-  font-size: 1.05em;
+  font-family: var(--font-surah-display, var(--font-quran, "Amiri Quran"), serif);
+  font-size: 1.7em;
   line-height: 1.2;
   color: var(--mushaf-gold-deep);
+}
+
+.quran-mode-pane--mushaf .qcm-surah-title__name .qcm-surah-title__glyph {
+  display: block;
+  font-size: 1em;
+  line-height: 0.95;
+  font-weight: normal;
+  /* The light-theme treatment of this face darkens it for interface ink; on
+     gilded paper that reads as mud, so the band keeps its own colour. */
+  opacity: 1;
+  filter: none;
 }
 
 /* The translated name is the reader's own handle on the surah, so it is set
-   in the interface face at a clearly subordinate size — never competing with
-   the Arabic name above it. */
+   in the interface face at a clearly subordinate size — a caption under the
+   name, never a second title competing with it. */
 .quran-mode-pane--mushaf .qcm-surah-title__localized {
   color: var(--reader-page-muted);
   font-family: var(--font-ui, system-ui, sans-serif);
-  font-size: max(0.62em, 11px);
+  font-size: max(0.46em, 11px);
   font-weight: 600;
-  letter-spacing: 0.02em;
-  line-height: 1.2;
+  letter-spacing: 0.05em;
+  line-height: 1.25;
   max-width: 100%;
   white-space: normal;
-}
-
-.quran-mode-pane--mushaf .qcm-surah-title__num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  min-width: 1.3em;
-  height: 1.3em;
-  margin-inline-start: 0.15em;
-  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 70%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--mushaf-gold) 10%, var(--reader-page-paper));
-  color: var(--mushaf-gold-deep);
-  font-family: var(--font-quran, "Amiri Quran"), serif;
-  font-size: max(0.58em, 10px);
-  font-weight: 700;
-  line-height: 1;
-}
-
-.quran-mode-pane--mushaf .qcm-basmala__stack {
-  display: flex;
-  flex: 1 1 auto;
-  min-width: 0;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.18em;
 }
 
 .quran-mode-pane--mushaf .qcm-basmala {
   font-size: 1em;
   line-height: 1;
   color: var(--reader-page-ink);
-}
-
-/* The meaning of the basmala belongs to the reader's language, but it is a
-   gloss on the Arabic, not a second line of Quran: interface face, half the
-   size, muted ink, no weight claim on the page. */
-.quran-mode-pane--mushaf .qcm-basmala__translation {
-  color: var(--reader-page-muted);
-  font-family: var(--font-ui, system-ui, sans-serif);
-  font-size: max(0.42em, 11px);
-  font-style: italic;
-  font-weight: 500;
-  line-height: 1.35;
-  max-width: 100%;
-  text-align: center;
-  /* The mushaf line forbids wrapping so a printed row stays whole; the gloss
-     is prose, and on a phone it is longer than the Arabic it sits under. */
-  white-space: normal;
 }
 
 /* Illuminated opening leaves (pages 1-2): mirrors the portal treatment so

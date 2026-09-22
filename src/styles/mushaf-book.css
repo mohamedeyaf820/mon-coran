@@ -854,9 +854,10 @@
 #root ~ .mfp-portal-root .mfp-book .qcm-surah-title {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
   width: 100%;
   height: 1.55em;
+  padding-inline: 1em;
   border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
   border-radius: 0.9em;
   background: linear-gradient(
@@ -870,45 +871,38 @@
   color: var(--reader-page-ink);
 }
 
-/* Gilded diamonds close the band at each end of the name. */
+/* Gilded diamonds close the band at each end. */
 #root ~ .mfp-portal-root .mfp-book .qcm-surah-title::before,
 #root ~ .mfp-portal-root .mfp-book .qcm-surah-title::after {
   content: "";
   flex: 0 0 auto;
   width: 0.22em;
   height: 0.22em;
-  margin-inline: 0.55em;
   background: color-mix(in srgb, var(--mushaf-gold) 85%, var(--mushaf-gold-deep));
   transform: rotate(45deg);
   opacity: 0.85;
 }
 
-/* The readable name is the band's voice: the Quran face at body scale,
-   gilded ink, and a small numbered rosette closing the band on its left —
-   the way the Madani print marks the surah number. */
+/* The band carries the name and nothing else — the number it used to hold
+   repeated the running head. It is set in the calligraphic surah-name face the
+   reader sees in the header and the player badge, sized to stay inside the
+   printed row height (--mfp-line-pitch). */
 #root ~ .mfp-portal-root .mfp-book .qcm-surah-title__name {
-  font-family: var(--font-quran, "Amiri Quran"), serif;
-  font-size: 1.05em;
-  line-height: 1.2;
+  font-family: var(--font-surah-display, var(--font-quran, "Amiri Quran"), serif);
+  font-size: 1.3em;
+  line-height: 1.15;
   color: var(--mushaf-gold-deep);
 }
 
-#root ~ .mfp-portal-root .mfp-book .qcm-surah-title__num {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex: 0 0 auto;
-  min-width: 1.3em;
-  height: 1.3em;
-  margin-inline-start: 0.15em;
-  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 70%, transparent);
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--mushaf-gold) 10%, var(--reader-page-paper));
-  color: var(--mushaf-gold-deep);
-  font-family: var(--font-quran, "Amiri Quran"), serif;
-  font-size: 0.58em;
-  font-weight: 700;
-  line-height: 1;
+/* The calligraphic surah-name face has a short em box (0.82/0.18), so its line
+   box is tightened to stay inside the printed row pitch. */
+#root ~ .mfp-portal-root .mfp-book .qcm-surah-title__glyph {
+  display: block;
+  font-size: 1em;
+  line-height: 0.9;
+  font-weight: normal;
+  opacity: 1;
+  filter: none;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-basmala {
