@@ -281,6 +281,15 @@ export function appReducer(state, action) {
       if (Object.prototype.hasOwnProperty.call(payload, "currentJuz")) {
         next.currentJuz = clampJuz(payload.currentJuz);
       }
+      // Choosing a theme by hand outranks the clock: with the automatic mode
+      // still on, its next 60 s tick would put the theme back and the reader
+      // would see their choice silently undone.
+      if (
+        Object.prototype.hasOwnProperty.call(payload, "theme") &&
+        next.autoNightMode
+      ) {
+        next.autoNightMode = false;
+      }
       return next;
     }
 
