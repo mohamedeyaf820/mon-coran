@@ -329,6 +329,26 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
     /if \(!usesMushafPageGlyphs\(state\.fontFamily, riwaya\)\) return undefined;/,
   );
 
+  // The Mushaf page flows like Quran.com sets one: the leaf takes the reading
+  // column and the body comes from that width (a 25em measure), so a wide
+  // screen prints a few long lines and a phone lands back near fifteen. Only
+  // the explicit Madani-page id keeps the cut glyph sheet.
+  assert.match(
+    sheetStyles,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(18px, \(100cqi - 3rem\) \/ 25, 72px\)/,
+  );
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 25em/);
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--qcm-page-lines: 0/);
+  assert.match(flowRenderer, /getPropertyValue\("--qcm-page-lines"\)/);
+  assert.doesNotMatch(
+    hafsRenderer,
+    /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-hafs"/,
+  );
+  assert.match(
+    hafsRenderer,
+    /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-madani-page",/,
+  );
+
   // The page classes are composed in template strings: PurgeCSS must keep them.
   assert.match(purgeConfig, /\/\^qcm-\//);
   assert.match(purgeConfig, /\/\^mfp-\//);

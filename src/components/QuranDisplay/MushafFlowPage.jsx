@@ -128,7 +128,16 @@ export default function MushafFlowPage({
         const flows = [...root.querySelectorAll(".qcm-flow")];
         if (flows.length === 0) return;
         const openingRows = root.querySelectorAll(".qcm-line").length;
-        const target = MUSHAF_PAGE_LINES - openingRows;
+        // Which contract this surface imposes, declared by its own stylesheet:
+        // the immersive book keeps the fifteen printed lines, while the reading
+        // pane sets the body to the column width and lets the leaf grow as tall
+        // as its text — zero means there is no line count to hit.
+        const declaredLines = Number.parseInt(
+          getComputedStyle(root).getPropertyValue("--qcm-page-lines"),
+          10,
+        );
+        const pageLines = Number.isFinite(declaredLines) ? declaredLines : MUSHAF_PAGE_LINES;
+        const target = pageLines - openingRows;
         let rows = 0;
         flows.forEach((flow) => {
           const pitch = Number.parseFloat(getComputedStyle(flow).lineHeight) || 1;

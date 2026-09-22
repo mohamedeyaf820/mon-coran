@@ -192,6 +192,7 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
     getFontOptionsForRiwaya("hafs").map((font) => font.id),
     [
       "qpc-hafs",
+      "qpc-madani-page",
       "qpc-indopak",
       "scheherazade-new",
       "amiri-quran",

@@ -82,6 +82,7 @@ export default {
     warshFallbackText: 'Warsh text could not be loaded. Text is displayed in Hafs script, audio is Warsh.',
     warshQcf4Badge: 'Authentic Warsh Mushaf',
     qpcHafsHint: 'Hafs font from Quran Foundation',
+    qpcMadaniPageHint: 'Same Uthmani face, printed Madinah page in fifteen lines',
     qpcIndopakHint: 'IndoPak font with waqf markers',
     scheherazadeHint: 'Elegant Unicode font, ideal for Hafs riwaya',
     amiriQuranHint: 'Amiri Quran, classic calligraphic style',

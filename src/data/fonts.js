@@ -23,6 +23,7 @@ import { applyFontSigns, getFontSignVariant, normalizeQuranGlyphText } from "../
 
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
+  "qpc-madani-page",
   "qpc-indopak",
   "scheherazade-new",
   "amiri-quran",
@@ -43,6 +44,12 @@ export const QURAN_FONT_OPTIONS = [
     id: "qpc-hafs",
     label: "QPC Uthmani Hafs",
     hintKey: "settings.qpcHafsHint",
+    riwaya: "hafs",
+  },
+  {
+    id: "qpc-madani-page",
+    label: "QPC Uthmani Hafs — Madani page",
+    hintKey: "settings.qpcMadaniPageHint",
     riwaya: "hafs",
   },
   {
@@ -91,6 +98,10 @@ export const QURAN_FONT_OPTIONS = [
 
 export const FONT_MAP = {
   "qpc-hafs":
+    "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
+  // Same Uthmanic face and the same print text; this id only differs in that
+  // the Mushaf page keeps the fifteen-line Madani cut instead of flowing.
+  "qpc-madani-page":
     "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
   // IndoPak lacks U+0660-U+0669 (standard Arabic-Indic digits); QPC Hafs provides the rosette fallback.
   "qpc-indopak":

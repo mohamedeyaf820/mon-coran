@@ -87,11 +87,12 @@ function groupPageLines(ayahs) {
   return markSurahEndings(placeSurahOpenings(pageLines));
 }
 
-// The printed sheet is cut with per-page QCF glyph fonts; "QPC Uthmani Hafs"
-// is that face, so it keeps the Madani page geometry. Every other Hafs face is
-// a proportional web font and prints the page as continuous flow text instead.
+// The printed sheet is cut with per-page QCF glyph fonts; only the explicit
+// Madani-page id asks for it. "QPC Uthmani Hafs" is the same Uthmanic face set
+// as continuous text, the way Quran.com and the other mushaf sites lay a page
+// out, so the default reads as flowing text that fills the column.
 const PAGE_GLYPH_FONT_IDS = new Set([
-  "qpc-hafs",
+  "qpc-madani-page",
   "qcf-v1",
   "qcf-v2",
   "qcf-v4-tajweed",

@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { resolveFontFamily } from "../../data/fonts";
 import {
+  DEFAULT_ARABIC_FONT_SIZE,
   clampArabicFontSize,
   getArabicReadingLineHeight,
   getResponsiveArabicFontSize,
@@ -148,6 +149,12 @@ export default function useQuranDisplayView({
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
+    // The continuous sheet sizes itself from its own width, so the preference
+    // reaches it as a unitless multiplier rather than a pixel value.
+    element.style.setProperty(
+      "--qcm-mushaf-scale",
+      String(preferredReadingFontSize / DEFAULT_ARABIC_FONT_SIZE),
+    );
     document.documentElement.style.setProperty("--qcom-reader-font-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--qcom-ar-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);

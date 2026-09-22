@@ -1163,13 +1163,34 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   display: none;
 }
 
+/* The continuous leaf is the reading column, so the stream must not hold it to
+   the list mode's 1040px measure; the body's own 25em cap keeps the line
+   readable on ultrawide screens. */
+.app-main .quran-mode-pane--mushaf {
+  max-width: none;
+}
+
 /* Flow sheets (Warsh, and Hafs printed with a proportional face): one
-   continuous justified body over the same row pitch. */
+   continuous body that takes the reading width, the way Quran.com sets a
+   page. The body size comes from that width — a 25em measure — so a wide
+   screen prints a few long lines. On a phone the 25em measure would drive the
+   type under what the printed folio prints there, so the floor holds it at the
+   18 px the fifteen-line sheet already reached, and the leaf simply runs
+   longer. No line count is imposed: the leaf is as tall as its text. */
 .quran-mode-pane--mushaf .qcm-lines[data-flow="true"] {
+  --qcm-page-lines: 0;
   display: block;
-  width: var(--mfp-line-measure);
-  font-size: clamp(14px, var(--qcm-mushaf-font-size, 34px), calc((100cqi - 3rem) / 16.7));
+  width: 100%;
+  max-width: 25em;
+  margin-inline: auto;
+  font-size: calc(clamp(18px, (100cqi - 3rem) / 25, 72px) * var(--qcm-mushaf-scale, 1));
   line-height: var(--mfp-line-pitch);
+}
+
+/* The printed leaf hugs its fifteen-line block; the continuous leaf is the
+   reading column, so its frame follows the body instead of the ink. */
+.quran-mode-pane--mushaf .qcm-page-shell:has(.qcm-lines[data-flow="true"]) .qcm-page {
+  width: 100%;
 }
 
 .quran-mode-pane--mushaf .qcm-lines[data-flow="true"] .qcm-line {

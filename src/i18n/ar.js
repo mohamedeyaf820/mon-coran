@@ -81,6 +81,7 @@ export default {
     warshFallbackText: 'لم يتم تحميل نص ورش. النص المعروض بخط حفص والصوت بقراءة ورش.',
     warshQcf4Badge: 'مصحف ورش أصلي',
     qpcHafsHint: 'خط حفص من مؤسسة Quran Foundation',
+    qpcMadaniPageHint: 'نفس الخط العثماني، صفحة المدينة المطبوعة بأسطر خمسة عشر',
     qpcIndopakHint: 'خط إندوباك مع علامات الوقف',
     scheherazadeHint: 'خط شهرزاد الجديد، أنيق لرواية حفص',
     amiriQuranHint: 'خط أميري القرآن، أسلوب خطي كلاسيكي',
