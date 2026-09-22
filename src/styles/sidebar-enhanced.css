@@ -244,8 +244,7 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
 }
 
 
-/* The Arabic name is what readers scan for, so it is set as readable naskh
-   rather than the display masthead face used at large sizes elsewhere. */
+/* Juz names have no masthead ligature, so they stay set as readable naskh. */
 #sidebar .sb-row-ar,
 .sb-wrapper .sb-row-ar {
   font-family: var(--font-arabic-ui, "Noto Naskh Arabic", "Amiri", serif) !important;
@@ -258,6 +257,26 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   text-align: end;
   max-width: 42%;
   overflow-wrap: anywhere;
+}
+
+/* The surah rows carry the same calligraphic name face as the mushaf
+   cartouche. The light-theme brightness filter is neutralised here so the glyph
+   keeps the row's token ink instead of a filtered approximation of it. */
+#sidebar .sb-row-calli,
+.sb-wrapper .sb-row-calli {
+  flex: 0 0 auto;
+  max-width: 42%;
+  text-align: end;
+  color: var(--text-secondary);
+}
+
+#sidebar .sb-row-calli .font-surah-names,
+.sb-wrapper .sb-row-calli .font-surah-names {
+  display: block;
+  font-size: 1.45rem !important;
+  line-height: 1.3 !important;
+  filter: none !important;
+  opacity: 1 !important;
 }
 
 

@@ -3,7 +3,7 @@ import "../styles/sidebar-enhanced.css";
 import { X, Search, ArrowLeft, ArrowRight } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
-import SURAHS, { toAr } from "../data/surahs";
+import SURAHS, { getSurahLigature, toAr } from "../data/surahs";
 import { getSurahVerseCountByRiwaya } from "../constants/warshSource";
 import { JUZ_DATA, JUZ_PAGE_RANGES } from "../data/juz";
 import { cn } from "../lib/utils";
@@ -463,12 +463,10 @@ export default function Sidebar() {
                     </span>
                   </div>
                   {lang !== "ar" && (
-                    <span
-                      dir="rtl"
-                      lang="ar"
-                      className="sb-row-ar shrink-0 truncate"
-                    >
-                      {s.ar}
+                    <span className="sb-row-calli shrink-0" role="img" aria-label={s.ar}>
+                      <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
+                        {getSurahLigature(s.n)}
+                      </span>
                     </span>
                   )}
                 </button>
