@@ -692,6 +692,10 @@ export const RECITER_PHOTOS_MAP = {
   fares_abbad: assabilePhoto("fares-abbad.png"),
   nasser_alqatami: assabilePhoto("nasser-al-qatami.png"),
   sahl_yassin: assabilePhoto("sahl-yassin.png"),
+  // Assabile page 37 « Yassen Al Jazairi » carries this portrait as its own
+  // profile image, and mp3quran.net/qari titles the same reciter القارئ ياسين
+  // in the Warsh riwaya — the two agree, so the face is attributed, not guessed.
+  warsh_yassin: assabilePhoto("al-qari-yassen.png"),
   ahmed_neana: assabilePhoto("ahmed-nuinaa.png"),
   akram_alalaqimy: assabilePhoto("akram-al-aalakmi.png"),
   khalid_abdullaah_qahtani_hafs: assabilePhoto("khaled-al-qahtani.png"),
@@ -712,6 +716,10 @@ export const RECITER_PHOTOS_MAP = {
     "https://www.assabile.com/media/person/200x256/laayoun-el-kouchi.png",
   abdulbar_althubaity: assabilePhoto("abdul-bari-ath-thobaity.png"),
   ali_hajjaj_alsoaesi: assabilePhoto("ali-hajjaj-souissi.png"),
+  // Assabile hosts this on the page that names the reciter, and the file is a
+  // real photograph rather than the name card Assabile uses for the Warsh
+  // reciters it has no picture of.
+  warsh_mohamed_abdulkarim: assabilePhoto("muhammad-abdulkareem.png"),
 };
 
 const ASSABILE_PROFILE_BASE = "https://www.assabile.com";
@@ -741,6 +749,8 @@ const RECITER_PROFILE_SOURCES = Object.freeze({
   abdulbar_althubaity: assabileProfile("/abdul-bari-ath-thobaity-38/abdul-bari-ath-thobaity.htm"),
   ali_hajjaj_alsoaesi: assabileProfile("/ali-hajjaj-souissi-78/ali-hajjaj-souissi.htm"),
   warsh_aloyoon_al_koshi: assabileProfile("/laayoun-el-kouchi-22/laayoun-el-kouchi.htm"),
+  warsh_yassin: assabileProfile("/yassen-al-jazairi-37/yassen-al-jazairi.htm"),
+  warsh_mohamed_abdulkarim: assabileProfile("/muhammad-abdulkareem-50/muhammad-abdulkareem.htm"),
 });
 
 const RECITER_PHOTO_SOURCES = Object.freeze({
@@ -751,6 +761,14 @@ const RECITER_PHOTO_SOURCES = Object.freeze({
   warsh_ibrahim_aldosari: Object.freeze({
     provider: "Way2Quran",
     url: "https://way2quran.com/ar/reciters/ibrahim-al-dosari?recitationSlug=warsh-an-nafi",
+  }),
+  warsh_yassin: Object.freeze({
+    provider: "Assabile",
+    url: "https://www.assabile.com/yassen-al-jazairi-37/yassen-al-jazairi.htm",
+  }),
+  warsh_mohamed_abdulkarim: Object.freeze({
+    provider: "Assabile",
+    url: "https://www.assabile.com/muhammad-abdulkareem-50/muhammad-abdulkareem.htm",
   }),
 });
 

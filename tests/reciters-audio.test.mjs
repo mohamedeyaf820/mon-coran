@@ -112,9 +112,7 @@ const REMOVED_RECITER_IDS = [
 // MP3Quran voices with no verifiable portrait.
 const AVATAR_ONLY_IDS = [
   "warsh_dagous",
-  "warsh_mohamed_abdulkarim",
   "warsh_rachid_belalaya",
-  "warsh_yassin",
   "saad_almoqren",
 ];
 
@@ -237,8 +235,8 @@ test("reciters: curated portrait URLs replace every known text thumbnail", () =>
   const withPhotos = allReciters().filter(
     (reciter) => !AVATAR_ONLY_IDS.includes(reciter.id),
   );
-  assert.equal(withPhotos.length, 47);
-  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 47);
+  assert.equal(withPhotos.length, 49);
+  assert.equal(Object.keys(RECITER_PHOTOS_MAP).length, 49);
 
   for (const reciter of withPhotos) {
     assert.equal(getReciterVisual(reciter).type, "photo", reciter.id);
@@ -318,15 +316,24 @@ test("reciters: every biography exposes a reviewed HTTPS source", () => {
   for (const [id, profile] of Object.entries(RESEARCHED_PROFILES)) {
     assert.match(profile.bioSource?.url || "", /^https:\/\//, id);
     assert.ok(profile.bioSource?.provider, id);
-    assert.match(profile.reviewedAt, /^2026-(?:08-01|08-13|09-19|09-20)$/, id);
+    assert.match(profile.reviewedAt, /^2026-(?:08-01|08-13|09-19|09-20|09-22)$/, id);
     assert.ok(profile.bio.fr.length <= 450, `${id}: concise French notice`);
   }
 
   assert.match(RESEARCHED_PROFILES.fares_abbad.bio.fr, /yéménite/);
   assert.match(RESEARCHED_PROFILES.sahl_yassin.bio.fr, /saoudien/);
   assert.match(RESEARCHED_PROFILES.akram_alalaqimy.bio.fr, /égyptien/);
-  assert.match(RESEARCHED_PROFILES.warsh_dagous.bioSource.url, /^https:\/\/api\.quranpedia\.net/);
-  assert.match(RESEARCHED_PROFILES.warsh_mohamed_abdulkarim.bioSource.url, /^https:\/\/api\.quranpedia\.net/);
+  // QuranPedia publishes no per-mushaf page, so the visible link goes to the
+  // site and the machine-checkable record stays on the API that documents it.
+  for (const [id, record] of [
+    ["warsh_dagous", 264],
+    ["warsh_mohamed_abdulkarim", 267],
+  ]) {
+    const src = RESEARCHED_PROFILES[id].bioSource;
+    assert.equal(src.url, "https://quranpedia.net", id);
+    assert.match(src.apiUrl, /^https:\/\/api\.quranpedia\.net/, id);
+    assert.equal(src.record, record, id);
+  }
 });
 
 test("reciters: reciter profiles match the catalogue exactly", () => {

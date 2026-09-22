@@ -43,7 +43,17 @@
       "provider": "Almutadaber",
       "url": "https://www.almutadaber.com/public/reciters/%D9%8A%D8%A7%D8%B3%D9%8A%D9%86%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D8%A6%D8%B1%D9%8A"
     },
-    "reviewedAt": "2026-09-20"
+    "reviewedAt": "2026-09-22",
+    "verificationSources": [
+      {
+        "provider": "MP3Quran",
+        "url": "https://www.mp3quran.net/qari"
+      },
+      {
+        "provider": "Assabile",
+        "url": "https://www.assabile.com/yassen-al-jazairi-37/yassen-al-jazairi.htm"
+      }
+    ]
   },
   "warsh_hussary": {
     "bio": {
@@ -579,9 +589,11 @@
     },
     "bioSource": {
       "provider": "QuranPedia",
-      "url": "https://api.quranpedia.net/v1/reciters"
+      "url": "https://quranpedia.net",
+      "apiUrl": "https://api.quranpedia.net/v1/reciters",
+      "record": 264
     },
-    "reviewedAt": "2026-09-20"
+    "reviewedAt": "2026-09-22"
   },
   "warsh_mohamed_abdulkarim": {
     "bio": {
@@ -591,9 +603,11 @@
     },
     "bioSource": {
       "provider": "QuranPedia",
-      "url": "https://api.quranpedia.net/v1/reciters"
+      "url": "https://quranpedia.net",
+      "apiUrl": "https://api.quranpedia.net/v1/reciters",
+      "record": 267
     },
-    "reviewedAt": "2026-09-20"
+    "reviewedAt": "2026-09-22"
   },
   "warsh_rachid_belalaya": {
     "bio": {
@@ -614,10 +628,10 @@
       "ar": "عبدالبارئ الثبيتي عالم وقارئ سعودي، إمام وخطيب المسجد الحرام وعضو هيئة كبار العلماء. مصحفه الكامل برواية حفص متاح سورًا سورًا على مكتبة القرآن الصوتية."
     },
     "bioSource": {
-      "provider": "QuranPedia",
-      "url": "https://api.quranpedia.net/v1/reciters"
+      "provider": "MP3Quran",
+      "url": "https://www.mp3quran.net/thubti"
     },
-    "reviewedAt": "2026-09-20"
+    "reviewedAt": "2026-09-22"
   },
   "saad_almoqren": {
     "bio": {
@@ -626,10 +640,10 @@
       "ar": "سعد المقرن قارئ وداعية سعودي، إمام المسجد الحرام، يتميز بتلاوة حفص متأنية واضحة. مصحفه الكامل منشور على مكتبة القرآن الصوتية بتلاوة كل سورة كاملة."
     },
     "bioSource": {
-      "provider": "QuranPedia",
-      "url": "https://api.quranpedia.net/v1/reciters"
+      "provider": "MP3Quran",
+      "url": "https://www.mp3quran.net/saad"
     },
-    "reviewedAt": "2026-09-20"
+    "reviewedAt": "2026-09-22"
   },
   "ali_hajjaj_alsoaesi": {
     "bio": {
