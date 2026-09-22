@@ -179,9 +179,14 @@ export default function TafsirSidebar() {
         setTafsirState({
           status: "error",
           data: null,
-          error:
-            error?.message ||
-            t("tafsir.loadError", lang),
+          // The raw message is an English transport error ("Failed to fetch"),
+          // which reads as a crash and tells an Arabic reader nothing.
+          error: t(
+            typeof navigator !== "undefined" && navigator.onLine === false
+              ? "tafsir.offline"
+              : "tafsir.loadError",
+            lang,
+          ),
         });
       });
     return () => controller.abort();

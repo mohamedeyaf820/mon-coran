@@ -84,6 +84,7 @@ export default {
     offlineBadge: 'hors connexion',
     noData: 'Aucune donnée disponible.',
     loadError: 'Impossible de charger le tafsir.',
+    offline: 'Vous êtes hors ligne. Reconnectez-vous pour charger le tafsir.',
   },
   sidebar: {
     title: 'Index des sourates', surahs: 'Sourates', juz: 'Juz',

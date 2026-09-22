@@ -528,7 +528,13 @@ export default function Header({ immersiveHidden = false }) {
                 onPointerDown={isRtl ? warmNext : warmPrevious}
                 onFocus={isRtl ? warmNext : warmPrevious}
                 disabled={isRtl ? !canGoNext : !canGoPrev}
-                aria-label={i18nT("quran.prevSurah", lang)}
+                aria-label={i18nT(
+                  // The mushaf always reads right-to-left on screen, so in the
+                  // Arabic UI the left arrow advances. The name has to follow
+                  // the action, not the glyph.
+                  isRtl ? "quran.nextSurah" : "quran.prevSurah",
+                  lang,
+                )}
               >
                 <ChevronLeft size={16} strokeWidth={2.5} />
               </button>
@@ -669,7 +675,10 @@ export default function Header({ immersiveHidden = false }) {
                 onPointerDown={isRtl ? warmPrevious : warmNext}
                 onFocus={isRtl ? warmPrevious : warmNext}
                 disabled={isRtl ? !canGoPrev : !canGoNext}
-                aria-label={i18nT("quran.nextSurah", lang)}
+                aria-label={i18nT(
+                  isRtl ? "quran.prevSurah" : "quran.nextSurah",
+                  lang,
+                )}
               >
                 <ChevronRight size={16} strokeWidth={2.5} />
               </button>

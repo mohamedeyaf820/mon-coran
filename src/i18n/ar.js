@@ -85,6 +85,7 @@ export default {
     offlineBadge: 'دون اتصال',
     noData: 'لا توجد بيانات.',
     loadError: 'تعذر تحميل التفسير.',
+    offline: 'لا اتصال متاح. أعد الاتصال لتحميل التفسير.',
   },
   sidebar: {
     title: 'فهرس السور', surahs: 'السور', juz: 'الأجزاء',

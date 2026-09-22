@@ -20,19 +20,30 @@ export default function ProgressBar() {
     // data arrives), so follow every real scroll instead of subscribing to
     // one element: scroll events do not bubble but they do capture on
     // document, and the event target is by definition the scroller.
+    // One read per frame, and no render unless the shown percentage moved:
+    // the bar is a width, so every needless update costs the reader a layout.
+    let frame = 0;
     const updateFrom = (source) => {
       if (!(source.scrollHeight - source.clientHeight > 1)) return;
-      setProgress(progressOf(source));
+      const next = progressOf(source);
+      setProgress((current) =>
+        Math.round(current) === Math.round(next) ? current : next,
+      );
     };
     const onScroll = (event) => {
       const scroller = event.target instanceof Element ? event.target : null;
-      if (scroller) updateFrom(scroller);
+      if (!scroller || frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        updateFrom(scroller);
+      });
     };
     document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     const onWindowScroll = () => updateFrom(document.scrollingElement || document.documentElement);
     window.addEventListener("scroll", onWindowScroll, { passive: true });
     updateFrom(document.querySelector(".app-main") || document.scrollingElement || document.documentElement);
     return () => {
+      if (frame) cancelAnimationFrame(frame);
       document.removeEventListener("scroll", onScroll, { capture: true });
       window.removeEventListener("scroll", onWindowScroll);
     };

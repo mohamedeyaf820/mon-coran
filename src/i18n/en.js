@@ -85,6 +85,7 @@ export default {
     offlineBadge: 'offline',
     noData: 'No data available.',
     loadError: 'Unable to load tafsir.',
+    offline: 'You are offline. Reconnect to load the tafsir.',
   },
   sidebar: {
     title: 'Surah Index', surahs: 'Surahs', juz: 'Juz',
