@@ -46,6 +46,9 @@ export function normalizeArabicSearchText(text = "") {
  * A word-final h after a vowel is dropped because readers type the aspirated
  * transliteration ("fatihah") while the dataset stores the short form
  * ("Al-Fatiha"); queries and records are folded the same way.
+ * Doubled Latin letters are then collapsed: "Minshawwi", "Shaatiri" and
+ * "Abdulbassit" are how readers spell a sound they never saw transliterated,
+ * and the catalogue stores one spelling each. Arabic is untouched.
  */
 export function foldSearchText(value) {
   return normalizeArabicSearchText(
@@ -53,7 +56,9 @@ export function foldSearchText(value) {
       .normalize("NFD")
       .replace(/[\u0300-\u036f]/g, "")
       .toLowerCase(),
-  ).replace(/([aeiou])h(?=$|\s)/g, "$1");
+  )
+    .replace(/([aeiou])h(?=$|\s)/g, "$1")
+    .replace(/([a-z])\1+/g, "$1");
 }
 
 // The 114 surah records are static, so each haystack is folded once here rather

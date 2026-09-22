@@ -1297,8 +1297,23 @@ html body .app-root {
   font-variant-numeric: tabular-nums;
 }
 
+/* The chip is filled with --primary when selected, so a translucent white badge
+   on top of it only reaches ~2:1 for its digits. Inverting it keeps the count
+   readable on both themes. */
 .app-root[data-view="home"] .home-style-filter.is-active .home-style-filter__count {
-  background: rgba(255, 255, 255, 0.22);
+  background: #fff;
+  color: var(--primary);
+}
+
+/* --primary resolves to a lighter green in the dark theme, which drops white
+   ink on the filled chip to 3.3:1. Inverting the ink to the night surface
+   clears AA for both the label and its count. */
+html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active {
+  color: #062014;
+}
+
+html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active .home-style-filter__count {
+  background: #062014;
   color: #fff;
 }
 
@@ -1307,6 +1322,27 @@ html body .app-root {
   color: var(--text-muted);
   font-size: max(0.66rem, 10px);
   line-height: 1.35;
+}
+
+/* Below ~530px the five style chips no longer fit and the strip's scrollbar is
+   hidden, so a chip cut in half read as the end of the list. Fade the inline-end
+   edge to show there is more to scroll; the hint line is hidden here, so this is
+   the only cue. */
+@media (max-width: 530px) {
+  .app-root[data-view="home"] .home-style-filters {
+    -webkit-mask-image: linear-gradient(to right, #000 0 calc(100% - 2rem), transparent 100%);
+    mask-image: linear-gradient(to right, #000 0 calc(100% - 2rem), transparent 100%);
+    scroll-snap-type: x proximity;
+  }
+
+  .app-root[data-view="home"] .home-style-filter {
+    scroll-snap-align: start;
+  }
+
+  .app-root[data-view="home"][data-dir="rtl"] .home-style-filters {
+    -webkit-mask-image: linear-gradient(to left, #000 0 calc(100% - 2rem), transparent 100%);
+    mask-image: linear-gradient(to left, #000 0 calc(100% - 2rem), transparent 100%);
+  }
 }
 
 @media (min-width: 769px) {

@@ -71,6 +71,13 @@ test("the shared fold collapses accents, tashkeel and letter variants", () => {
   assert.equal(foldSearchText("الأنعام"), foldSearchText("الانعام"));
   assert.equal(foldSearchText("البقرة"), foldSearchText("البقره"));
   assert.equal(foldSearchText("يوسف"), foldSearchText("يؤسف"));
+  // Readers double a letter to mark a sound they heard, not a spelling they
+  // saw; queries and records must land on the same form.
+  assert.equal(foldSearchText("Minshawwi"), foldSearchText("Minshawi"));
+  assert.equal(foldSearchText("Abdulbassit"), foldSearchText("Abdulbasit"));
+  assert.equal(foldSearchText("Shaatiri"), "shatiri");
+  // The collapse is Latin-only: a written shaddah stays in the Arabic text.
+  assert.equal(foldSearchText("الشدّة"), "الشده");
 });
 
 test("every surah search box resolves the same query to the same surahs", () => {

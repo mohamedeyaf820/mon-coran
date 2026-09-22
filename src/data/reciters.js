@@ -64,7 +64,10 @@ const SUPPLEMENTAL_HAFS_RECITERS = [
     name: "الحصري المعلم",
     nameEn: "Al-Husary Muallim",
     nameFr: "Al-Housri Muallim",
-    style: "murattal",
+    // EveryAyah publishes this as a distinct teaching recitation (Husary_Muallim),
+    // slower and word-by-word oriented than his murattal — the hub's "Muallim"
+    // filter exists for exactly this voice.
+    style: "muallim",
     cdn: "Husary_Muallim_128kbps",
     cdnType: "everyayah",
     audioMode: "ayah",
@@ -313,7 +316,7 @@ const RECITERS = {
       nameEn: "Muhammad Siddiq al-Minshawi",
       nameFr: "Muhammad Siddiq al-Minshawi",
       style: "murattal",
-      searchAliases: ["Minshawi", "Manshawi", "Menchaoui", "المنشاوي"],
+      searchAliases: ["Minshawi", "Minshawy", "Manshawi", "Menchaoui", "المنشاوي"],
       cataloguePriority: 10,
       cdn: "Minshawi/Murattal/mp3/",
       cdnType: "quran-cdn",
@@ -325,7 +328,7 @@ const RECITERS = {
       nameEn: "Al-Minshawi (Mujawwad)",
       nameFr: "Al-Minshawi (Mujawwad)",
       style: "mujawwad",
-      searchAliases: ["Minshawi", "Manshawi", "Menchaoui", "المنشاوي"],
+      searchAliases: ["Minshawi", "Minshawy", "Manshawi", "Menchaoui", "المنشاوي"],
       cataloguePriority: 11,
       cdn: "Minshawy_Mujawwad_192kbps",
       cdnType: "everyayah",
@@ -1046,7 +1049,7 @@ export function validateReciterProfile(reciter) {
     if (!String(reciter?.[field] || "").trim()) errors.push(field);
   }
   if (!/^[a-z0-9_.-]+$/i.test(String(reciter?.id || ""))) errors.push("id");
-  if (!["murattal", "mujawwad", "tartil"].includes(reciter?.style)) errors.push("style");
+  if (!["murattal", "mujawwad", "tartil", "muallim"].includes(reciter?.style)) errors.push("style");
   if (!["hafs", "warsh"].includes(reciter?.riwaya)) errors.push("riwaya");
   if (reciter?.riwaya === "warsh" && reciter?.verifiedWarsh !== true) {
     errors.push("verifiedWarsh");
@@ -1109,6 +1112,39 @@ export default AVAILABLE_RECITERS;
 
 export function getRecitersByRiwaya(riwaya = "hafs") {
   return AVAILABLE_RECITERS[riwaya] || AVAILABLE_RECITERS.hafs;
+}
+
+// The audio hub filters the list by these ids, so a style that exists on a
+// reciter but has no chip here is unreachable, and a chip with no reciter
+// behind it promises a list that is always empty. Both are asserted against
+// the catalogue in tests/reciters-audio.test.mjs.
+export const RECITER_STYLE_FILTERS = Object.freeze([
+  { id: "all", label: { fr: "Tous", en: "All", ar: "الكل" } },
+  {
+    id: "murattal",
+    label: { fr: "Murattal", en: "Murattal", ar: "مرتل" },
+    hint: { fr: "posé", en: "measured", ar: "قراءة هادئة" },
+  },
+  {
+    id: "mujawwad",
+    label: { fr: "Mujawwad", en: "Mujawwad", ar: "مجود" },
+    hint: { fr: "orné", en: "ornamented", ar: "أداء مزخرف" },
+  },
+  {
+    id: "muallim",
+    label: { fr: "Muallim", en: "Muallim", ar: "معلم" },
+    hint: { fr: "apprentissage", en: "learning", ar: "للتعلّم" },
+  },
+  { id: "favorites", label: { fr: "Favoris", en: "Favorites", ar: "المفضلة" } },
+]);
+
+export function countRecitersByStyle(reciters = []) {
+  const counts = { all: reciters.length };
+  for (const filter of RECITER_STYLE_FILTERS) {
+    if (filter.id === "all" || filter.id === "favorites") continue;
+    counts[filter.id] = reciters.filter((r) => r.style === filter.id).length;
+  }
+  return counts;
 }
 
 export function getDefaultReciterId(riwaya = "hafs") {

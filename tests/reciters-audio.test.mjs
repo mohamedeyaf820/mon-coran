@@ -4,6 +4,8 @@ import { readFileSync } from "node:fs";
 
 import {
   RECITER_PHOTOS_MAP,
+  RECITER_STYLE_FILTERS,
+  countRecitersByStyle,
   getReciter,
   getReciterAvatar,
   getReciterBio,
@@ -177,7 +179,7 @@ test("reciters: only the approved voices stream whole surahs", () => {
 
 test("reciters: ids are unique and metadata is compatible with the player", () => {
   const ids = new Set();
-  const allowedStyles = new Set(["murattal", "mujawwad", "tartil"]);
+  const allowedStyles = new Set(["murattal", "mujawwad", "tartil", "muallim"]);
   const allowedCdnTypes = new Set(["everyayah", "quran-cdn", "quranpedia", "mp3quran-surah"]);
   const allowedSources = new Set(["everyayah", "quran", "quranpedia", "mp3quran"]);
 
@@ -224,6 +226,72 @@ test("reciters: QuranPedia cdn values are numeric recitation ids", () => {
     assert.match(reciter.cdn, /^\d+$/, reciter.id);
     assert.equal(getReciterSourceInfo(reciter).label, "QuranPedia", reciter.id);
   }
+});
+
+// The hub offers one chip per RECITER_STYLE_FILTERS entry and filters the
+// active riwaya by reciter.style, so the two lists have to agree in both
+// directions or a voice becomes unreachable (a style with no chip) or the
+// chip becomes a dead end (a chip with no voice).
+test("reciters: hub style chips and catalogue styles agree in both directions", () => {
+  const chipIds = RECITER_STYLE_FILTERS.map((f) => f.id);
+  assert.deepEqual(chipIds, [...new Set(chipIds)]);
+  assert.equal(chipIds[0], "all");
+  assert.ok(chipIds.includes("favorites"));
+
+  const styleChips = chipIds.filter((id) => id !== "all" && id !== "favorites");
+  const catalogueStyles = new Set(allReciters().map((r) => r.style));
+
+  // The hub's hint line is built from the chips that carry a gloss, so a style
+  // without one silently loses its explanation.
+  for (const filter of RECITER_STYLE_FILTERS) {
+    if (filter.id === "all" || filter.id === "favorites") {
+      assert.equal(filter.hint, undefined, filter.id);
+      continue;
+    }
+    for (const lang of ["fr", "en", "ar"]) {
+      assert.ok(filter.label?.[lang]?.trim(), `${filter.id} label ${lang}`);
+      assert.ok(filter.hint?.[lang]?.trim(), `${filter.id} hint ${lang}`);
+    }
+  }
+
+  for (const style of catalogueStyles) {
+    assert.ok(styleChips.includes(style), `no hub chip can reach style "${style}"`);
+  }
+  for (const chip of styleChips) {
+    assert.ok(catalogueStyles.has(chip), `hub chip "${chip}" matches no reciter`);
+    assert.ok(
+      getRecitersByRiwaya("hafs").some((r) => r.style === chip),
+      `hub chip "${chip}" is empty for Hafs`,
+    );
+  }
+});
+
+test("reciters: style counts stay within the riwaya the hub lists", () => {
+  for (const riwaya of ["hafs", "warsh"]) {
+    const list = getRecitersByRiwaya(riwaya);
+    const counts = countRecitersByStyle(list);
+    assert.equal(counts.all, list.length, riwaya);
+    const styleTotal = Object.entries(counts)
+      .filter(([id]) => id !== "all")
+      .reduce((sum, [, n]) => sum + n, 0);
+    assert.equal(styleTotal, list.length, `${riwaya}: every voice is in exactly one chip`);
+    for (const [style, n] of Object.entries(counts)) {
+      if (style === "all") continue;
+      assert.equal(
+        n,
+        list.filter((r) => r.style === style).length,
+        `${riwaya}/${style}`,
+      );
+    }
+  }
+  // Al-Husary's teaching recitation is the one Muallim voice; tagging it back
+  // as murattal silently kills the chip.
+  assert.deepEqual(
+    getRecitersByRiwaya("hafs")
+      .filter((r) => r.style === "muallim")
+      .map((r) => r.id),
+    ["husary_muallim"],
+  );
 });
 
 test("reciters: every catalogue entry has a visual and localized biography", () => {

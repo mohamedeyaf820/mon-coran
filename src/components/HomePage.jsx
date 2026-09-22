@@ -211,6 +211,16 @@ export default function HomePage({ lowPerfMode = false }) {
   const ActiveReciterDetailPage =
     resolvedReciterDetailPage || ReciterDetailPage;
 
+  // Warsh has no Mujawwad or Muallim voice yet, and the hub hides a chip it
+  // cannot fill. If such a chip was already the active filter, switching
+  // riwaya would leave an empty list whose cause is no longer on screen.
+  useEffect(() => {
+    if (reciterStyleFilter === "all" || reciterStyleFilter === "favorites") return;
+    if (!availableReciters.some((r) => r.style === reciterStyleFilter)) {
+      setReciterStyleFilter("all");
+    }
+  }, [availableReciters, reciterStyleFilter]);
+
   useEffect(() => {
     startTransition(() => {
       setActiveTab(
@@ -931,6 +941,7 @@ export default function HomePage({ lowPerfMode = false }) {
           loadMoreSurahs={loadMoreSurahs}
           loadMoreRef={loadMoreRef}
           filteredReciters={filteredReciters}
+          riwayaReciters={availableReciters}
           onToggleFavoriteReciter={toggleFavoriteReciter}
           favoriteReciters={state.favoriteReciters}
           state={state}

@@ -22,6 +22,8 @@ import { THEMATIC_STATIONS } from "../../services/StationService";
 import { surahName } from "../../data/surahs";
 import { SurahCard, JuzCard, EmptyState } from "./HomePrimitives";
 import AVAILABLE_RECITERS, {
+  RECITER_STYLE_FILTERS,
+  countRecitersByStyle,
   getReciterCountryLabel,
   getReciterVisual,
 } from "../../data/reciters";
@@ -210,6 +212,7 @@ export default function ContentSection({
   loadMoreSurahs,
   loadMoreRef,
   filteredReciters,
+  riwayaReciters,
   onToggleFavoriteReciter,
   favoriteReciters,
   state,
@@ -225,21 +228,21 @@ export default function ContentSection({
   listeningHistory,
   t,
 }) {
-  const _allReciters = Object.values(AVAILABLE_RECITERS).flat();
+  // Counted over the riwaya actually on screen: a chip that promises 52 voices
+  // while the list can only ever hold the 44 of this riwaya reads as broken.
   const reciterStyleCounts = {
-    all: _allReciters.length,
-    murattal: _allReciters.filter(r => r.style === "murattal").length,
-    mujawwad: _allReciters.filter(r => r.style === "mujawwad").length,
-    muallim: _allReciters.filter(r => r.style === "muallim").length,
+    ...countRecitersByStyle(riwayaReciters || []),
     favorites: (favoriteReciters || []).length,
   };
-  const STYLE_FILTERS = [
-    { id: "all", label: { fr: "Tous", en: "All", ar: "\u0627\u0644\u0643\u0644" } },
-    { id: "murattal", label: { fr: "Murattal", en: "Murattal", ar: "\u0645\u0631\u062a\u0644" } },
-    { id: "mujawwad", label: { fr: "Mujawwad", en: "Mujawwad", ar: "\u0645\u062c\u0648\u062f" } },
-    { id: "muallim", label: { fr: "Muallim", en: "Muallim", ar: "\u0645\u0639\u0644\u0645" } },
-    { id: "favorites", label: { fr: "Favoris", en: "Favorites", ar: "\u0627\u0644\u0645\u0641\u0636\u0644\u0629" } },
-  ];
+  // A style with no voice in this riwaya is not offered: the chip would only
+  // ever lead to an empty list. Favoris stays visible at zero - it is a
+  // feature the user has not used yet, not a filter that cannot match.
+  const styleFilters = RECITER_STYLE_FILTERS.filter(
+    (item) =>
+      item.id === "all" ||
+      item.id === "favorites" ||
+      reciterStyleCounts[item.id] > 0,
+  );
 
   const [audioView, setAudioView] = useState("reciters");
   const [visibleReciterCount, setVisibleReciterCount] = useState(INITIAL_RECITER_COUNT);
@@ -472,7 +475,7 @@ export default function ContentSection({
           {audioView === "reciters" && (
             <div className="home-audio-browser__filters">
               <div className="home-style-filters" role="group" aria-label={lang === "ar" ? "نمط التلاوة" : lang === "en" ? "Recitation style" : "Style de récitation"}>
-                {STYLE_FILTERS.map((item) => (
+                {styleFilters.map((item) => (
                   <button
                     key={item.id}
                     type="button"
@@ -490,11 +493,15 @@ export default function ContentSection({
                 ))}
               </div>
               <p className="home-audio-browser__hint">
-                {lang === "ar"
-                  ? "مرتل: قراءة هادئة · مجود: أداء مزخرف · معلم: للتعلّم"
-                  : lang === "en"
-                    ? "Murattal: measured · Mujawwad: ornamented · Muallim: learning"
-                    : "Murattal : posé · Mujawwad : orné · Muallim : apprentissage"}
+                {styleFilters
+                  .filter((item) => item.hint)
+                  .map((item) => {
+                    const label = item.label[lang] || item.label.fr;
+                    const gloss = item.hint[lang] || item.hint.fr;
+                    // French typography puts a space before the colon.
+                    return lang === "fr" ? `${label} : ${gloss}` : `${label}: ${gloss}`;
+                  })
+                  .join(" · ")}
               </p>
             </div>
           )}

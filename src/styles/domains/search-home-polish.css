@@ -2886,18 +2886,21 @@ html[data-theme="dark"] .search-pro__close:hover {
     font-weight: 700 !important;
 }
 
-.app-root .app-view-home .home-style-filter.bg-primary,
-.app-root[data-view="home"] .home-style-filter.bg-primary {
-    border-color: var(--primary);
-    background: var(--primary);
-    color: #ffffff;
-}
-
-.app-root .app-view-home .home-style-filter:not(.bg-primary),
-.app-root[data-view="home"] .home-style-filter:not(.bg-primary) {
+.app-root .app-view-home .home-style-filter,
+.app-root[data-view="home"] .home-style-filter {
     border-color: var(--border);
     background: var(--bg-secondary);
     color: var(--text-secondary);
+}
+
+/* The component marks the selected chip with .is-active, never with a colour
+   utility, so the selected state has to be carried by this class. Specificity
+   is one class above the base rule, which keeps it winning without !important. */
+.app-root .app-view-home .home-style-filter.is-active,
+.app-root[data-view="home"] .home-style-filter.is-active {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #ffffff;
 }
 
 .app-root .app-view-home .hp-grid.hp-grid--radio,
