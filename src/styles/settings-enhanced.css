@@ -571,7 +571,7 @@
 .settings-switch span {
   position: absolute !important;
   top: 0.18rem !important;
-  left: 0.2rem !important;
+  inset-inline-start: 0.2rem !important;
   width: 1.05rem !important;
   height: 1.05rem !important;
   border-radius: 999px;
@@ -1336,7 +1336,7 @@
 .settings-switch span {
   position: absolute !important;
   top: 0.18rem !important;
-  left: 0.2rem !important;
+  inset-inline-start: 0.2rem !important;
   width: 1.05rem !important;
   height: 1.05rem !important;
   border-radius: 999px !important;
@@ -1818,4 +1818,9 @@ html[data-theme="dark"] .settings-drawer {
   .settings-theme-tile {
     transition: none !important;
   }
+}
+
+/* The knob travels along the writing direction: in RTL the track starts on the right. */
+html[dir="rtl"] .settings-switch[data-state="checked"] span {
+  transform: translateX(-1.16rem) !important;
 }
