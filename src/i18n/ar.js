@@ -145,6 +145,9 @@ export default {
     inputLabel: 'النص المراد البحث عنه في القرآن',
     voiceStart: 'البحث باستخدام صوتك', voiceStop: 'إيقاف الاستماع',
     voiceStartShort: 'إملاء', voiceStopShort: 'إيقاف', voiceListening: 'أستمع إليك… تحدث الآن.',
+    voiceLangGroup: 'لغة الإملاء',
+    voiceLang: { arabic: 'ع', fr: 'FR', en: 'EN' },
+    voiceLangFull: { arabic: 'العربية', fr: 'Français', en: 'English' },
     voiceErrors: {
       secureContext: 'افتح التطبيق عبر عنوان HTTPS لاستخدام الميكروفون.',
       unsupported: 'البحث الصوتي غير مدعوم في هذا المتصفح.',

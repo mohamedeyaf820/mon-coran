@@ -32,7 +32,23 @@ import {
 } from "../utils/searchIntelligence";
 import { prepareSearchQuery } from "../services/searchWorkerService";
 import { startPerformanceTimer } from "../services/performanceMetrics";
-import useVoiceSearch from "../hooks/useVoiceSearch";
+import useVoiceSearch, { getVoiceLanguageTag } from "../hooks/useVoiceSearch";
+
+const VOICE_MODE_STORAGE_KEY = "mushaf-voice-language";
+const VOICE_MODES = ["arabic", "fr", "en"];
+
+function interfaceVoiceMode(lang) {
+  return lang === "ar" ? "arabic" : lang === "en" ? "en" : "fr";
+}
+
+function readStoredVoiceMode() {
+  try {
+    const stored = localStorage.getItem(VOICE_MODE_STORAGE_KEY);
+    return VOICE_MODES.includes(stored) ? stored : null;
+  } catch {
+    return null;
+  }
+}
 
 // Never surface a raw error message: it leaks internals and reads as a crash.
 function formatSearchError(error, lang) {
@@ -76,22 +92,33 @@ export default function SearchModal() {
   // "36", "2:10", "sourate 36", "juz 5", "٢:١٠" ask for a position, not a word.
   const reference = useMemo(() => parseSearchReference(query), [query]);
 
+  // The recogniser hears one language per session, so this is a user choice,
+  // not a guess from the text already typed: dictating an Arabic Quran word into
+  // a French session returns nothing and reads as a broken microphone.
+  const [voiceMode, setVoiceMode] = useState(
+    () => readStoredVoiceMode() || interfaceVoiceMode(lang),
+  );
+  const [voiceInterim, setVoiceInterim] = useState("");
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(VOICE_MODE_STORAGE_KEY, voiceMode);
+    } catch {
+      /* private mode: the choice just does not persist */
+    }
+  }, [voiceMode]);
+
   const handleVoiceTranscript = useCallback((transcript) => {
     const sanitized = sanitizeSearchQuery(transcript);
+    setVoiceInterim("");
     if (!sanitized) return;
     setQuery(sanitized);
   }, []);
 
   const voiceSearch = useVoiceSearch({
-    interfaceLanguage: lang,
-    searchMode: containsArabic(query)
-      ? "arabic"
-      : lang === "en"
-        ? "en"
-        : lang === "fr"
-          ? "fr"
-          : "arabic",
+    language: getVoiceLanguageTag(voiceMode),
     onTranscript: handleVoiceTranscript,
+    onInterim: setVoiceInterim,
   });
 
   const close = () => dispatch({ type: "SET", payload: { searchOpen: false } });
@@ -417,12 +444,12 @@ export default function SearchModal() {
                         className={`search-pro__voice-btn${voiceSearch.isListening ? " is-listening" : ""}`}
                         onClick={voiceSearch.toggle}
                         onKeyDown={(event) => event.stopPropagation()}
-                        aria-label={t(
+                        aria-label={`${t(
                           voiceSearch.isListening
                             ? "search.voiceStop"
                             : "search.voiceStart",
                           lang,
-                        )}
+                        )} — ${t(`search.voiceLangFull.${voiceMode}`, lang)}`}
                         aria-pressed={voiceSearch.isListening}
                         title={t(
                           voiceSearch.isListening
@@ -444,6 +471,12 @@ export default function SearchModal() {
                             lang,
                           )}
                         </span>
+                        <span
+                          className="search-pro__voice-lang"
+                          aria-hidden="true"
+                        >
+                          {t(`search.voiceLang.${voiceMode}`, lang)}
+                        </span>
                       </button>
                       <button
                         className="search-pro__submit"
@@ -463,21 +496,52 @@ export default function SearchModal() {
                     </div>
                   </section>
 
-                  {(voiceSearch.isListening || voiceSearch.isStarting) && (
-                    <p
-                      className="search-pro__voice-status"
-                      role="status"
-                      aria-live="polite"
-                    >
-                      <span aria-hidden="true" />
-                      {t("search.voiceListening", lang)}
-                    </p>
-                  )}
+                  {(voiceSearch.isListening ||
+                    voiceSearch.isStarting ||
+                    voiceSearch.errorCode) && (
+                    <div className="search-pro__voice-panel">
+                      {voiceSearch.errorCode ? (
+                        <p className="search-pro__voice-error" role="alert">
+                          {t(
+                            `search.voiceErrors.${voiceSearch.errorCode}`,
+                            lang,
+                          )}
+                        </p>
+                      ) : (
+                        <p
+                          className="search-pro__voice-status"
+                          role="status"
+                          aria-live="polite"
+                        >
+                          <span aria-hidden="true" />
+                          {voiceInterim || t("search.voiceListening", lang)}
+                        </p>
+                      )}
 
-                  {voiceSearch.errorCode && (
-                    <p className="search-pro__voice-error" role="alert">
-                      {t(`search.voiceErrors.${voiceSearch.errorCode}`, lang)}
-                    </p>
+                      {/* The recogniser hears one language at a time, so the
+                          recovery for "nothing detected" is usually the other
+                          one - offer it here rather than sending the user away. */}
+                      <div
+                        className="search-pro__voice-langs"
+                        role="group"
+                        aria-label={t("search.voiceLangGroup", lang)}
+                      >
+                        {VOICE_MODES.map((mode) => (
+                          <button
+                            key={mode}
+                            type="button"
+                            className={`search-pro__voice-lang-option${mode === voiceMode ? " is-active" : ""}`}
+                            onClick={() => {
+                              setVoiceMode(mode);
+                              voiceSearch.clearError();
+                            }}
+                            aria-pressed={mode === voiceMode}
+                          >
+                            {t(`search.voiceLangFull.${mode}`, lang)}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   )}
 
                   {error && (

@@ -144,6 +144,9 @@ export default {
     inputLabel: 'Texte à rechercher dans le Coran',
     voiceStart: 'Rechercher avec votre voix', voiceStop: 'Arrêter l’écoute',
     voiceStartShort: 'Dicter', voiceStopShort: 'Arrêter', voiceListening: 'Je vous écoute… Parlez maintenant.',
+    voiceLangGroup: 'Langue de la dictée',
+    voiceLang: { arabic: 'ع', fr: 'FR', en: 'EN' },
+    voiceLangFull: { arabic: 'العربية', fr: 'Français', en: 'English' },
     voiceErrors: {
       secureContext: 'Ouvrez l’application avec une adresse HTTPS pour utiliser le microphone.',
       unsupported: 'La recherche vocale n’est pas prise en charge par ce navigateur.',

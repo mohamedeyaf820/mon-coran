@@ -145,6 +145,9 @@ export default {
     inputLabel: 'Text to search for in the Quran',
     voiceStart: 'Search with your voice', voiceStop: 'Stop listening',
     voiceStartShort: 'Dictate', voiceStopShort: 'Stop', voiceListening: 'Listening… Speak now.',
+    voiceLangGroup: 'Dictation language',
+    voiceLang: { arabic: 'ع', fr: 'FR', en: 'EN' },
+    voiceLangFull: { arabic: 'العربية', fr: 'Français', en: 'English' },
     voiceErrors: {
       secureContext: 'Open the app using an HTTPS address to use the microphone.',
       unsupported: 'Voice search is not supported by this browser.',

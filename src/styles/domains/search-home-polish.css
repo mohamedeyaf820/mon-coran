@@ -336,6 +336,60 @@
     to { transform: scale(0.72); opacity: 0.58; }
 }
 
+/* The recogniser hears one language per session, so the badge states which one
+   the microphone is currently set to instead of leaving it implied. */
+.search-pro__voice-lang {
+    border-radius: 999px;
+    padding: 0.06rem 0.34rem;
+    background: rgba(var(--theme-primary-rgb, 16, 185, 129), 0.14);
+    color: var(--theme-primary, #10b981);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+}
+
+.search-pro__voice-btn.is-listening .search-pro__voice-lang {
+    background: rgba(220, 38, 38, 0.14);
+    color: #dc2626;
+}
+
+.search-pro__voice-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.search-pro__voice-langs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.search-pro__voice-lang-option {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    border: 1px solid color-mix(in srgb, var(--theme-border, #64748b) 28%, transparent);
+    border-radius: 999px;
+    padding: 0 0.8rem;
+    background: color-mix(in srgb, var(--theme-panel-bg, #0f172a) 72%, transparent);
+    color: var(--theme-text-muted, #94a3b8);
+    font-size: 0.76rem;
+    font-weight: 750;
+    transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+}
+
+.search-pro__voice-lang-option.is-active {
+    border-color: var(--theme-primary, #10b981);
+    background: var(--theme-primary, #10b981);
+    color: #fff;
+}
+
+.search-pro__voice-lang-option:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring, 0 0 0 3px rgba(16, 185, 129, 0.4));
+}
+
 .search-pro__actions {
     display: flex;
     align-items: center;

@@ -17,20 +17,35 @@ export function getSpeechRecognitionConstructor(browserWindow) {
   );
 }
 
-export default function useVoiceSearch({
-  interfaceLanguage,
-  searchMode,
-  onTranscript,
-}) {
+// The three dictation languages the search dialog offers. The Web Speech API
+// recognises one language per session and cannot mix them, so dictating an
+// Arabic Quran word into a French session returns nothing at all - which is why
+// the language has to be a visible choice rather than a guess.
+export const VOICE_LANGUAGE_MODES = Object.freeze(["arabic", "fr", "en"]);
+
+export function getVoiceLanguageTag(mode) {
+  if (mode === "arabic") return "ar-SA";
+  if (mode === "en") return "en-US";
+  return "fr-FR";
+}
+
+export default function useVoiceSearch({ language, onTranscript, onInterim }) {
   const recognitionRef = useRef(null);
   const transcriptReceivedRef = useRef(false);
+  const heardRef = useRef(false);
+  const interimTextRef = useRef("");
   const onTranscriptRef = useRef(onTranscript);
+  const onInterimRef = useRef(onInterim);
   const [status, setStatus] = useState("idle");
   const [errorCode, setErrorCode] = useState(null);
 
   useEffect(() => {
     onTranscriptRef.current = onTranscript;
   }, [onTranscript]);
+
+  useEffect(() => {
+    onInterimRef.current = onInterim;
+  }, [onInterim]);
 
   const clearError = useCallback(() => setErrorCode(null), []);
 
@@ -76,15 +91,16 @@ export default function useVoiceSearch({
       setErrorCode("unsupported");
       return;
     }
-    recognition.lang = getVoiceRecognitionLanguage(
-      searchMode,
-      interfaceLanguage,
-    );
+    recognition.lang = language;
     recognition.continuous = false;
-    recognition.interimResults = false;
+    // Interim results are what make the mic feel alive: without them the user
+    // speaks and sees nothing until the session closes.
+    recognition.interimResults = true;
     recognition.maxAlternatives = 1;
 
     transcriptReceivedRef.current = false;
+    heardRef.current = false;
+    interimTextRef.current = "";
     setErrorCode(null);
     setStatus("starting");
 
@@ -100,14 +116,22 @@ export default function useVoiceSearch({
     };
     recognition.onresult = (event) => {
       if (!isCurrent()) return;
-      const transcript = Array.from(event.results || [])
-        .map((result) => result?.[0]?.transcript || "")
-        .join(" ")
-        .trim();
-
-      if (!transcript) return;
+      let finalText = "";
+      let interimText = "";
+      for (const result of Array.from(event.results || [])) {
+        const text = result?.[0]?.transcript || "";
+        if (result.isFinal) finalText += text;
+        else interimText += text;
+      }
+      if (interimText.trim()) {
+        heardRef.current = true;
+        interimTextRef.current = interimText.trim();
+        onInterimRef.current?.(interimText.trim());
+      }
+      if (!finalText.trim()) return;
       transcriptReceivedRef.current = true;
-      onTranscriptRef.current?.(transcript);
+      heardRef.current = true;
+      onTranscriptRef.current?.(finalText.trim());
     };
     recognition.onerror = (event) => {
       if (!isCurrent()) return;
@@ -134,7 +158,12 @@ export default function useVoiceSearch({
     };
     recognition.onend = () => {
       if (!isCurrent()) return;
-      if (!transcriptReceivedRef.current) {
+      // Mobile implementations sometimes close the session without ever
+      // marking the last chunk final. Searching the words the user already saw
+      // beats reporting a dictation that produced nothing.
+      if (!transcriptReceivedRef.current && heardRef.current && interimTextRef.current) {
+        onTranscriptRef.current?.(interimTextRef.current);
+      } else if (!transcriptReceivedRef.current) {
         setErrorCode((current) => current || "noSpeech");
       }
       release();
@@ -147,7 +176,7 @@ export default function useVoiceSearch({
       release();
       setErrorCode(error?.name === "NotAllowedError" ? "permissionDenied" : "failed");
     }
-  }, [interfaceLanguage, searchMode, stop]);
+  }, [language, stop]);
 
   useEffect(
     () => () => {
