@@ -121,6 +121,11 @@ export default function useQuranDisplayScroll({
   // scroll-source guard above deliberately never fires. The continuous page
   // stream repositions itself onto the page being read (usePageStream);
   // surah and juz content has no page anchor, so the top of the sheet is it.
+  //
+  // A list ⇄ mushaf switch is the exception worth anchoring: the verse being
+  // read is known and exists in both sheets, and dropping the reader at verse 1
+  // throws away where they were for no reason. A riwaya switch keeps the reset,
+  // because verse 40 in Warsh is not verse 40 in Hafs.
   const repaginationRef = useRef(null);
   useEffect(() => {
     const key = `${mushafLayout}:${riwaya}`;
@@ -129,11 +134,12 @@ export default function useQuranDisplayScroll({
       return;
     }
     if (repaginationRef.current === key) return;
+    const keptRiwaya = repaginationRef.current.endsWith(`:${riwaya}`);
     repaginationRef.current = key;
-    if (displayMode !== "page") {
+    if (displayMode !== "page" && !(keptRiwaya && currentAyah > 1)) {
       getScrollContainer()?.scrollTo({ top: 0, behavior: "auto" });
     }
-  }, [displayMode, getScrollContainer, mushafLayout, riwaya]);
+  }, [currentAyah, displayMode, getScrollContainer, mushafLayout, riwaya]);
 
   useEffect(() => {
     if (
@@ -200,7 +206,9 @@ export default function useQuranDisplayScroll({
       cancelled = true;
       stop();
     };
-  }, [ayahCount, contentRef, currentAyah, displayMode]);
+    // mushafLayout is a dependency because switching sheet re-paginates the
+    // verses: the anchor has to be sought again in the new sheet.
+  }, [ayahCount, contentRef, currentAyah, displayMode, mushafLayout]);
 
   useEffect(() => {
     clearFollowRetryTimer();
