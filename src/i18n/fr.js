@@ -286,6 +286,7 @@ export default {
     readyToPlay: 'Prêt à lire',
     expand: 'Agrandir',
     minimize: 'Réduire',
+    stateOn: 'Activé', stateOff: 'Désactivé',
     optionsAndReciters: 'Options et récitateurs',
     progressLabel: 'Progression audio',
     reciterSwitched: 'Récitateur indisponible, bascule vers {name}.',
@@ -313,12 +314,14 @@ export default {
   notes: {
     title: 'Notes', placeholder: 'Ajouter une note sur ce verset…',
     save: 'Enregistrer', delete: 'Supprimer', empty: 'Aucune note', add: 'Ajouter une note',
+    view: 'Voir la note',
     reflectionEyebrow: 'Note de méditation',
     composerTitle: 'Écrire sur ce verset',
     fieldLabel: 'Note personnelle sur ce verset',
   },
   actions: {
     copy: 'Copier', share: 'Partager', note: 'Note', listen: 'Écouter',
+    close: 'Fermer', addBookmark: 'Ajouter aux favoris', removeBookmark: 'Retirer le favori',
     copied: 'Verset copié', copiedShare: 'Copié pour le partage',
     retry: 'Réessayer',
     shareWhatsapp: 'WhatsApp', shareTelegram: 'Telegram',

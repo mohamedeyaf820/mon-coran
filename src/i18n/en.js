@@ -287,6 +287,7 @@ export default {
     readyToPlay: 'Ready',
     expand: 'Expand',
     minimize: 'Minimize',
+    stateOn: 'On', stateOff: 'Off',
     optionsAndReciters: 'Options and reciters',
     progressLabel: 'Audio progress',
     reciterSwitched: 'Reciter unavailable, switched to {name}.',
@@ -314,12 +315,14 @@ export default {
   notes: {
     title: 'Notes', placeholder: 'Add a note for this ayah…',
     save: 'Save', delete: 'Delete', empty: 'No notes', add: 'Add note',
+    view: 'View note',
     reflectionEyebrow: 'Reflection note',
     composerTitle: 'Write about this verse',
     fieldLabel: 'Personal note about this ayah',
   },
   actions: {
     copy: 'Copy', share: 'Share', note: 'Note', listen: 'Listen',
+    close: 'Close', addBookmark: 'Add bookmark', removeBookmark: 'Remove bookmark',
     copied: 'Ayah copied', copiedShare: 'Copied for sharing',
     retry: 'Retry',
     shareWhatsapp: 'WhatsApp', shareTelegram: 'Telegram',

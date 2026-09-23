@@ -141,8 +141,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           ? "note"
           : null;
   const sheetIdBase = `ayah-action-${surah}-${ayah}`;
-  const closeSheetLabel =
-    lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close";
+  const closeSheetLabel = t("actions.close", lang);
   const noteFieldLabel = t("notes.fieldLabel", lang);
 
   useEffect(() => {
@@ -545,7 +544,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
@@ -592,7 +591,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 }}
               >
                 <PenSquare size={13} className="text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}</span>
+                <span>{t("notes.add", lang)}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={openPlaylistMenu}>
@@ -690,7 +689,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             }}
           >
             <PenSquare size={12} />
-            <span>{noteText.trim() ? (lang === "fr" ? "Voir la note" : "View note") : "Note"}</span>
+            <span>{noteText.trim() ? t("notes.view", lang) : t("actions.note", lang)}</span>
           </button>
 
           {/* Playlists */}
@@ -757,7 +756,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
@@ -840,7 +839,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            aria-label={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
             title={lang === "fr" ? "Favori" : "Bookmark"}
           >
             {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
@@ -916,7 +915,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 bookmarked && inlineIconButtonActiveClass,
               )}
               onClick={toggleBookmark}
-              title={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
+              title={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
               aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
             >
               <Bookmark size={13} />
@@ -1170,7 +1169,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               className="ayah-action-sheet__btn"
               onClick={closePanels}
             >
-              {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+              {t("actions.close", lang)}
             </button>
             <button
               type="button"

@@ -381,8 +381,8 @@ export default function PlaybackSettingsPanel(props) {
             aria-pressed={tartilMode}
           >
             {tartilMode
-              ? (lang === "fr" ? "Activé" : lang === "ar" ? "مفعّل" : "On")
-              : (lang === "fr" ? "Désactivé" : lang === "ar" ? "معطّل" : "Off")}
+              ? t("audio.stateOn", lang)
+              : t("audio.stateOff", lang)}
           </button>
         </div>
         <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
