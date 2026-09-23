@@ -146,6 +146,97 @@ function resolveCardArabicFontFamily(riwaya) {
   return declared || CARD_ARABIC_FONT_FALLBACK[target];
 }
 
+/**
+ * The card is rasterised as a standalone SVG image, which cannot see the page's
+ * @font-face rules: without an embedded copy the Quran text is drawn in whatever
+ * Arabic face the OS offers. One face per riwaya, read from our own same-origin
+ * stylesheets and cached.
+ */
+const CARD_FONT_MAX_BYTES = 512 * 1024;
+const cardFontCache = new Map();
+
+function splitFontStack(stack) {
+  return String(stack || "")
+    .split(",")
+    .map((part) => part.trim().replace(/^['"]|['"]$/g, ""))
+    .filter(Boolean);
+}
+
+function findSameOriginFontUrl(family) {
+  if (typeof document === "undefined") return null;
+  for (const sheet of document.styleSheets) {
+    let rules;
+    try {
+      rules = sheet.cssRules;
+    } catch {
+      continue;
+    }
+    for (const rule of rules || []) {
+      if (rule.type !== 5) continue;
+      const declared = rule.style
+        .getPropertyValue("font-family")
+        .replace(/^['"]|['"]$/g, "")
+        .trim();
+      if (declared !== family) continue;
+      const match = /url\((['"]?)([^'")]+)\1\)/.exec(
+        rule.style.getPropertyValue("src"),
+      );
+      if (!match) continue;
+      const url = new URL(match[2], sheet.href || document.baseURI);
+      if (url.origin !== window.location.origin) continue;
+      return url.href;
+    }
+  }
+  return null;
+}
+
+function bytesToBase64(bytes) {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let offset = 0; offset < bytes.length; offset += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + chunk));
+  }
+  return btoa(binary);
+}
+
+const FONT_FORMATS = {
+  woff2: ["woff2", "font/woff2"],
+  woff: ["woff", "font/woff"],
+  ttf: ["truetype", "font/ttf"],
+  otf: ["opentype", "font/otf"],
+};
+
+function fontFormat(href) {
+  const extension = /\.(\w+)(?:\?|#|$)/.exec(href)?.[1]?.toLowerCase();
+  return FONT_FORMATS[extension];
+}
+
+async function loadCardFontCss(riwaya) {
+  const target = riwaya === "warsh" ? "warsh" : "hafs";
+  if (cardFontCache.has(target)) return cardFontCache.get(target);
+  let css = "";
+  for (const family of splitFontStack(resolveCardArabicFontFamily(target))) {
+    const safeFamily = family.replace(/[^A-Za-z0-9 _-]/g, "");
+    if (!safeFamily) continue;
+    const href = findSameOriginFontUrl(family);
+    const faceFormat = href && fontFormat(href);
+    if (!faceFormat) continue;
+    try {
+      const response = await fetch(href);
+      if (!response.ok) continue;
+      const bytes = new Uint8Array(await response.arrayBuffer());
+      if (!bytes.byteLength || bytes.byteLength > CARD_FONT_MAX_BYTES) continue;
+      const [format, mime] = faceFormat;
+      css = `@font-face{font-family:'${safeFamily}';src:url(data:${mime};base64,${bytesToBase64(bytes)}) format('${format}');}`;
+      break;
+    } catch {
+      // The card still rasterises with the system Arabic face.
+    }
+  }
+  cardFontCache.set(target, css);
+  return css;
+}
+
 function buildRiwayaLine({ width, preset, riwayaLabel, riwayaLabelRtl }) {
   if (!riwayaLabel) return "";
   const x = Math.round(width * 0.5);
@@ -406,6 +497,16 @@ export default function AyahSharePanel() {
     [draftRiwaya],
   );
   const riwayaLabel = t(draftRiwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang);
+  const [cardFontCss, setCardFontCss] = useState("");
+  useEffect(() => {
+    let active = true;
+    loadCardFontCss(draftRiwaya).then((css) => {
+      if (active) setCardFontCss(css);
+    });
+    return () => {
+      active = false;
+    };
+  }, [draftRiwaya]);
   const svgContent = useMemo(
     () => (verseUnavailable ? "" : buildVerseCardSvg({
       arabicText,
@@ -437,7 +538,17 @@ export default function AyahSharePanel() {
       verseUnavailable,
     ],
   );
-  const safeSvgContent = svgContent ? sanitizeSvgMarkup(svgContent) : "";
+  const safeSvgContent = useMemo(() => {
+    if (!svgContent) return "";
+    const cleaned = sanitizeSvgMarkup(svgContent);
+    if (!cleaned || !cardFontCss) return cleaned;
+    // The sanitizer blocks <style> on purpose; this block is ours, built from a
+    // family name filtered to [A-Za-z0-9 _-] and base64 font bytes.
+    return cleaned.replace(
+      /^<svg\b[^>]*>/,
+      (open) => `${open}<style>${cardFontCss}</style>`,
+    );
+  }, [cardFontCss, svgContent]);
   const previewUrl = safeSvgContent
     ? `data:image/svg+xml;charset=utf-8,${encodeURIComponent(safeSvgContent)}`
     : "";
