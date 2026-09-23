@@ -45,6 +45,7 @@ export default function Header({ immersiveHidden = false }) {
     (current) => ({
       lang: current.lang,
       currentSurah: current.currentSurah,
+      currentAyah: current.currentAyah,
       displayMode: current.displayMode,
       currentPage: current.currentPage,
       currentJuz: current.currentJuz,
@@ -65,6 +66,7 @@ export default function Header({ immersiveHidden = false }) {
   const {
     lang,
     currentSurah,
+    currentAyah,
     displayMode,
     currentPage,
     currentJuz,
@@ -362,7 +364,12 @@ export default function Header({ immersiveHidden = false }) {
   const headerLabels = {
     menu: i18nT("nav.menu", lang),
     more: i18nT("header.more", lang),
-    homeSummary: i18nT("header.continueReading", lang),
+    homeSummary: i18nT(
+      displayMode === "page" || displayMode === "juz" || currentSurah > 1 || currentAyah > 1
+        ? "header.continueReading"
+        : "header.startReading",
+      lang,
+    ),
     homeMeta: `${i18nT(riwaya === "warsh" ? "quran.warsh" : "quran.hafs", lang)} \u00b7 114 ${i18nT("header.metaSurahs", lang)} \u00b7 ${i18nT("header.metaJuz", lang)}`,
     quranNav: i18nT("header.quranNav", lang),
     riwayaToggle: i18nT("header.riwayaToggle", lang),

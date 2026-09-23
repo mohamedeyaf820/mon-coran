@@ -263,7 +263,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
 }
 
 #root .app-root[data-view="reading"] .srh-pill {
-  min-height: 36px !important;
+  min-height: 44px !important;
+  min-width: 44px !important;
   border: 0 !important;
   border-radius: calc(var(--ux-radius-control, 0.75rem) - 0.15rem) !important;
   background: transparent !important;
@@ -453,7 +454,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
 }
 
 #root .app-root[data-view="reading"] .reader-toolbar-btn--primary {
-  min-height: 36px !important;
+  min-height: 44px !important;
   border-radius: var(--ux-radius-control, 0.75rem) !important;
   box-shadow: none !important;
 }

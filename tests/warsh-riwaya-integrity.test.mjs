@@ -9,6 +9,7 @@
  */
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { createHash } from "node:crypto";
 import test from "node:test";
 
 import SURAHS from "../src/data/surahs.js";
@@ -16,6 +17,7 @@ import {
   WARSH_DATA_BASE_URL,
   WARSH_LEGACY_JSON_SHA256,
   WARSH_LEGACY_JSON_URL,
+  getWarshPageStart,
   getSurahVerseCountByRiwaya,
   getWarshSurahAyahCount,
   hafsNumbersForAyah,
@@ -294,6 +296,24 @@ test("both Warsh text sources are pinned to immutable commits", () => {
   }
   assert.match(WARSH_DATA_BASE_URL, /warsh_text\/$/, "per-surah directory base");
   assert.match(WARSH_LEGACY_JSON_SHA256, /^[0-9a-f]{64}$/, "sha-256 digest");
+});
+
+test("the local Warsh page source is exact and every ayah has one page", () => {
+  const bytes = fs.readFileSync(new URL("../public/data/warsh-page-source.json", import.meta.url));
+  assert.equal(createHash("sha256").update(bytes).digest("hex"), WARSH_LEGACY_JSON_SHA256);
+  const rows = JSON.parse(bytes.toString("utf8"));
+  assert.equal(rows.length, 6214);
+  const pageCounts = new Map();
+  const rangeRows = [];
+  for (const row of rows) {
+    const page = getWarshPageStart(row.page);
+    assert.ok(page >= 1 && page <= 604, `ayah ${row.id} has a printed page`);
+    pageCounts.set(page, (pageCounts.get(page) || 0) + 1);
+    if (String(row.page).includes("-")) rangeRows.push([row.id, page]);
+  }
+  assert.equal(pageCounts.size, 604);
+  assert.equal([...pageCounts.values()].reduce((sum, count) => sum + count, 0), 6214);
+  assert.deepEqual(rangeRows, [[536, 85], [2434, 317], [2824, 354], [2830, 355]]);
 });
 
 test("warshService requires the exact verse count and verifies the digest", () => {

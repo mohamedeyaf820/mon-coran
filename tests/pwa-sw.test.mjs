@@ -46,7 +46,7 @@ test('runtime cache does not persist opaque network responses', async () => {
     fetch: async () => opaque,
   };
   vm.runInNewContext(sw, context);
-  assert.equal(await context.cacheFirst(new Request('https://qa.test/assets/test.js'), 'mushaf-plus-v20'), opaque);
+  assert.equal(await context.cacheFirst(new Request('https://qa.test/assets/test.js'), 'mushaf-plus-v21'), opaque);
   assert.equal(writes, 0);
 });
 

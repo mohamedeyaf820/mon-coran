@@ -21,7 +21,7 @@ import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
 import {
   WARSH_TRANSLATION_EDITION_ID,
   WARSH_TRANSLATION_EDITION_ID_EN,
-} from "./warshTranslationService.js";
+} from "../constants/warshTranslationEditions.js";
 import {
   normalizeDayTheme,
   normalizeNightTheme,

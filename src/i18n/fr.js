@@ -12,6 +12,7 @@ export default {
   header: {
     more: 'Plus d\'options',
     continueReading: 'Reprendre la lecture',
+    startReading: 'Commencer la lecture',
     metaSurahs: 'sourates',
     metaJuz: '30 Juz',
     quranNav: 'Navigation du Coran',

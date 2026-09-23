@@ -159,10 +159,10 @@ export default function useQuranDisplayData({
     requestAbortRef.current = controller;
     const signal = controller.signal;
     const cacheKey = currentCacheKey;
-    const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
+    let cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
 
     setError(null);
-    if (cachedData && (!needsHafsSupport || cachedData.hafsSupportReady)) {
+    if (cachedData) {
       setAyahs(cachedData.ayahs);
       setResolvedCacheKey(cacheKey);
       setSettledCacheKey(cacheKey);
@@ -171,10 +171,10 @@ export default function useQuranDisplayData({
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
       persistRef.current(cachedData.ayahs);
-      return;
+      if (!needsHafsSupport || cachedData.hafsSupportReady) return;
     }
 
-    dispatch({ type: "SET_LOADING", payload: true });
+    if (!cachedData) dispatch({ type: "SET_LOADING", payload: true });
 
     const pendingPrefetch = DISPLAY_DATA_PREFETCHES.get(cacheKey);
     if (pendingPrefetch) {
@@ -192,7 +192,8 @@ export default function useQuranDisplayData({
         });
         dispatch({ type: "SET_LOADING", payload: false });
         persistRef.current(prefetchedData.ayahs);
-        return;
+        if (!needsHafsSupport || prefetchedData.hafsSupportReady) return;
+        cachedData = prefetchedData;
       } catch {
         // A failed background warmup must not prevent the foreground retry.
       }
@@ -237,8 +238,23 @@ export default function useQuranDisplayData({
         assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
       }
 
-      let resolvedAyahs = fetchedAyahs;
-      let hafsSupportReady = !needsHafsSupport;
+      // The requested Quran text is already verified. Optional Hafs metadata
+      // (translations, word support) can arrive later without holding it back.
+      rememberLimited(
+        DISPLAY_DATA_CACHE,
+        cacheKey,
+        { ayahs: fetchedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsSupportReady: !needsHafsSupport },
+        DISPLAY_DATA_CACHE_MAX,
+      );
+      setAyahs(fetchedAyahs);
+      setResolvedCacheKey(cacheKey);
+      setSettledCacheKey(cacheKey);
+      setIsWarshFallback(fallback);
+      setDataSource(resolvedSource);
+      dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
+      dispatch({ type: "SET_LOADING", payload: false });
+      persistRef.current(fetchedAyahs);
+
       if (hafsPromise) {
         const hafsData = await hafsPromise;
         if (signal.aborted || requestSeqRef.current !== requestId) return;
@@ -264,25 +280,16 @@ export default function useQuranDisplayData({
               ayah,
             ]),
           );
-          resolvedAyahs = mergeHafsSupport(fetchedAyahs, hafsMap, riwaya);
-          hafsSupportReady = true;
+          const resolvedAyahs = mergeHafsSupport(fetchedAyahs, hafsMap, riwaya);
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            cacheKey,
+            { ayahs: resolvedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsSupportReady: true },
+            DISPLAY_DATA_CACHE_MAX,
+          );
+          setAyahs(resolvedAyahs);
         }
       }
-
-      rememberLimited(
-        DISPLAY_DATA_CACHE,
-        cacheKey,
-        { ayahs: resolvedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsSupportReady },
-        DISPLAY_DATA_CACHE_MAX,
-      );
-      setAyahs(resolvedAyahs);
-      setResolvedCacheKey(cacheKey);
-      setSettledCacheKey(cacheKey);
-      setIsWarshFallback(fallback);
-      setDataSource(resolvedSource);
-      dispatch({ type: "SET", payload: { loadedAyahCount: resolvedAyahs.length } });
-      dispatch({ type: "SET_LOADING", payload: false });
-      persistRef.current(resolvedAyahs);
     } catch (err) {
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       if (import.meta.env.DEV) console.warn("Fetch error:", err);

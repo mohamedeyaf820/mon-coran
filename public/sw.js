@@ -10,7 +10,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v20";
+const CACHE_NAME = "mushaf-plus-v21";
 const API_CACHE_NAME = "mushaf-plus-api-v6";
 const QCF_FONT_CACHE_NAME = "mushaf-plus-qcf-fonts-v1";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
@@ -34,6 +34,7 @@ const ASSETS_TO_CACHE = [
   "/favicon.png",
   "/data/reciter-profiles.json",
   "/data/editorial-copy.json",
+  "/data/warsh-page-source.json",
   // The reading faces are needed on every route once offline.
   "/fonts/uthmanic-hafs-v18.woff2",
   "/fonts/kfgqpc-warsh-21.woff2",

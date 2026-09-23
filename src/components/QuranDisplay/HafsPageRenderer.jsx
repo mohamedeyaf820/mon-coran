@@ -130,13 +130,17 @@ export default function HafsPageRenderer({
   // fallback rather than failing the sheet.
   const [resolvedVersion, setResolvedVersion] = useState("v2");
   const requestedVersion = showTajwid ? "v4" : "v2";
-  const usesPageGlyphs = usesMushafPageGlyphs(fontFamily, riwaya);
+  const lines = useMemo(() => groupPageLines(ayahs), [ayahs]);
+  const hasPageGlyphs = lines.some(({ words }) => words.some((word) => Boolean(word.codeV2)));
+  // Tajweed mode prints the Quran Foundation's own coloured QCF v4 glyphs
+  // whenever the page payload has their positioned codes, even when the
+  // regular reading face is proportional Unicode.
+  const usesPageGlyphs = usesMushafPageGlyphs(fontFamily, riwaya) || (showTajwid && hasPageGlyphs);
   const pageFontFamily = getQcfPageFontFamily(currentPage, resolvedVersion);
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
 
-  const lines = useMemo(() => groupPageLines(ayahs), [ayahs]);
   const flowSegments = useMemo(
     () =>
       usesPageGlyphs
@@ -220,6 +224,7 @@ export default function HafsPageRenderer({
         data-ayah-number={word.ayah}
         data-ayah-global={word.globalAyah}
         data-word-position={word.position}
+        data-qcf-v4-page={fontLoaded && resolvedVersion === "v4" ? currentPage : undefined}
         role="button"
         tabIndex={0}
         onClick={() => {

@@ -185,7 +185,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 .app-root[data-view="reading"] .reader-loading-content {
   width: var(--reader-content-max);
   max-width: var(--reader-content-max);
-  min-height: 60vh;
+  min-height: 100dvh;
   margin-inline: auto;
 }
 

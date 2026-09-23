@@ -48,6 +48,36 @@ const FONT_SOURCES = {
 
 const QCF_FONT_VERSIONS = new Set(["v1", "v2", "v4"]);
 const QCF_FONT_BASE = "https://verses.quran.foundation/fonts/quran/hafs";
+const qcfPaletteStyles = new Map();
+
+function ensureQcfPaletteStyle(page) {
+  if (typeof document === "undefined") return;
+  const normalizedPage = normalizePage(page);
+  if (qcfPaletteStyles.has(normalizedPage)) return;
+  const family = `qcf-v4-p${normalizedPage}`;
+  const selector = `.qcm-word[data-qcf-v4-page="${normalizedPage}"]`;
+  const style = document.createElement("style");
+  style.textContent = `
+    @font-palette-values --qcf-v4-dark-p${normalizedPage} {
+      font-family: "${family}"; base-palette: 1;
+    }
+    @font-palette-values --qcf-v4-sepia-p${normalizedPage} {
+      font-family: "${family}"; base-palette: 2;
+    }
+    html[data-theme="dark"] ${selector}, html[data-theme="night-blue"] ${selector},
+    html[data-theme="oled"] ${selector} { font-palette: --qcf-v4-dark-p${normalizedPage}; }
+    html[data-theme="sepia"] ${selector} { font-palette: --qcf-v4-sepia-p${normalizedPage}; }
+  `;
+  document.head.appendChild(style);
+  qcfPaletteStyles.set(normalizedPage, style);
+  // The reader holds at most eight pages. Bound dynamic palette rules even
+  // after long sessions; revisiting a page reinstalls its rule on demand.
+  if (qcfPaletteStyles.size > 40) {
+    const oldestPage = qcfPaletteStyles.keys().next().value;
+    qcfPaletteStyles.get(oldestPage)?.remove();
+    qcfPaletteStyles.delete(oldestPage);
+  }
+}
 
 function normalizePage(page) {
   const value = Math.trunc(Number(page));
@@ -198,6 +228,7 @@ export async function ensureFontLoaded(fontId, options = {}) {
 }
 
 export async function ensureQcfPageFontLoaded(page, version = "v2") {
+  if (version === "v4") ensureQcfPaletteStyle(page);
   return ensureFontLoaded(`qcf-${version}-p${normalizePage(page)}`);
 }
 

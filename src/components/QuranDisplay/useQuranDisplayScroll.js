@@ -271,7 +271,28 @@ export default function useQuranDisplayScroll({
   useEffect(() => () => clearFollowRetryTimer(), [clearFollowRetryTimer]);
 
   return {
-    scrollToTop: () => getScrollContainer()?.scrollTo({ top: 0, behavior: "smooth" }),
+    scrollToTop: () => {
+      const container = getScrollContainer();
+      const documentScroller = document.scrollingElement || document.documentElement;
+      // Layouts can scroll in the reader, its shell, or the document. Reset
+      // every active reading ancestor so a nested scroller cannot leave the
+      // page at the end of a long surah after this action.
+      const scrollers = new Set([container, documentScroller]);
+      for (let node = contentRef.current; node; node = node.parentElement) {
+        if (node.scrollTop > 0) scrollers.add(node);
+      }
+      contentRef.current?.querySelectorAll(".quran-display-scroll").forEach((node) => {
+        if (node.scrollTop > 0) scrollers.add(node);
+      });
+      scrollers.forEach((node) => {
+        if (!node || node.scrollTop <= 0) return;
+        // Long smooth scrolls take seconds and can trigger more page loads.
+        node.scrollTo({ top: 0, behavior: node.scrollTop > 2400 ? "instant" : "smooth" });
+      });
+      if (window.scrollY > 0 && documentScroller?.scrollTop > 0) {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+    },
     showScrollTop,
   };
 }

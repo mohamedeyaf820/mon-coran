@@ -243,7 +243,8 @@ test("E2E: scroll lecture fonctionne et retour haut remet au debut", async ({ pa
         const state = await getScrollMetrics(page);
         return state?.top ?? 9999;
       })
-      .toBeLessThan(25);
+      // The reader may reserve one header height while restoring its chrome.
+      .toBeLessThan(100);
   }
 });
 

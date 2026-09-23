@@ -345,7 +345,7 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   const pageMode = source("src/components/QuranDisplay/PageMode.jsx");
   assert.match(
     pageMode,
-    /if \(!usesMushafPageGlyphs\(state\.fontFamily, riwaya\)\) return undefined;/,
+    /if \(!usesMushafPageGlyphs\(state\.fontFamily, riwaya\) && !\(riwaya === "hafs" && showTajwid\)\) return undefined;/,
   );
 
   // The Mushaf page flows like Quran.com sets one: the leaf takes the reading

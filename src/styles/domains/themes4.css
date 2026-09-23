@@ -247,10 +247,12 @@
 
     /* Quran.com canonical tajweed palette (dark theme). Madd hues shift to
        Quran.com's dark-adjusted tints, which already clear 3:1 on the ink background. */
-    --tajwid-silent: #999999;
-    --tajwid-lam-shamsiyya: #999999;
+    /* Quran Foundation QCF v4 dark palette; light and sepia keep the same
+       hues at stronger contrast against their paper surfaces. */
+    --tajwid-silent: #9d9999;
+    --tajwid-lam-shamsiyya: #9d9999;
     --tajwid-ghunna: #26b55d;
-    --tajwid-idgham: #999999;
+    --tajwid-idgham: #9d9999;
     --tajwid-ikhfa: #26b55d;
     --tajwid-iqlab: #26b55d;
     --tajwid-qalqala: #00deff;
@@ -265,8 +267,8 @@
     --tajwid-tashil: #26b55d;
     --tajwid-ibdal: #ff8e3b;
     --tajwid-sila-kubra: #ff5e8e;
-    --tajwid-tarqiq-ra: #999999;
-    --tajwid-idgham-warsh: #999999;
+    --tajwid-tarqiq-ra: #9d9999;
+    --tajwid-idgham-warsh: #9d9999;
 }
 
 :root[data-theme="quran-night"],

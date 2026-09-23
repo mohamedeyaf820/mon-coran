@@ -715,7 +715,7 @@ html body .app-root {
 .app-root[data-view="home"] .home-resume-panel {
   isolation: isolate;
   display: flex;
-  min-height: clamp(17rem, 27vw, 20rem);
+  min-height: clamp(29rem, 35vw, 36rem);
   flex-direction: column;
   padding: clamp(1rem, 1.7vw, 1.35rem);
   color: #f8fbf9;
@@ -817,22 +817,20 @@ html body .app-root {
   border-radius: 0.55rem;
 }
 
-/* One composition at every width, the one the phone shows: the greeting, the
-   riwaya, the promise, then the answer to "where was I?" directly under it and
-   the library row under that. The old two-column body pushed the reading
-   target into a right-hand panel behind a hairline, which separated the verse
-   from the sentence it continues and left a dead band in a wide card. */
 .app-root[data-view="home"] .home-resume-panel__body {
-  display: flex;
+  display: grid;
   flex: 1;
-  flex-direction: column;
-  align-items: stretch;
+  grid-template-columns: minmax(0, 1fr) minmax(11rem, 0.72fr);
+  grid-template-rows: 1fr auto auto 1fr auto;
+  column-gap: clamp(1rem, 2vw, 2rem);
   max-width: none;
   padding-block: clamp(0.8rem, 1.5vw, 1.25rem);
 }
 
 .app-root[data-view="home"] .home-resume-panel__eyebrow {
   grid-area: eyebrow;
+  grid-column: 1;
+  grid-row: 2;
   width: fit-content;
   gap: 0.4rem;
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -848,10 +846,12 @@ html body .app-root {
 
 .app-root[data-view="home"] .home-resume-panel h1 {
   grid-area: title;
+  grid-column: 1;
+  grid-row: 3;
   max-width: 16ch;
   margin: 0.65rem 0 0;
   color: #fff;
-  font-size: clamp(1.5rem, 2.45vw, 2.2rem);
+  font-size: clamp(2.2rem, 3.2vw, 3rem);
   font-weight: 780;
   letter-spacing: -0.045em;
   line-height: 1.02;
@@ -860,22 +860,25 @@ html body .app-root {
 
 .app-root[data-view="home"] .home-resume-panel__target {
   grid-area: target;
+  grid-column: 2;
+  grid-row: 3;
   display: flex;
   min-width: 0;
   align-items: flex-start;
   flex-direction: column;
   gap: 0.2rem;
-  margin: 0.55rem 0 0;
-  padding-inline-start: 0;
-  border-inline-start: 0;
+  margin: 0;
+  padding-inline-start: clamp(0.8rem, 1.5vw, 1.4rem);
+  border-inline-start: 1px solid rgba(255, 255, 255, 0.2);
   color: rgba(255, 255, 255, 0.78);
-  text-align: start;
+  text-align: end;
+  justify-content: center;
 }
 
 /* The card is about the next verse, not about a caption announcing it; the
    phone has never shown the label and the wide card does not need it either. */
 .app-root[data-view="home"] .home-resume-panel__target-label {
-  display: none;
+  display: block;
   color: rgba(255, 255, 255, 0.56);
   font-size: max(0.66rem, 10px);
   font-weight: 760;
@@ -907,6 +910,8 @@ html body .app-root {
 
 .app-root[data-view="home"] .home-resume-panel__library {
   grid-area: library;
+  grid-column: 1 / -1;
+  grid-row: 5;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.45rem;
@@ -1361,7 +1366,7 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
   }
 
   .app-root[data-view="home"] .home-resume-panel {
-    min-height: 16.5rem;
+    min-height: 28rem;
   }
 
   .app-root[data-view="home"] .home-today-panel__suggestions {
@@ -1379,26 +1384,30 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
   }
 
   .app-root[data-view="home"] .home-resume-panel {
-    min-height: 0;
-    padding: 0.85rem;
+    min-height: 28rem;
+    padding: 1rem;
   }
 
   .app-root[data-view="home"] .home-resume-panel__body {
-    padding-block: 0.72rem;
+    display: flex;
+    flex-direction: column;
+    padding-block: 1.2rem;
   }
 
   .app-root[data-view="home"] .home-resume-panel h1 {
     max-width: none;
-    font-size: clamp(1.35rem, 7vw, 1.85rem);
+    font-size: clamp(1.9rem, 7vw, 2.5rem);
   }
 
   .app-root[data-view="home"] .home-resume-panel__target {
-    margin-top: 0.55rem;
+    margin-top: 0.8rem;
+    padding-inline-start: 0;
+    border-inline-start: 0;
   }
 
   .app-root[data-view="home"] .home-resume-panel__library {
     gap: 0.32rem;
-    margin-top: 0.58rem;
+    margin-top: auto;
   }
 
   .app-root[data-view="home"] .home-resume-panel__library > button {
@@ -1408,7 +1417,7 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
 
   .app-root[data-view="home"] .home-resume-panel__actions {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: minmax(0, 1fr) minmax(7rem, auto);
   }
 
   .app-root[data-view="home"] :is(.home-resume-panel__primary, .home-resume-panel__secondary) {
@@ -1508,7 +1517,7 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
   }
 
   .app-root[data-view="home"] .home-resume-panel__target-label {
-    display: none;
+    display: block;
   }
 
   .app-root[data-view="home"] .home-resume-panel__target-line > strong {
@@ -1814,4 +1823,18 @@ body:has(.pwa-update-banner) .install-prompt {
   bottom: calc(
     var(--space-5) + var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 4.5rem
   );
+}
+
+@media (max-width: 360px) {
+  .app-root[data-view="home"] .home-resume-panel {
+    min-height: 0;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__body {
+    padding-block: 0.65rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__library {
+    margin-top: 0.7rem;
+  }
 }

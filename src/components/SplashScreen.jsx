@@ -8,9 +8,10 @@ const VERSE = {
   ref: "الحجر — ٩",
 };
 
-const SPLASH_DURATION_MS = 3200;
-const SPLASH_FADE_MS = 400;
-const SKIP_DELAY_MS = 1400;
+const SPLASH_MAX_MS = 1400;
+const SPLASH_MIN_MS = 450;
+const SPLASH_FADE_MS = 180;
+const SKIP_DELAY_MS = 700;
 
 export default function SplashScreen({
   onDone,
@@ -35,16 +36,26 @@ export default function SplashScreen({
   }, [onDone]);
 
   useEffect(() => {
+    let active = true;
+    const startedAt = performance.now();
+    let readyTimer;
     const skipTimer = window.setTimeout(() => setShowSkip(true), SKIP_DELAY_MS);
-    const closeTimer = window.setTimeout(dismiss, SPLASH_DURATION_MS);
+    const closeTimer = window.setTimeout(dismiss, SPLASH_MAX_MS);
 
-    // onPrefetch called via ref — not in deps, so timer never resets on state changes
-    const result = onPrefetchRef.current?.();
-    if (result?.catch) result.catch(() => null);
+    // The route chunks can finish early; the splash should never add seconds
+    // of artificial waiting after they are ready.
+    Promise.resolve(onPrefetchRef.current?.())
+      .catch(() => null)
+      .finally(() => {
+        if (!active) return;
+        readyTimer = window.setTimeout(dismiss, Math.max(0, SPLASH_MIN_MS - (performance.now() - startedAt)));
+      });
 
     return () => {
+      active = false;
       window.clearTimeout(skipTimer);
       window.clearTimeout(closeTimer);
+      window.clearTimeout(readyTimer);
     };
   }, [dismiss]);
 
@@ -421,7 +432,7 @@ export default function SplashScreen({
           background: linear-gradient(90deg, rgba(139,107,27,.7), var(--sp-gold-soft));
           transform: scaleX(0);
           transform-origin: left;
-          animation: spBar ${SPLASH_DURATION_MS - 400}ms 900ms cubic-bezier(.18,.78,.22,1) forwards;
+          animation: spBar ${SPLASH_MAX_MS - 400}ms 200ms cubic-bezier(.18,.78,.22,1) forwards;
         }
         .sp-progress__spark {
           position: absolute;
@@ -433,7 +444,7 @@ export default function SplashScreen({
           background: #fff8d6;
           box-shadow: 0 0 10px rgba(240,209,122,.9), 0 0 22px rgba(240,209,122,.5);
           transform: translate(-50%, -50%);
-          animation: spSpark ${SPLASH_DURATION_MS - 400}ms 900ms cubic-bezier(.18,.78,.22,1) forwards;
+          animation: spSpark ${SPLASH_MAX_MS - 400}ms 200ms cubic-bezier(.18,.78,.22,1) forwards;
         }
         .splash-loading-text {
           font-family: "Cairo", system-ui, sans-serif;

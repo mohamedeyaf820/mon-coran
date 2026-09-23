@@ -16,14 +16,11 @@ import {
 } from "./context/AppContext";
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
-import PWAUpdateBanner from "./components/PWAUpdateBanner";
-import InstallPrompt from "./components/InstallPrompt";
 import { runWhenIdle } from "./utils/idleUtils";
 import { isLowPerformanceDevice } from "./utils/networkPolicy";
 import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
-import ProgressBar from "./components/ProgressBar";
 import {
   ensureReciterForRiwaya,
   getReciter,
@@ -64,6 +61,9 @@ const KeyboardShortcutsModal = lazy(
 );
 const TafsirSidebar = lazy(() => import("./components/TafsirSidebar"));
 const TajweedTooltip = lazy(() => import("./components/Quran/TajweedTooltip"));
+const PWAUpdateBanner = lazy(() => import("./components/PWAUpdateBanner"));
+const InstallPrompt = lazy(() => import("./components/InstallPrompt"));
+const ProgressBar = lazy(() => import("./components/ProgressBar"));
 
 function AppLoadingFallback({ lang, variant = "page" }) {
   const label =
@@ -236,6 +236,15 @@ export default function App() {
     routeNotFound,
     focusReading,
   } = state;
+  const [auxiliaryPromptsReady, setAuxiliaryPromptsReady] = useState(false);
+
+  useEffect(() => {
+    if (!splashDone || auxiliaryPromptsReady) return undefined;
+    // Install and update prompts are useful after the first screen settles;
+    // their code should not compete with Quran text and navigation at launch.
+    const timer = window.setTimeout(() => setAuxiliaryPromptsReady(true), 2500);
+    return () => window.clearTimeout(timer);
+  }, [auxiliaryPromptsReady, splashDone]);
 
   const handleUrlRouteChange = useCallback(
     (route) => {
@@ -816,7 +825,9 @@ export default function App() {
         data-riwaya={state.riwaya}
         inert={blockingModalOpen ? "" : undefined}
       >
-        {!showHome && !showDuas && !legalPage && !routeNotFound ? <ProgressBar /> : null}
+        {!showHome && !showDuas && !legalPage && !routeNotFound ? (
+          <Suspense fallback={null}><ProgressBar /></Suspense>
+        ) : null}
         <Suspense fallback={null}>
           <ConfirmDialogHost />
         </Suspense>
@@ -984,8 +995,12 @@ export default function App() {
           </Suspense>
         </ErrorBoundary>
       </div>
-      <PWAUpdateBanner />
-      <InstallPrompt />
+      {auxiliaryPromptsReady ? (
+        <Suspense fallback={null}>
+          <PWAUpdateBanner />
+          <InstallPrompt />
+        </Suspense>
+      ) : null}
     </ErrorBoundary>
   );
 }

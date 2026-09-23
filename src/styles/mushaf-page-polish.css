@@ -1288,16 +1288,9 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   overflow: visible;
 }
 
-/* Rule-based Warsh tajweed: the colour is carried per whole word by the
-   renderer (sub-word ranges slice cursive ink). :where keeps the selector at
-   the base specificity so the hover/active/focus/playing rules below still
-   win over the ink. */
+/* Warsh uses the QCF v4 rule palette on complete cursive words. */
 .quran-mode-pane--mushaf .qcm-word:where([data-tajwid]) {
-  color: color-mix(
-    in srgb,
-    var(--qcm-word-tajwid, var(--reader-page-ink)) 48%,
-    var(--reader-page-ink)
-  );
+  color: var(--qcm-word-tajwid, var(--reader-page-ink));
 }
 
 .quran-mode-pane--mushaf :is(.qcm-word:hover, .qcm-word--active) {

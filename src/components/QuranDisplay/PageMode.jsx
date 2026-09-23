@@ -97,7 +97,7 @@ function PageMode({
   // cut at all — so prefetching there only spends the reader's data.
   useEffect(() => {
     if (mushafLayout !== "mushaf") return undefined;
-    if (!usesMushafPageGlyphs(state.fontFamily, riwaya)) return undefined;
+    if (!usesMushafPageGlyphs(state.fontFamily, riwaya) && !(riwaya === "hafs" && showTajwid)) return undefined;
     let active = true;
     const numbers = stream.pages.map(({ page }) => page).join(",");
     const version = showTajwid ? "v4" : "v2";
@@ -264,7 +264,7 @@ function PageMode({
               </button>
             ) : null}
           </div>
-        ) : stream.hasNext ? (
+        ) : streamPages.length > 0 && stream.hasNext ? (
           <p className="page-stream__status" aria-live="polite">
             {lang === "ar" ? "الصفحة التالية تُحمَّل أثناء التمرير…" : lang === "en" ? "The next page loads as you scroll…" : "La page suivante se charge au fil du défilement…"}
           </p>

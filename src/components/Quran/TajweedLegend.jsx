@@ -16,14 +16,17 @@ const LEGEND_COPY = {
   fr: {
     eyebrow: "Guide Tajwid",
     helper: "Survolez un passage coloré pour comprendre la règle",
+    warshHelper: "Repères calculés pour Warsh ; certaines règles ne sont pas marquées.",
   },
   en: {
     eyebrow: "Tajweed guide",
     helper: "Hover over a coloured passage to understand the rule",
+    warshHelper: "Warsh rule hints are calculated; some rules are not marked.",
   },
   ar: {
     eyebrow: "دليل التجويد",
     helper: "مرّر المؤشر فوق النص الملوّن لمعرفة القاعدة",
+    warshHelper: "علامات ورش محسوبة؛ بعض الأحكام غير ملوّنة.",
   },
 };
 
@@ -39,7 +42,7 @@ function TajweedLegend({ lang = "fr", riwaya = "hafs" }) {
     >
       <summary className="tajweed-legend__intro">
         <span className="tajweed-legend__eyebrow">{copy.eyebrow}</span>
-        <span className="tajweed-legend__helper">{copy.helper}</span>
+        <span className="tajweed-legend__helper">{riwaya === "warsh" ? copy.warshHelper : copy.helper}</span>
       </summary>
 
       <div className="tajweed-legend__rules" role="list">

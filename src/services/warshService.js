@@ -12,7 +12,9 @@ import { JUZ_DATA } from '../data/juz';
 import {
   WARSH_DATA_BASE_URL,
   WARSH_LEGACY_JSON_URL,
+  WARSH_LOCAL_JSON_URL,
   WARSH_LEGACY_JSON_SHA256,
+  getWarshPageStart,
   getWarshSurahAyahCount,
 } from '../constants/warshSource';
 import { fetchQuranComText } from './quranComAPI';
@@ -151,7 +153,7 @@ function getLegacyIndex(data) {
 
   actualData.forEach((item) => {
     const surah = getSurahNumberFromRaw(item);
-    const page = Number(item?.page ?? item?.page_number ?? item?.pageNo);
+    const page = getWarshPageStart(item?.page ?? item?.page_number ?? item?.pageNo);
     const juz = Number(item?.jozz ?? item?.juz ?? item?.juz_number);
 
     if (surah) {
@@ -474,8 +476,16 @@ async function loadLegacyWarshData() {
         }
       } catch { }
 
-      log(`[WarshService] Fetching Warsh JSON from: ${WARSH_LEGACY_JSON_URL}`);
-      const res = await fetchWithTimeout(WARSH_LEGACY_JSON_URL, {}, 20000);
+      // Serve the reviewed, pinned bytes with the app. The remote mirror is a
+      // recovery path for an older deployment missing the local asset.
+      let res;
+      try {
+        res = await fetchWithTimeout(WARSH_LOCAL_JSON_URL, {}, 8000);
+        if (!res.ok) throw new Error(`Local Warsh source: ${res.status}`);
+      } catch (error) {
+        logError('[WarshService] Local Warsh source unavailable:', error);
+        res = await fetchWithTimeout(WARSH_LEGACY_JSON_URL, {}, 20000);
+      }
       if (!res.ok) throw new Error(`Failed to load legacy Warsh JSON: ${res.status}`);
 
       // Integrity gate: the URL is pinned to a commit, but the mirror is still
@@ -768,7 +778,7 @@ export async function getWarshPageVerses(pageNum) {
       surah: { number: Number(ayah.sura_no) },
       numberInSurah: Number(ayah.aya_no),
       number: Number(ayah.id),
-      page: Number(ayah.page),
+      page: getWarshPageStart(ayah.page),
       juz: Number(ayah.jozz),
       lineStart: Number(ayah.line_start) || null,
       lineEnd: Number(ayah.line_end) || null,

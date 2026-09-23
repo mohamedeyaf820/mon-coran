@@ -45,7 +45,7 @@ for (const online of [false, true]) {
       document: { getElementById: () => null },
       window: { addEventListener: (name, callback) => { handlers[name] = callback; }, location: { reload: () => { reloads++; } } },
       sessionStorage: { getItem: () => null, setItem: () => {} },
-      caches: { keys: async () => ['mushaf-plus-v20'], delete: async () => { deletions++; } },
+      caches: { keys: async () => ['mushaf-plus-v21'], delete: async () => { deletions++; } },
       fetch: async (_url, options) => {
         assert.equal(options.method, 'HEAD', 'connectivity probe must bypass the GET-only service worker');
         throw new TypeError('Network unavailable');
@@ -61,7 +61,7 @@ for (const online of [false, true]) {
 }
 
 for (const [url, cacheName, ignoreVary] of [
-  ['https://qa.test/assets/app.js', 'mushaf-plus-v20', true],
+  ['https://qa.test/assets/app.js', 'mushaf-plus-v21', true],
   ['https://api.alquran.cloud/v1/surah/1', 'mushaf-plus-api-v6', false],
 ]) {
   test(`worker uses the correct Vary policy for ${url}`, async () => {

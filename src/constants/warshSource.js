@@ -11,6 +11,8 @@
  *   (6214 rows, same numbering; also the dataset the Warsh page/juz view and
  *   the derived Warsh-Hafs mapping in src/data/warshHafsNumbering.js come
  *   from). Pinned to commit 31d4c18a8cf4afa081e113ffd377bb23372f6e26.
+ *   The exact verified bytes ship as public/data/warsh-page-source.json for
+ *   fast same-origin page reading and first-install offline access.
  *
  * Why pinned: these URLs decide which Quran text a reader sees. A `main` /
  * `refs/heads/main` raw URL silently serves whatever the branch head holds on
@@ -48,6 +50,19 @@ export const WARSH_DATA_BASE_URL =
 
 export const WARSH_LEGACY_JSON_URL =
   `https://raw.githubusercontent.com/aziz011133/quran_warsh/${WARSH_LEGACY_COMMIT}/warshData_v2-1.json`;
+export const WARSH_LOCAL_JSON_URL = "/data/warsh-page-source.json";
+
+// A few source ayahs span a printed page boundary. The page reader shows each
+// complete ayah once, on the page where it begins.
+export function getWarshPageStart(rawPage) {
+  const match = String(rawPage ?? "").match(/^(\d{1,3})(?:-(\d{1,3}))?$/);
+  if (!match) return null;
+  const start = Number(match[1]);
+  const end = match[2] ? Number(match[2]) : start;
+  return start >= 1 && end <= 604 && end - start <= 1 && end >= start
+    ? start
+    : null;
+}
 
 /**
  * SHA-256 of the exact bytes served at WARSH_LEGACY_JSON_URL above.

@@ -22,12 +22,17 @@ import { fetchWithTimeout } from "./fetchWithTimeout.js";
 import { getWarshSurahAyahCount } from "../constants/warshSource.js";
 import SURAHS from "../data/surahs.js";
 import { JUZ_DATA } from "../data/juz.js";
+import {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+} from "../constants/warshTranslationEditions.js";
+export {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+} from "../constants/warshTranslationEditions.js";
 
 const IDB_STORE = "cache";
 const ASSET_TIMEOUT_MS = 8000;
-
-export const WARSH_TRANSLATION_EDITION_ID = "fr.montada-warsh";
-export const WARSH_TRANSLATION_EDITION_ID_EN = "en.pickthall-warsh";
 
 /** Mirrors the EDITIONS presets in scripts/build-warsh-translation.mjs. */
 const WARSH_EDITIONS = {

@@ -13,6 +13,7 @@ export default {
   header: {
     more: 'خيارات إضافية',
     continueReading: 'استئناف القراءة',
+    startReading: 'ابدأ القراءة',
     metaSurahs: 'سورة',
     metaJuz: '٣٠ جزء',
     quranNav: 'التنقل في القرآن',
