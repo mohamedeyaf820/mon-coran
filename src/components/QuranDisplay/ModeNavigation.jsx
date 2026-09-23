@@ -1,6 +1,7 @@
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { t } from "../../i18n";
 
 export default function ModeNavigation({
   className,
@@ -21,7 +22,7 @@ export default function ModeNavigation({
   return (
     <nav
       className={cn("reader-mode-nav", className)}
-      aria-label={lang === "ar" ? "تنقل القراءة" : lang === "fr" ? "Navigation de lecture" : "Reading navigation"}
+      aria-label={t("nav.readingNavigation", lang)}
     >
       <button
         type="button"

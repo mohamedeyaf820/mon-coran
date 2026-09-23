@@ -81,7 +81,7 @@ function JuzMode({
 
         <ReadingToolbar
           onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
-          playLabel={lang === "ar" ? undefined : lang === "fr" ? "Écouter le juz" : "Listen juz"}
+          playLabel={lang === "ar" ? undefined : t("audio.listenJuz", lang)}
           preparingSurah={preparingSurah}
           surahNum={firstSurah}
           onToggleMushaf={onToggleMushaf}

@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'المصحف الشريف', loading: 'جاري التحميل...', skipToContent: 'الانتقال إلى المحتوى الرئيسي', keyboardShortcuts: 'اختصارات لوحة المفاتيح', keyboardShortcutsHint: 'اختصارات لوحة المفاتيح (؟)' },
   nav: {
+    readingNavigation: 'تنقل القراءة',
     menu: 'القائمة', home: 'الرئيسية', search: 'البحث', bookmarks: 'العلامات',
     duas: 'الأدعية', settings: 'الإعدادات', theme: 'تبديل السمة', scrollTop: 'العودة للأعلى',
     surahList: 'فهرس السور',
@@ -271,6 +272,7 @@ export default {
     periodDay: 'نهاري',
   },
   audio: {
+    listenPage: 'استماع الصفحة', listenJuz: 'استماع الجزء',
     playbackBlocked: 'أوقف المتصفح التشغيل. اضغط على تشغيل للاستئناف.',
     play: 'تشغيل', pause: 'إيقاف', next: 'الآية التالية', prev: 'الآية السابقة',
     repeat: 'تكرار', playSurah: 'تشغيل السورة كاملة', close: 'إغلاق',
@@ -322,6 +324,8 @@ export default {
     fieldLabel: 'ملاحظة شخصية حول هذه الآية',
   },
   actions: {
+    bookmark: 'المفضلة',
+    bookmarked: 'في المفضلة',
     copy: 'نسخ', share: 'مشاركة', note: 'ملاحظة', listen: 'استماع',
     close: 'إغلاق', addBookmark: 'أضف إلى المفضلة', removeBookmark: 'إزالة المفضلة',
     copied: 'تم نسخ الآية', copiedShare: 'تم نسخ الآية للمشاركة',

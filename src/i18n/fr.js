@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'Le Saint Coran', loading: 'Chargement...', skipToContent: 'Aller au contenu principal', keyboardShortcuts: 'Raccourcis clavier', keyboardShortcutsHint: 'Raccourcis clavier (?)' },
   nav: {
+    readingNavigation: 'Navigation de lecture',
     menu: 'Menu', home: 'Accueil', search: 'Rechercher', bookmarks: 'Favoris',
     duas: 'Invocations', settings: 'Paramètres', theme: 'Thème', scrollTop: 'Haut de page',
     surahList: 'Liste des sourates',    goTo: 'Aller \u00e0\u2026', goToSurah: 'Sourate (1-114)',
@@ -271,6 +272,7 @@ export default {
     periodDay: 'Jour',
   },
   audio: {
+    listenPage: 'Écouter la page', listenJuz: 'Écouter le juz',
     playbackBlocked: 'Le navigateur a interrompu la lecture. Appuyez sur Lecture pour reprendre.',
     play: 'Lecture', pause: 'Pause', next: 'Verset suivant', prev: 'Verset précédent',
     repeat: 'Répéter', playSurah: 'Lire la sourate entière', close: 'Fermer',
@@ -320,6 +322,8 @@ export default {
     fieldLabel: 'Note personnelle sur ce verset',
   },
   actions: {
+    bookmark: 'Favori',
+    bookmarked: 'Favori',
     copy: 'Copier', share: 'Partager', note: 'Note', listen: 'Écouter',
     close: 'Fermer', addBookmark: 'Ajouter aux favoris', removeBookmark: 'Retirer le favori',
     copied: 'Verset copié', copiedShare: 'Copié pour le partage',

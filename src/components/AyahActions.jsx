@@ -529,7 +529,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               }
             }}
             aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
-            title={lang === "fr" ? "Écouter" : "Listen"}
+            title={t("actions.listen", lang)}
           >
             {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
@@ -545,7 +545,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             )}
             onClick={toggleBookmark}
             aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            title={t("actions.bookmark", lang)}
           >
             {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
@@ -600,7 +600,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               </DropdownMenuItem>
               <DropdownMenuItem onClick={toggleTafsir}>
                 <BookOpen size={13} className="text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}</span>
+                <span>{t("tafsir.title", lang)}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -621,10 +621,10 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 playAyah();
               }
             }}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
             {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
-            <span>{isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Écouter" : "Play")}</span>
+            <span>{isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}</span>
           </button>
 
           {/* Tafsir */}
@@ -637,7 +637,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onClick={toggleTafsir}
           >
             <BookOpen size={12} />
-            <span>Tafsir</span>
+            <span>{t("tafsir.title", lang)}</span>
           </button>
 
           {/* Bookmark */}
@@ -650,7 +650,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onClick={toggleBookmark}
           >
             {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
-            <span>{bookmarked ? (lang === "fr" ? "Favori" : "Bookmarked") : (lang === "fr" ? "Favori" : "Bookmark")}</span>
+            <span>{bookmarked ? t("actions.bookmarked", lang) : t("actions.bookmark", lang)}</span>
           </button>
 
           {/* Copy */}
@@ -663,7 +663,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onClick={copyText}
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
-            <span>{copied ? (lang === "fr" ? "Copié" : "Copied") : (lang === "fr" ? "Copier" : "Copy")}</span>
+            <span>{copied ? t("actions.copied", lang) : t("actions.copy", lang)}</span>
           </button>
 
           {/* Share */}
@@ -673,7 +673,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onClick={openShareStudio}
           >
             <Share2 size={12} />
-            <span>{lang === "fr" ? "Partager" : "Share"}</span>
+            <span>{t("actions.share", lang)}</span>
           </button>
 
           {/* Note */}
@@ -725,7 +725,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               }
             }}
             aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
             {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
           </button>
@@ -740,8 +740,8 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
-            aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
-            title="Tafsir"
+            aria-label={t("tafsir.title", lang)}
+            title={t("tafsir.title", lang)}
           >
             <BookOpen size={12} />
           </button>
@@ -757,7 +757,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             )}
             onClick={toggleBookmark}
             aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            title={t("actions.bookmark", lang)}
           >
             {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
           </button>
@@ -773,7 +773,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             )}
             onClick={copyText}
             aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
-            title={lang === "fr" ? "Copier" : "Copy"}
+            title={t("actions.copy", lang)}
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
           </button>
@@ -784,7 +784,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             className="min-h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
-            title={lang === "fr" ? "Partager" : "Share"}
+            title={t("actions.share", lang)}
           >
             <Share2 size={12} />
           </button>
@@ -808,7 +808,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               }
             }}
             aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
             {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
@@ -823,8 +823,8 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
-            aria-label={lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir"}
-            title="Tafsir"
+            aria-label={t("tafsir.title", lang)}
+            title={t("tafsir.title", lang)}
           >
             <BookOpen size={13} />
           </button>
@@ -840,7 +840,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             )}
             onClick={toggleBookmark}
             aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            title={t("actions.bookmark", lang)}
           >
             {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
@@ -856,7 +856,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             )}
             onClick={copyText}
             aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
-            title={lang === "fr" ? "Copier" : "Copy"}
+            title={t("actions.copy", lang)}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>
@@ -867,7 +867,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
             aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
-            title={lang === "fr" ? "Partager" : "Share"}
+            title={t("actions.share", lang)}
           >
             <Share2 size={13} />
           </button>

@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { Bookmark } from "lucide-react";
 import { toAr } from "../../data/surahs";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
@@ -57,7 +58,7 @@ function AyahList({
   const playingAnnouncement = currentPlayingAyah
     ? lang === "ar"
       ? `الآية ${toAr(currentPlayingAyah.surah)}:${toAr(currentPlayingAyah.ayah)}`
-      : `${lang === "fr" ? "Verset" : "Verse"} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
+      : `${t("quran.ayah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
     : "";
 
   // Always-mounted live region — removing/adding it resets the AT announcement queue.

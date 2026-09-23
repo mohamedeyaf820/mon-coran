@@ -192,7 +192,7 @@ export default function QCReadingView({
                   aria-label={
                     lang === "ar"
                       ? `${t("quran.ayah", lang)} ${toAr(ayah.numberInSurah)}`
-                      : `${lang === "fr" ? "Verset" : "Verse"} ${ayah.numberInSurah}`
+                      : `${t("quran.ayah", lang)} ${ayah.numberInSurah}`
                   }
                   aria-current={isPlaying ? "true" : undefined}
                   onClick={() => onToggleActive?.(toggleId)}

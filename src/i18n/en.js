@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'The Noble Quran', loading: 'Loading...', skipToContent: 'Skip to main content', keyboardShortcuts: 'Keyboard shortcuts', keyboardShortcutsHint: 'Keyboard shortcuts (?)' },
   nav: {
+    readingNavigation: 'Reading navigation',
     menu: 'Menu', home: 'Home', search: 'Search', bookmarks: 'Bookmarks',
     duas: 'Supplications', settings: 'Settings', theme: 'Toggle theme', scrollTop: 'Back to top',
     surahList: 'Surah list',
@@ -272,6 +273,7 @@ export default {
     periodDay: 'Day',
   },
   audio: {
+    listenPage: 'Listen page', listenJuz: 'Listen juz',
     playbackBlocked: 'The browser interrupted playback. Press Play to resume.',
     play: 'Play', pause: 'Pause', next: 'Next Ayah', prev: 'Previous Ayah',
     repeat: 'Repeat', playSurah: 'Play Entire Surah', close: 'Close',
@@ -321,6 +323,8 @@ export default {
     fieldLabel: 'Personal note about this ayah',
   },
   actions: {
+    bookmark: 'Bookmark',
+    bookmarked: 'Bookmarked',
     copy: 'Copy', share: 'Share', note: 'Note', listen: 'Listen',
     close: 'Close', addBookmark: 'Add bookmark', removeBookmark: 'Remove bookmark',
     copied: 'Ayah copied', copiedShare: 'Copied for sharing',

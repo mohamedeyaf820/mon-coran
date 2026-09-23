@@ -189,7 +189,7 @@ function PageMode({
         />
         <ReadingToolbar
           onPlay={onPlaySurah}
-          playLabel={lang === "ar" ? undefined : lang === "fr" ? "Écouter la page" : "Listen page"}
+          playLabel={lang === "ar" ? undefined : t("audio.listenPage", lang)}
           preparingSurah={preparingSurah}
           surahNum={pageTopSurah || currentSurah}
           onToggleMushaf={onToggleMushaf}
