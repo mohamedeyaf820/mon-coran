@@ -310,6 +310,7 @@ export default function App() {
   const immersiveTimer = useRef(null);
   const immersiveScrollTop = useRef(0);
   const immersiveRevealUntil = useRef(0);
+  const immersiveReserved = useRef(0);
   const mainScrollRef = useRef(null);
 
   useEffect(() => {
@@ -509,15 +510,30 @@ export default function App() {
   }, [currentSurah, currentPage, currentJuz, displayMode]);
 
   useLayoutEffect(() => {
-    if (!immersiveActive) return;
+    if (!immersiveActive) {
+      immersiveReserved.current = 0;
+      return;
+    }
     const scrollContainer = mainScrollRef.current;
-    const preservedTop = immersiveScrollTop.current;
-    if (
-      scrollContainer &&
-      preservedTop > 0 &&
-      Math.abs(scrollContainer.scrollTop - preservedTop) > 2
-    ) {
-      scrollContainer.scrollTop = preservedTop;
+    if (!scrollContainer) return;
+    // Hiding the chrome gives its band back to the page, which moves the top
+    // edge of the scroller. Keeping the raw offset would slide the line being
+    // read by that band, so the offset moves with it and the text stays put.
+    const reserved = immersiveHidden
+      ? Math.ceil(
+          Number.parseFloat(
+            getComputedStyle(document.documentElement).getPropertyValue("--header-h"),
+          ) || 0,
+        )
+      : 0;
+    const shift = reserved - immersiveReserved.current;
+    immersiveReserved.current = reserved;
+    const target = immersiveScrollTop.current - shift;
+    if (Math.abs(scrollContainer.scrollTop - target) > 2) {
+      scrollContainer.scrollTop = Math.max(0, target);
+      // The scroll event this write fires must not read as the user scrolling
+      // back up, which would reveal the chrome again in the same gesture.
+      immersiveScrollTop.current = scrollContainer.scrollTop;
     }
   }, [immersiveActive, immersiveHidden]);
 
