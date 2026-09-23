@@ -666,7 +666,14 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   --mfp-frame-inner: 1px;
   --mfp-corner-size: 0.65rem;
   --mfp-line-measure: 16.7em;
-  --mfp-line-pitch: 1.62em;
+  /* Row pitch for every mushaf surface. It has to clear the ink the face
+     paints, not the em box: the QPC/QCF Hafs metrics declare ascent 19 +
+     descent 9 = 1.75em at a 16px body, and the tallest ascender measured in
+     the corpus ("unzila", 1.149em) plus the deepest descender ("jahannamu",
+     0.5em) reach 1.649em, 1.679em on some pages. The 1.5em and 1.62em this
+     used to carry made consecutive lines overlap by up to 2.4px, which
+     printed as cut letters with tajweed on and off alike. */
+  --mfp-line-pitch: 1.75em;
 }
 
 .quran-mode-pane--mushaf .page-stream__page {
@@ -1108,7 +1115,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  min-height: 24.3em;
+  min-height: 26.25em;
 }
 
 /* The reader's page is not a printed plate: it ends under its last line, the
@@ -1147,11 +1154,10 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
    words stretched across the column. On a phone the measure would drive the
    type under what the printed folio prints there, so the floor holds it at
    16 px and the leaf simply runs longer. No line count is imposed: the leaf
-   is as tall as its text, and the row pitch tightens to 1.5em so the page
-   reads dense, not airy. */
+   is as tall as its text, so it reads at the shared 1.75em row pitch that
+   clears the face's ink envelope (see --mfp-line-pitch above). */
 .quran-mode-pane--mushaf .qcm-lines[data-flow="true"] {
   --qcm-page-lines: 0;
-  --mfp-line-pitch: 1.5em;
   display: block;
   width: 100%;
   max-width: 34em;
@@ -1216,11 +1222,6 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   min-width: 0;
   min-height: 0;
   overflow: visible;
-}
-
-/* Warsh uses the QCF v4 rule palette on complete cursive words. */
-.quran-mode-pane--mushaf .qcm-word:where([data-tajwid]) {
-  color: var(--qcm-word-tajwid, var(--reader-page-ink));
 }
 
 .quran-mode-pane--mushaf :is(.qcm-word:hover, .qcm-word--active) {

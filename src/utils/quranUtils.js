@@ -48,7 +48,7 @@ const FONT_SIGN_VARIANTS = {
 };
 
 export function getFontSignVariant(fontId) {
-    if (fontId === 'qpc-hafs') return 'qpc-hafs';
+    if (fontId === 'qpc-hafs' || fontId === 'qpc-madani-page') return 'qpc-hafs';
     if (fontId === 'qpc-warsh' || fontId === 'kfgqpc-warsh') return 'kfgqpc-warsh';
     return null;
 }

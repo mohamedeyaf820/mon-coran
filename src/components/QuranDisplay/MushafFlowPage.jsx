@@ -1,5 +1,6 @@
-import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { getPerWordTajweedColors } from "../../data/tajwidRules";
+import React, { useLayoutEffect, useRef, useState } from "react";
+import { getPerWordTajweedRanges } from "../../data/tajwidRules";
+import { applyTajweedHighlights, supportsTajweedHighlights } from "../../utils/tajweedHighlights";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
 import { normalizeArabicText, getVerseKey } from "./mushafPageComposition";
@@ -58,8 +59,7 @@ const FLOW_WORD_STYLE = Object.freeze({
 
 /**
  * Turn ayahs into flow segments. `getWords(ayah)` returns the printable word
- * list for the riwaya and face in use; the rule array is aligned 1:1 with it
- * because getPerWordTajweedColors splits on whitespace the same way.
+ * list for the riwaya and face in use; rule ranges are local to each word.
  */
 export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
   const segments = [];
@@ -82,10 +82,11 @@ export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
       flow = { kind: "flow", tokens: [] };
       segments.push(flow);
     }
+    const normalizedWords = words.map(normalizeArabicText);
     const rules = showTajwid
-      ? getPerWordTajweedColors(words.join(" "), riwaya)
+      ? getPerWordTajweedRanges(normalizedWords, riwaya)
       : [];
-    words.forEach((text, idx) => {
+    normalizedWords.forEach((text, idx) => {
       flow.tokens.push({
         charType: "word",
         globalAyah: ayah.number,
@@ -93,7 +94,7 @@ export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
         ayah: ayahNum,
         position: idx + 1,
         text,
-        ruleId: rules[idx] || null,
+        tajweedRanges: rules[idx] || [],
       });
     });
     flow.tokens.push({
@@ -130,6 +131,28 @@ export default function MushafFlowPage({
   const fitRef = useRef(1);
   const fitPassRef = useRef(0);
   const fitKeyRef = useRef("");
+
+  useLayoutEffect(() => {
+    if (!showTajwid || !supportsTajweedHighlights()) return undefined;
+    const root = linesRef.current;
+    if (!root) return undefined;
+    const cleanups = [];
+    const words = new Map(Array.from(root.querySelectorAll("[data-tajweed-key]"),
+      (element) => [element.getAttribute("data-tajweed-key"), element]));
+    for (const segment of segments) {
+      if (segment.kind !== "flow") continue;
+      for (const token of segment.tokens) {
+        if (token.charType !== "word" || !token.tajweedRanges.length) continue;
+        const key = `${token.globalAyah}:${token.position}`;
+        const word = words.get(key);
+        const node = word?.firstChild;
+        if (node?.nodeType === Node.TEXT_NODE && node.data === token.text) {
+          cleanups.push(applyTajweedHighlights(node, token.tajweedRanges));
+        }
+      }
+    }
+    return () => cleanups.forEach((cleanup) => cleanup());
+  }, [segments, showTajwid]);
 
   useLayoutEffect(() => {
     if (!linesRef.current) return undefined;
@@ -273,7 +296,7 @@ export default function MushafFlowPage({
         data-ayah-number={token.ayah}
         data-ayah-global={token.globalAyah}
         data-word-position={token.position}
-        data-tajwid={token.ruleId || undefined}
+        data-tajweed-key={`${token.globalAyah}:${token.position}`}
         role="button"
         tabIndex={0}
         onClick={() => {
@@ -285,13 +308,7 @@ export default function MushafFlowPage({
             playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
           }
         }}
-        style={
-          token.ruleId
-            ? // The sheet paints the rule colour through --qcm-word-tajwid so the
-              // hover/active/focus ink rules keep winning over a plain colour.
-              { ...FLOW_WORD_STYLE, "--qcm-word-tajwid": `var(--tajwid-${token.ruleId})` }
-            : FLOW_WORD_STYLE
-        }
+        style={FLOW_WORD_STYLE}
       >
         {normalizeArabicText(token.text)}
       </span>

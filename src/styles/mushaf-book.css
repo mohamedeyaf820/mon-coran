@@ -456,17 +456,19 @@
 .mfp-portal-root {
   --mfp-cols: 1;
   --mfp-line-measure: 16.7em;
-  --mfp-line-pitch: 1.62em;
+  /* Shares the reader's row pitch: 1.75em is the QPC/QCF Hafs ink envelope
+     (ascent 19 + descent 9 at a 16 px body). See mushaf-page-polish.css. */
+  --mfp-line-pitch: 1.75em;
   /* Vertical room taken by the overlay bar and the sheet margins (measured:
      71 px of bar plus ~80 px of fold), and horizontal room for the gutters,
      the frame padding and the outer rubric column. The em divisor is the whole
-     leaf, not just its fifteen lines: grid 24.3 em + head, folio and padding
+     leaf, not just its fifteen lines: grid 26.25 em + head, folio and padding
      ~4.5 em. Budgeting only the grid let the floor bind and the sheet scroll
      a few lines past the window on a 720 px screen. */
   --mfp-chrome: 150px;
   --mfp-hchrome: 260px;
   --mfp-min-font: 18px;
-  --mfp-leaf-em: 29.8;
+  --mfp-leaf-em: 31.75;
   --mfp-font: clamp(
     var(--mfp-min-font),
     min(
@@ -674,18 +676,18 @@
   /* The boost and the 1.5em optical shift grow the block past a standard
      leaf, so the opening page gets its own budget: the width fit divides
      by 16.7 × 1.08 and the height fit by the boosted block height
-     (24.3 × 1.08 + 1.5 × 1.08 ≈ 27.9, rounded up for the running-head
+     (26.25 × 1.08 + 1.5 × 1.08 ≈ 29.97, rounded up for the running-head
      room) — otherwise the opening leaf overflows a phone screen (width)
      or pushes its last lines past the fold (height). */
   font-size: min(
     calc(var(--mfp-font) * 1.08),
     calc((100vw - var(--mfp-hchrome)) / (18.05 * var(--mfp-cols, 1))),
-    calc((100vh - var(--mfp-chrome)) / 31.7)
+    calc((100vh - var(--mfp-chrome)) / 33.8)
   );
   font-size: min(
     calc(var(--mfp-font) * 1.08),
     calc((100vw - var(--mfp-hchrome)) / (18.05 * var(--mfp-cols, 1))),
-    calc((100dvh - var(--mfp-chrome)) / 31.7)
+    calc((100dvh - var(--mfp-chrome)) / 33.8)
   );
 }
 
@@ -697,11 +699,11 @@
 #root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-flow="true"] {
   font-size: min(
     calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
-    calc((100vh - var(--mfp-chrome)) / 18.5)
+    calc((100vh - var(--mfp-chrome)) / 19.5)
   );
   font-size: min(
     calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
-    calc((100dvh - var(--mfp-chrome)) / 18.5)
+    calc((100dvh - var(--mfp-chrome)) / 19.5)
   );
 }
 
@@ -816,7 +818,7 @@
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  min-height: 24.3em;
+  min-height: 26.25em;
 }
 
 /* A short opening page cannot fill the fifteen lines even at the fit ceiling,
@@ -1191,14 +1193,6 @@
      floor makes dense lines overflow the frame at every fit value. */
   min-width: 0;
   min-height: 0;
-}
-
-#root ~ .mfp-portal-root .mfp-book .qcm-word:where([data-tajwid]) {
-  color: color-mix(
-    in srgb,
-    var(--qcm-word-tajwid, var(--reader-page-ink)) 48%,
-    var(--reader-page-ink)
-  );
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-word:hover,

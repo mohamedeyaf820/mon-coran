@@ -3,6 +3,7 @@ import test from "node:test";
 
 import {
   getRulesForRiwaya,
+  getPerWordTajweedRanges,
   stabilizeTajwidSegments,
 } from "../src/data/tajwidRules.js";
 import {
@@ -21,6 +22,16 @@ test("tajwid segments keep leading Arabic marks attached to their base glyph", (
     { text: "\u0630\u064E\u0670\u0644\u0650\u0643\u064E", ruleId: null },
   ]);
   assert.equal(segments.map((segment) => segment.text).join("").includes("\u0672"), false);
+});
+
+test("Hafs and Warsh Tajweed ranges cover letters within a word", () => {
+  for (const riwaya of ["hafs", "warsh"]) {
+    const word = "إِنَّهُ";
+    const ranges = getPerWordTajweedRanges([word], riwaya);
+    assert.ok(ranges[0].some(({ start, end, ruleId }) =>
+      ruleId === "ghunna" && start > 0 && end < word.length));
+    assert.equal(ranges[0].some(({ start, end }) => start === 0 && end === word.length), false);
+  }
 });
 
 test("tajwid segments retain the coloured base after moving a leading harakah", () => {

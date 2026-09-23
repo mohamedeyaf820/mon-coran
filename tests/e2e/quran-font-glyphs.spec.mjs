@@ -33,44 +33,40 @@ async function openFullscreenPageReader(page, overrides = {}) {
   await expect(page.locator(".mfp-portal-root .qcm-word").first()).toBeVisible({ timeout: 30_000 });
 }
 
-test("Hafs pages load their real QCF page font and render words with it", async ({ page }) => {
-  await openFullscreenPageReader(page);
+test("Hafs pages keep an intact Unicode face when the page font is selected", async ({ page }) => {
+  await openFullscreenPageReader(page, { fontFamily: "qpc-madani-page", showTajwid: true });
   const overlay = page.locator(".mfp-portal-root");
   const firstWord = overlay.locator(".qcm-word").first();
 
   await expect
     .poll(() => firstWord.evaluate((element) => window.getComputedStyle(element).fontFamily))
-    .toContain("qcf-v2-p3", { timeout: 20_000 });
-
-  const fontState = await page.evaluate(() => ({
-    registered: [...document.fonts].some(
-      (face) => face.family.includes("qcf-v2-p3") && face.status === "loaded",
-    ),
-    // document.fonts.check alone returns true for unknown families, so the
-    // loaded FontFace above is the load-bearing assertion.
-    available: document.fonts.check('16px "qcf-v2-p3"'),
-  }));
-  expect(fontState.registered, "the page font face is actually loaded").toBe(true);
-  expect(fontState.available).toBe(true);
+    .toContain("QPC Hafs", { timeout: 20_000 });
 
   await expect(firstWord).not.toHaveText("");
+  expect(await overlay.locator(".qcm-word").count()).toBeGreaterThan(50);
+  expect(await overlay.locator(".qcm-word").evaluateAll((words) =>
+    words.some((word) => /[\u25CC\u25CF\u25CB\u2B24\u2022]/u.test(word.textContent || "")))).toBe(false);
   await expect(overlay.locator(".qcm-font-warning")).toHaveCount(0);
 });
 
-test("a blocked QCF font keeps the Quran text readable through the fallback", async ({ page }) => {
-  await page.route(/verses\.quran\.foundation\/fonts\//, (route) => route.abort());
-  await openFullscreenPageReader(page);
+test("blocking QCF page fonts leaves the Unicode reading text intact", async ({ page }) => {
+  let pageFontRequests = 0;
+  await page.route(/verses\.quran\.foundation\/fonts\//, (route) => {
+    pageFontRequests += 1;
+    return route.abort();
+  });
+  await openFullscreenPageReader(page, { fontFamily: "qpc-madani-page" });
   const overlay = page.locator(".mfp-portal-root");
 
-  await expect(overlay.locator(".qcm-font-warning").first()).toBeVisible({ timeout: 30_000 });
-  expect(await overlay.locator(".qcm-font-warning").count()).toBeGreaterThanOrEqual(1);
+  await expect(overlay.locator(".qcm-font-warning")).toHaveCount(0);
   const words = await overlay.locator(".qcm-word").evaluateAll((nodes) => nodes.slice(0, 8).map((node) => ({
     fontFamily: window.getComputedStyle(node).fontFamily,
     text: node.textContent || "",
   })));
   expect(words.length).toBeGreaterThan(0);
   words.forEach((word) => {
-    expect(word.fontFamily).not.toContain("qcf-");
+    expect(word.fontFamily).toContain("QPC Hafs");
     expect(word.text).toMatch(/[\u0600-\u06FF]/u);
   });
+  expect(pageFontRequests).toBe(0);
 });

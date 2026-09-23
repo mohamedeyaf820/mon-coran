@@ -296,7 +296,7 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   assert.doesNotMatch(overlay, /<CleanPageView/);
   assert.match(overlay, /data-page-kind=\{pageKind\}/);
   assert.match(book, /--mfp-line-measure: 16\.7em/);
-  assert.match(book, /--mfp-line-pitch: 1\.62em/);
+  assert.match(book, /--mfp-line-pitch: 1\.75em/);
   assert.match(book, /\[data-page-kind="opening"\] \.qcm-line/);
   assert.match(mushafPage, /HafsPageRenderer/);
   assert.match(mushafPage, /WarshPageRenderer/);
@@ -343,23 +343,32 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
     /fontFamily: "var\(--qd-font-family, var\(--font-quran\)\)"/,
   );
   const pageMode = source("src/components/QuranDisplay/PageMode.jsx");
-  assert.match(
-    pageMode,
-    /if \(!usesMushafPageGlyphs\(state\.fontFamily, riwaya\) && !\(riwaya === "hafs" && showTajwid\)\) return undefined;/,
-  );
+  assert.doesNotMatch(pageMode, /ensureQcfPageFontLoaded/);
 
   // The Mushaf page flows like Quran.com sets one: the leaf takes the reading
   // column and the body comes from that width (a 34em measure, the length a
   // Madani line holds), so a wide screen prints full lines instead of four
-  // words stretched across the column. Only the explicit Madani-page id keeps
-  // the cut glyph sheet.
+  // words stretched across the column. The explicit Madani-page preference
+  // also uses Unicode flow until QCF glyph placement is verified.
   assert.match(
     sheetStyles,
     /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(16px, \(100cqi - 3rem\) \/ 34, 72px\)/,
   );
   assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 34em/);
   assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--qcm-page-lines: 0/);
-  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--mfp-line-pitch: 1\.5em/);
+  // One row pitch for every mushaf surface, and it has to clear the ink the
+  // face paints: the shipped QPC/QCF Hafs metrics are ascent 19 + descent 9 =
+  // 1.75em at a 16 px body, and the tallest ascender plus deepest descender
+  // measured in the corpus reach 1.679em. The 1.5em the flow sheet declared
+  // for itself and the 1.62em of the printed grid both let consecutive lines
+  // overlap by up to 2.4 px, which printed as cut letters with tajweed on and
+  // off alike.
+  assert.match(sheetStyles, /--mfp-line-pitch: 1\.75em/);
+  assert.doesNotMatch(
+    sheetStyles,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*--mfp-line-pitch\s*:/,
+    "the flow sheet must not re-declare a pitch below the shared ink envelope",
+  );
   assert.match(flowRenderer, /getPropertyValue\("--qcm-page-lines"\)/);
 
   // A proportional sheet prints the verse divider with the reader's own face:
@@ -688,4 +697,14 @@ test("the application-wide design system owns themes, surfaces and responsive fa
   assert.match(system, /@media \(max-width: 480px\)[\s\S]*?\.library-overlay[\s\S]*?align-items: end/);
   assert.match(system, /@media \(max-width: 340px\)[\s\S]*?\.library-tabs small[\s\S]*?display: none/);
   assert.match(system, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test("tajweed paints rule ranges without colouring complete words", () => {
+  const flowSheet = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+  const listText = source("src/components/Quran/TajweedText.jsx");
+
+  assert.match(flowSheet, /applyTajweedHighlights\(node, token\.tajweedRanges\)/);
+  assert.doesNotMatch(flowSheet, /--qcm-word-tajwid/);
+  assert.match(listText, /const paintRules = partRules/);
+  assert.doesNotMatch(listText, /start: 0, end: buffer\.length/);
 });

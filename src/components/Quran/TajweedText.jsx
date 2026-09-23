@@ -370,11 +370,8 @@ const WAQF_CHAR_RE = /^[\u06D6-\u06DC\u06DE]$/;
  * kashida carrying a dagger alif, which shows up as coloured bars floating
  * under the word. See src/utils/tajweedHighlights.js.
  *
- * Colours are painted over the whole word, never over the rule's own letters:
- * the Uthmanic face draws joined glyphs that overlap their advance boxes, so a
- * sub-word range slices the neighbouring strokes and the letters read as cut.
- * The precise ranges stay in `rules` for hit-testing, so a tap still reports
- * the exact rule under the pointer.
+ * The text node stays whole while the highlight ranges colour only the
+ * characters identified by the Quran.com markup or the riwaya rules.
  * ──────────────────────────────────────────────────────────────────────── */
 
 const TAJWEED_HIGHLIGHTS_SUPPORTED = supportsTajweedHighlights();
@@ -398,9 +395,7 @@ function finishHighlightWord(text, rules) {
                 });
             }
         }
-        const paintRules = partRules.length
-            ? [{ start: 0, end: buffer.length, ruleId: partRules[0].ruleId }]
-            : [];
+        const paintRules = partRules;
         parts.push({ type: 'text', text: buffer, rules: partRules, paintRules });
         buffer = '';
     };
@@ -481,7 +476,6 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                             data-tajwid={firstRule?.ruleId}
                             data-tajwid-name={ruleLabel?.name}
                             data-tajwid-desc={ruleLabel?.desc}
-                            style={{ color: firstRule ? resolveRuleColor(firstRule.ruleId, tajweedColors) : "inherit" }}
                             onClick={play}
                             onKeyDown={play ? (event) => {
                                 if (event.key === "Enter" || event.key === " ") {
@@ -1030,9 +1024,8 @@ const TajweedText = React.memo(function TajweedText({
         );
     }
 
-    // Older engines cannot paint sub-ranges without splitting the cursive run.
-    // Keep each Arabic word as one shaped text node and apply the first Tajwid
-    // rule to the whole word: colour precision is reduced, never text integrity.
+    // Older engines cannot paint sub-ranges without splitting the cursive run;
+    // keep each word as one shaped text node rather than producing broken glyphs.
     return <TajweedWordFallback words={highlightWords} lang={lang} riwaya={riwaya} surahNum={surahNum} ayahNumber={ayahNumber} tajweedColors={tajweedColors} ruleMetadata={ruleMetadata} />;
 });
 

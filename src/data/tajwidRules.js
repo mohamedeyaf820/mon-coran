@@ -518,6 +518,44 @@ export function parseTajwid(text, riwaya = "hafs") {
   return stabilizedSegments;
 }
 
+/** UTF-16 rule ranges for each word, preserving the complete Arabic text run. */
+export function getPerWordTajweedRanges(words, riwaya = "hafs") {
+  if (!Array.isArray(words) || words.length === 0) return [];
+  const text = words.join(" ");
+  const segments = parseTajwid(text, riwaya);
+  // A font-specific normalization must never shift a colour onto another
+  // Quranic letter. In that case render the uncoloured, intact words.
+  if (segments.map((segment) => segment.text).join("") !== text) {
+    return words.map(() => []);
+  }
+  const ranges = words.map(() => []);
+  const positions = [];
+  let cursor = 0;
+  for (const word of words) {
+    positions.push({ start: cursor, end: cursor + word.length });
+    cursor += word.length + 1;
+  }
+  let segmentStart = 0;
+  for (const segment of segments) {
+    const segmentEnd = segmentStart + segment.text.length;
+    if (segment.ruleId) {
+      positions.forEach((position, index) => {
+        const start = Math.max(segmentStart, position.start);
+        const end = Math.min(segmentEnd, position.end);
+        if (end > start) {
+          ranges[index].push({
+            start: start - position.start,
+            end: end - position.start,
+            ruleId: segment.ruleId,
+          });
+        }
+      });
+    }
+    segmentStart = segmentEnd;
+  }
+  return ranges;
+}
+
 /**
  * Get per-word tajweed rule IDs for use with QCF4 Warsh rendering.
  * Analyses an Arabic text string and returns an array of ruleId (or null) per word.

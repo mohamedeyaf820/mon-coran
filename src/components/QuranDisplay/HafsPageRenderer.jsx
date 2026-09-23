@@ -125,19 +125,16 @@ export default function HafsPageRenderer({
   riwaya,
   showTajwid,
 }) {
-  // Tajweed switches the sheet to the coloured COLRv1 cut of the same page
-  // font. Not every page has a v4 file, so the plain face stays as the
-  // fallback rather than failing the sheet.
+  // The per-page QCF glyphs overlap at this reader's proportional page width,
+  // even with Tajweed off. Keep both states in the same Unicode flow until a
+  // verified page layout can place those glyphs without collisions.
   const [resolvedVersion, setResolvedVersion] = useState("v2");
-  const requestedVersion = showTajwid ? "v4" : "v2";
+  const requestedVersion = "v2";
   const lines = useMemo(() => groupPageLines(ayahs), [ayahs]);
-  const hasPageGlyphs = lines.some(({ words }) => words.some((word) => Boolean(word.codeV2)));
-  // Tajweed mode prints the Quran Foundation's own coloured QCF v4 glyphs
-  // whenever the page payload has their positioned codes, even when the
-  // regular reading face is proportional Unicode.
-  const usesPageGlyphs = usesMushafPageGlyphs(fontFamily, riwaya) || (showTajwid && hasPageGlyphs);
+  const usesPageGlyphs = false;
+  const flowFontId = usesMushafPageGlyphs(fontFamily, riwaya) ? "qpc-hafs" : fontFamily;
   const pageFontFamily = getQcfPageFontFamily(currentPage, resolvedVersion);
-  const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
+  const fallbackFontFamily = resolveFontFamily(flowFontId, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
 
@@ -146,11 +143,11 @@ export default function HafsPageRenderer({
       usesPageGlyphs
         ? []
         : buildFlowSegments(ayahs, {
-            getWords: (ayah) => getHafsFlowWords(ayah, fontFamily, riwaya),
+            getWords: (ayah) => getHafsFlowWords(ayah, flowFontId, riwaya),
             riwaya: "hafs",
             showTajwid,
           }),
-    [ayahs, fontFamily, riwaya, showTajwid, usesPageGlyphs],
+    [ayahs, flowFontId, riwaya, showTajwid, usesPageGlyphs],
   );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
@@ -161,13 +158,13 @@ export default function HafsPageRenderer({
     if (usesPageGlyphs) return undefined;
     let cancelled = false;
     setFontLoaded(false);
-    ensureFontLoaded(normalizeFontId(fontFamily, riwaya)).then((result) => {
+    ensureFontLoaded(normalizeFontId(flowFontId, riwaya)).then((result) => {
       if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
     });
     return () => {
       cancelled = true;
     };
-  }, [fontFamily, riwaya, usesPageGlyphs]);
+  }, [flowFontId, riwaya, usesPageGlyphs]);
 
   useEffect(() => {
     if (!usesPageGlyphs) return undefined;
@@ -256,8 +253,8 @@ export default function HafsPageRenderer({
         currentPage={currentPage}
         currentPlayingAyah={currentPlayingAyah}
         fallbackFontFamily={fallbackFontFamily}
-        fitSignal={`${fontLoaded}|${fontFamily}|${showTajwid ? "t" : "-"}`}
-        fontFamily={fontFamily}
+        fitSignal={`${fontLoaded}|${flowFontId}|${showTajwid ? "t" : "-"}`}
+        fontFamily={flowFontId}
         lang={lang}
         meta={meta}
         onToggleActive={onToggleActive}
