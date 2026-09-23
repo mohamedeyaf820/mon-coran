@@ -106,16 +106,110 @@ function readCachedTafsir(resourceId, verseKey) {
   }
 }
 
+/**
+ * The tafsir cache is bounded: one entry per verse per author is a few
+ * kilobytes, and an unbounded pile of them competes with the storage the
+ * user's own notes, bookmarks and reading position live in. The index keeps
+ * the cached keys most-recent-first so the oldest go when it is full, without
+ * reading the texts back.
+ */
+const TAFSIR_CACHE_INDEX = `${TAFSIR_CACHE_PREFIX}index`;
+const TAFSIR_CACHE_MAX = 240;
+
+function listTafsirCacheKeys() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (key && key !== TAFSIR_CACHE_INDEX && key.startsWith(TAFSIR_CACHE_PREFIX)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
+function readTafsirCacheIndex() {
+  let raw;
+  try {
+    raw = localStorage.getItem(TAFSIR_CACHE_INDEX);
+  } catch {
+    return [];
+  }
+  // An absent index is not an empty one: it means verses were cached before
+  // the cache was bounded, and they still have to be counted.
+  if (raw === null) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((key) => typeof key === "string")
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function removeTafsirCacheKeys(keys) {
+  keys.forEach((key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // A browser that refuses the removal still has the entry counted out.
+    }
+  });
+}
+
+function writeTafsirCacheIndex(index) {
+  try {
+    localStorage.setItem(TAFSIR_CACHE_INDEX, JSON.stringify(index));
+  } catch {
+    // The index is a convenience; losing it only means rebuilding it next time.
+  }
+}
+
+function trackTafsirCacheKey(key) {
+  let index = readTafsirCacheIndex();
+  if (index === null) {
+    const existing = listTafsirCacheKeys();
+    // An unbounded cache left by an earlier version is not worth reading
+    // through: it is only a copy of what the API already has.
+    if (existing.length > TAFSIR_CACHE_MAX) {
+      removeTafsirCacheKeys(existing);
+      index = [];
+    } else {
+      index = existing;
+    }
+  }
+  index = [key, ...index.filter((entry) => entry !== key)];
+  removeTafsirCacheKeys(index.slice(TAFSIR_CACHE_MAX));
+  writeTafsirCacheIndex(index.slice(0, TAFSIR_CACHE_MAX));
+}
+
+function trimTafsirCache(keep) {
+  const index = readTafsirCacheIndex() ?? listTafsirCacheKeys();
+  removeTafsirCacheKeys(index.slice(keep));
+  writeTafsirCacheIndex(index.slice(0, keep));
+}
+
 function cacheTafsir(resourceId, verseKey, text) {
   if (typeof localStorage === "undefined" || !text) return;
+  const key = `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`;
+  const savedAt = Date.now();
+  const write = () =>
+    localStorage.setItem(key, JSON.stringify({ text, savedAt }));
   try {
-    localStorage.setItem(
-      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
-      JSON.stringify({ text, savedAt: Date.now() }),
-    );
+    write();
   } catch {
-    // Storage can be disabled in private browsing; live loading still works.
+    // A full cache must not cost the rest of the app its storage: drop the
+    // oldest half of it and retry once.
+    trimTafsirCache(TAFSIR_CACHE_MAX / 2);
+    try {
+      write();
+    } catch {
+      // Storage can be disabled entirely in private browsing; live loading
+      // still works.
+    }
+    return;
   }
+  trackTafsirCacheKey(key);
 }
 
 export function getAvailableTafsirs() {
