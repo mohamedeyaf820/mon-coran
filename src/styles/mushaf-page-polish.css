@@ -1162,7 +1162,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   width: 100%;
   max-width: 34em;
   margin-inline: auto;
-  font-size: calc(clamp(16px, (100cqi - 3rem) / 34, 72px) * var(--qcm-mushaf-scale, 1));
+  font-size: calc(clamp(22px, (100cqi - 3rem) / 34, 72px) * var(--qcm-mushaf-scale, 1));
   line-height: var(--mfp-line-pitch);
 }
 

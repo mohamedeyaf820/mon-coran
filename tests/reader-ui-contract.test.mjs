@@ -352,7 +352,7 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   // also uses Unicode flow until QCF glyph placement is verified.
   assert.match(
     sheetStyles,
-    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(16px, \(100cqi - 3rem\) \/ 34, 72px\)/,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(22px, \(100cqi - 3rem\) \/ 34, 72px\)/,
   );
   assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 34em/);
   assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--qcm-page-lines: 0/);
@@ -705,6 +705,6 @@ test("tajweed paints rule ranges without colouring complete words", () => {
 
   assert.match(flowSheet, /applyTajweedHighlights\(node, token\.tajweedRanges\)/);
   assert.doesNotMatch(flowSheet, /--qcm-word-tajwid/);
-  assert.match(listText, /const paintRules = partRules/);
+  assert.match(listText, /parts: \[\{ type: 'text', text, rules, paintRules: rules \}\]/);
   assert.doesNotMatch(listText, /start: 0, end: buffer\.length/);
 });

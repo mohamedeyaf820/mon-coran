@@ -28,7 +28,7 @@ const MAX_LINE_FIT = 1;
 // rendered size the sheet stops shrinking and grows past fifteen lines
 // instead, reporting the adjusted-layout notice: legibility outranks the
 // line count, the text itself never changes.
-const MIN_LEGIBLE_FLOW_PX = 15;
+const MIN_LEGIBLE_FLOW_PX = 22;
 // Converged type size per sheet, keyed by what the fit actually depends on: the
 // page, the reader's settings signal, the measure it was laid out in and its
 // token count. Without it every remount restarts from 1 and re-runs the whole
@@ -222,7 +222,7 @@ export default function MushafFlowPage({
         };
         const current = fitRef.current;
         // The legibility floor outranks the no-growth ceiling: on a narrow
-        // phone the measured body is already below 15 px before the fit, so
+        // phone the measured body can fall below readable size before the fit, so
         // capping at 1 there would print micro-glyphs. Growth is allowed
         // only up to what legibility demands, never to reach fifteen lines.
         const next = Math.max(floor, Math.min(MAX_LINE_FIT, current * (target / rows)));

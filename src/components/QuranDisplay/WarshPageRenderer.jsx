@@ -50,6 +50,9 @@ export default function WarshPageRenderer({
     let cancelled = false;
     setFontLoaded(false);
     setFontSettled(false);
+    const revealFallback = window.setTimeout(() => {
+      if (!cancelled) setFontSettled(true);
+    }, 1500);
     // Load the Warsh font file so --font-quran resolves correctly.
     // fontFamily defaults to "qpc-warsh" when not supplied.
     ensureFontLoaded(fontFamily || "qpc-warsh").then((result) => {
@@ -62,6 +65,7 @@ export default function WarshPageRenderer({
     });
     return () => {
       cancelled = true;
+      window.clearTimeout(revealFallback);
     };
   }, [fontFamily]);
 

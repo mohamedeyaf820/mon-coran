@@ -206,6 +206,15 @@ const WAQF_RULES = {
     }
 };
 
+export function getWaqfHelp(text, lang) {
+    const language = lang === 'ar' || lang === 'en' ? lang : 'fr';
+    const signs = [...new Set(String(text || '').match(/[\u06D6-\u06DC]/gu) || [])];
+    return signs.map((sign) => {
+        const rule = WAQF_RULES[sign];
+        return rule ? `${rule.name[language]} : ${rule.desc[language]}` : '';
+    }).filter(Boolean).join(' · ') || undefined;
+}
+
 
 
 function getVerseLabel(lang, ayahNumber) {
@@ -357,10 +366,9 @@ function resolveRuleColor(ruleId, tajweedColors) {
     return (tajweedColors && tajweedColors[ruleId]) || `var(--tajwid-${ruleId})`;
 }
 
-// Waqf signs are combining marks; they are rendered by WaqfSign as a readable
-// standalone glyph, so they are split out of the word text in both paths.
+// Waqf signs inside a word are combining marks. Keep them in the same text
+// node as their base letter; wrapping one in WaqfSign detaches its glyph.
 const WAQF_SPLIT_RE = /([\u06D6-\u06DC\u06DE])/;
-const WAQF_CHAR_RE = /^[\u06D6-\u06DC\u06DE]$/;
 
 /* ────────────────────────────────────────────────────────────────────────
  * Highlight path (default): one text node per word, colours applied with the
@@ -377,43 +385,11 @@ const WAQF_CHAR_RE = /^[\u06D6-\u06DC\u06DE]$/;
 const TAJWEED_HIGHLIGHTS_SUPPORTED = supportsTajweedHighlights();
 
 function finishHighlightWord(text, rules) {
-    const parts = [];
-    let buffer = '';
-    let bufferStart = 0;
-
-    const pushText = (endIndex) => {
-        if (!buffer) return;
-        const partRules = [];
-        for (const rule of rules) {
-            const start = Math.max(rule.start, bufferStart);
-            const end = Math.min(rule.end, endIndex);
-            if (end > start) {
-                partRules.push({
-                    start: start - bufferStart,
-                    end: end - bufferStart,
-                    ruleId: rule.ruleId,
-                });
-            }
-        }
-        const paintRules = partRules;
-        parts.push({ type: 'text', text: buffer, rules: partRules, paintRules });
-        buffer = '';
+    return {
+        text,
+        isMarker: isMarkerToken(text),
+        parts: [{ type: 'text', text, rules, paintRules: rules }],
     };
-
-    for (let index = 0; index < text.length; index += 1) {
-        const char = text[index];
-        if (WAQF_CHAR_RE.test(char)) {
-            pushText(index);
-            parts.push({ type: 'waqf', char });
-            bufferStart = index + 1;
-        } else {
-            if (!buffer) bufferStart = index;
-            buffer += char;
-        }
-    }
-    pushText(text.length);
-
-    return { text, isMarker: isMarkerToken(text), parts };
 }
 
 // Groups rule segments into words and records, per word, the UTF-16 ranges
@@ -476,6 +452,7 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                             data-tajwid={firstRule?.ruleId}
                             data-tajwid-name={ruleLabel?.name}
                             data-tajwid-desc={ruleLabel?.desc}
+                            title={getWaqfHelp(word.text, lang)}
                             onClick={play}
                             onKeyDown={play ? (event) => {
                                 if (event.key === "Enter" || event.key === " ") {
@@ -487,9 +464,7 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                             tabIndex={play || word.isMarker ? 0 : undefined}
                             aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                         >
-                            {word.parts.map((part, partIndex) => part.type === "waqf"
-                                ? <WaqfSign key={partIndex} char={part.char} lang={lang} riwaya={riwaya} />
-                                : <React.Fragment key={partIndex}>{part.text}</React.Fragment>)}
+                            {word.text}
                         </span>
                         {wordIndex < words.length - 1 ? (words[wordIndex + 1]?.isMarker ? "\u202F" : " ") : null}
                     </React.Fragment>
@@ -713,6 +688,7 @@ function TajweedHighlightWords({
                                 data-tajwid-name={firstRuleLabel?.name}
                                 data-tajwid-desc={firstRuleLabel?.desc}
                                 data-tajwid-color={firstRule ? resolveRuleColor(firstRule.ruleId, tajweedColors) : undefined}
+                                title={getWaqfHelp(word.text, lang)}
                                 onClick={!word.isMarker
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}
@@ -729,11 +705,7 @@ function TajweedHighlightWords({
                                 aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
-                                {word.parts.map((part, partIndex) =>
-                                    part.type === 'waqf'
-                                        ? <WaqfSign key={partIndex} char={part.char} lang={lang} riwaya={riwaya} />
-                                        : <React.Fragment key={partIndex}>{part.text}</React.Fragment>
-                                )}
+                                {word.text}
                             </span>
                             {wordIndex < words.length - 1 ? (nextWord?.isMarker ? "\u202F" : " ") : null}
                         </React.Fragment>
@@ -991,21 +963,9 @@ const TajweedText = React.memo(function TajweedText({
 
     if (!text) return null;
 
-    // Simple plain text path (handling waqf even if tajwed is off)
+    // Plain text keeps every combining mark attached to its base letter.
     if (!enabled || !segments || segments.length === 0) {
-        if (WAQF_SPLIT_RE.test(text)) {
-            const parts = text.split(WAQF_SPLIT_RE);
-            return (
-                <span>
-                    {parts.map((p, j) => 
-                        WAQF_SPLIT_RE.test(p) 
-                            ? <WaqfSign key={j} char={p} lang={lang} riwaya={riwaya} />
-                            : p
-                    )}
-                </span>
-            );
-        }
-        return <span>{text}</span>;
+        return <span title={getWaqfHelp(text, lang)}>{text}</span>;
     }
 
     if (TAJWEED_HIGHLIGHTS_SUPPORTED && highlightWords) {

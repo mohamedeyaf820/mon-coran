@@ -2,15 +2,12 @@ import React, { useMemo } from "react";
 import useKaraokeWordIndex from "../../hooks/useKaraokeWordIndex";
 import audioService from "../../services/audioService";
 import { normalizeFontId } from "../../data/fonts";
-import { getFontSignVariant, getReadableWaqfGlyph } from "../../utils/quranUtils";
+import { getFontSignVariant } from "../../utils/quranUtils";
 import { useAppLocale } from "../../context/AppContext";
-import TajweedText from "./TajweedText";
+import TajweedText, { getWaqfHelp } from "./TajweedText";
 import { t } from "../../i18n";
 import { playWordAudio, getWordAudioUrl } from "../../utils/wordAudio";
 import { hasCoherentWordData, isAyahMarkerToken } from "../../utils/wordCoherence";
-
-const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;
-const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
 
 function getVerseLabel(lang, ayahNumber) {
   if (!ayahNumber) return undefined;
@@ -29,56 +26,41 @@ function CanonicalQuranText({
   const { lang } = useAppLocale();
   const verseLabel = getVerseLabel(lang, ayahNumber);
   if (riwaya === "warsh") {
-    const parts = String(text).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
+    const parts = String(text).split(/\s+/).filter(Boolean);
     let wordRunningIndex = 0;
     return (
       <span className="quran-canonical-text" dir="rtl" lang="ar">
-        {parts.map((part, index) => {
-          if (WAQF_MARKER_CHAR_RE.test(part)) {
-            return (
-              <span
-                key={`${part}-${index}`}
-                className="warsh-waqf-marker waqf-marker"
-                data-waqf={part.codePointAt(0)?.toString(16).toUpperCase()}
-                aria-hidden="true"
-              >
-                {getReadableWaqfGlyph(part)}
-              </span>
-            );
-          }
-          const wordList = part.split(/\s+/).filter(Boolean);
+        {parts.map((word, index) => {
+          const isMarker = isAyahMarkerToken(word);
+          if (!isMarker) wordRunningIndex += 1;
+          const wordPosition = wordRunningIndex;
+          const audioUrl = !isMarker && surahNum && ayahNumber
+            ? getWordAudioUrl(surahNum, ayahNumber, wordPosition)
+            : null;
+          const handleClick = (event) => {
+            event.stopPropagation();
+            playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPosition });
+          };
           return (
-            <React.Fragment key={`${index}-${part.length}`}>
-              {wordList.map((w, wIdx) => {
-                const isMarker = isAyahMarkerToken(w);
-                const currentPos = ++wordRunningIndex;
-                const audioUrl = !isMarker && surahNum && ayahNumber
-                  ? getWordAudioUrl(surahNum, ayahNumber, currentPos)
-                  : null;
-
-                const handleClick = (e) => {
-                  if (!isMarker) {
-                    e.stopPropagation();
-                    playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: currentPos });
+            <React.Fragment key={index}>
+              <span
+                className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                onClick={!isMarker ? handleClick : undefined}
+                onKeyDown={!isMarker ? (event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    handleClick(event);
                   }
-                };
-
-                return (
-                  <React.Fragment key={wIdx}>
-                    <span
-                      className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
-                      onClick={!isMarker ? handleClick : undefined}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={isMarker ? verseLabel : undefined}
-                      style={{ display: "inline" }}
-                    >
-                      {w}
-                    </span>
-                    {wIdx < wordList.length - 1 ? " " : null}
-                  </React.Fragment>
-                );
-              })}
+                } : undefined}
+                role={!isMarker ? "button" : undefined}
+                tabIndex={!isMarker ? 0 : undefined}
+                aria-label={isMarker ? verseLabel : undefined}
+                title={getWaqfHelp(word, lang)}
+                style={{ display: "inline" }}
+              >
+                {word}
+              </span>
+              {index < parts.length - 1 ? (isAyahMarkerToken(parts[index + 1]) ? "\u202F" : " ") : null}
             </React.Fragment>
           );
         })}

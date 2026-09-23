@@ -21,69 +21,23 @@ async function expectFontFamily(locator, family) {
 }
 
 async function expectCanonicalWaqfMark(page, riwaya) {
-  // The verse carrying the waqf signs (ayah 2) can sit below the fold on a
-  // small phone with the tools open; the list only mounts verses near the
-  // viewport, so bring it in first.
+  // The waqf mark is a combining character, so it must share its text node
+  // with the preceding letter for the selected Quran font to attach it.
   const verseWithWaqf = page.locator('#ayah-2, [data-ayah-number="2"]').first();
   if (await verseWithWaqf.count()) {
     await verseWithWaqf.scrollIntoViewIfNeeded().catch(() => {});
   }
-  // A waqf sign is a combining mark set over the previous letter: with some
-  // faces (IndoPak Nastaleeq) its box has no width, so it is checked as
-  // attached content rather than as a visible box.
-  const marker = page.locator(".waqf-marker").first();
-  try {
-    await expect(marker).toBeAttached({ timeout: 15_000 });
-  } catch (error) {
-    // Keep the verse markup with the failure: the runner's DOM can differ.
-    const report = await page
-      .evaluate(() => {
-        const markers = [...document.querySelectorAll(".waqf-marker")];
-        const verse = document.querySelector('#ayah-2, [data-ayah-number="2"]');
-        const text = verse?.querySelector(".qc-ayah-text-ar, .verse-text");
-        return JSON.stringify(
-          {
-            markerCount: markers.length,
-            markers: markers.slice(0, 3).map((node) => {
-              const rect = node.getBoundingClientRect();
-              const style = getComputedStyle(node);
-              return {
-                html: node.outerHTML.slice(0, 300),
-                rect: [rect.x, rect.y, rect.width, rect.height].map(Math.round),
-                display: style.display,
-                visibility: style.visibility,
-                opacity: style.opacity,
-                fontFamily: style.fontFamily,
-              };
-            }),
-            verseText: text?.textContent?.slice(0, 200),
-            verseHtml: text?.innerHTML?.slice(0, 6000),
-          },
-          null,
-          1,
-        );
-      })
-      .catch((reason) => `diagnostics failed: ${reason}`);
-    await test.info().attach("verse-2-diagnostics", { body: report, contentType: "text/plain" });
-    throw error;
-  }
-  const metrics = await marker.evaluate((element) => {
-    const style = getComputedStyle(element);
-    const ayah = element.closest(".qc-ayah-text-ar, .verse-text");
-    const ayahStyle = ayah ? getComputedStyle(ayah) : null;
-    return {
-      text: element.textContent || "",
-      fontFamily: style.fontFamily,
-      fontRatio: ayahStyle
-        ? Number.parseFloat(style.fontSize) / Number.parseFloat(ayahStyle.fontSize)
-        : 1,
-    };
-  });
+  const markedWord = page.locator("[data-tajwid-word]").filter({ hasText: /[\u06D6-\u06DC]/u }).first();
+  await expect(markedWord).toBeAttached({ timeout: 15_000 });
+  const metrics = await markedWord.evaluate((element) => ({
+    text: element.textContent || "",
+    children: element.childNodes.length,
+    fontFamily: getComputedStyle(element).fontFamily,
+  }));
 
-  expect(metrics.text).toMatch(/[\u06D6-\u06DC]/u);
-  expect(metrics.text).not.toMatch(/(?:صلى|قلى|∴)/u);
+  expect(metrics.text).toMatch(/[^\s\u06D6-\u06DC][\u06D6-\u06DC]/u);
   expect(metrics.text).not.toContain("\u25CC");
-  expect(metrics.fontRatio).toBeLessThanOrEqual(0.8);
+  expect(metrics.children).toBe(1);
   expect(metrics.fontFamily).toContain(riwaya === "warsh" ? "Warsh" : "QPC Hafs");
 }
 

@@ -136,6 +136,7 @@ export default function HafsPageRenderer({
   const pageFontFamily = getQcfPageFontFamily(currentPage, resolvedVersion);
   const fallbackFontFamily = resolveFontFamily(flowFontId, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [fontSettled, setFontSettled] = useState(false);
   const [fontFailed, setFontFailed] = useState(false);
 
   const flowSegments = useMemo(
@@ -158,11 +159,22 @@ export default function HafsPageRenderer({
     if (usesPageGlyphs) return undefined;
     let cancelled = false;
     setFontLoaded(false);
+    setFontSettled(false);
+    // Do not leave verified Quran text invisible behind a stalled font request.
+    const revealFallback = window.setTimeout(() => {
+      if (!cancelled) setFontSettled(true);
+    }, 1500);
     ensureFontLoaded(normalizeFontId(flowFontId, riwaya)).then((result) => {
-      if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
+      if (!cancelled) {
+        setFontLoaded(Boolean(result.loaded || result.cached));
+        setFontSettled(true);
+      }
+    }).catch(() => {
+      if (!cancelled) setFontSettled(true);
     });
     return () => {
       cancelled = true;
+      window.clearTimeout(revealFallback);
     };
   }, [flowFontId, riwaya, usesPageGlyphs]);
 
@@ -253,6 +265,7 @@ export default function HafsPageRenderer({
         currentPage={currentPage}
         currentPlayingAyah={currentPlayingAyah}
         fallbackFontFamily={fallbackFontFamily}
+        fontReady={fontSettled}
         fitSignal={`${fontLoaded}|${flowFontId}|${showTajwid ? "t" : "-"}`}
         fontFamily={flowFontId}
         lang={lang}

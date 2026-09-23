@@ -718,8 +718,8 @@
 
     .srh-controls {
         gap: 0.22rem;
-        min-height: 2.7rem;
-        padding: 0.22rem 0.28rem;
+        min-height: 44px;
+        padding: 0 0.28rem;
     }
 
     .srh-view-pills {
@@ -728,7 +728,7 @@
 
     .srh-pill,
     .srh-toggle {
-        min-height: 40px;
+        min-height: 44px;
         gap: 0.12rem;
         padding-inline: 0.2rem;
         border-radius: 0.58rem;

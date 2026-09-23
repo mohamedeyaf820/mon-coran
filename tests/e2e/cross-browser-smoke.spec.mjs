@@ -285,7 +285,7 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
   }
 });
 
-test("les signes de waqf restent des annotations coraniques compactes", async ({ page }) => {
+test("les signes de waqf restent attachés aux lettres coraniques", async ({ page }) => {
   await installQuranNetworkFixtures(page, { withWaqfSigns: true });
   await page.addInitScript(() => {
     localStorage.setItem(
@@ -312,45 +312,87 @@ test("les signes de waqf restent des annotations coraniques compactes", async ({
   await page.setViewportSize({ width: 319, height: 698 });
   await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
 
-  const markers = page.locator(".mushaf-text-block .waqf-marker");
-  await expect(markers).toHaveCount(3, { timeout: 30_000 });
-  await expect(markers.nth(0)).toHaveAttribute("data-waqf", "6D7");
-  await expect(markers.nth(1)).toHaveAttribute("data-waqf", "6DA");
-  await expect(markers.nth(2)).toHaveAttribute("data-waqf", "6D6");
-  await expect(markers.nth(0)).toContainText("\u06D7");
-  await expect(markers.nth(1)).toContainText("\u06DA");
-  await expect(markers.nth(2)).toContainText("\u06D6");
-
-  for (const marker of await markers.all()) {
-    const layout = await marker.evaluate((element) => {
-      const markerStyle = getComputedStyle(element);
-      const ayah = element.closest(".qc-ayah-text-ar");
-      const ayahStyle = getComputedStyle(ayah);
-      const rect = element.getBoundingClientRect();
-      return {
-        display: markerStyle.display,
-        borderWidth: markerStyle.borderWidth,
-        outlineWidth: markerStyle.outlineWidth,
-        backgroundColor: markerStyle.backgroundColor,
-        boxShadow: markerStyle.boxShadow,
-        markerFontSize: Number.parseFloat(markerStyle.fontSize),
-        markerHeight: rect.height,
-        ayahFontSize: Number.parseFloat(ayahStyle.fontSize),
-        ayahLineHeight: Number.parseFloat(ayahStyle.lineHeight),
-      };
-    });
-    expect(layout.display).toBe("inline-block");
-    expect(layout.borderWidth).toBe("0px");
-    expect(layout.outlineWidth).toBe("0px");
-    expect(layout.backgroundColor).toBe("rgba(0, 0, 0, 0)");
-    expect(layout.boxShadow).toBe("none");
-    expect(layout.markerFontSize).toBeLessThan(layout.ayahFontSize * 0.8);
-    expect(layout.markerHeight).toBeLessThan(layout.ayahLineHeight * 0.5);
-  }
+  const words = page.locator(".mushaf-text-block [data-tajwid-word]");
+  await expect(words.first()).toBeVisible({ timeout: 30_000 });
+  const marks = await words.evaluateAll((elements) => elements
+    .filter((element) => /[\u06D6-\u06DC]/u.test(element.textContent || ""))
+    .map((element) => ({
+      text: element.textContent,
+      children: element.childNodes.length,
+      startsWithMark: /^[\u06D6-\u06DC]/u.test(element.textContent || ""),
+      help: element.title,
+    })));
+  expect(marks.length).toBe(3);
+  expect(marks.every((mark) => mark.children === 1 && !mark.startsWithMark)).toBe(true);
+  expect(marks.every((mark) => mark.help.length > 0)).toBe(true);
+  await expect(page.locator(".mushaf-text-block .waqf-marker")).toHaveCount(0);
 
   expect(
     await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
   ).toBe(true);
+
+});
+
+test("les signes de waqf restent liés au texte quand le Tajweed est désactivé", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      displayMode: "surah",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "hafs",
+      fontFamily: "qpc-hafs",
+      showTajwid: false,
+      lastPosition: { surah: 3, ayah: 2, page: 1, juz: 1 },
+    }));
+  });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+  const plain = page.locator(".mushaf-text-block").first();
+  await expect(plain).toContainText("\u06D7", { timeout: 30_000 });
+  const plainMarks = await plain.evaluate((root) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const marks = [];
+    while (walker.nextNode()) {
+      const text = walker.currentNode.data;
+      for (let index = 0; index < text.length; index += 1) {
+        if (/[\u06D6-\u06DC]/u.test(text[index])) {
+          marks.push({ preceding: text[index - 1] || "", text });
+        }
+      }
+    }
+    return marks;
+  });
+  expect(plainMarks).toHaveLength(3);
+  expect(plainMarks.every((mark) => mark.preceding && !/\s/u.test(mark.preceding))).toBe(true);
+});
+
+test("Warsh sans Tajweed conserve les signes de waqf dans chaque mot", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      displayMode: "surah",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "warsh",
+      fontFamily: "qpc-warsh",
+      showTajwid: false,
+      lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 },
+    }));
+  });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+  const markedWords = page.locator('#ayah-1 .quran-word-item').filter({ hasText: /\u06D6/u });
+  await expect(markedWords).toHaveCount(2, { timeout: 30_000 });
+  const integrity = await markedWords.evaluateAll((elements) => elements.map((element) => ({
+    text: element.textContent,
+    children: element.childNodes.length,
+    help: element.title,
+  })));
+  expect(integrity.every((word) => word.children === 1 && word.help.length > 0)).toBe(true);
+  await expect(page.locator('#ayah-1 .warsh-waqf-marker')).toHaveCount(0);
 });
 
 test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", async ({ page }) => {
@@ -382,8 +424,11 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
 
   const firstAyah = page.locator("#ayah-1");
   await expect(firstAyah).toBeVisible({ timeout: 30_000 });
-  await expect(firstAyah.locator(".warsh-waqf-marker")).toHaveCount(2);
-  await expect(firstAyah.locator(".warsh-waqf-marker").first()).toContainText("\u06D6");
+  await expect(firstAyah.locator(".warsh-waqf-marker")).toHaveCount(0);
+  const warshMarks = await firstAyah.locator("[data-tajwid-word]").evaluateAll((elements) => elements
+    .filter((element) => /\u06D6/u.test(element.textContent || ""))
+    .map((element) => element.childNodes.length));
+  expect(warshMarks).toEqual([1, 1]);
   await expect(firstAyah.locator(".native-ayah-marker")).toHaveCount(1);
 
   await expect(page.locator(".mp-header__search")).toBeHidden();
