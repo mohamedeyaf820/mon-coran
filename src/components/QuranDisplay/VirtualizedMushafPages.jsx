@@ -80,8 +80,8 @@ function VirtualizedMushafPages({
     });
   }, [pinnedIndexes, pinnedKey]);
 
-  // Reset only when the loaded page collection changes. While scrolling or
-  // listening, rendered pages remain mounted and keep their exact height.
+  // A new page collection starts again from the first page, and forgets the
+  // heights measured for the previous one.
   useEffect(() => {
     measuredHeights.current.clear();
     setVisibleIndexes(new Set([0, ...pinnedIndexesRef.current]));
@@ -111,9 +111,17 @@ function VirtualizedMushafPages({
           let changed = false;
           for (const entry of entries) {
             const index = Number(entry.target.dataset.virtualPageIndex);
-            const shouldRender = entry.isIntersecting || pinnedIndexesRef.current.has(index);
-            if (shouldRender && !next.has(index)) {
-              next.add(index);
+            if (entry.isIntersecting || pinnedIndexesRef.current.has(index)) {
+              if (!next.has(index)) {
+                next.add(index);
+                changed = true;
+              }
+            } else if (
+              // Unmeasured pages would fall back to the clamp() placeholder and
+              // move the text below them, so they stay mounted.
+              measuredHeights.current.has(index) &&
+              next.delete(index)
+            ) {
               changed = true;
             }
           }
