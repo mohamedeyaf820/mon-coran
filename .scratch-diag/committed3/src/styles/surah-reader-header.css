@@ -1,0 +1,997 @@
+.srh-root {
+    --srh-surface: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
+    --srh-surface-soft: color-mix(in srgb, var(--bg-secondary) 88%, var(--bg-card));
+    --srh-line: color-mix(in srgb, var(--primary) 17%, var(--border));
+    --srh-shadow: 0 14px 36px color-mix(in srgb, var(--text-primary) 9%, transparent);
+    position: sticky;
+    top: 0;
+    z-index: 85;
+    display: flex;
+    width: min(100%, 1040px);
+    margin: 0 auto 0.55rem;
+    overflow: hidden;
+    flex-direction: column;
+    border: 1px solid var(--srh-line);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 5% -20%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 38%),
+        color-mix(in srgb, var(--srh-surface) 95%, transparent);
+    box-shadow: var(--srh-shadow), inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
+    color: var(--text-primary);
+    backdrop-filter: blur(18px) saturate(125%);
+    isolation: isolate;
+}
+
+.srh-divider {
+    height: 1px;
+    flex: 0 0 auto;
+    margin: 0;
+    background: var(--srh-line);
+    opacity: 0.72;
+}
+
+.srh-identity {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: clamp(0.55rem, 1.4vw, 0.9rem);
+    min-height: 6.15rem;
+    padding: clamp(0.85rem, 1.6vw, 1.15rem) clamp(1rem, 2.2vw, 1.55rem);
+}
+
+.srh-identity__disclosure {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: clamp(4rem, 6.5vw, 5.4rem) minmax(0, 1fr) 1.5rem;
+    align-items: center;
+    gap: clamp(0.8rem, 2vw, 1.3rem);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    text-align: start;
+}
+
+.srh-identity__chevron,
+.srh-mobile-bar__chevron {
+    color: var(--primary);
+    transition: transform 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.srh-identity__disclosure[aria-expanded="true"] .srh-identity__chevron,
+.srh-mobile-bar__disclosure[aria-expanded="true"] .srh-mobile-bar__chevron {
+    transform: rotate(180deg);
+}
+
+.srh-arabic {
+    display: flex;
+    width: clamp(4rem, 6.5vw, 5.4rem);
+    min-height: 3.4rem;
+    align-items: center;
+    justify-content: center;
+    color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
+    font-family: var(--font-surah-name, var(--font-quran), serif);
+    font-size: clamp(2rem, 3.5vw, 2.65rem);
+    line-height: 1;
+    filter: drop-shadow(0 3px 6px color-mix(in srgb, var(--primary) 10%, transparent));
+}
+
+/* Surah-name ligatures are interface identity, not Quran body copy. Keep
+   their scale independent from the user-controlled Quran reading size. */
+.app-root[data-view="reading"] :is(.srh-arabic, .srh-mobile-bar__name) > .font-surah-names {
+    font-size: 1em !important;
+    line-height: 1 !important;
+}
+
+.srh-meta {
+    min-width: 0;
+}
+
+.srh-meta__top {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.42rem 0.7rem;
+}
+
+.srh-title {
+    min-width: 0;
+    margin: 0;
+    overflow: hidden;
+    color: var(--text-primary);
+    font-size: clamp(1.18rem, 2.15vw, 1.55rem);
+    font-weight: 800;
+    letter-spacing: -0.025em;
+    line-height: 1.16;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.srh-title__num {
+    color: var(--primary);
+    font-variant-numeric: tabular-nums;
+}
+
+.srh-badges {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    flex-wrap: wrap;
+    gap: 0.32rem;
+}
+
+.srh-badge {
+    display: inline-flex;
+    min-height: 1.55rem;
+    align-items: center;
+    padding: 0.18rem 0.55rem;
+    border: 1px solid var(--srh-line);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--srh-surface-soft) 84%, transparent);
+    color: var(--text-muted);
+    font-family: var(--font-ui, sans-serif);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.075em;
+    line-height: 1;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.srh-badge--gold {
+    border-color: color-mix(in srgb, var(--color-gold, #c5a04b) 42%, var(--border));
+    background: color-mix(in srgb, var(--color-gold, #c5a04b) 9%, var(--bg-card));
+    color: color-mix(in srgb, #76520f 84%, var(--text-primary));
+}
+
+.srh-badge--blue {
+    border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+    background: color-mix(in srgb, var(--primary) 7%, var(--bg-card));
+    color: var(--primary);
+}
+
+.srh-sub {
+    margin: 0.26rem 0 0;
+    color: color-mix(in srgb, var(--text-muted) 84%, var(--primary));
+    font-family: var(--font-reading, serif);
+    font-size: 0.78rem;
+    font-style: italic;
+    line-height: 1.3;
+}
+
+.srh-desc {
+    max-width: 66ch;
+    margin: 0.22rem 0 0;
+    overflow: hidden;
+    color: var(--text-muted);
+    font-size: clamp(0.7rem, 1vw, 0.8rem);
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.srh-actions {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 0.48rem;
+    margin-inline-start: auto;
+}
+
+.srh-play-btn,
+.srh-info-btn,
+.srh-pill,
+.srh-toggle,
+.srh-typography-trigger {
+    font-family: var(--font-ui, sans-serif);
+    cursor: pointer;
+    transition: border-color 160ms ease, background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.srh-play-btn,
+.srh-info-btn {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    padding: 0.48rem 0.82rem;
+    border-radius: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+}
+
+.srh-root :is(.srh-play-btn, .srh-info-btn, .srh-pill, .srh-toggle, .srh-typography-trigger) > svg {
+    width: var(--mp-action-icon-max, 0.92rem);
+    height: var(--mp-action-icon-max, 0.92rem);
+}
+
+.srh-play-btn {
+    border: 1px solid color-mix(in srgb, var(--primary) 82%, #fff 18%);
+    background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 88%, #fff 12%), var(--primary));
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 26%, transparent);
+    color: #fff;
+}
+
+.srh-play-btn:hover:not(:disabled) {
+    box-shadow: 0 11px 24px color-mix(in srgb, var(--primary) 34%, transparent);
+    transform: translateY(-1px);
+}
+
+.srh-play-btn:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+}
+
+.srh-play-btn:disabled {
+    cursor: wait;
+    opacity: 0.62;
+}
+
+.srh-play-btn--playing {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 72%, var(--color-gold, #a77928)), var(--primary));
+}
+
+.srh-info-btn {
+    border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
+    background: color-mix(in srgb, var(--bg-card) 78%, var(--primary) 4%);
+    color: var(--text-secondary);
+}
+
+.srh-info-btn:hover,
+.srh-info-btn--active {
+    border-color: color-mix(in srgb, var(--primary) 48%, var(--border));
+    background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
+    color: var(--primary);
+}
+
+.srh-root :is(button, select, input):focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary) 78%, #fff 22%);
+    outline-offset: 2px;
+}
+
+.srh-mobile-bar {
+    display: none;
+}
+
+.srh-reader-tools {
+    display: grid;
+    min-width: 0;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    visibility: hidden;
+    transition: grid-template-rows 240ms cubic-bezier(0.2, 0.8, 0.2, 1), opacity 160ms ease, visibility 0s linear 240ms;
+}
+
+.srh-reader-tools__inner {
+    display: flex;
+    min-height: 0;
+    overflow: hidden;
+    flex-direction: column;
+}
+
+.srh-reader-tools--open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    transition-delay: 0s;
+}
+
+.srh-controls,
+.srh-footer {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding-inline: clamp(0.85rem, 2.2vw, 1.45rem);
+    background: color-mix(in srgb, var(--srh-surface-soft) 72%, transparent);
+}
+
+.srh-controls {
+    min-height: 2.9rem;
+    padding-block: 0.32rem;
+}
+
+.srh-footer {
+    min-height: 3rem;
+    padding-block: 0.3rem;
+}
+
+.srh-view-pills,
+.srh-study-toggles {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.24rem;
+}
+
+.srh-view-pills {
+    flex: 0 0 auto;
+    padding: 0.22rem;
+    border: 1px solid var(--srh-line);
+    border-radius: 0.85rem;
+    background: color-mix(in srgb, var(--bg-secondary) 78%, transparent);
+}
+
+.srh-study-toggles {
+    flex: 1;
+}
+
+.srh-pill,
+.srh-toggle {
+    display: inline-flex;
+    min-height: 40px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.3rem;
+    flex: 0 0 auto;
+    padding: 0.32rem 0.65rem;
+    border: 1px solid transparent;
+    border-radius: 0.6rem;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.srh-pill--active {
+    border-color: color-mix(in srgb, var(--primary) 18%, var(--border));
+    background: var(--bg-card);
+    box-shadow: 0 3px 10px color-mix(in srgb, var(--text-primary) 7%, transparent);
+    color: var(--primary);
+}
+
+.srh-toggle--active {
+    border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+    background: color-mix(in srgb, var(--primary) 8%, var(--bg-card));
+    color: var(--primary);
+}
+
+.srh-pill:not(.srh-pill--active):hover,
+.srh-toggle:not(.srh-toggle--active):hover {
+    background: color-mix(in srgb, var(--bg-card) 72%, transparent);
+    color: var(--text-primary);
+}
+
+.srh-toggle:disabled {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+.srh-toggle:disabled:hover {
+    background: transparent;
+    color: inherit;
+}
+
+.srh-vsep {
+    width: 1px;
+    height: 1.6rem;
+    flex: 0 0 auto;
+    margin-inline: 0.05rem;
+    background: var(--srh-line);
+}
+
+.srh-footer__spacer {
+    min-width: 0.5rem;
+    flex: 1;
+}
+
+.srh-footer .arabic-font-controls {
+    min-width: 0;
+    flex: 0 1 auto;
+}
+
+.srh-footer .arabic-font-controls--compact .afc-select {
+    max-width: clamp(7rem, 17vw, 11rem);
+}
+
+.srh-typography-disclosure {
+    display: contents;
+}
+
+.srh-typography-trigger {
+    display: none;
+    min-height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    gap: 0.38rem;
+    padding: 0.42rem 0.68rem;
+    border: 1px solid var(--srh-line);
+    border-radius: 0.72rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.srh-typography-disclosure.open .srh-typography-trigger {
+    border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
+    background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
+    color: var(--primary);
+}
+
+.srh-typography-panel {
+    min-width: 0;
+}
+
+@media (max-width: 640px) {
+    .srh-root {
+        position: sticky;
+        top: 0;
+        width: 100%;
+        margin-bottom: 0.45rem;
+        border-radius: 1rem;
+        backdrop-filter: none;
+    }
+
+    .srh-identity,
+    .srh-identity + .srh-divider {
+        display: none;
+    }
+
+    .srh-mobile-bar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 0.35rem;
+        min-height: 3.45rem;
+        padding: 0.38rem 0.48rem;
+        background: color-mix(in srgb, var(--srh-surface) 90%, transparent);
+    }
+
+    .srh-mobile-bar__disclosure {
+        display: grid;
+        min-width: 0;
+        min-height: 44px;
+        grid-template-columns: 4.8rem minmax(0, 1fr) 1.25rem;
+        align-items: center;
+        gap: 0.48rem;
+        padding: 0.12rem 0.25rem;
+        border: 0;
+        border-radius: 0.75rem;
+        background: transparent;
+        color: var(--text-primary);
+        cursor: pointer;
+        text-align: start;
+        transition: background 160ms ease, color 160ms ease;
+    }
+
+    .srh-mobile-bar__disclosure:hover,
+    .srh-mobile-bar__disclosure[aria-expanded="true"] {
+        background: color-mix(in srgb, var(--primary) 7%, transparent);
+    }
+
+    .srh-mobile-bar__name {
+        display: flex;
+        width: 4.8rem;
+        min-height: 2.65rem;
+        align-items: center;
+        justify-content: center;
+        color: color-mix(in srgb, var(--text-primary) 78%, var(--primary));
+        font-family: var(--font-surah-name, var(--font-quran), serif);
+        font-size: clamp(1.85rem, 8vw, 2.2rem);
+        line-height: 1;
+        filter: drop-shadow(0 2px 5px color-mix(in srgb, var(--primary) 10%, transparent));
+    }
+
+    .srh-mobile-bar__title {
+        display: flex;
+        min-width: 0;
+        overflow: hidden;
+        flex-direction: column;
+        gap: 0.08rem;
+        padding-inline-start: 0.18rem;
+        color: var(--text-primary);
+        text-overflow: ellipsis;
+    }
+
+    .srh-mobile-bar__title strong,
+    .srh-mobile-bar__title small {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .srh-mobile-bar__title strong {
+        font-size: clamp(0.82rem, 3.6vw, 0.95rem);
+        font-weight: 850;
+        line-height: 1.15;
+    }
+
+    .srh-mobile-bar__title small {
+        color: var(--text-muted);
+        font-size: clamp(0.59rem, 2.7vw, 0.68rem);
+        font-weight: 650;
+        line-height: 1.15;
+    }
+
+    .srh-mobile-bar__actions {
+        display: flex;
+        gap: 0.35rem;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        padding: 0;
+        border-radius: 0.72rem;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) > svg {
+        width: 0.74rem;
+        height: 0.74rem;
+    }
+
+    .srh-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 0.45rem;
+        min-height: 3.2rem;
+        padding: 0.38rem 0.55rem;
+    }
+
+    .srh-vsep {
+        display: none;
+    }
+
+    .srh-view-pills,
+    .srh-study-toggles {
+        width: 100%;
+    }
+
+    .srh-view-pills {
+        padding: 0.18rem;
+    }
+
+    .srh-pill,
+    .srh-toggle {
+        min-width: 0;
+        min-height: 44px;
+        flex: 1 1 0;
+        padding: 0.35rem 0.42rem;
+        font-size: 0.68rem;
+    }
+
+    .srh-footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.45rem;
+        min-height: 3.25rem;
+        padding: 0.38rem 0.55rem;
+        overflow: visible;
+    }
+
+    .srh-typography-trigger {
+        display: inline-flex;
+        width: 100%;
+        min-height: 44px;
+    }
+
+    .srh-typography-panel {
+        display: none;
+        grid-column: 1 / -1;
+        width: 100%;
+        padding-top: 0.45rem;
+        border-top: 1px solid var(--srh-line);
+    }
+
+    .srh-typography-disclosure.open .srh-typography-panel {
+        display: block;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1.05fr) minmax(8.7rem, 0.95fr);
+        width: 100%;
+        min-width: 0;
+    }
+
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group),
+    .srh-typography-panel .afc-select {
+        width: 100%;
+        min-width: 0;
+        max-width: none;
+    }
+
+    .srh-typography-panel .afc-range {
+        width: min(5rem, 22vw);
+        min-width: 2.8rem;
+    }
+
+    .srh-footer__spacer {
+        display: none;
+    }
+}
+
+@media (max-width: 390px) {
+    .srh-mobile-bar {
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 0.32rem;
+        min-height: 3.05rem;
+        padding: 0.28rem 0.34rem;
+    }
+
+    .srh-mobile-bar__disclosure {
+        min-height: 44px;
+        grid-template-columns: 4.6rem minmax(0, 1fr) 1rem;
+        gap: 0.32rem;
+        padding-inline: 0.12rem;
+    }
+
+    .srh-mobile-bar__name {
+        width: 4.6rem;
+        min-height: 2.35rem;
+        font-size: clamp(1.82rem, 8.5vw, 2rem);
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 0.62rem;
+    }
+
+    .srh-controls,
+    .srh-footer {
+        gap: 0.3rem;
+        min-height: 2.85rem;
+        padding: 0.28rem 0.34rem;
+    }
+
+    .srh-pill,
+    .srh-toggle {
+        gap: 0.25rem;
+        min-height: 40px;
+        padding-inline: 0.3rem;
+        font-size: 0.62rem;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .srh-typography-panel .afc-range {
+        width: 100%;
+    }
+}
+
+/* Extra-small phones: keep the reading command bar useful without making the
+   Quran compete with labels. The controls retain a comfortable vertical touch
+   target while their visual footprint and glyphs become quieter. */
+@media (max-width: 360px) {
+    .srh-root {
+        margin-bottom: 0.3rem;
+        border-radius: 0.82rem;
+        box-shadow: 0 0.45rem 1rem color-mix(in srgb, #000 7%, transparent);
+    }
+
+    .srh-mobile-bar {
+        gap: 0.22rem;
+        min-height: 3rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-mobile-bar__disclosure {
+        min-height: 44px;
+        grid-template-columns: minmax(3.8rem, 1fr) 0.8rem;
+        gap: 0.12rem;
+        padding: 0 0.16rem;
+    }
+
+    .srh-mobile-bar__name {
+        width: 100%;
+        min-width: 0;
+        min-height: 2.2rem;
+        justify-content: flex-start;
+        font-size: clamp(1.72rem, 9vw, 1.95rem);
+        filter: none;
+    }
+
+    .srh-mobile-bar__title {
+        display: none;
+    }
+
+    .srh-mobile-bar__chevron {
+        width: 0.68rem;
+        height: 0.68rem;
+    }
+
+    .srh-mobile-bar__actions {
+        gap: 0.2rem;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+        border-radius: 0.58rem;
+        box-shadow: none;
+    }
+
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) > svg {
+        width: 0.7rem;
+        height: 0.7rem;
+    }
+
+    .srh-controls {
+        gap: 0.22rem;
+        min-height: 2.7rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-view-pills {
+        padding: 0.12rem;
+    }
+
+    .srh-pill,
+    .srh-toggle {
+        min-height: 40px;
+        gap: 0.12rem;
+        padding-inline: 0.2rem;
+        border-radius: 0.58rem;
+        font-size: 0.58rem;
+    }
+
+    .srh-pill > svg,
+    .srh-toggle > svg {
+        display: none;
+    }
+
+    .srh-footer {
+        gap: 0.25rem;
+        min-height: 2.7rem;
+        padding: 0.22rem 0.28rem;
+    }
+
+    .srh-typography-trigger {
+        min-height: 40px;
+        padding-block: 0.3rem;
+        font-size: 0.65rem;
+    }
+
+    .srh-typography-panel {
+        padding-top: 0.28rem;
+    }
+
+    .srh-typography-panel .arabic-font-controls {
+        gap: 0.28rem;
+    }
+
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group) {
+        min-height: 42px !important;
+        height: 42px;
+        padding: 0.2rem 0.32rem !important;
+        border-radius: 0.65rem !important;
+    }
+
+    .srh-typography-panel .afc-select {
+        min-height: 34px !important;
+        height: 34px;
+        padding-inline: 0.42rem !important;
+        font-size: 0.68rem !important;
+    }
+
+    .srh-typography-panel :is(.afc-leading-icon, .afc-marker-preview) {
+        width: 0.78rem !important;
+        min-width: 0.78rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    .srh-typography-panel :is(.afc-size-btn, .afc-size-value) {
+        width: 30px !important;
+        min-width: 30px !important;
+        height: 34px !important;
+        min-height: 34px !important;
+        font-size: 0.68rem !important;
+    }
+}
+
+@media (max-width: 280px) {
+    .srh-mobile-bar {
+        padding: 0.15rem 0.2rem;
+        gap: 0.15rem;
+    }
+    .srh-mobile-bar__disclosure {
+        grid-template-columns: minmax(0, 1fr);
+    }
+    .srh-mobile-bar__chevron {
+        display: none;
+    }
+    .srh-mobile-bar :is(.srh-play-btn, .srh-info-btn) {
+        width: 44px;
+        min-width: 44px;
+        min-height: 44px;
+    }
+    .srh-controls {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* Compact tablets and split-screen iPads keep the desktop information
+   hierarchy, but without desktop-sized identity and action controls. */
+@media (min-width: 641px) and (max-width: 720px) {
+    .srh-identity {
+        gap: 0.45rem;
+        min-height: 5.15rem;
+        padding: 0.62rem 0.72rem;
+    }
+
+    .srh-identity__disclosure {
+        grid-template-columns: 3.55rem minmax(0, 1fr) 0.9rem;
+        gap: 0.55rem;
+    }
+
+    .srh-arabic {
+        width: 3.55rem;
+        min-height: 2.8rem;
+        font-size: clamp(1.7rem, 4.6vw, 2rem) !important;
+        filter: none;
+    }
+
+    .srh-title {
+        font-size: clamp(1rem, 2.7vw, 1.2rem);
+    }
+
+    .srh-meta__top {
+        gap: 0.28rem 0.42rem;
+    }
+
+    .srh-badges {
+        gap: 0.22rem;
+    }
+
+    .srh-badge {
+        min-height: 1.38rem;
+        padding: 0.14rem 0.42rem;
+        font-size: 0.56rem;
+    }
+
+    .srh-sub {
+        margin-top: 0.14rem;
+        font-size: 0.7rem;
+    }
+
+    .srh-desc {
+        display: none;
+    }
+
+    .srh-actions {
+        gap: 0.32rem;
+    }
+
+    .srh-actions :is(.srh-play-btn, .srh-info-btn) {
+        min-height: 40px;
+        padding: 0.42rem 0.62rem;
+        border-radius: 0.68rem;
+        font-size: 0.69rem;
+    }
+
+    .srh-actions .srh-fullscreen-btn .srh-info-btn__label {
+        display: none;
+    }
+}
+
+[dir="rtl"] .srh-actions {
+    margin-inline-start: auto;
+    margin-inline-end: 0;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap {
+    display: flex;
+    width: min(100%, 1040px);
+    margin-inline: auto;
+    padding-inline: 0;
+    flex-direction: column;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap > .srh-root {
+    width: 100%;
+    max-width: 100%;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap > section.srh-root {
+    padding: 0;
+}
+
+/* One coherent reader surface: the Tajwid guide belongs to the surah header. */
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+    --reader-header-line: color-mix(in srgb, var(--primary) 19%, var(--border));
+    width: min(100%, 1040px) !important;
+    max-width: 1040px !important;
+    margin: 0 auto 0.65rem !important;
+    padding: 0 !important;
+    overflow: hidden;
+    border: 1px solid var(--reader-header-line);
+    border-radius: 1.35rem;
+    background:
+        radial-gradient(circle at 7% -32%, color-mix(in srgb, var(--primary) 10%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 96%, transparent);
+    box-shadow: 0 14px 36px color-mix(in srgb, var(--text-primary) 8%, transparent),
+        inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent);
+    backdrop-filter: blur(18px) saturate(120%);
+    -webkit-backdrop-filter: blur(18px) saturate(120%);
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend {
+    order: 0;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0.28rem 0.75rem !important;
+    overflow: hidden;
+    border: 0 !important;
+    border-bottom: 1px solid var(--reader-header-line) !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
+    padding: 0.38rem 0.75rem 0.62rem !important;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
+    min-height: 2rem;
+    padding: 0.3rem 0.25rem;
+}
+
+html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .srh-root {
+    position: relative;
+    top: auto;
+    order: 1;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+    border-color: color-mix(in srgb, var(--gold, #b9954b) 34%, var(--border));
+    background:
+        radial-gradient(circle at 7% -32%, color-mix(in srgb, var(--gold, #b9954b) 10%, transparent), transparent 42%),
+        color-mix(in srgb, var(--bg-card) 97%, transparent);
+}
+
+@media (max-width: 640px) {
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified {
+        width: 100% !important;
+        margin-bottom: 0.45rem !important;
+        border-radius: 0.95rem;
+        box-shadow: 0 8px 22px color-mix(in srgb, var(--text-primary) 7%, transparent);
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend,
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
+        padding: 0.18rem 0.45rem !important;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
+        min-height: 1.85rem;
+        padding: 0.24rem 0.18rem;
+    }
+
+    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__eyebrow {
+        font-size: 0.6rem;
+        letter-spacing: 0.075em;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .srh-root *,
+    .srh-root *::before,
+    .srh-root *::after {
+        scroll-behavior: auto;
+        transition-duration: 0.01ms;
+        animation-duration: 0.01ms;
+        animation-iteration-count: 1;
+    }
+}

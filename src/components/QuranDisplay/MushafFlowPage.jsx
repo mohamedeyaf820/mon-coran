@@ -28,6 +28,33 @@ const MAX_LINE_FIT = 1;
 // instead, reporting the adjusted-layout notice: legibility outranks the
 // line count, the text itself never changes.
 const MIN_LEGIBLE_FLOW_PX = 15;
+// Converged type size per sheet, keyed by what the fit actually depends on: the
+// page, the reader's settings signal, the measure it was laid out in and its
+// token count. Without it every remount restarts from 1 and re-runs the whole
+// refinement — the type visibly resizes each time a page comes back into view,
+// and each of those passes re-styles every word on the sheet.
+const FIT_CACHE_LIMIT = 240;
+const fitCache = new Map();
+// The constant part of a flow word: identical reference for every word, so React
+// skips the style diff instead of re-resolving twelve declarations per word on
+// every pass that touches the sheet.
+const FLOW_WORD_STYLE = Object.freeze({
+  // --qd-font-family is the reader's own choice. --font-quran cannot be the only
+  // source: the Warsh display element re-declares it above the inline stamp, so
+  // it resolves to the fixed Madinah stack and every face in the picker prints
+  // as KFGQPC Warsh.
+  fontFamily: "var(--qd-font-family, var(--font-quran))",
+  fontSize: "1em",
+  lineHeight: "inherit",
+  letterSpacing: 0,
+  textRendering: "optimizeLegibility",
+  WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
+  fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
+  WebkitFontSmoothing: "antialiased",
+  MozOsxFontSmoothing: "grayscale",
+  unicodeBidi: "isolate",
+  whiteSpace: "nowrap",
+});
 
 /**
  * Turn ayahs into flow segments. `getWords(ayah)` returns the printable word
@@ -97,35 +124,52 @@ export default function MushafFlowPage({
   // Flow words are proportional text in a web font, not QCF cut glyphs: a font
   // that fails to load still renders readable text, so the sheet never shows
   // the QCF font warning. Load completion only matters as a re-measure signal.
-  const [flowFit, setFlowFit] = useState(1);
   const [fitDegraded, setFitDegraded] = useState(false);
   const linesRef = useRef(null);
+  const fitRef = useRef(1);
   const fitPassRef = useRef(0);
   const fitKeyRef = useRef("");
 
   useLayoutEffect(() => {
     if (!linesRef.current) return undefined;
 
-    // A new page, font or segment set restarts the refinement budget. Row
-    // count is proportional to the type size (bigger glyphs fit fewer words per
-    // line), so each pass multiplies the fit by target/rows until the segments
-    // fill exactly the fifteen printed lines.
-    const inputKey = `${currentPage}|${fitSignal}|${segments.length}`;
-    if (fitKeyRef.current !== inputKey) {
-      fitKeyRef.current = inputKey;
-      fitPassRef.current = 0;
-    }
-    if (fitPassRef.current >= 10) return undefined;
+    // The fit is written straight onto the measured node rather than through
+    // state: a pass that changed the type size used to re-render the sheet, and
+    // the sheet is hundreds of word spans. Refinement then costs one React
+    // commit per pass on top of the style recalculation the new size needs.
+    const beginPass = () => {
+      const root = linesRef.current;
+      if (!root) return null;
+      // A new page, font, measure or segment set restarts the refinement budget.
+      // Row count is proportional to the type size (bigger glyphs fit fewer words
+      // per line), so each pass multiplies the fit by target/rows until the
+      // segments fill exactly the fifteen printed lines.
+      const inputKey = `${currentPage}|${fitSignal}|${Math.round(root.clientWidth)}|${segments.length}`;
+      if (fitKeyRef.current !== inputKey) {
+        fitKeyRef.current = inputKey;
+        fitPassRef.current = 0;
+        // Revisiting a sheet starts from the size that already converged for it,
+        // so the first painted frame is correct and one pass is enough to prove
+        // it; only a genuinely new page pays for the refinement.
+        fitRef.current = fitCache.get(inputKey) ?? 1;
+        root.style.setProperty("--qcm-flow-fit", String(fitRef.current));
+      }
+      return fitPassRef.current < 10 ? { root, inputKey } : null;
+    };
 
     let frame = 0;
     let disposed = false;
 
     const measure = () => {
-      if (disposed || fitPassRef.current >= 10) return;
+      if (disposed) return;
+      const started = beginPass();
+      if (!started) return;
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
-        if (disposed || !linesRef.current) return;
-        const root = linesRef.current;
+        if (disposed) return;
+        const pass = beginPass();
+        if (!pass) return;
+        const { root, inputKey } = pass;
         const flows = [...root.querySelectorAll(".qcm-flow")];
         if (flows.length === 0) return;
         const openingRows = root.querySelectorAll(".qcm-line").length;
@@ -148,34 +192,45 @@ export default function MushafFlowPage({
         const basePx = Number.parseFloat(getComputedStyle(root).fontSize) || 1;
         const floor = Math.max(MIN_LINE_FIT, MIN_LEGIBLE_FLOW_PX / basePx);
 
-        setFlowFit((current) => {
-          // The legibility floor outranks the no-growth ceiling: on a narrow
-          // phone the measured body is already below 15 px before the fit, so
-          // capping at 1 there would print micro-glyphs. Growth is allowed
-          // only up to what legibility demands, never to reach fifteen lines.
-          const next = Math.max(floor, Math.min(MAX_LINE_FIT, current * (target / rows)));
-          if (Math.abs(next - current) < 0.004) {
-            // Converged: the notice fires only when the legibility floor holds
-            // the type up and the page therefore runs past fifteen lines.
-            setFitDegraded(current <= floor + 0.001 && rows > target);
-            fitPassRef.current = 10;
-            return current;
-          }
-          fitPassRef.current += 1;
-          if (fitPassRef.current < 10) {
-            window.setTimeout(measure, 60);
-          } else {
-            setFitDegraded(next <= floor + 0.001 && rows > target);
-          }
-          return next;
-        });
+        const apply = (value) => {
+          fitRef.current = value;
+          root.style.setProperty("--qcm-flow-fit", String(value));
+        };
+        const current = fitRef.current;
+        // The legibility floor outranks the no-growth ceiling: on a narrow
+        // phone the measured body is already below 15 px before the fit, so
+        // capping at 1 there would print micro-glyphs. Growth is allowed
+        // only up to what legibility demands, never to reach fifteen lines.
+        const next = Math.max(floor, Math.min(MAX_LINE_FIT, current * (target / rows)));
+        // The notice fires only when the legibility floor holds the type up and
+        // the page therefore runs past fifteen lines.
+        const degraded = (value) => value <= floor + 0.001 && rows > target;
+
+        if (Math.abs(next - current) < 0.004) {
+          fitPassRef.current = 10;
+          if (fitCache.size >= FIT_CACHE_LIMIT) fitCache.delete(fitCache.keys().next().value);
+          fitCache.set(inputKey, current);
+          setFitDegraded(degraded(current));
+          return;
+        }
+        fitPassRef.current += 1;
+        apply(next);
+        if (fitPassRef.current >= 10) {
+          if (fitCache.size >= FIT_CACHE_LIMIT) fitCache.delete(fitCache.keys().next().value);
+          fitCache.set(inputKey, next);
+          setFitDegraded(degraded(next));
+        } else {
+          window.setTimeout(measure, 60);
+        }
       });
     };
 
     measure();
     const onResize = () => {
+      // A different measure is a different cache key: beginPass reseeds from the
+      // width being asked for now, or from 1 when it has never been laid out.
       fitKeyRef.current = "";
-      setFlowFit(1);
+      fitPassRef.current = 0;
       setFitDegraded(false);
       window.setTimeout(measure, 120);
     };
@@ -229,26 +284,13 @@ export default function MushafFlowPage({
             playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
           }
         }}
-        style={{
-          // --qd-font-family is the reader's own choice. --font-quran cannot be
-          // the only source: the Warsh display element re-declares it above the
-          // inline stamp, so it resolves to the fixed Madinah stack and every
-          // face in the picker prints as KFGQPC Warsh.
-          fontFamily: "var(--qd-font-family, var(--font-quran))",
-          fontSize: "1em",
-          lineHeight: "inherit",
-          letterSpacing: 0,
-          textRendering: "optimizeLegibility",
-          WebkitFontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
-          fontFeatureSettings: '"kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1',
-          WebkitFontSmoothing: "antialiased",
-          MozOsxFontSmoothing: "grayscale",
-          unicodeBidi: "isolate",
-          whiteSpace: "nowrap",
-          // The sheet paints the rule colour through --qcm-word-tajwid so the
-          // hover/active/focus ink rules keep winning over a plain colour.
-          ...(token.ruleId ? { "--qcm-word-tajwid": `var(--tajwid-${token.ruleId})` } : {}),
-        }}
+        style={
+          token.ruleId
+            ? // The sheet paints the rule colour through --qcm-word-tajwid so the
+              // hover/active/focus ink rules keep winning over a plain colour.
+              { ...FLOW_WORD_STYLE, "--qcm-word-tajwid": `var(--tajwid-${token.ruleId})` }
+            : FLOW_WORD_STYLE
+        }
       >
         {normalizeArabicText(token.text)}
       </span>
@@ -273,7 +315,6 @@ export default function MushafFlowPage({
         data-flow="true"
         data-warsh={riwaya === "warsh" ? "true" : undefined}
         data-tajweed={showTajwid ? "on" : undefined}
-        style={{ "--qcm-flow-fit": flowFit }}
       >
         {segments.map((segment, index) => {
           if (segment.kind === "surah-header") {

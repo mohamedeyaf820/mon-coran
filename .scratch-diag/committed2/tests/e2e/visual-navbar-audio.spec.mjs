@@ -1,0 +1,134 @@
+import fs from "node:fs";
+import path from "node:path";
+import { test, expect } from "@playwright/test";
+
+const OUTPUT_DIR = path.join("test-results", "visual-navbar-audio");
+const SETTINGS_KEY = "mushaf-plus-settings";
+
+async function seedTheme(page, theme = "dark") {
+  await page.addInitScript(({ key, theme }) => {
+    localStorage.setItem(
+      key,
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: true,
+        showDuas: false,
+        lang: "fr",
+        theme,
+        riwaya: "hafs",
+      }),
+    );
+  }, { key: SETTINGS_KEY, theme });
+}
+
+async function openReader(page) {
+  await page.goto("/");
+  const start = page.getByRole("button", {
+    name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
+  });
+  await expect(start.first()).toBeVisible();
+  await start.first().click();
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
+}
+
+test("Visual desktop dark: navbar + modal audio options", async ({ page }) => {
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await seedTheme(page);
+  await openReader(page);
+
+  const header = page.locator(".mp-header").first();
+  await expect(header).toBeVisible();
+  await header.screenshot({
+    path: path.join(OUTPUT_DIR, "desktop-navbar.png"),
+  });
+
+  const player = page.locator(".mp-audio-player--desktop").first();
+  await expect(player).toBeVisible();
+  const reopenDesktop = player.locator(".mp-player-minimized-open").first();
+  if (await reopenDesktop.isVisible().catch(() => false)) {
+    await reopenDesktop.click();
+  }
+  await expect(player).not.toHaveClass(/is-minimized/);
+  const desktopHeaderActions = player.locator(".simple-player__header-actions");
+  const desktopHeaderButtons = desktopHeaderActions.locator("button");
+  await expect(desktopHeaderButtons).toHaveCount(2);
+  for (const button of await desktopHeaderButtons.all()) {
+    await expect(button).toBeVisible();
+  }
+  await player.screenshot({
+    path: path.join(OUTPUT_DIR, "desktop-audio-player.png"),
+  });
+
+  const optionsTrigger = player.locator(".mp-player-options-trigger").first();
+  await expect(optionsTrigger).toBeVisible();
+  await optionsTrigger.click();
+
+  const modal = page.locator(".audio-player-modal__surface").first();
+  await expect(modal).toBeVisible();
+  await modal.screenshot({
+    path: path.join(OUTPUT_DIR, "desktop-audio-modal.png"),
+  });
+});
+
+for (const theme of ["light", "sepia"]) {
+  test(`Visual desktop ${theme}: reader navbar`, async ({ page }) => {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+    await page.setViewportSize({ width: 1128, height: 760 });
+    await seedTheme(page, theme);
+    await openReader(page);
+
+    const header = page.locator(".mp-header").first();
+    await expect(header).toBeVisible();
+    await header.screenshot({
+      path: path.join(OUTPUT_DIR, `${theme}-desktop-navbar.png`),
+    });
+  });
+}
+
+test.describe("mobile", () => {
+  test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+
+  test("Visual mobile dark: navbar + modal audio options", async ({ page }) => {
+    fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+
+    await seedTheme(page);
+    await openReader(page);
+
+    const header = page.locator(".mp-header").first();
+    await expect(header).toBeVisible();
+    await header.screenshot({
+      path: path.join(OUTPUT_DIR, "mobile-navbar.png"),
+    });
+
+    const minimized = page
+      .locator(
+        '.mp-audio-player--mobile.is-minimized[data-testid="audio-player-compact"]',
+      )
+      .first();
+    const reopenBtn = minimized.locator(".mp-player-minimized-open").first();
+    await expect(reopenBtn).toBeVisible();
+    await reopenBtn.click();
+
+    const dock = page
+      .locator(".mp-audio-player--mobile.simple-player--mobile-open")
+      .first();
+    await expect(dock).toBeVisible();
+    await expect(dock.locator(".simple-player__header-actions button")).toHaveCount(2);
+    await expect(dock.locator(".simple-player__transport-options")).toBeVisible();
+    await dock.screenshot({
+      path: path.join(OUTPUT_DIR, "mobile-audio-player.png"),
+    });
+
+    const optionsTrigger = dock.locator(".mp-player-options-trigger").first();
+    await expect(optionsTrigger).toBeVisible();
+    await optionsTrigger.click();
+
+    const modal = page.locator(".audio-player-modal__surface").first();
+    await expect(modal).toBeVisible();
+    await modal.screenshot({
+      path: path.join(OUTPUT_DIR, "mobile-audio-modal.png"),
+    });
+  });
+});

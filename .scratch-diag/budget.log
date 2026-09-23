@@ -1,0 +1,14 @@
+
+> mushafplus@1.1.0 audit:screen-budget
+> node scripts/check-screen-budget.mjs
+
+[screen-budget] src/components/HomePage.jsx: 31.9 kB (limit 40 kB) -> OK
+[screen-budget] src/components/QuranDisplay.jsx: 22.1 kB (limit 24 kB) -> OK
+[screen-budget] src/components/AudioPlayer.jsx: 40.7 kB (limit 42 kB) -> OK
+[screen-budget] src/components/SettingsModal.jsx: 44.0 kB (limit 44 kB) -> OK
+[screen-budget] src/components/LibraryModal.jsx: 17.1 kB (limit 24 kB) -> OK
+[screen-budget] src/components/AyahActions.jsx: 46.1 kB (limit 90 kB) -> OK
+[screen-budget] src/services/audioService.js: 44.2 kB (limit 45 kB) -> OK
+[screen-budget] src/context/AppContext.jsx: 29.6 kB (limit 34 kB) -> OK
+[screen-budget] src/services/quranAPI.js: 27.7 kB (limit 29 kB) -> OK
+[screen-budget] src/services/quranComAPI.js: 19.3 kB (limit 20 kB) -> OK

@@ -1,0 +1,2206 @@
+{
+ "hafs": [
+  {
+   "rec": 31,
+   "qari": "محمد جبريل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "verse.mp3quran.net"
+  },
+  {
+   "rec": 39,
+   "qari": "ياسر سلامة",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "verse.mp3quran.net"
+  },
+  {
+   "rec": 43,
+   "qari": "أحمد الحذيفي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 44,
+   "qari": "أحمد الحواشي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 45,
+   "qari": "أحمد السويلم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 46,
+   "qari": "أحمد الطرابلسي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 47,
+   "qari": "أحمد النفيس",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 48,
+   "qari": "أحمد بن علي العجمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 50,
+   "qari": "أحمد سعود",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 51,
+   "qari": "أحمد صابر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 52,
+   "qari": "أحمد عامر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 53,
+   "qari": "أحمد نعينع",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 54,
+   "qari": "أخيل عبدالحي روا (من ماليزيا)",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 55,
+   "qari": "أكرم العلاقمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 56,
+   "qari": "إبراهيم الأخضر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 57,
+   "qari": "إدريس أبكر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 58,
+   "qari": "إسلام صبحي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 59,
+   "qari": "ابراهيم الجبرين",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 60,
+   "qari": "ابراهيم الجرمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 61,
+   "qari": "ابراهيم الدوسري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 63,
+   "qari": "ابراهيم السعدان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 64,
+   "qari": "ابراهيم العسيري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 65,
+   "qari": "استاذ زامري (من ماليزيا)",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 68,
+   "qari": "الزين محمد أحمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 69,
+   "qari": "العشري عمران",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 73,
+   "qari": "بدر التركي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 74,
+   "qari": "بندر بليله",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 75,
+   "qari": "توفيق الصايغ",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 76,
+   "qari": "جمال الدين الزيلعي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 77,
+   "qari": "جمال شاكر عبدالله",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 78,
+   "qari": "جمعان العصيمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 79,
+   "qari": "حاتم فريد الواعر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 80,
+   "qari": "حسين آل الشيخ",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 81,
+   "qari": "حمد الدغريري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 82,
+   "qari": "خالد الجليل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 83,
+   "qari": "خالد الشارخ",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 84,
+   "qari": "خالد الشريمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 85,
+   "qari": "خالد الغامدي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 86,
+   "qari": "خالد القحطاني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 87,
+   "qari": "خالد المهنا",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 88,
+   "qari": "خالد الوهيبي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 89,
+   "qari": "خالد عبدالكافي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 90,
+   "qari": "خليفة الطنيجي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 91,
+   "qari": "داود حمزة",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 92,
+   "qari": "رامي الدعيس",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 94,
+   "qari": "رشيد بلعالية",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 95,
+   "qari": "رضية عبدالرحمن ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 96,
+   "qari": "رعد محمد الكردي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 97,
+   "qari": "رقية سولونق ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 98,
+   "qari": "رمضان شكور",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 99,
+   "qari": "زكريا حمامة",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 100,
+   "qari": "زكي داغستاني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 101,
+   "qari": "سابينة مامات ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 102,
+   "qari": "سامي الحسن",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 103,
+   "qari": "سامي الدوسري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 104,
+   "qari": "سعد الغامدي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 105,
+   "qari": "سعد المقرن",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 106,
+   "qari": "سعود الشريم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 107,
+   "qari": "سلمان العتيبي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 108,
+   "qari": "سهل ياسين",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 109,
+   "qari": "سيد رمضان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 110,
+   "qari": "سيدين عبدالرحمن ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 111,
+   "qari": "شعبان الصياد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 112,
+   "qari": "شيخ أبو بكر الشاطري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 113,
+   "qari": "شيرزاد عبدالرحمن طاهر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 114,
+   "qari": "صابر عبدالحكم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 115,
+   "qari": "صالح آل طالب",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 116,
+   "qari": "صالح الصاهود",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 117,
+   "qari": "صالح الهبدان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 118,
+   "qari": "صلاح البدير",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 120,
+   "qari": "صلاح الهاشم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 121,
+   "qari": "صلاح بو خاطر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 122,
+   "qari": "صلاح مصلي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 124,
+   "qari": "عادل الكلباني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 125,
+   "qari": "عادل ريان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 126,
+   "qari": "عبدالبارئ الثبيتي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 127,
+   "qari": "عبدالبارئ محمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 129,
+   "qari": "عبدالباسط عبدالصمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 132,
+   "qari": "عبدالرحمن السديس",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 133,
+   "qari": "عبدالرحمن العوسي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 134,
+   "qari": "عبدالرحمن الماجد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 135,
+   "qari": "عبدالرشيد صوفي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 138,
+   "qari": "عبدالعزيز الأحمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 139,
+   "qari": "عبدالعزيز الزهراني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 140,
+   "qari": "عبدالغني عبدالله ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 141,
+   "qari": "عبدالله البريمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 142,
+   "qari": "عبدالله البعيجان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 143,
+   "qari": "عبدالله الخلف",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 144,
+   "qari": "عبدالله الكندري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 145,
+   "qari": "عبدالله المطرود",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 146,
+   "qari": "عبدالله الموسى",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 147,
+   "qari": "عبدالله بصفر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 148,
+   "qari": "عبدالله خياط",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 149,
+   "qari": "عبدالله عواد الجهني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 150,
+   "qari": "عبدالله غيلان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 151,
+   "qari": "عبدالله فهمي ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 152,
+   "qari": "عبدالمجيد الأركاني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 153,
+   "qari": "عبدالمحسن الحارثي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 154,
+   "qari": "عبدالمحسن العبيكان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 155,
+   "qari": "عبدالمحسن العسكر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 156,
+   "qari": "عبدالمحسن القاسم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 157,
+   "qari": "عبدالهادي أحمد كناكري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 158,
+   "qari": "عبدالودود حنيف",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 159,
+   "qari": "عبدالولي الأركاني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 160,
+   "qari": "عثمان الأنصاري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 161,
+   "qari": "علي أبو هاشم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 163,
+   "qari": "علي بن عبدالرحمن الحذيفي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 164,
+   "qari": "علي جابر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 165,
+   "qari": "علي حجاج السويسي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 166,
+   "qari": "عماد زهير حافظ",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 167,
+   "qari": "عمر الدريويز",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 169,
+   "qari": "فارس عباد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 170,
+   "qari": "فهد العتيبي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 171,
+   "qari": "فهد الكندري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 172,
+   "qari": "فواز الكعبي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 173,
+   "qari": "لافي العوني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 174,
+   "qari": "ماجد الزامل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 175,
+   "qari": "ماجد العنزي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 176,
+   "qari": "مالك شيبة الحمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 178,
+   "qari": "ماهر المعيقلي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 179,
+   "qari": "ماهر شخاشيرو",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 180,
+   "qari": "محمد أيوب",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 182,
+   "qari": "محمد البخيت",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 183,
+   "qari": "محمد البراك",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 184,
+   "qari": "محمد الحافظ ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 185,
+   "qari": "محمد الطبلاوي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 186,
+   "qari": "محمد اللحيدان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 187,
+   "qari": "محمد المحيسني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 188,
+   "qari": "محمد المنشد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 189,
+   "qari": "محمد جبريل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 190,
+   "qari": "محمد حفص علي ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 191,
+   "qari": "محمد خليل القارئ",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 192,
+   "qari": "محمد خير النور ( من ماليزيا )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 193,
+   "qari": "محمد رشاد الشريف",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 194,
+   "qari": "محمد رفعت",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 195,
+   "qari": "محمد صالح عالم شاه",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 197,
+   "qari": "محمد صديق المنشاوي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 202,
+   "qari": "محمد عبدالكريم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 203,
+   "qari": "محمد عثمان خان ( من الهند )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 204,
+   "qari": "محمود الرفاعي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 208,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 210,
+   "qari": "محمود علي البنا",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 212,
+   "qari": "مشاري العفاسي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 213,
+   "qari": "مصطفى إسماعيل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 214,
+   "qari": "مصطفى اللاهوني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 215,
+   "qari": "مصطفى رعد العزاوي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 216,
+   "qari": "معمر الأندونيسي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 217,
+   "qari": "معيض الحارثي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 221,
+   "qari": "مفتاح السلطني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 223,
+   "qari": "منصور السالمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 224,
+   "qari": "موسى بلال",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 225,
+   "qari": "ناصر العبيد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 226,
+   "qari": "ناصر العصفور",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 227,
+   "qari": "ناصر القطامي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 228,
+   "qari": "ناصر الماجد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 229,
+   "qari": "نبيل الرفاعي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 230,
+   "qari": "نعمة الحسان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 231,
+   "qari": "هاني الرفاعي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 232,
+   "qari": "هزاع البلوشي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 233,
+   "qari": "هيثم الجدعاني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 234,
+   "qari": "واصل المذن",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 235,
+   "qari": "وديع اليمني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 236,
+   "qari": "وشيار حيدر اربيلي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 237,
+   "qari": "وليد الدليمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 239,
+   "qari": "ياسر الدوسري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 240,
+   "qari": "ياسر الفيلكاوي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 241,
+   "qari": "ياسر القرشي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 243,
+   "qari": "ياسر سلامة",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 244,
+   "qari": "يحيى حوا",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 245,
+   "qari": "يوسف الدغوش ( من المغرب )",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 246,
+   "qari": "يوسف الشويعي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 247,
+   "qari": "يوسف بن نوح أحمد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 248,
+   "qari": "محمد صديق المنشاوي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 256,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "حفص بالسكت من طريق طيبة النشر",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 297,
+   "qari": "عبدالرحمن السويّد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 298,
+   "qari": "عبدالإله بن عون",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 299,
+   "qari": "أحمد طالب بن حميد",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 301,
+   "qari": "إبراهيم الدوسري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 302,
+   "qari": "عبدالله القرافي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 303,
+   "qari": "عبدالبديع غيلان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 304,
+   "qari": "محمد برهجي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 305,
+   "qari": "يوسف العيدروس",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 306,
+   "qari": "حسن الدغريري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 307,
+   "qari": "محمد الفقيه",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 308,
+   "qari": "جنيد آدم عبدالله",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 309,
+   "qari": "خالد الزيادي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 310,
+   "qari": "الوليد الشمسان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 311,
+   "qari": "إبراهيم الشهري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 312,
+   "qari": "عبدالرحمن بن عبدالرزاق البدر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 315,
+   "qari": "أحمد خليل شاهين",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 316,
+   "qari": "عبدالعزيز العسيري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 330,
+   "qari": "أحمد ديبان",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 331,
+   "qari": "عبدالله كامل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 332,
+   "qari": "بيشه وا قادر الكردي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 334,
+   "qari": "نذير المالكي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 337,
+   "qari": "هيثم الدخين",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 340,
+   "qari": "محمود عبدالحكم",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 344,
+   "qari": "هاشم أبو دلال",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 345,
+   "qari": "فؤاد الخامري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 346,
+   "qari": "سيد أحمد هاشمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 347,
+   "qari": "خالد كريم محمدي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 348,
+   "qari": "مال الله عبدالرحمن الجابر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 349,
+   "qari": "سلمان الصديق",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 350,
+   "qari": "حسن صالح",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 351,
+   "qari": "عبدالرحمن الشحات",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 352,
+   "qari": "عيسى عمر سناكو",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 353,
+   "qari": "هارون بقائي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 354,
+   "qari": "عبدالله بخاري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 355,
+   "qari": "صالح القريشي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 356,
+   "qari": "صالح الشمراني",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 357,
+   "qari": "فيصل الهاجري",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 358,
+   "qari": "أنس العمادي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 359,
+   "qari": "عبدالملك العسكر",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 360,
+   "qari": "عبدالكريم الحازمي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 362,
+   "qari": "عبدالله المشعل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 364,
+   "qari": "مختار الحاج",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 366,
+   "qari": "عبدالعزيز التركي",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 367,
+   "qari": "عبدالله عبدل",
+   "riwaya": "حفص عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  }
+ ],
+ "warsh": [
+  {
+   "rec": 62,
+   "qari": "ابراهيم الدوسري",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 70,
+   "qari": "العيون الكوشي",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 72,
+   "qari": "القارئ ياسين",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server11.mp3quran.net"
+  },
+  {
+   "rec": 93,
+   "qari": "رشيد إفراد",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 130,
+   "qari": "عبدالباسط عبدالصمد",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 168,
+   "qari": "عمر القزابري",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 181,
+   "qari": "محمد الأيراوي",
+   "riwaya": "ورش عن نافع من طريق أبي بكر الأصبهاني",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 201,
+   "qari": "محمد عبدالكريم",
+   "riwaya": "ورش عن نافع من طريق أبي بكر الأصبهاني",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 206,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 262,
+   "qari": "عبد الباسط عبد الصمد",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 263,
+   "qari": "ياسين الجزائري",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 264,
+   "qari": "عبد الكريم الدغوش",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 266,
+   "qari": "رشيد بلعالية",
+   "riwaya": "ورش عن نافع من طريق الأصبهاني",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 267,
+   "qari": "محمد عبدالكريم",
+   "riwaya": "ورش عن نافع من طريق الأصبهاني",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 296,
+   "qari": "محمد سايد",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 317,
+   "qari": "يونس اسويلص",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 324,
+   "qari": "أحمد ديبان",
+   "riwaya": "ورش عن نافع من طريق الأزرق",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 333,
+   "qari": "رشيد بلعالية",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 361,
+   "qari": "هشام الهراز",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 363,
+   "qari": "عبدالعزيز سحيم",
+   "riwaya": "ورش عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  }
+ ],
+ "autre": [
+  {
+   "rec": 49,
+   "qari": "أحمد خضر الطرابلسي",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 66,
+   "qari": "المصحف المعلم للقارئ الحسيني العزازي",
+   "riwaya": "المصحف المعلم للقارئ الحسيني العزازي",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 67,
+   "qari": "الدوكالي محمد العالم",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 71,
+   "qari": "الفاتح محمد الزبير",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server6.mp3quran.net"
+  },
+  {
+   "rec": 119,
+   "qari": "صلاح الهاشم",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 123,
+   "qari": "طارق عبدالغني دعوب",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 128,
+   "qari": "المصحف المعلم للقارئ عبدالبارئ محمد",
+   "riwaya": "المصحف المعلم للقارئ عبدالبارئ محمد",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 131,
+   "qari": "المصحف المجود للقارئ عبدالباسط عبدالصمد",
+   "riwaya": "المصحف المجود للقارئ عبدالباسط عبدالصمد ",
+   "per_ayah": false,
+   "host": "server7.mp3quran.net"
+  },
+  {
+   "rec": 136,
+   "qari": "عبدالرشيد صوفي",
+   "riwaya": "السوسي عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 137,
+   "qari": "عبدالرشيد صوفي",
+   "riwaya": "خلف عن حمزة",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 162,
+   "qari": "علي الحذيفي",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 177,
+   "qari": "المصحف المعلم للقارئ ماهر المعيقلي",
+   "riwaya": "المصحف المعلم للقارئ ماهر المعيقلي",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 196,
+   "qari": "المصحف المجود للقارئ محمد صديق المنشاوي",
+   "riwaya": "المصحف المجود للقارئ محمد صديق المنشاوي",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 198,
+   "qari": "المصحف المعلم للقارئ محمد صديق المنشاوي",
+   "riwaya": "المصحف المعلم للقارئ محمد صديق المنشاوي",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 199,
+   "qari": "محمد عبدالحكيم سعيد العبدالله",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 200,
+   "qari": "محمد عبدالحكيم سعيد العبدالله",
+   "riwaya": "البزي وقنبل عن ابن كثير",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 205,
+   "qari": "محمود الشيمي",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server10.mp3quran.net"
+  },
+  {
+   "rec": 207,
+   "qari": "المصحف المجود للقارئ محمود خليل الحصري",
+   "riwaya": "المصحف المجود للقارئ محمود خليل الحصري",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 209,
+   "qari": "المصحف المجود للقارئ محمود علي البنا",
+   "riwaya": "المصحف المجود للقارئ محمود علي البنا",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 211,
+   "qari": "مشاري العفاسي",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 218,
+   "qari": "مفتاح السلطني",
+   "riwaya": "ابن ذكوان عن ابن عامر",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 219,
+   "qari": "مفتاح السلطني",
+   "riwaya": "شعبة  عن عاصم",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 220,
+   "qari": "مفتاح السلطني",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 222,
+   "qari": "مفتاح السلطني",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 238,
+   "qari": "وليد النائحي",
+   "riwaya": "قالون عن نافع من طريق أبي نشيط",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 242,
+   "qari": "ياسر المزروعي",
+   "riwaya": "قراءة يعقوب الحضرمي بروايتي رويس وروح",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  },
+  {
+   "rec": 257,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 258,
+   "qari": "وليد علي النائحي",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 259,
+   "qari": "الأمين محمد قنيوه",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 260,
+   "qari": "محمد أبوسنينة",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 268,
+   "qari": "محمد عبد الحكيم",
+   "riwaya": "البزي عن ابن كثير",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 269,
+   "qari": "محمد عبد الحكيم",
+   "riwaya": "قنبل عن ابن كثير",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 270,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 271,
+   "qari": "عبد الرشيد صوفي",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 273,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "هشام عن ابن عامر",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 274,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "ابن ذكوان عن ابن عامر",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 275,
+   "qari": "عبد الرشيد صوفي",
+   "riwaya": "شعبة عن عاصم",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 276,
+   "qari": "عبد الحكيم عبد اللطيف",
+   "riwaya": "شعبة عن عاصم",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 277,
+   "qari": "عبد الرشيد صوفي",
+   "riwaya": "خلف عن حمزة",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 278,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "خلاد عن حمزة",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 279,
+   "qari": "عبد الرشيد صوفي",
+   "riwaya": "أبو الحارث عن الكسائي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 280,
+   "qari": "عبد الرشيد صوفي",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 281,
+   "qari": "محمد عبد الحكيم سعيد",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 282,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "ابن وردان عن أبي جعفر",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 283,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "ابن جماز عن أبي جعفر",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 284,
+   "qari": "ياسر المزروعي",
+   "riwaya": "رويس عن يعقوب الحضرمي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 285,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "رويس عن يعقوب الحضرمي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 286,
+   "qari": "ياسر المزروعي",
+   "riwaya": "روح عن يعقوب الحضرمي",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 287,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "إسحاق الوراق عن خلف البزار",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 288,
+   "qari": "مفتاح محمد السلطني",
+   "riwaya": "إدريس الحداد عن خلف البزار",
+   "per_ayah": true,
+   "host": "files.quranpedia.net"
+  },
+  {
+   "rec": 289,
+   "qari": "الأمين قنيوه",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "cdn.quranpedia.net"
+  },
+  {
+   "rec": 290,
+   "qari": "محمد أبو سنينة",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": true,
+   "host": "cdn.quranpedia.net"
+  },
+  {
+   "rec": 291,
+   "qari": "مجود للقارئ ماهر المعيقلي",
+   "riwaya": "مجود للقارئ ماهر المعيقلي",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 292,
+   "qari": "مجود للقارئ محمد الطبلاوي",
+   "riwaya": "مجود للقارئ محمد الطبلاوي",
+   "per_ayah": false,
+   "host": "server12.mp3quran.net"
+  },
+  {
+   "rec": 293,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 294,
+   "qari": "محمود خليل الحصري",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server13.mp3quran.net"
+  },
+  {
+   "rec": 295,
+   "qari": "مجود للقارئ مصطفى إسماعيل",
+   "riwaya": "مجود للقارئ مصطفى إسماعيل",
+   "per_ayah": false,
+   "host": "server8.mp3quran.net"
+  },
+  {
+   "rec": 300,
+   "qari": "نورين محمد صديق",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 313,
+   "qari": "مروان العكري",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 314,
+   "qari": "معلم للقارئ عبدالله الموسى",
+   "riwaya": "معلم للقارئ عبدالله الموسى",
+   "per_ayah": false,
+   "host": "server14.mp3quran.net"
+  },
+  {
+   "rec": 318,
+   "qari": "أحمد ديبان",
+   "riwaya": "ابن جماز عن أبي جعفر",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 319,
+   "qari": "أحمد ديبان",
+   "riwaya": "هشام عن ابي عامر",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 320,
+   "qari": "أحمد ديبان",
+   "riwaya": "خلف عن حمزة",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 321,
+   "qari": "أحمد ديبان",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 322,
+   "qari": "أحمد ديبان",
+   "riwaya": "السوسي عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 323,
+   "qari": "أحمد ديبان",
+   "riwaya": "ابن ذكوان عن ابن عامر",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 325,
+   "qari": "أحمد ديبان",
+   "riwaya": "الدوري عن أبي عمرو",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 326,
+   "qari": "أحمد ديبان",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 327,
+   "qari": "أحمد ديبان",
+   "riwaya": "البزي عن ابن كثير",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 328,
+   "qari": "أحمد ديبان",
+   "riwaya": "قنبل عن ابن كثير",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 329,
+   "qari": "أحمد ديبان",
+   "riwaya": "شعبة  عن عاصم",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 335,
+   "qari": "عكاشة كميني",
+   "riwaya": "البزي عن ابن كثير",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 336,
+   "qari": "عكاشة كميني",
+   "riwaya": "الدوري عن الكسائي",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 339,
+   "qari": "محمد الأمين قنيوة",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 343,
+   "qari": "إبراهيم كشيدان",
+   "riwaya": "قالون عن نافع",
+   "per_ayah": false,
+   "host": "server16.mp3quran.net"
+  },
+  {
+   "rec": 365,
+   "qari": "علي بن عبدالرحمن الحذيفي",
+   "riwaya": "شعبة  عن عاصم",
+   "per_ayah": false,
+   "host": "server9.mp3quran.net"
+  }
+ ]
+}

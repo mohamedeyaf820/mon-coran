@@ -1,0 +1,45 @@
+[
+  {
+    "cssFile": "5VpcSb5e.css",
+    "bytes": [
+      25006,
+      27375
+    ],
+    "revived": [
+      ".full-quran-download",
+      ".full-quran-download h4",
+      ".full-quran-download__primary,.full-quran-download__remove",
+      ".full-quran-download__primary",
+      ".full-quran-download__primary.is-cancel",
+      ".full-quran-download__primary:disabled",
+      ".full-quran-download .is-spinning",
+      ".recitation-row__type",
+      ".recitation-action-btn--download",
+      ".recitation-action-btn--download .recitation-action-btn__label",
+      ".recitation-action-btn--download.is-offline",
+      ".recitation-action-btn--download.is-downloading",
+      ".full-quran-download.is-ready",
+      ".full-quran-download.is-ready .full-quran-download__icon"
+    ]
+  },
+  {
+    "cssFile": "DhbBLyNk.css",
+    "bytes": [
+      256473,
+      256790
+    ],
+    "revived": [
+      ".sip-overview"
+    ]
+  },
+  {
+    "cssFile": "ud9RGzJw.css",
+    "bytes": [
+      395263,
+      395268
+    ],
+    "revived": [
+      "code,kbd,pre"
+    ]
+  }
+]

@@ -1,0 +1,64 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 102,
+  "number_of_ayahs": 8,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Rivalry in worldly increase distracteth you"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Until ye come to the graves."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Nay, but ye will come to know!"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Nay, but ye will come to know!"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "Nay, would that ye knew (now) with a sure knowledge!"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "For ye will behold hell-fire."
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "Aye, ye will behold it with sure vision."
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "Then, on that day, ye will be asked concerning pleasure."
+    }
+  ]
+}

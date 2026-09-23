@@ -1,0 +1,10 @@
+/* Critical device typography: available before the deferred feature cascade. */
+:root {
+  --mp-fluid-root: clamp(15px, calc(14.4px + 0.17vw), 17px);
+}
+
+html {
+  font-size: var(--mp-fluid-root) !important;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}

@@ -1,0 +1,45 @@
+diff --git a/src/components/Home/HomePrimitives.jsx b/src/components/Home/HomePrimitives.jsx
+index d25396d..824b3c4 100644
+--- a/src/components/Home/HomePrimitives.jsx
++++ b/src/components/Home/HomePrimitives.jsx
+@@ -3,4 +3,6 @@ import { Play, Pause } from "lucide-react";
+ import { cn } from "../../lib/utils";
+ import { getSurahLigature, toAr } from "../../data/surahs";
++import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
++import { useAppLocale } from "../../context/AppContext";
+ import {
+   normalizeLatinSurahName,
+@@ -86,10 +88,12 @@ export const SurahCard = memo(function SurahCard({
+         ? TYPE_INFO[surah.type]?.ar || ""
+         : getSurahEnglishMeaning(surah.n);
++  const { riwaya } = useAppLocale();
++  const verseCount = getSurahVerseCountByRiwaya(surah.n, riwaya) || surah.ayahs;
+   const ayahLabel =
+     lang === "ar"
+-      ? `${toAr(surah.ayahs)} آية`
++      ? `${toAr(verseCount)} آية`
+       : lang === "fr"
+-        ? `${surah.ayahs} versets`
+-        : `${surah.ayahs} ayahs`;
++        ? `${verseCount} versets`
++        : `${verseCount} ayahs`;
+   const playAriaLabel = isPlaying
+     ? lang === "ar"
+@@ -168,6 +172,6 @@ export const SurahCard = memo(function SurahCard({
+                 "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+                 surah.type === "Meccan"
+-                  ? "bg-gold/10 text-gold"
+-                  : "bg-primary/10 text-primary",
++                  ? "bg-[var(--gold-tint)] text-[var(--gold)]"
++                  : "bg-[color-mix(in_srgb,var(--primary)_10%,transparent_90%)] text-[var(--primary)]",
+               )}
+             >
+@@ -269,6 +273,6 @@ export const SurahCard = memo(function SurahCard({
+               "hp-card-type inline-flex items-center px-1.5 py-0 rounded text-[0.6rem] font-semibold leading-[1.6]",
+               isMeccan
+-                ? "bg-gold/10 text-gold"
+-                : "bg-primary/10 text-primary",
++                ? "bg-[var(--gold-tint)] text-[var(--gold)]"
++                : "bg-[color-mix(in_srgb,var(--primary)_10%,transparent_90%)] text-[var(--primary)]",
+             )}
+           >

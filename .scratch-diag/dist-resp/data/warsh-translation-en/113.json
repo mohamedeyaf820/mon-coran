@@ -1,0 +1,43 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 113,
+  "number_of_ayahs": 5,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Say: I seek refuge in the Lord of the Daybreak"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "From the evil of that which He created;"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "From the evil of the darkness when it is intense,"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "And from the evil of malignant witchcraft,"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "And from the evil of the envier when he envieth."
+    }
+  ]
+}

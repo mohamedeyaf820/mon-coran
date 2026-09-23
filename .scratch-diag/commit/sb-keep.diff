@@ -1,0 +1,24 @@
+diff --git a/src/styles/sidebar-enhanced.css b/src/styles/sidebar-enhanced.css
+index c93229c..6eb6ba1 100644
+--- a/src/styles/sidebar-enhanced.css
++++ b/src/styles/sidebar-enhanced.css
+@@ -137,5 +159,5 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
+   color: var(--text-secondary) !important;
+   background: transparent !important;
+-  min-height: 2.2rem !important;
++  min-height: max(2.75rem, 44px) !important;
+ }
+ 
+@@ -271,5 +303,5 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
+   #sidebar .overflow-y-auto button.w-full,
+   .sb-wrapper .overflow-y-auto button.w-full {
+-    min-height: 2.25rem !important;
++    min-height: max(2.75rem, 44px) !important;
+     padding: 0.3rem 0.4rem !important;
+   }
+@@ -277,5 +309,4 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
+   #sidebar .sidebar-tab-trigger,
+   .sb-wrapper .sidebar-tab-trigger {
+-    min-height: 2rem !important;
+     font-size: 0.68rem !important;
+   }

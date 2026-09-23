@@ -1,0 +1,3578 @@
+
+
+:root {
+  --home-shell-max: 1380px;
+  --home-surface-radius: 22px;
+  --player-desktop-w: min(376px, calc(100vw - 32px));
+  --touch-target: 44px;
+}
+
+html {
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
+}
+
+body,
+#root {
+  overflow-x: clip;
+}
+
+button,
+[role="button"],
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+button,
+[role="button"] {
+  -webkit-tap-highlight-color: transparent;
+}
+
+
+.app-root > .mp-header {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: var(--z-header) !important;
+  padding: 0.45rem clamp(0.55rem, 1.8vw, 1rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 70%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 88%, transparent)) !important;
+  backdrop-filter: blur(6px) saturate(1.04);
+  box-shadow: 0 12px 34px rgba(8, 24, 16, 0.08);
+}
+
+.app-root > .mp-header .mp-header__bar {
+  width: min(1420px, 100%) !important;
+  min-height: 3.35rem !important;
+  margin-inline: auto;
+  display: grid !important;
+  grid-template-columns: minmax(10rem, 0.82fr) minmax(12rem, 1fr) minmax(15rem, 0.92fr) !important;
+  align-items: center !important;
+  gap: clamp(0.45rem, 1vw, 0.85rem);
+}
+
+.app-root > .mp-header .mp-header__brand-row,
+.app-root > .mp-header .mp-header__center,
+.app-root > .mp-header .mp-header__actions {
+  min-width: 0 !important;
+}
+
+.app-root > .mp-header .mp-header__brand-row,
+.app-root > .mp-header .mp-header__actions,
+.app-root > .mp-header .mp-header__nav {
+  display: flex !important;
+  align-items: center !important;
+}
+
+.app-root > .mp-header .mp-header__brand-row {
+  justify-content: flex-start !important;
+  gap: 0.55rem;
+}
+
+.app-root > .mp-header .mp-header__actions {
+  justify-content: flex-end !important;
+  gap: 0.42rem;
+}
+
+.app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__more, .mp-header__nav-arrow) {
+  width: var(--space-11) !important;
+  min-width: var(--space-11) !important;
+  height: var(--space-11) !important;
+  min-height: var(--space-11) !important;
+  border-radius: var(--r-md-lg);
+  border: 1px solid transparent;
+  background: transparent !important;
+  color: color-mix(in srgb, var(--theme-text, #111827) 86%, var(--theme-text-muted, #64748b)) !important;
+  box-shadow: none;
+}
+
+.app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile):hover {
+  border-color: color-mix(in srgb, var(--theme-primary, #0b6235) 42%, transparent);
+  background: rgba(var(--theme-primary-rgb, 11, 98, 53), 0.1) !important;
+  color: var(--theme-primary, #0b6235) !important;
+  transform: translateY(-1px);
+}
+
+.app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile):focus-visible,
+.app-root > .mp-header .mp-header__title-btn:focus-visible,
+.app-root > .mp-header .mp-header__home-summary:focus-visible,
+.app-root > .mp-header .mp-header__seg:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--theme-primary, #0b6235) 70%, white 30%);
+  outline-offset: 3px;
+}
+
+.app-root > .mp-header .mp-header__brand {
+  min-width: 0 !important;
+  max-width: 13.5rem !important;
+  border-radius: var(--r-lg);
+  padding: 0.28rem 0.7rem 0.28rem 0.32rem;
+  gap: 0.6rem;
+}
+
+.app-root > .mp-header .mp-header__logo {
+  width: 2.42rem !important;
+  height: 2.42rem !important;
+  border-radius: var(--r-md-lg);
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(5, 18, 11, 0.14);
+}
+
+.app-root > .mp-header .mp-header__brand-text {
+  font-size: var(--ts-lg) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0;
+}
+
+.app-root > .mp-header .mp-header__home-summary,
+.app-root > .mp-header .mp-header__title-btn {
+  width: auto !important;
+  max-width: min(100%, 22rem) !important;
+  min-width: 10rem !important;
+  min-height: 2.55rem !important;
+  border-radius: var(--r-lg);
+  border: 1px solid transparent;
+  background: transparent !important;
+  padding: 0.32rem 1rem;
+  text-align: center !important;
+  box-shadow: none;
+  gap: 0;
+}
+
+.app-root > .mp-header .mp-header__home-summary > strong:not(.mp-header__home-summary-clean),
+.app-root > .mp-header .mp-header__home-summary > span:not(.mp-header__home-meta-clean) {
+  display: none !important;
+}
+
+.app-root > .mp-header .mp-header__home-summary-clean,
+.app-root > .mp-header .mp-header__title {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  color: var(--theme-text, #111827) !important;
+  font-size: clamp(0.84rem, 0.78rem + 0.2vw, 0.97rem) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: -0.01em;
+}
+
+.app-root > .mp-header .mp-header__home-meta-clean,
+.app-root > .mp-header .mp-header__kicker {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  color: var(--theme-primary, #0b6235) !important;
+  font-size: 0.6rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  line-height: 1.2 !important;
+}
+
+.app-root > .mp-header .mp-header__sub {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  color: var(--theme-text-muted, #64748b) !important;
+  font-size: var(--ts-xs) !important;
+  font-weight: 500 !important;
+  line-height: 1.1 !important;
+  letter-spacing: 0;
+}
+
+.app-root > .mp-header .mp-header__nav {
+  justify-content: center !important;
+  gap: 0.3rem;
+  background: transparent !important;
+  border: none;
+  padding: 0;
+}
+
+.app-root > .mp-header .mp-header__nav-arrow {
+  flex-shrink: 0 !important;
+}
+
+.app-root > .mp-header .mp-header__nav-arrow:disabled {
+  opacity: 0.38;
+  transform: none;
+}
+
+.app-root > .mp-header .mp-header__search {
+  width: auto !important;
+  min-width: 8.1rem !important;
+  padding-inline: var(--space-3);
+  gap: 0.48rem;
+}
+
+.app-root > .mp-header .mp-header__riwaya-switch {
+  height: 2.55rem !important;
+  border-radius: var(--r-lg);
+  background: color-mix(in srgb, var(--theme-panel-bg, #fff) 82%, transparent) !important;
+}
+
+.app-root > .mp-header .mp-header__seg,
+.app-root > .mp-header .mp-header__riwaya-switch button {
+  min-height: 2.08rem !important;
+  border-radius: var(--r-md);
+  letter-spacing: 0;
+}
+
+.app-root > .mp-header .mp-header__seg.is-active,
+.app-root > .mp-header .mp-header__riwaya-switch button:is(:hover, .is-active),
+.app-root > .mp-header .mp-header__riwaya-switch button[class*="bg-"] {
+  background: rgba(var(--theme-primary-rgb, 11, 98, 53), 0.13) !important;
+  color: var(--theme-primary, #0b6235) !important;
+}
+
+.app-root > .mp-header .mp-header-menu__item {
+  min-height: 2.7rem !important;
+  border-radius: var(--r-md);
+}
+
+html[data-theme="dark"] .app-root > .mp-header,
+html.dark .app-root > .mp-header {
+  background:
+    linear-gradient(180deg, rgba(13, 23, 20, 0.94), rgba(8, 15, 13, 0.9)) !important;
+  border-color: rgba(134, 157, 143, 0.18);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.34);
+}
+
+html[data-theme="dark"] .app-root > .mp-header :is(.mp-header__action, .mp-header__riwaya-mobile, .mp-header__riwaya-switch),
+html.dark .app-root > .mp-header :is(.mp-header__action, .mp-header__riwaya-mobile, .mp-header__riwaya-switch) {
+  background: rgba(18, 31, 26, 0.82) !important;
+  border-color: rgba(138, 160, 146, 0.2);
+  color: rgba(232, 238, 232, 0.9) !important;
+}
+
+html[data-theme="dark"] .app-root > .mp-header :is(.mp-header__title, .mp-header__home-summary-clean, .mp-header__title-btn),
+html.dark .app-root > .mp-header :is(.mp-header__title, .mp-header__home-summary-clean, .mp-header__title-btn) {
+  color: rgba(240, 246, 240, 0.94) !important;
+  border-color: transparent;
+}
+
+html[data-theme="dark"] .app-root > .mp-header :is(.mp-header__sub, .mp-header__kicker, .mp-header__home-meta-clean),
+html.dark .app-root > .mp-header :is(.mp-header__sub, .mp-header__kicker, .mp-header__home-meta-clean) {
+  color: rgba(194, 209, 198, 0.72) !important;
+}
+
+.hp-wrapper {
+  position: relative;
+  isolation: isolate;
+  width: min(var(--home-shell-max), calc(100vw - 28px));
+  margin-inline: auto;
+  padding-block: clamp(1rem, 2.4vw, 2rem) calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 2rem);
+}
+
+.hp-wrapper > .pointer-events-none[aria-hidden="true"] {
+  display: none !important;
+}
+
+.home-content-section {
+  border-color: color-mix(in srgb, var(--theme-border, rgba(148, 163, 184, 0.28)) 70%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 92%, transparent)) !important;
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 24%, transparent),
+    0 18px 52px rgba(10, 24, 18, 0.12);
+}
+
+html[data-theme="dark"] .home-content-section,
+html.dark .home-content-section {
+  background:
+    linear-gradient(180deg, rgba(18, 28, 24, 0.94), rgba(10, 18, 16, 0.92)) !important;
+  border-color: rgba(134, 157, 143, 0.2);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 24px 70px rgba(0, 0, 0, 0.38);
+}
+
+/* Décoller une carte au survol n'a de sens qu'avec une souris : sur tactile,
+   :hover reste actif après le tap et la carte demeure levée. */
+@media (hover: hover) and (pointer: fine) {
+  .hp-card:hover,
+  .home-reciter-card:hover,
+  .reciter-card:hover,
+  [data-reciter-card="true"]:hover {
+    transform: translateY(-2px);
+  }
+}
+
+.home-content-toolbar button,
+.hp-card button,
+.reciter-card button,
+[data-reciter-card="true"] button,
+.qc-reader-header button,
+.mp-audio-player button,
+.audio-player-modal button {
+  min-height: var(--touch-target);
+  min-width: var(--touch-target);
+}
+
+.home-content-toolbar {
+  position: sticky;
+  top: calc(var(--header-h, 68px) + 0.65rem);
+  border-radius: var(--r-xl);
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 92%, transparent) !important;
+  box-shadow: 0 14px 36px rgba(10, 24, 18, 0.1);
+  backdrop-filter: blur(4px) saturate(1.02);
+}
+
+html[data-theme="dark"] .home-content-toolbar,
+html.dark .home-content-toolbar {
+  background: rgba(13, 23, 20, 0.92) !important;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.36);
+}
+
+.home-collection-heading {
+  padding: 0 0.15rem;
+}
+
+.home-collection-heading__copy h2 {
+  color: var(--theme-text, #111827);
+  font-size: clamp(1.2rem, 1.9vw, 1.62rem);
+  line-height: 1.12;
+  letter-spacing: 0;
+}
+
+.home-collection-heading__copy p {
+  max-width: 68ch;
+  color: color-mix(in srgb, var(--theme-text-muted, #64748b) 92%, var(--theme-text, #111827));
+}
+
+.home-reciter-card,
+.reciter-card,
+[data-reciter-card="true"] {
+  min-height: 184px;
+  border-radius: var(--r-xl);
+  border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 72%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 94%, transparent), color-mix(in srgb, var(--theme-panel-bg, #fff) 90%, transparent)) !important;
+  box-shadow: 0 12px 30px rgba(6, 18, 12, 0.09);
+}
+
+.hp-card {
+  min-width: 0;
+  border-radius: var(--r-xl);
+}
+
+.reciter-card__name,
+.home-collection-heading__copy h2 {
+  text-wrap: balance;
+}
+
+.hp-card-play {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.reciter-card__media {
+  inline-size: clamp(58px, 8vw, 76px) !important;
+  block-size: clamp(58px, 8vw, 76px) !important;
+}
+
+.reciter-card__name {
+  letter-spacing: 0;
+}
+
+.reciter-card__actions {
+  margin-top: auto;
+}
+
+html[data-theme="dark"] .home-reciter-card,
+html.dark .home-reciter-card,
+html[data-theme="dark"] .reciter-card,
+html.dark .reciter-card,
+html[data-theme="dark"] [data-reciter-card="true"],
+html.dark [data-reciter-card="true"] {
+  background:
+    linear-gradient(180deg, rgba(18, 31, 26, 0.94), rgba(11, 21, 18, 0.94)) !important;
+  border-color: rgba(136, 157, 144, 0.2);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
+}
+
+.quran-display-container,
+.quran-reading-page,
+.quran-page-shell {
+  scroll-padding-bottom: calc(var(--player-h, 0px) + var(--desktop-player-reserved-h, 0px) + 2rem);
+}
+
+.quran-display,
+.qc-reader-page,
+.qc-reading-content,
+.quran-reader-shell,
+.qcm-page-shell {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+.qc-reader-page,
+.quran-reader-shell,
+.quran-display--platform {
+  padding-bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.5rem);
+}
+
+.qc-reader-header {
+  top: 0;
+  min-width: 0;
+}
+
+.qc-reader-header [role="group"],
+.reading-toolbar,
+.quran-toolbar,
+.qc-mode-nav {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+}
+
+.qc-reader-header [role="group"]::-webkit-scrollbar,
+.reading-toolbar::-webkit-scrollbar,
+.quran-toolbar::-webkit-scrollbar,
+.qc-mode-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.quran-text,
+.arabic-text,
+.qc-ayah__arabic,
+.quran-ayah-text,
+.mp-ayah,
+.qcm-word {
+  font-size: clamp(1.82rem, 6.8vw, 3.28rem);
+  line-height: 2.22;
+  word-spacing: clamp(0.045em, 0.42vw, 0.16em);
+  text-wrap: pretty;
+}
+
+[data-ayah-active="true"],
+.is-active-ayah,
+.ayah-active,
+.qc-ayah-card.is-active,
+.qc-ayah-card[aria-current="true"],
+.mp-ayah--active {
+  position: relative;
+  border-color: color-mix(in srgb, var(--theme-primary, #0b6235) 58%, transparent);
+  background:
+    linear-gradient(90deg, rgba(var(--theme-primary-rgb, 11, 98, 53), 0.1), transparent 54%),
+    color-mix(in srgb, var(--theme-panel-bg-strong, #fff) 92%, transparent) !important;
+}
+
+[data-ayah-active="true"]::before,
+.is-active-ayah::before,
+.ayah-active::before,
+.qc-ayah-card.is-active::before,
+.qc-ayah-card[aria-current="true"]::before {
+  content: "";
+  position: absolute;
+  inset-block: 14px;
+  inset-inline-start: 0;
+  inline-size: 3px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--theme-primary, #0b6235), var(--gold, #d4a820));
+}
+
+.qc-ayah-card.is-playing,
+.ayah-playing,
+.mp-ayah--playing {
+  box-shadow: inset 0 0 0 1px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.22),
+    0 14px 38px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.12);
+}
+
+.mp-audio-player {
+  contain: layout paint style;
+  letter-spacing: 0;
+}
+
+.mp-audio-player--desktop {
+  width: var(--player-desktop-w) !important;
+  min-width: 320px !important;
+  max-width: var(--player-desktop-w) !important;
+  transform-origin: bottom right;
+  transition-property: box-shadow, transform, opacity !important;
+}
+
+.mp-audio-player--desktop.is-minimized {
+  min-height: 110px;
+  max-height: 128px;
+}
+
+.mp-audio-player--desktop.is-maximized.is-collapsed {
+  min-height: 338px;
+  max-height: min(452px, calc(100dvh - var(--header-h, 70px) - 28px));
+}
+
+.mp-audio-player--desktop.is-expanded {
+  max-height: calc(100dvh - var(--header-h, 70px) - 24px) !important;
+}
+
+.mp-audio-player--desktop[data-dragging="true"] {
+  cursor: grabbing;
+  opacity: 0.98;
+  transform: scale(1.006);
+}
+
+.mp-player-drag-zone {
+  min-height: 42px;
+  margin: 0.55rem 0.75rem 0.15rem;
+  border-radius: var(--r-lg);
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.mp-player-drag-zone:active {
+  cursor: grabbing;
+}
+
+.mp-player-drag-zone span {
+  letter-spacing: 0.08em;
+}
+
+.mp-player-controls-strip {
+  border-radius: var(--r-lg);
+}
+
+.mp-player-play-btn,
+.audio-player-primary-btn {
+  flex: 0 0 auto;
+}
+
+.mp-player-progress {
+  min-height: 6px;
+}
+
+.mp-audio-player--mobile.mp-audio-player--dock {
+  max-height: min(68dvh, 520px);
+  border-radius: var(--r-xl) 24px 0 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+  min-height: 138px;
+  max-height: 138px;
+}
+
+.mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
+  max-height: min(72dvh, 620px);
+}
+
+.mp-audio-player--mobile:not(.mp-audio-player--dock) {
+  min-height: 72px;
+}
+
+.mp-player-mobile-expanded {
+  max-height: calc(72dvh - 132px) !important;
+}
+
+.audio-player-modal__surface {
+  max-width: calc(100vw - 18px) !important;
+}
+
+.audio-player-modal input,
+.mp-audio-player input {
+  min-height: 36px;
+}
+
+.audio-player-modal button,
+.mp-audio-player button,
+.home-content-section button {
+  outline-offset: 3px;
+}
+
+.app-root .home-audio-speed-button[aria-pressed="true"] {
+  background: var(--primary, #0b6235) !important;
+  color: var(--theme-text-inverse, #fff) !important;
+}
+
+.audio-player-modal button:focus-visible,
+.mp-audio-player button:focus-visible,
+.home-content-section button:focus-visible,
+.hp-card:focus-visible,
+.reciter-card button:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--theme-primary, #0b6235) 72%, white 28%);
+}
+
+html[data-theme="dark"] .mp-audio-player,
+html.dark .mp-audio-player,
+html[data-theme="dark"] .audio-player-modal__surface,
+html.dark .audio-player-modal__surface {
+  color-scheme: dark;
+}
+
+@media (max-width: 1180px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: minmax(7rem, auto) minmax(8rem, 1fr) auto !important;
+  }
+
+  .app-root > .mp-header .mp-header__brand {
+    max-width: 10.75rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__search {
+    min-width: 2.8rem !important;
+    width: 2.8rem !important;
+    padding-inline: 0;
+  }
+
+  .app-root > .mp-header .mp-header__search span {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__network {
+    display: none !important;
+  }
+
+  .home-content-toolbar {
+    top: calc(var(--header-h, 64px) + 0.4rem);
+  }
+}
+
+@media (max-width: 720px) {
+  .app-root > .mp-header {
+    padding: 0.34rem 0.48rem;
+  }
+
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.25rem !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    gap: 0.35rem;
+  }
+
+  .app-root > .mp-header .mp-header__center {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__brand {
+    display: inline-flex !important;
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0;
+  }
+
+  .app-root > .mp-header .mp-header__brand-text {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__logo {
+    width: 2.2rem !important;
+    height: 2.2rem !important;
+    margin-inline: auto;
+  }
+
+  .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__riwaya-mobile) {
+    width: var(--space-11) !important;
+    min-width: var(--space-11) !important;
+    height: var(--space-11) !important;
+    min-height: var(--space-11) !important;
+    border-radius: var(--r-md);
+  }
+
+  .app-root > .mp-header .mp-header__actions {
+    gap: 0.3rem;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-mobile {
+    display: inline-flex !important;
+    margin-right: 0;
+    font-size: var(--ts-xs) !important;
+  }
+
+  .app-root > .mp-header .mp-header__action:not(.mp-header__search),
+  .app-root > .mp-header .mp-header__network {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__more {
+    display: inline-flex !important;
+  }
+
+  .hp-wrapper {
+    width: min(100%, var(--home-shell-max));
+    padding-block: 0.75rem calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem);
+  }
+
+  .home-hero-actions > button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .home-content-toolbar {
+    position: relative;
+    top: auto;
+    padding: 0.65rem;
+  }
+
+  .home-content-toolbar > * {
+    min-width: 0;
+  }
+
+  .home-content-toolbar .no-scrollbar {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  .hp-card,
+  .reciter-card,
+  [data-reciter-card="true"] {
+    min-height: 132px;
+    border-radius: var(--r-lg);
+  }
+
+  .hp-card-ar {
+    max-width: 34%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .quran-text,
+  .arabic-text,
+  .qc-ayah__arabic,
+  .quran-ayah-text,
+  .mp-ayah,
+  .qcm-word {
+    font-size: clamp(1.42rem, 7.2vw, 2.18rem);
+    line-height: 2.04;
+    word-spacing: 0.055em;
+  }
+
+  .home-collection-heading__copy h2 {
+    font-size: var(--ts-lg);
+  }
+
+  .mp-audio-player--desktop {
+    display: none !important;
+  }
+
+  .audio-player-modal {
+    align-items: flex-end !important;
+    padding: 0;
+  }
+
+  .audio-player-modal__surface {
+    height: min(86dvh, 680px) !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    border-radius: var(--r-xl) 22px 0 0;
+  }
+}
+
+@media (max-width: 420px) {
+  :root {
+    --touch-target: 44px;
+  }
+
+  .mp-player-mobile-meta {
+    width: 4.65rem !important;
+  }
+
+  .mp-player-mobile-secondary {
+    gap: 0.2rem;
+  }
+
+  .mp-player-mobile-main-controls {
+    gap: 0.22rem;
+    padding-inline: 0.28rem;
+  }
+}
+
+
+.app-root > .mp-header .mp-header__riwaya-mobile {
+  display: none !important;
+}
+
+.app-root > .mp-header .mp-header__bar {
+  min-height: 3.85rem !important;
+  grid-template-columns: minmax(11.5rem, 0.85fr) minmax(18rem, 1.08fr) minmax(17rem, 0.95fr) !important;
+}
+
+.app-root > .mp-header .mp-header__title-btn,
+.app-root > .mp-header .mp-header__home-summary {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.12rem;
+  min-height: 3.15rem !important;
+  max-height: none !important;
+  padding-block: 0.42rem;
+  padding-inline: clamp(0.85rem, 1.4vw, 1.15rem);
+}
+
+.app-root > .mp-header .mp-header__kicker {
+  order: 0;
+  font-size: var(--ts-2xs) !important;
+  font-weight: 850 !important;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--theme-primary, #0b6235) 78%, var(--theme-text-muted, #64748b)) !important;
+}
+
+.app-root > .mp-header .mp-header__title,
+.app-root > .mp-header .mp-header__home-summary-clean {
+  order: 1;
+  font-size: clamp(0.92rem, 0.82rem + 0.34vw, 1.08rem) !important;
+  font-weight: 850 !important;
+  line-height: 1.08 !important;
+  letter-spacing: 0;
+}
+
+.app-root > .mp-header .mp-header__sub,
+.app-root > .mp-header .mp-header__home-meta-clean {
+  order: 2;
+  font-size: var(--ts-xs) !important;
+  font-weight: 650 !important;
+  line-height: 1.05 !important;
+  opacity: 0.88;
+}
+
+.app-root > .mp-header .mp-header__nav-arrow {
+  width: 2.72rem !important;
+  min-width: 2.72rem !important;
+  height: 2.72rem !important;
+}
+
+.app-root > .mp-header .mp-header__search {
+  min-width: 8.25rem !important;
+  height: 2.72rem !important;
+  border-radius: var(--r-lg);
+  font-weight: 850 !important;
+}
+
+.app-root > .mp-header .mp-header__riwaya-switch {
+  min-width: 10.5rem !important;
+  margin-right: 0;
+}
+
+.app-root > .mp-header .mp-header__riwaya-switch button {
+  min-width: 4.72rem !important;
+  font-size: var(--ts-sm) !important;
+  font-weight: 800 !important;
+}
+
+.app-root > .mp-header .mp-header__more {
+  display: inline-flex !important;
+}
+
+.home-hero-actions {
+  margin-top: clamp(1.05rem, 2vw, 1.45rem);
+}
+
+.home-content-section {
+  padding: clamp(0.85rem, 1.7vw, 1.25rem);
+  border-radius: var(--r-xl);
+}
+
+.home-collection-heading__eyebrow {
+  letter-spacing: 0.1em;
+  color: color-mix(in srgb, var(--theme-primary, #0b6235) 74%, var(--theme-text-muted, #64748b)) !important;
+}
+
+.home-collection-heading__copy h2 {
+  font-size: clamp(1.22rem, 0.96rem + 1vw, 1.78rem) !important;
+  line-height: 1.08 !important;
+}
+
+.home-collection-heading__copy p {
+  font-size: clamp(0.84rem, 0.78rem + 0.22vw, 0.94rem) !important;
+  line-height: 1.58 !important;
+}
+
+.hp-grid.hp-grid--surah {
+  gap: clamp(0.65rem, 1.2vw, 0.9rem);
+}
+
+.hp-card {
+  min-height: 126px !important;
+  padding: clamp(0.75rem, 1.2vw, 1rem);
+}
+
+.hp-card-name {
+  font-size: clamp(0.92rem, 0.84rem + 0.22vw, 1.04rem) !important;
+  line-height: 1.15 !important;
+}
+
+.hp-card-meta {
+  line-height: 1.25 !important;
+}
+
+.hp-card-ar {
+  font-size: clamp(1.38rem, 1.05rem + 1.15vw, 1.78rem) !important;
+  max-width: 38% !important;
+}
+
+@media (max-width: 1180px) {
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.65rem !important;
+    grid-template-columns: minmax(8rem, auto) minmax(13rem, 1fr) auto !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    width: min(100%, 20rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-switch {
+    min-width: 8.9rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-switch button {
+    min-width: 3.95rem !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    width: min(100%, 15rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__sub,
+  .app-root > .mp-header .mp-header__home-meta-clean {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-switch {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-mobile {
+    display: inline-flex !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.25rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-mobile {
+    display: inline-flex !important;
+  }
+
+  .home-content-section {
+    padding: 0.78rem;
+    border-radius: var(--r-xl);
+  }
+
+  .hp-card {
+    min-height: 112px !important;
+  }
+
+  .hp-card-ar {
+    max-width: 34% !important;
+  }
+}
+
+
+.app-root .qc-reader-toolbar {
+  position: static !important;
+  inset: auto !important;
+  z-index: 12 !important;
+  width: min(100%, 1040px) !important;
+  max-width: min(1040px, calc(100vw - 24px)) !important;
+  margin-inline: auto;
+  border-radius: var(--r-xl);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-surface, #ffffff) 94%, transparent), color-mix(in srgb, var(--theme-surface-2, #f7faf7) 92%, transparent)) !important;
+  box-shadow: 0 14px 36px color-mix(in srgb, var(--theme-primary, #0b6235) 11%, transparent);
+  overflow: visible;
+  transform: none;
+}
+
+.app-root .qc-reader-toolbar button,
+.app-root .qc-reader-toolbar select {
+  min-height: var(--space-10) !important;
+  white-space: nowrap !important;
+}
+
+.app-root .qc-reader-toolbar button {
+  border-radius: var(--r-md);
+  letter-spacing: 0;
+}
+
+.app-root .qc-reader-toolbar button[aria-pressed="true"] {
+  box-shadow: 0 8px 18px color-mix(in srgb, var(--theme-primary, #0b6235) 14%, transparent);
+}
+
+.app-root .qc-reader-toolbar .scrollbar-none {
+  scrollbar-width: none !important;
+}
+
+.app-root .qc-reader-toolbar .scrollbar-none::-webkit-scrollbar {
+  display: none !important;
+}
+
+.app-root .qc-reader-toolbar .arabic-font-controls--compact {
+  flex-wrap: nowrap !important;
+  min-width: min(100%, 330px) !important;
+}
+
+.app-root .qc-reader-toolbar .afc-font-group {
+  min-width: 142px !important;
+}
+
+.app-root .qc-reader-toolbar .afc-select {
+  width: 100% !important;
+  min-width: 112px !important;
+  max-width: 148px !important;
+  text-overflow: ellipsis;
+}
+
+.app-root .qc-reader-toolbar .afc-size-group {
+  min-width: 164px !important;
+}
+
+.app-root .qc-reader-toolbar .afc-range {
+  width: clamp(76px, 10vw, 110px) !important;
+}
+
+[data-theme="dark"] .app-root .qc-reader-toolbar,
+[data-theme="night-blue"] .app-root .qc-reader-toolbar,
+[data-theme="oled"] .app-root .qc-reader-toolbar {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-surface, #121a16) 92%, transparent), color-mix(in srgb, var(--theme-surface-2, #0d1511) 94%, transparent)) !important;
+  border-color: color-mix(in srgb, var(--theme-primary, #2dd084) 26%, transparent);
+  box-shadow: 0 16px 44px rgba(0, 0, 0, 0.34);
+}
+
+@media (max-width: 760px) {
+  .app-root .qc-reader-toolbar {
+    max-width: calc(100vw - 16px) !important;
+    gap: 0.7rem;
+    padding: var(--space-3);
+    border-radius: var(--r-xl);
+  }
+
+  .app-root .qc-reader-toolbar > div {
+    min-width: 0 !important;
+  }
+
+  .app-root .qc-reader-toolbar button {
+    min-height: 44px !important;
+    padding-inline: 0.78rem;
+  }
+
+  .app-root .qc-reader-toolbar .arabic-font-controls--compact {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .app-root .qc-reader-toolbar .afc-font-group,
+  .app-root .qc-reader-toolbar .afc-size-group {
+    flex: 1 1 auto !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-root .qc-reader-toolbar {
+    margin-bottom: 1rem;
+  }
+
+  .app-root .qc-reader-toolbar .afc-size-group {
+    min-width: 140px !important;
+  }
+
+  .app-root .qc-reader-toolbar .afc-size-btn {
+    min-width: 36px !important;
+  }
+}
+
+
+.app-root[data-view="reading"] .quran-display.quran-display--platform {
+  --reader-page-max: min(100%, 1360px) !important;
+  --reader-content-max: min(100%, 1180px) !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-verse-by-verse-view, .surah-ayahs-list, .qcom-continuous-list) {
+  width: min(100%, 1180px) !important;
+  max-width: min(100%, 1180px) !important;
+  margin-inline: auto;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-list-card, .qc-ayah-block, .rd-ayah) {
+  width: 100% !important;
+  max-width: min(100%, 1140px) !important;
+  margin-inline: auto;
+  content-visibility: visible;
+  contain: none;
+  contain-intrinsic-size: auto !important;
+  filter: none;
+  opacity: 1;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-list-card, .qc-ayah-block, .rd-ayah, .surah-ayahs-list, .qcom-continuous-list, .qc-verse-by-verse-view) {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar {
+  width: 100% !important;
+  max-width: none !important;
+  filter: none;
+  opacity: 1;
+  transform: translateZ(0);
+}
+
+.app-root[data-view="reading"] .quran-display--platform .qc-list-card > .flex-1 {
+  width: 100% !important;
+}
+
+@media (max-width: 760px) {
+  .app-root[data-view="reading"] .quran-display--platform :is(.qc-verse-by-verse-view, .surah-ayahs-list, .qcom-continuous-list, .qc-list-card, .qc-ayah-block, .rd-ayah) {
+    max-width: 100% !important;
+  }
+}
+
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf {
+  width: 100% !important;
+  max-width: min(100%, 1320px) !important;
+  padding-inline: clamp(0.72rem, 2vw, 1.6rem);
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
+  position: relative !important;
+  width: min(100%, 1240px) !important;
+  max-width: 1240px !important;
+  margin-inline: auto;
+  padding: clamp(1rem, 2.2vw, 2rem) clamp(0.85rem, 2.6vw, 2.25rem);
+  overflow: visible;
+  filter: none;
+  opacity: 1;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper::before,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper::after,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block::before,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block::after {
+  content: none !important;
+  display: none !important;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+  width: 100% !important;
+  max-width: min(100%, 1120px) !important;
+  margin-inline: auto;
+  padding: clamp(1.15rem, 2.2vw, 2.15rem) clamp(0.55rem, 1.8vw, 1.5rem);
+  color: var(--text-quran, var(--reader-page-ink, var(--text-primary))) !important;
+  font-size: var(--cpv-font-size, var(--qd-font-size, 42px)) !important;
+  line-height: var(--cpv-line-height, 2.42) !important;
+  word-spacing: var(--cpv-word-spacing, 0.1em);
+  letter-spacing: 0;
+  text-align: right !important;
+  filter: none;
+  opacity: 1;
+  transform: none;
+  contain: layout style;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block :is(.quran-verse-inline, .quran-arabic-text, .verse-text, .verse-text *) {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  word-spacing: inherit;
+  filter: none;
+  opacity: 1;
+}
+
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-header,
+.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-footer {
+  width: min(100%, 1040px) !important;
+  margin-inline: auto;
+}
+
+@media (max-width: 760px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf {
+    padding-inline: 0.48rem;
+  }
+
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .cpv-container.mushaf-page-wrapper {
+    padding: 0.85rem 0.5rem 1rem;
+    border-radius: var(--r-xl);
+  }
+
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    max-width: 100% !important;
+    padding-inline: 0.38rem;
+    font-size: var(--cpv-font-size, 42px) !important;
+    line-height: var(--cpv-line-height, 1.94) !important;
+    word-spacing: var(--cpv-word-spacing, 0.045em);
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    font-size: var(--cpv-font-size, 38px) !important;
+    line-height: var(--cpv-line-height, 1.94) !important;
+    word-spacing: var(--cpv-word-spacing, 0.045em);
+  }
+}
+
+@media (max-width: 380px) {
+  .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block.mushaf-container {
+    font-size: var(--cpv-font-size, clamp(18px, 7vw, 24px)) !important;
+    line-height: var(--cpv-line-height, 1.94) !important;
+    word-spacing: var(--cpv-word-spacing, 0.045em);
+  }
+}
+
+
+.app-root > .mp-header .mp-header__bar {
+  grid-template-columns: minmax(7.5rem, 0.72fr) minmax(11rem, 1fr) minmax(11rem, 0.8fr) !important;
+}
+
+.app-root > .mp-header .mp-header__title-btn,
+.app-root > .mp-header .mp-header__home-summary {
+  max-width: min(31rem, 100%) !important;
+}
+
+.app-root > .mp-header .mp-header__search span {
+  white-space: nowrap !important;
+}
+
+.app-root > .mp-header .mp-header__actions {
+  flex-wrap: nowrap !important;
+}
+
+.app-root .mp-audio-player--desktop {
+  will-change: transform;
+}
+
+.app-root .mp-audio-player--desktop[data-dragging="true"] {
+  transition: none;
+  box-shadow: 0 30px 70px rgba(2, 8, 18, 0.54),
+    0 0 0 2px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.24);
+}
+
+.app-root .mp-audio-player--desktop .mp-player-drag-zone,
+.app-root .mp-audio-player--desktop [data-player-drag="true"] {
+  cursor: grab;
+}
+
+.app-root .mp-audio-player--desktop[data-dragging="true"] :is(.mp-player-drag-zone, [data-player-drag="true"]) {
+  cursor: grabbing;
+}
+
+.app-root .app-view-home .home-content-toolbar {
+  position: sticky !important;
+  top: calc(var(--header-h, 72px) + 0.6rem) !important;
+  z-index: 45 !important;
+  align-items: stretch !important;
+}
+
+.app-root .app-view-home .home-content-toolbar input {
+  min-height: 44px !important;
+}
+
+.app-root .app-view-home .hp-grid.hp-grid--surah {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)) !important;
+}
+
+.app-root .app-view-home .hp-list .hp-card--surah,
+.app-root .app-view-home .hp-grid.hp-grid--surah .hp-card {
+  min-width: 0 !important;
+  isolation: isolate;
+}
+
+.app-root .app-view-home .hp-card-name,
+.app-root .app-view-home .hp-card-meta {
+  letter-spacing: 0;
+}
+
+.app-root .app-view-home .hp-card-ar {
+  font-size: clamp(1.35rem, 1rem + 1.25vw, 2.25rem) !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+}
+
+/* List card — calligraphie ligature (même que grid card) */
+.app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.72rem, 1.2rem + 0.85vw, 2.1rem) !important;
+  line-height: 1 !important;
+  opacity: 0.82;
+  transition: opacity 160ms ease;
+}
+
+.app-root .app-view-home .hp-card--list:hover .hp-card-ar {
+  opacity: 1;
+}
+
+/* Override the small-device rule that crushes hp-card-ar to 0.76rem */
+html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.55rem, 6vw, 2rem) !important;
+  line-height: 1 !important;
+}
+
+.app-root .app-view-home .hp-card-play {
+  min-width: var(--space-10) !important;
+  min-height: var(--space-10) !important;
+}
+
+@media (max-width: 920px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+  }
+
+  .app-root > .mp-header .mp-header__brand {
+    padding-inline-end: 0.35rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-width: 0 !important;
+    padding-inline: 0.65rem;
+  }
+}
+
+@media (max-width: 640px) {
+  .app-root > .mp-header {
+    padding-inline: 0.45rem;
+  }
+
+  .app-root > .mp-header .mp-header__bar {
+    display: flex !important;
+    gap: 0.35rem;
+    height: clamp(48px, 7vh, 54px) !important;
+    min-height: unset !important;
+  }
+
+  .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: var(--space-11) !important;
+    min-width: 44px !important;
+    height: var(--space-11) !important;
+    min-height: 44px !important;
+  }
+
+  .app-root > .mp-header .mp-header__center {
+    overflow: hidden;
+  }
+
+  .app-root > .mp-header .mp-header__search {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__network {
+    display: none !important;
+  }
+
+  .app-root .app-view-home .home-content-toolbar {
+    position: relative !important;
+    top: auto !important;
+    gap: 0.65rem;
+    padding: var(--space-3);
+  }
+
+  .app-root .app-view-home .hp-card--surah {
+    padding: 0.85rem;
+  }
+
+}
+
+@media (max-width: 1024px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    display: flex !important;
+    visibility: visible;
+    opacity: 1;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    display: inline-flex !important;
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    left: max(0.55rem, env(safe-area-inset-left)) !important;
+    right: max(0.55rem, env(safe-area-inset-right)) !important;
+    bottom: max(0.55rem, env(safe-area-inset-bottom)) !important;
+    width: auto !important;
+    border-radius: var(--r-lg);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    contain: none;
+    overflow: visible;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 5.45rem !important;
+    max-height: 5.45rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    position: absolute !important;
+    inset: 0.38rem 0.55rem auto !important;
+    z-index: 4;
+    min-height: 0 !important;
+    padding: 0;
+    pointer-events: none;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    width: 2.25rem !important;
+    min-width: 2.25rem !important;
+    height: 2.25rem !important;
+    min-height: 2.25rem !important;
+    pointer-events: auto;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
+    display: none !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
+    height: 0.2rem !important;
+    margin: 0.46rem 3.25rem 0;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 4.25rem !important;
+    padding: 0.6rem 0.58rem 0.5rem;
+    gap: 0.38rem;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    min-height: 2.72rem !important;
+    padding-block: 0.15rem;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
+    max-height: min(64dvh, 30rem) !important;
+    border-radius: var(--r-xl);
+  }
+
+  .app-root .mp-player-mobile-expanded {
+    max-height: min(38dvh, 18rem) !important;
+  }
+
+  .app-root .audio-player-modal {
+    align-items: flex-end !important;
+    padding: var(--space-3);
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    z-index: var(--z-modal, 600) !important;
+  }
+
+  .app-root .mp-audio-player .audio-player-modal__surface.audio-player-modal__surface--settings,
+  .app-root .audio-player-modal__surface.audio-player-modal__surface--settings {
+    width: min(92vw, 44rem) !important;
+    height: min(78dvh, 42rem) !important;
+    min-height: 0 !important;
+    max-height: min(78dvh, 42rem) !important;
+    border-radius: var(--r-xl);
+  }
+
+  .app-root .audio-player-modal__header {
+    min-height: 3.45rem !important;
+    padding: var(--space-3) 0.9rem;
+  }
+
+  .app-root .audio-player-modal__grid {
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  .app-root .audio-reciter-options {
+    min-height: min(32dvh, 18rem) !important;
+  }
+
+  .app-root .audio-reciter-options__item {
+    min-height: 4.15rem !important;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  .app-root .mp-audio-player .audio-player-modal__surface.audio-player-modal__surface--settings,
+  .app-root .audio-player-modal__surface.audio-player-modal__surface--settings {
+    width: min(88vw, 52rem) !important;
+    height: min(76dvh, 42rem) !important;
+    max-height: min(76dvh, 42rem) !important;
+  }
+
+  .app-root .audio-player-modal__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+    overflow: hidden;
+  }
+
+  .app-root .audio-reciter-options {
+    min-height: 0 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-root .audio-player-modal {
+    padding: 0.45rem 0.45rem max(0.45rem, env(safe-area-inset-bottom));
+  }
+
+  .app-root .mp-audio-player .audio-player-modal__surface.audio-player-modal__surface--settings,
+  .app-root .audio-player-modal__surface.audio-player-modal__surface--settings {
+    width: calc(100vw - 0.9rem) !important;
+    max-width: calc(100vw - 0.9rem) !important;
+    height: min(82dvh, 36rem) !important;
+    max-height: min(82dvh, 36rem) !important;
+    border-radius: var(--r-xl) 1.2rem 0 0;
+  }
+
+  .app-root .audio-player-modal__title-wrap p {
+    display: none !important;
+  }
+
+  .app-root .audio-reciter-options__search {
+    margin-bottom: 0.45rem;
+  }
+
+  .app-root .audio-reciter-options__search input {
+    min-height: 2.45rem !important;
+  }
+
+  .app-root .audio-reciter-options__scroll {
+    max-height: min(34dvh, 17rem) !important;
+  }
+
+  .app-root .audio-reciter-options__item {
+    min-height: 3.85rem !important;
+    border-radius: var(--r-lg);
+  }
+
+  .app-root .audio-reciter-options__badge {
+    min-height: 1.1rem !important;
+    padding-block: 0.12rem;
+    font-size: var(--ts-2xs) !important;
+  }
+
+  .app-root .audio-reciter-options__badge:first-child {
+    display: none !important;
+  }
+}
+
+
+html body .app-root[data-view="home"] .home-top-cards-grid {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  align-items: stretch !important;
+  gap: clamp(0.7rem, 1.2vw, 0.95rem);
+  width: min(100%, 1240px) !important;
+  margin: clamp(0.85rem, 1.6vw, 1.15rem) auto 0;
+}
+
+html body .app-root[data-view="home"] .home-top-cards-grid > * {
+  min-width: 0 !important;
+  height: 100% !important;
+  padding: clamp(0.9rem, 1.3vw, 1.1rem);
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--theme-border, var(--border)) 78%, transparent);
+  border-radius: 1.1rem;
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 96%, var(--primary) 4%) !important;
+  box-shadow: 0 10px 28px rgba(12, 32, 24, 0.07);
+}
+
+html body .app-root[data-view="home"] .home-prayer-list {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  align-content: start !important;
+  gap: 0.2rem;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item {
+  display: grid !important;
+  grid-template-columns: 1.75rem minmax(0, 1fr) auto !important;
+  min-width: 0 !important;
+  min-height: 2.55rem !important;
+  gap: 0.5rem;
+  padding: 0.35rem 0.45rem;
+  border-radius: 0.75rem;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item > :first-child {
+  width: 1.75rem !important;
+  height: 1.75rem !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item > span {
+  min-width: 0 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.2);
+  background: rgba(var(--primary-rgb, 11, 98, 53), 0.075) !important;
+}
+
+html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] > span:last-child {
+  flex: none !important;
+  padding: 0.2rem 0.42rem;
+  font-size: 0.54rem !important;
+  letter-spacing: 0.04em;
+  animation: none;
+}
+
+@media (hover: hover) {
+  html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
+    border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.22);
+    box-shadow: 0 14px 34px rgba(12, 32, 24, 0.1);
+    transform: translateY(-2px);
+  }
+}
+
+html[data-theme="dark"] body .app-root[data-view="home"] .home-top-cards-grid > *,
+html.dark body .app-root[data-view="home"] .home-top-cards-grid > *,
+html[data-theme="quran-night"] body .app-root[data-view="home"] .home-top-cards-grid > *,
+html[data-theme="oled"] body .app-root[data-view="home"] .home-top-cards-grid > * {
+  border-color: rgba(176, 201, 187, 0.14);
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-secondary)) 95%, var(--primary) 5%) !important;
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
+}
+
+html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > * {
+  border-color: rgba(139, 107, 62, 0.17);
+  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 95%, #b57d2a 5%) !important;
+  box-shadow: 0 12px 30px rgba(72, 55, 35, 0.08);
+}
+
+@media (max-width: 1199px) {
+  html body .app-root[data-view="home"] .home-top-cards-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+    grid-column: 1 / -1 !important;
+  }
+}
+
+@media (max-width: 680px) {
+  html body .app-root[data-view="home"] .home-top-cards-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+    gap: 0.45rem;
+  }
+
+  html body .app-root[data-view="home"] .home-top-cards-grid > * {
+    padding: 0.62rem;
+    border-radius: 0.78rem;
+  }
+}
+
+@media (max-width: 390px) {
+  html body .app-root[data-view="home"] .home-prayer-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
+    grid-column: auto !important;
+  }
+}
+
+@media (max-width: 380px) {
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    gap: 0.24rem;
+    padding-inline: 0.45rem;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    min-width: 2.35rem !important;
+    width: 2.35rem !important;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  body > .audio-player-modal {
+    position: fixed !important;
+    inset: 0 !important;
+    display: flex !important;
+    align-items: flex-end !important;
+    justify-content: center !important;
+    width: 100vw !important;
+    height: 100dvh !important;
+    padding: var(--space-3);
+    z-index: var(--z-modal, 600) !important;
+    overflow: hidden;
+  }
+
+  body > .audio-player-modal .audio-player-modal__backdrop {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in srgb, var(--theme-bg) 38%, transparent 62%),
+        color-mix(in srgb, var(--theme-bg) 76%, #020706 24%)
+      ) !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__surface.audio-player-modal__surface--settings {
+    flex: 0 0 min(92vw, 44rem) !important;
+    position: fixed !important;
+    bottom: 0.75rem !important;
+    left: 50% !important;
+    width: min(92vw, 44rem) !important;
+    max-width: min(92vw, 44rem) !important;
+    height: min(78dvh, 42rem) !important;
+    min-height: 0 !important;
+    max-height: min(78dvh, 42rem) !important;
+    border-radius: var(--r-xl);
+    transform: translateX(-50%);
+  }
+
+  body > .audio-player-modal .audio-player-modal__header {
+    min-height: 3.45rem !important;
+    padding: var(--space-3) 0.9rem;
+  }
+
+  body > .audio-player-modal .audio-player-modal__grid {
+    grid-template-columns: 1fr !important;
+    gap: var(--space-3);
+    min-height: 0 !important;
+    overflow: auto;
+    overscroll-behavior: contain !important;
+    padding: var(--space-3);
+  }
+
+  body > .audio-player-modal .audio-reciter-options {
+    min-height: 0 !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__scroll {
+    max-height: min(31dvh, 17.5rem) !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item {
+    min-height: 4rem !important;
+  }
+}
+
+@media (min-width: 721px) and (max-width: 1024px) {
+  body > .audio-player-modal {
+    padding: var(--space-4);
+  }
+
+  body > .audio-player-modal .audio-player-modal__surface.audio-player-modal__surface--settings {
+    flex-basis: min(88vw, 52rem) !important;
+    width: min(88vw, 52rem) !important;
+    max-width: min(88vw, 52rem) !important;
+    height: min(76dvh, 42rem) !important;
+    max-height: min(76dvh, 42rem) !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__grid {
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr) !important;
+    overflow: hidden;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__scroll {
+    max-height: min(45dvh, 24rem) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  body > .audio-player-modal {
+    padding: 0.45rem 0.45rem max(0.45rem, env(safe-area-inset-bottom));
+  }
+
+  body > .audio-player-modal .audio-player-modal__surface.audio-player-modal__surface--settings {
+    right: 0.45rem !important;
+    bottom: max(0.45rem, env(safe-area-inset-bottom)) !important;
+    left: 0.45rem !important;
+    flex-basis: auto !important;
+    width: auto !important;
+    max-width: none !important;
+    height: min(82dvh, 36rem) !important;
+    max-height: min(82dvh, 36rem) !important;
+    border-radius: var(--r-xl) 1.2rem 0 0;
+    transform: none;
+  }
+
+  body > .audio-player-modal .audio-player-modal__title-wrap p {
+    display: none !important;
+  }
+
+  body > .audio-player-modal .audio-player-modal__grid {
+    gap: 0.55rem;
+    padding: 0.6rem;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__search {
+    margin-bottom: 0.45rem;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__search input {
+    min-height: 2.45rem !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__scroll {
+    max-height: min(34dvh, 17rem) !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item {
+    min-height: 3.85rem !important;
+    border-radius: var(--r-lg);
+  }
+
+  body > .audio-player-modal .audio-reciter-options__badge {
+    min-height: 1.1rem !important;
+    padding-block: 0.12rem;
+    font-size: var(--ts-2xs) !important;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__badge:first-child {
+    display: none !important;
+  }
+}
+
+
+body > .audio-player-modal .audio-player-modal__surface--settings {
+  background:
+    linear-gradient(
+      160deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 94%, var(--theme-primary) 6%),
+      color-mix(in srgb, var(--theme-panel-bg) 96%, var(--theme-bg) 4%)
+    ) !important;
+}
+
+body > .audio-player-modal .audio-player-modal__title-wrap h3 {
+  font-size: clamp(0.88rem, 0.82rem + 0.22vw, 1.04rem) !important;
+  line-height: 1.12 !important;
+  letter-spacing: 0;
+}
+
+body > .audio-player-modal .audio-player-modal__title-wrap p {
+  font-size: clamp(0.66rem, 0.62rem + 0.15vw, 0.78rem) !important;
+  line-height: 1.35 !important;
+}
+
+body > .audio-player-modal .audio-player-modal__close {
+  width: 2.42rem !important;
+  height: 2.42rem !important;
+  min-width: 2.42rem !important;
+  border-radius: var(--r-lg);
+  font-size: var(--ts-sm) !important;
+}
+
+body > .audio-player-modal :is(.audio-reciter-options, .audio-settings-card) {
+  border-color: color-mix(in srgb, var(--theme-border) 58%, transparent 42%);
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 86%, transparent 14%),
+      color-mix(in srgb, var(--theme-panel-bg) 92%, transparent 8%)
+    ) !important;
+  color: color-mix(in srgb, var(--theme-text) 92%, var(--theme-bg) 8%) !important;
+}
+
+body > .audio-player-modal .audio-settings-card :is(span, p, label) {
+  color: color-mix(in srgb, var(--theme-text) 82%, var(--theme-bg) 18%) !important;
+}
+
+body > .audio-player-modal .audio-settings-card p {
+  color: color-mix(in srgb, var(--theme-text-muted) 88%, var(--theme-text) 12%) !important;
+}
+
+body > .audio-player-modal .audio-settings-card [class*="uppercase"] {
+  color: color-mix(in srgb, var(--theme-primary) 74%, var(--theme-text) 26%) !important;
+}
+
+body > .audio-player-modal :is(.audio-settings-card input[type="number"], .audio-reciter-options__search input) {
+  border-color: color-mix(in srgb, var(--theme-border) 72%, transparent 28%);
+  background: color-mix(in srgb, var(--theme-panel-bg-strong) 94%, #ffffff 6%) !important;
+  color: color-mix(in srgb, var(--theme-text) 94%, var(--theme-bg) 6%) !important;
+}
+
+body > .audio-player-modal :is(.audio-settings-card input[type="number"], .audio-reciter-options__search input)::placeholder {
+  color: color-mix(in srgb, var(--theme-text-muted) 78%, var(--theme-bg) 22%) !important;
+}
+
+body > .audio-player-modal .audio-settings-card input[type="range"] {
+  accent-color: color-mix(in srgb, var(--theme-primary) 76%, #5fbfe0 24%) !important;
+}
+
+body > .audio-player-modal .audio-settings-card button {
+  border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
+  background: color-mix(in srgb, var(--theme-panel-bg-strong) 84%, var(--theme-primary) 16%) !important;
+  color: color-mix(in srgb, var(--theme-text) 90%, var(--theme-bg) 10%) !important;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body > .audio-player-modal .audio-settings-card button:hover {
+    border-color: color-mix(in srgb, var(--theme-primary) 58%, transparent 42%);
+    background: color-mix(in srgb, var(--theme-primary) 22%, var(--theme-panel-bg-strong) 78%) !important;
+  }
+}
+
+body > .audio-player-modal .audio-reciter-options__item {
+  align-items: center !important;
+  gap: 0.72rem;
+  padding: 0.68rem 0.78rem;
+  text-align: start !important;
+  background:
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--theme-primary) 74%, #06351f 26%),
+      color-mix(in srgb, var(--theme-primary) 58%, #041f15 42%)
+    ) !important;
+  color: #ffffff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  body > .audio-player-modal .audio-reciter-options__item:hover {
+    filter: brightness(1.04);
+  }
+}
+
+body > .audio-player-modal .audio-reciter-options__item .relative.mt-0\.5 {
+  width: clamp(2.1rem, 1.96rem + 0.45vw, 2.55rem) !important;
+  height: clamp(2.1rem, 1.96rem + 0.45vw, 2.55rem) !important;
+  border-radius: var(--r-md-lg);
+}
+
+body > .audio-player-modal .audio-reciter-options__item span.text-\[0\.76rem\] {
+  font-size: clamp(0.72rem, 0.68rem + 0.18vw, 0.84rem) !important;
+  line-height: 1.18 !important;
+}
+
+body > .audio-player-modal .audio-reciter-options__badge {
+  border-radius: 999px;
+  font-size: clamp(0.48rem, 0.45rem + 0.12vw, 0.58rem) !important;
+  line-height: 1 !important;
+}
+
+body > .audio-player-modal .audio-playback-settings {
+  scrollbar-gutter: stable;
+}
+
+body > .audio-player-modal .audio-settings-card {
+  border-radius: var(--r-lg);
+}
+
+body > .audio-player-modal .audio-settings-pills button,
+body > .audio-player-modal .audio-settings-actions button,
+body > .audio-player-modal .audio-settings-speed {
+  min-height: 2.36rem !important;
+  border-radius: var(--r-md-lg);
+  font-size: clamp(0.68rem, 0.63rem + 0.16vw, 0.78rem) !important;
+}
+
+body > .audio-player-modal .audio-settings-icon-btn {
+  width: 2.4rem !important;
+  height: 2.4rem !important;
+  min-width: 2.4rem !important;
+  border-radius: var(--r-md-lg);
+}
+
+.app-root > .mp-header {
+  overflow: visible;
+}
+
+.app-root > .mp-header .mp-header__bar {
+  min-height: clamp(3.55rem, 3.25rem + 0.7vw, 4.25rem) !important;
+  gap: clamp(0.42rem, 1.2vw, 0.9rem);
+}
+
+.app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+  width: clamp(2.75rem, 2.55rem + 0.55vw, 3rem) !important;
+  min-width: clamp(2.75rem, 2.55rem + 0.55vw, 3rem) !important;
+  height: clamp(2.75rem, 2.55rem + 0.55vw, 3rem) !important;
+  min-height: clamp(2.75rem, 2.55rem + 0.55vw, 3rem) !important;
+  border-radius: var(--r-lg);
+  font-size: clamp(0.82rem, 0.78rem + 0.12vw, 0.95rem) !important;
+}
+
+.app-root > .mp-header .mp-header__title-btn,
+.app-root > .mp-header .mp-header__home-summary {
+  min-height: clamp(2.72rem, 2.45rem + 0.7vw, 3.2rem) !important;
+  padding: 0.45rem clamp(0.72rem, 1.4vw, 1.05rem);
+}
+
+.app-root > .mp-header .mp-header__title,
+.app-root > .mp-header .mp-header__home-summary-clean {
+  font-size: clamp(0.82rem, 0.76rem + 0.24vw, 1rem) !important;
+  line-height: 1.05 !important;
+}
+
+.app-root > .mp-header :is(.mp-header__kicker, .mp-header__sub, .mp-header__home-meta-clean) {
+  font-size: clamp(0.58rem, 0.53rem + 0.16vw, 0.68rem) !important;
+  line-height: 1.1 !important;
+}
+
+.app-root > .mp-header .mp-header__search {
+  min-width: clamp(2.65rem, 8vw, 8.8rem) !important;
+  padding-inline: clamp(0.72rem, 1.5vw, 1.1rem);
+}
+
+.app-root > .mp-header .mp-header__riwaya-switch {
+  min-height: 2.6rem !important;
+  border-radius: var(--r-lg);
+}
+
+.app-root > .mp-header .mp-header__riwaya-switch button,
+.app-root > .mp-header .mp-header__seg {
+  min-height: 2.18rem !important;
+  border-radius: var(--r-md);
+  font-size: var(--ts-sm) !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar, .reader-toolbar, .quran-nav, .mushaf-layout-toggle-bar) {
+  gap: clamp(0.42rem, 1.1vw, 0.72rem);
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar button, .reader-toolbar button, .quran-nav button, .mushaf-layout-toggle-bar button) {
+  min-height: clamp(2.38rem, 2.18rem + 0.52vw, 2.82rem) !important;
+  border-radius: var(--r-md-lg);
+  font-size: clamp(0.72rem, 0.66rem + 0.18vw, 0.84rem) !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar i, .reader-toolbar i, .quran-nav i, .mushaf-layout-toggle-bar i) {
+  font-size: clamp(0.78rem, 0.72rem + 0.16vw, 0.92rem) !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform .ayah-actions-inline {
+  gap: 0.42rem;
+  padding: clamp(0.48rem, 0.42rem + 0.18vw, 0.68rem);
+}
+
+.app-root[data-view="reading"] .quran-display--platform .ayah-actions-inline__icon-btn {
+  width: clamp(2.14rem, 2rem + 0.34vw, 2.42rem) !important;
+  height: clamp(2.14rem, 2rem + 0.34vw, 2.42rem) !important;
+  font-size: clamp(0.72rem, 0.68rem + 0.14vw, 0.84rem) !important;
+}
+
+.app-root[data-view="reading"] .quran-display--platform :is(.qc-ayah-text-ar, .rd-arabic, .quran-arabic-text) {
+  font-size: clamp(1.9rem, 1.45rem + 1.15vw, 3.15rem) !important;
+  line-height: clamp(2.9, 2.55 + 0.35vw, 3.35) !important;
+}
+
+@media (max-width: 720px) {
+  body > .audio-player-modal .audio-player-modal__header {
+    min-height: 3.08rem !important;
+    padding: 0.62rem 0.72rem;
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item {
+    min-height: 3.55rem !important;
+    padding: 0.56rem 0.62rem;
+  }
+
+  body > .audio-player-modal .audio-settings-card {
+    margin-bottom: 0.55rem;
+    padding: 0.68rem;
+  }
+
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    padding-inline: 0.55rem;
+  }
+
+  .app-root > .mp-header .mp-header__brand-text,
+  .app-root > .mp-header .mp-header__search span,
+  .app-root > .mp-header .mp-header__network {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__center {
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar, .reader-toolbar, .quran-nav, .mushaf-layout-toggle-bar) {
+    display: flex !important;
+    overflow-x: auto;
+    scrollbar-width: none !important;
+    padding-inline: 0.35rem;
+  }
+
+  .app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar, .reader-toolbar, .quran-nav, .mushaf-layout-toggle-bar)::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .app-root[data-view="reading"] .quran-display--platform :is(.qc-reader-toolbar button, .reader-toolbar button, .quran-nav button, .mushaf-layout-toggle-bar button) {
+    flex: 0 0 auto !important;
+    min-width: 2.72rem !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.35rem !important;
+    gap: 0.32rem;
+  }
+
+  .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: 2.35rem !important;
+    min-width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-height: 2.35rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-height: 2.48rem !important;
+    padding-inline: 0.56rem;
+  }
+
+  .app-root > .mp-header .mp-header__sub,
+  .app-root > .mp-header .mp-header__home-meta-clean {
+    display: none !important;
+  }
+}
+
+
+@media (max-width: 1024px) {
+  .app-root > .mp-header .mp-header__bar {
+    min-height: 3.35rem !important;
+    padding: 0.34rem clamp(0.48rem, 1.2vw, 0.78rem);
+  }
+
+  .app-root > .mp-header :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more, .mp-header__nav-arrow, .mp-header__riwaya-mobile) {
+    width: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    min-width: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    height: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    min-height: clamp(2.38rem, 2.18rem + 0.38vw, 2.62rem) !important;
+    border-radius: var(--r-md-lg);
+    font-size: clamp(0.78rem, 0.72rem + 0.12vw, 0.9rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__search {
+    width: clamp(2.55rem, 2.25rem + 0.7vw, 3rem) !important;
+    min-width: clamp(2.55rem, 2.25rem + 0.7vw, 3rem) !important;
+    padding-inline: 0;
+  }
+
+  .app-root > .mp-header .mp-header__search span {
+    display: none !important;
+  }
+
+  .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: auto !important;
+    min-width: clamp(2.74rem, 2.5rem + 0.6vw, 3.18rem) !important;
+    padding-inline: 0.52rem;
+    font-size: clamp(0.68rem, 0.64rem + 0.12vw, 0.76rem) !important;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-height: clamp(2.45rem, 2.22rem + 0.48vw, 2.82rem) !important;
+    border-radius: var(--r-lg);
+  }
+
+  .app-root > .mp-header .mp-header__title,
+  .app-root > .mp-header .mp-header__home-summary-clean {
+    font-size: clamp(0.78rem, 0.7rem + 0.24vw, 0.94rem) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    border-radius: var(--r-lg);
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.7rem !important;
+    max-height: 4.7rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    inset: 0.36rem 0.48rem auto !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    width: 2.18rem !important;
+    min-width: 2.18rem !important;
+    height: 2.18rem !important;
+    min-height: 2.18rem !important;
+    border-radius: var(--r-md-lg);
+    font-size: var(--ts-xs) !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 86%, var(--theme-primary) 14%) !important;
+    color: color-mix(in srgb, var(--theme-text) 88%, var(--theme-bg) 12%) !important;
+    box-shadow: 0 8px 20px rgba(2, 10, 18, 0.12);
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
+    height: 0.16rem !important;
+    margin: 0.42rem 3rem 0;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 3.72rem !important;
+    padding: 0.52rem 0.5rem 0.42rem;
+    gap: 0.28rem;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    width: clamp(4.2rem, 15vw, 5rem) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :first-child {
+    font-size: var(--ts-xs) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :nth-child(2) {
+    font-size: var(--ts-2xs) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    min-height: 2.52rem !important;
+    gap: 0.35rem;
+    padding: 0.18rem 0.38rem;
+    border-radius: var(--r-lg);
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.34rem !important;
+    min-width: 2.34rem !important;
+    height: 2.34rem !important;
+    min-height: 2.34rem !important;
+    border-radius: var(--r-md-lg);
+    font-size: var(--ts-xs) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.72rem !important;
+    min-width: 2.72rem !important;
+    height: 2.72rem !important;
+    min-height: 2.72rem !important;
+    border-radius: var(--r-lg);
+    font-size: var(--ts-sm) !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    gap: 0.28rem;
+  }
+}
+
+@media (max-width: 520px) {
+  .app-root > .mp-header .mp-header__bar {
+    gap: 0.3rem;
+  }
+
+  .app-root > .mp-header .mp-header__brand {
+    margin-inline-end: 0.08rem;
+  }
+
+  .app-root > .mp-header .mp-header__logo {
+    width: 2.28rem !important;
+    height: 2.28rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__nav {
+    gap: 0.28rem;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn {
+    padding-inline: 0.54rem;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.55rem !important;
+    max-height: 4.55rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    min-height: 3.58rem !important;
+  }
+
+  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1180px) {
+  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn {
+    width: 2.62rem !important;
+    min-width: 2.62rem !important;
+    max-width: 2.62rem !important;
+    height: 2.62rem !important;
+    min-height: 2.62rem !important;
+    padding-inline: 0;
+    border-radius: var(--r-md-lg);
+    font-size: var(--ts-sm) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn span {
+    display: none !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.5rem !important;
+    max-height: 4.5rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: flex !important;
+    height: 3.05rem !important;
+    min-height: 3.05rem !important;
+    max-height: 3.05rem !important;
+    align-items: center !important;
+    overflow: hidden;
+    padding-block: 0.28rem;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.58rem !important;
+    min-height: 2.58rem !important;
+    max-height: 2.58rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.28rem !important;
+    min-width: 2.28rem !important;
+    height: 2.28rem !important;
+    min-height: 2.28rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.56rem !important;
+    min-width: 2.56rem !important;
+    height: 2.56rem !important;
+    min-height: 2.56rem !important;
+  }
+}
+
+@media (max-width: 520px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 4.32rem !important;
+    max-height: 4.32rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    height: 2.88rem !important;
+    min-height: 2.88rem !important;
+    max-height: 2.88rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.44rem !important;
+    min-height: 2.44rem !important;
+    max-height: 2.44rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.12rem !important;
+    min-width: 2.12rem !important;
+    height: 2.12rem !important;
+    min-height: 2.12rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.42rem !important;
+    min-width: 2.42rem !important;
+    height: 2.42rem !important;
+    min-height: 2.42rem !important;
+  }
+}
+
+@media (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    flex: 0 0 auto !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+}
+
+
+@media (max-width: 900px) {
+  html body .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(5.5rem, 1fr) max-content !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__center {
+    overflow: hidden;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    display: flex !important;
+    flex: 0 0 auto !important;
+    width: max-content !important;
+    max-width: 100% !important;
+    overflow: visible;
+  }
+
+  html body .app-root > .mp-header .mp-header__icon-btn,
+  html body .app-root > .mp-header .mp-header__action:not(.mp-header__search),
+  html body .app-root > .mp-header .mp-header__more,
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    display: inline-flex !important;
+    visibility: visible;
+    opacity: 1;
+    min-width: var(--space-10) !important;
+    min-height: var(--space-10) !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-switch {
+    margin-inline-end: 0.25rem;
+  }
+
+  html body .app-root .qc-reader-toolbar > div:last-child {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(7.25rem, auto) !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .arabic-font-controls--compact {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    gap: 0.42rem;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-font-group {
+    flex: 1 1 9rem !important;
+    min-width: 7.2rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-select {
+    width: 100% !important;
+    min-width: 0 !important;
+    font-size: var(--ts-xs) !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-size-group {
+    flex: 0 0 auto !important;
+    min-width: 8rem !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-range {
+    width: clamp(3.8rem, 13vw, 5.4rem) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--theme-panel-bg-strong) 98%, var(--theme-primary) 2%),
+      color-mix(in srgb, var(--theme-panel-bg) 98%, var(--theme-bg) 2%)
+    ) !important;
+    border-color: color-mix(in srgb, var(--theme-border-strong) 54%, transparent 46%);
+    box-shadow: 0 -16px 42px rgba(2, 8, 18, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+    backdrop-filter: blur(8px) saturate(1.08);
+    -webkit-backdrop-filter: blur(8px) saturate(1.08);
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 6.05rem !important;
+    max-height: 6.05rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
+    position: relative !important;
+    inset: auto !important;
+    height: var(--space-8) !important;
+    min-height: var(--space-8) !important;
+    padding: 0.42rem 0.72rem 0.12rem;
+    background: transparent !important;
+    pointer-events: none;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
+    width: 2.38rem !important;
+    min-width: 2.38rem !important;
+    height: 2.38rem !important;
+    min-height: 2.38rem !important;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 96%, var(--theme-primary) 4%) !important;
+    pointer-events: auto;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
+    opacity: 0.9;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
+    height: 0.32rem !important;
+    margin: 0.16rem 0.82rem 0;
+    background: color-mix(in srgb, var(--theme-border) 52%, transparent 48%) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    height: 3.58rem !important;
+    min-height: 3.58rem !important;
+    max-height: 3.58rem !important;
+    display: grid !important;
+    grid-template-columns: minmax(4.6rem, 0.8fr) minmax(10.5rem, 1.45fr) auto !important;
+    align-items: center !important;
+    gap: 0.46rem;
+    padding: 0.34rem 0.72rem 0.58rem;
+    overflow: visible;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    display: flex !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :first-child {
+    font-size: var(--ts-xs) !important;
+    color: color-mix(in srgb, var(--theme-text) 94%, var(--theme-bg) 6%) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :nth-child(2) {
+    font-size: var(--ts-2xs) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    height: 2.9rem !important;
+    min-height: 2.9rem !important;
+    max-height: 2.9rem !important;
+    border-radius: var(--r-lg);
+    gap: 0.34rem;
+    padding: 0.26rem 0.42rem;
+    background: color-mix(in srgb, var(--theme-panel-bg-strong) 92%, var(--theme-bg) 8%) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.44rem !important;
+    min-width: 2.44rem !important;
+    height: 2.44rem !important;
+    min-height: 2.44rem !important;
+    border-radius: var(--r-md-lg);
+    font-size: var(--ts-xs) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 2.92rem !important;
+    min-width: 2.92rem !important;
+    height: 2.92rem !important;
+    min-height: 2.92rem !important;
+    border-radius: var(--r-lg);
+    font-size: var(--ts-base) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    display: flex !important;
+    gap: 0.34rem;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root > .mp-header .mp-header__action.mp-header__search {
+    display: none !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(4.2rem, 1fr) max-content !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__actions {
+    gap: 0.24rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__action:not(.mp-header__search),
+  html body .app-root > .mp-header .mp-header__more,
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: 44px !important;
+    min-width: 44px !important;
+    height: 44px !important;
+    min-height: 44px !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__riwaya-mobile {
+    width: auto !important;
+    min-width: 46px !important;
+    padding-inline: 0.38rem;
+  }
+
+  html body .app-root .qc-reader-toolbar > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .arabic-font-controls--compact {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) minmax(9.25rem, 0.92fr) !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-font-group,
+  html body .app-root .qc-reader-toolbar .afc-size-group {
+    width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-range {
+    width: clamp(3.35rem, 17vw, 4.85rem) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 6.35rem !important;
+    max-height: 6.35rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-areas:
+      "meta secondary"
+      "controls controls" !important;
+    height: 4.1rem !important;
+    min-height: 4.1rem !important;
+    max-height: 4.1rem !important;
+    gap: 0.3rem 0.44rem;
+    padding: 0.24rem 0.62rem 0.54rem;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    grid-area: meta !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    grid-area: controls !important;
+    width: 100% !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    grid-area: secondary !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger {
+    width: var(--mp-device-touch) !important;
+    min-width: var(--mp-device-touch) !important;
+    height: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+    max-width: none !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-options-trigger,
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: var(--mp-device-touch) !important;
+    min-width: var(--mp-device-touch) !important;
+    height: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+  }
+}
+
+
+:root {
+  --mp-device-ui: clamp(0.9rem, 0.84rem + 0.18vw, 1rem);
+  --mp-device-ui-sm: clamp(0.76rem, 0.72rem + 0.14vw, 0.84rem);
+  --mp-device-icon: clamp(0.8rem, 0.74rem + 0.16vw, 0.9rem);
+  --mp-device-touch: 44px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --mp-device-touch: 42px;
+  }
+
+  html body .app-root {
+    --mp-device-touch: 42px;
+  }
+
+  html body .app-root :is(
+    .mp-header__icon-btn,
+    .mp-header__action:not(.mp-header__search),
+    .mp-header__more,
+    .mp-header__nav-arrow,
+    .mp-header__riwaya-mobile,
+    .modal-close,
+    .modal-action-btn,
+    .audio-player-modal__close,
+    .ayah-action-sheet__close,
+    .ayah-actions__utility-btn,
+    .ayah-actions-inline__icon-btn,
+    .qcom-verse-card-footer-btn,
+    .hp-card-play,
+    .sb-wrapper button
+  ) {
+    min-width: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+  }
+
+  html body .app-root :is(button, [role="button"]) :is(svg, i),
+  html body .app-root :is(.mp-header__icon-btn, .mp-header__action, .mp-header__more) :is(svg, i) {
+    width: var(--mp-device-icon) !important;
+    height: var(--mp-device-icon) !important;
+    font-size: var(--mp-device-icon) !important;
+    line-height: 1 !important;
+  }
+
+  html body .app-root :is(
+    .home-hero-title,
+    .home-collection-heading__copy h2,
+    .modal-title,
+    .settings-drawer__title,
+    .audio-player-modal__title-wrap h3,
+    .reciter-detail__name
+  ) {
+    font-size: clamp(1.08rem, 0.92rem + 1vw, 1.72rem) !important;
+    line-height: 1.15 !important;
+    text-wrap: balance;
+  }
+
+  html body .app-root :is(
+    .home-hero-copy-clean,
+    .home-collection-heading__copy p,
+    .modal-subtitle,
+    .settings-drawer__subtitle,
+    .audio-player-modal__title-wrap p,
+    .hp-card-meta,
+    .mp-footer-v2__copy
+  ) {
+    font-size: var(--mp-device-ui-sm) !important;
+    line-height: 1.45 !important;
+  }
+
+  html body .app-root :is(
+    .home-top-cards-grid,
+    .hp-grid,
+    .hp-grid--surah,
+    .reciter-detail__stats
+  ) {
+    gap: clamp(0.32rem, 0.9vw, 0.55rem);
+  }
+
+  html body .app-root :is(.home-content-section, .home-hero-shell, .hp-card, .home-info-card, .surah-card, .qcom-verse-card) {
+    border-radius: clamp(0.68rem, 1.8vw, 0.9rem);
+  }
+
+  body > .audio-player-modal .audio-reciter-options__item,
+  html body .app-root .settings-reciter-option {
+    min-height: clamp(3.2rem, 7vw, 3.75rem) !important;
+    padding: clamp(0.5rem, 1.6vw, 0.75rem);
+  }
+}
+
+@media (max-width: 640px) {
+  :root {
+    --mp-device-touch: 40px;
+  }
+
+  html body .app-root {
+    --mp-device-touch: 40px;
+    --mp-device-ui: 0.8125rem;
+    --mp-device-ui-sm: 0.75rem;
+    --mp-device-icon: 0.66rem;
+  }
+
+  html body .app-root :is(.mp-header__brand-text, .mp-header__sub, .mp-header__kicker) {
+    display: none !important;
+  }
+
+  html body .app-root :is(
+    .mp-header__title,
+    .mp-header__home-summary-clean,
+    .hp-card-name,
+    .home-cta-label-clean,
+    .settings-drawer label,
+    .audio-player-modal label,
+    .qcom-verse-card-footer-btn span
+  ) {
+    font-size: var(--mp-device-ui-sm) !important;
+    line-height: 1.18 !important;
+  }
+
+  html body .app-root :is(.home-hero-shell, .home-content-section) {
+    padding: clamp(0.58rem, 2.5vw, 0.78rem);
+  }
+
+  html body .app-root .app-view-home .home-hero-logo {
+    display: none !important;
+  }
+
+  html body .app-root .app-view-home .home-brand-row {
+    gap: 0;
+  }
+
+  html body .app-root .app-view-home :is(.hp-card, .surah-card, .home-top-cards-grid > *) {
+    font-size: max(0.76rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-card-name, .hp-card-meta, .hp-card-ar, .home-info-card, .home-content-toolbar) {
+    font-size: max(0.74rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-list, .hp-grid, .hp-grid--surah) :is(.hp-card-name, .hp-card-meta, .hp-card-ar) {
+    font-size: max(0.76rem, var(--mp-device-ui-sm)) !important;
+    line-height: 1.25 !important;
+  }
+
+  html body .app-root .app-view-home :is(.hp-list, .hp-grid, .hp-grid--surah) .hp-card-name {
+    font-size: max(0.8rem, var(--mp-device-ui)) !important;
+  }
+
+  html body .app-root .app-view-home .hp-card :is(.hp-card-meta, .hp-card-ar) {
+    font-size: max(0.72rem, var(--mp-device-ui-sm)) !important;
+  }
+
+  html body .app-root .app-view-home .hp-card-meta,
+  html body .app-root .app-view-home .hp-card-meta.hp-card-meta--meaning,
+  html body .app-root .app-view-home .hp-card-meta.hp-card-meta--ayahs {
+    font-size: var(--ts-sm) !important;
+  }
+
+  html body .app-root :is(.hp-card, .home-top-cards-grid > *, .surah-card) {
+    min-height: 0 !important;
+    padding: clamp(0.5rem, 2vw, 0.68rem);
+  }
+
+  html body .app-root .quran-display--platform .qc-ayah-text-ar {
+    font-size: clamp(1.62rem, calc(var(--qd-reading-font-size, 34px) * 0.58), 2.28rem) !important;
+    line-height: 2.05 !important;
+  }
+
+  html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar) {
+    scrollbar-width: none !important;
+  }
+
+  html body .app-root :is(.settings-drawer__tabs, .audio-player-modal__grid, .qcom-verse-card-footer, .home-content-toolbar)::-webkit-scrollbar {
+    display: none !important;
+  }
+
+
+  html body .app-root .ayah-actions button {
+    width: var(--mp-device-touch) !important;
+    height: var(--mp-device-touch) !important;
+    min-width: var(--mp-device-touch) !important;
+    min-height: var(--mp-device-touch) !important;
+  }
+
+  /* List card Arabic — restaurer taille calligraphique après le reset global */
+  html body .app-root .app-view-home .hp-card--list .hp-card-ar {
+    font-family: "surahnames", serif !important;
+    font-size: clamp(1.55rem, 6vw, 2rem) !important;
+    line-height: 1 !important;
+  }
+}
+
+@media (max-width: 380px) {
+  :root {
+    --mp-device-touch: 38px;
+  }
+
+  html body .app-root {
+    --mp-device-touch: 38px;
+    --mp-device-ui-sm: 0.72rem;
+    --mp-device-icon: 0.62rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    gap: 0.18rem;
+  }
+
+  html body .app-root > .mp-header :is(.mp-header__riwaya-mobile, .mp-header__action:not(.mp-header__search), .mp-header__more, .mp-header__icon-btn) {
+    border-radius: var(--r-md);
+  }
+
+  html body .app-root .qc-reader-toolbar .afc-size-value {
+    display: none !important;
+  }
+}
+
+.ayah-actions-modal--quiet {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.app-root > .mp-header .mp-header__center {
+  min-width: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+}
+
+.app-root > .mp-header .mp-header__nav {
+  width: fit-content !important;
+  max-width: 100% !important;
+  grid-template-columns: auto minmax(0, max-content) auto !important;
+  align-items: center !important;
+  gap: clamp(0.28rem, 0.8vw, 0.5rem);
+}
+
+.app-root > .mp-header .mp-header__title-btn,
+.app-root > .mp-header .mp-header__home-summary {
+  width: fit-content !important;
+  min-width: clamp(10.5rem, 26vw, 19rem) !important;
+  max-width: min(52vw, 27rem) !important;
+  min-height: max(clamp(2.35rem, 4.5vw, 2.85rem), 44px) !important;
+  padding: 0.32rem clamp(0.7rem, 1.2vw, 1rem);
+  border-radius: clamp(0.88rem, 1.8vw, 1.12rem);
+}
+
+.app-root > .mp-header .mp-header__nav-arrow {
+  width: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+  min-width: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+  height: clamp(2.35rem, 4.6vw, 2.75rem) !important;
+}
+
+.app-root > .mp-header .mp-header__title,
+.app-root > .mp-header .mp-header__home-summary-clean {
+  font-size: clamp(0.86rem, 0.78rem + 0.32vw, 1.02rem) !important;
+}
+
+.app-root .quran-display--platform .qc-surah-header-wrap > section {
+  width: fit-content !important;
+  min-width: min(100%, 18rem) !important;
+  max-width: min(100%, 42rem) !important;
+  margin-bottom: clamp(0.42rem, 1.1vw, 0.65rem);
+}
+
+@media (max-width: 720px) {
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    min-width: min(12.5rem, 48vw) !important;
+    max-width: 50vw !important;
+  }
+}
+
+@media (max-width: 420px) {
+  .app-root > .mp-header .mp-header__bar {
+    grid-template-columns: auto minmax(0, 1fr) max-content !important;
+    gap: 0.2rem;
+  }
+
+  .app-root > .mp-header .mp-header__title-btn,
+  .app-root > .mp-header .mp-header__home-summary {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    padding-inline: 0.28rem;
+  }
+
+  .app-root > .mp-header .mp-header__nav-arrow {
+    width: 2.38rem !important;
+    min-width: 2.38rem !important;
+    height: 2.38rem !important;
+  }
+
+  .app-root > .mp-header .mp-header__title {
+    font-size: clamp(0.72rem, 3.25vw, 0.86rem) !important;
+    /* 1.06 put a 13px glyph box in an 11px line, so the clipped line was the
+       Arabic descenders and the Latin j/y of surah names. */
+    line-height: 1.25 !important;
+  }
+}
+
+@media (max-width: 640px) {
+  html body .app-root > .mp-header {
+    padding-block: 0.14rem;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    display: flex !important;
+    height: clamp(48px, 7vh, 54px) !important;
+    min-height: unset !important;
+    max-height: unset !important;
+  }
+
+  html body .app-root .sb-wrapper {
+    width: calc(100vw - 1px) !important;
+    max-width: calc(100vw - 1px) !important;
+  }
+}
+
+
+
+
+@media (min-width: 641px) and (max-width: 1024px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: 5.2rem !important;
+    max-height: 5.2rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    height: auto !important;
+    min-height: 3.6rem !important;
+    max-height: none !important;
+    gap: var(--space-2);
+    padding: 0.4rem 0.75rem 0.55rem;
+    overflow: visible;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 5.5rem !important;
+    min-width: 5rem !important;
+    flex-shrink: 0 !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    flex: 1 1 auto !important;
+    min-width: 0 !important;
+    width: auto !important;
+    max-width: none !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+    max-height: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--r-lg);
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    display: flex !important;
+    flex-shrink: 0 !important;
+    gap: 0.35rem;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: var(--space-10) !important;
+    min-width: var(--space-10) !important;
+    height: var(--space-10) !important;
+    min-height: var(--space-10) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: 3rem !important;
+    min-width: 3rem !important;
+    height: 3rem !important;
+    min-height: 3rem !important;
+  }
+}
+
+
+@media (max-width: 640px) {
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
+    min-height: auto !important;
+    max-height: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
+    display: grid !important;
+    grid-template-columns: 1fr auto !important;
+    grid-template-rows: auto auto !important;
+    grid-template-areas:
+      "meta secondary"
+      "controls controls" !important;
+    height: auto !important;
+    min-height: unset !important;
+    max-height: none !important;
+    gap: 0.3rem 0.4rem;
+    padding: 0.3rem 0.6rem 0.55rem;
+    overflow: visible;
+    align-items: center !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
+    grid-area: meta !important;
+    display: flex !important;
+    flex-direction: column !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
+    grid-area: controls !important;
+    width: 100% !important;
+    flex: unset !important;
+    height: 2.8rem !important;
+    min-height: 2.8rem !important;
+    max-height: none !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.4rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--r-md-lg);
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
+    grid-area: secondary !important;
+    display: flex !important;
+    gap: 0.3rem;
+    flex-shrink: 0 !important;
+  }
+
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn) {
+    width: 2.35rem !important;
+    min-width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-height: 2.35rem !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
+    width: var(--space-11) !important;
+    min-width: var(--space-11) !important;
+    height: var(--space-11) !important;
+    min-height: var(--space-11) !important;
+  }
+
+  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
+    width: 2.35rem !important;
+    min-width: 2.35rem !important;
+    height: 2.35rem !important;
+    min-height: 2.35rem !important;
+  }
+}
+
+
+
+html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 0.7rem;
+}
+
+html body .app-root[data-view="home"] .reciter-card {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 0.65rem;
+  min-height: 5.25rem !important;
+  padding: 0.62rem;
+  border: 1px solid var(--theme-border, var(--border));
+  border-radius: 16px;
+  background: var(--theme-surface, var(--bg-card)) !important;
+  box-shadow: 0 5px 16px color-mix(in srgb, var(--theme-text, #173128) 6%, transparent);
+  overflow: hidden;
+  transform: none;
+  contain: layout paint style;
+  transition: border-color 160ms ease, box-shadow 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+/* Retour au tap : cette carte est la cible principale du bouton détail. La règle
+   doit rester dans ce fichier, au niveau de spécificité qui gagne la cascade. */
+html body .app-root[data-view="home"] .reciter-card:active {
+  transform: scale(0.98);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .app-root[data-view="home"] .reciter-card:hover {
+    border-color: color-mix(in srgb, var(--primary) 36%, var(--theme-border, var(--border)));
+    box-shadow: 0 10px 24px color-mix(in srgb, var(--theme-text, #173128) 9%, transparent);
+  }
+}
+
+html body .app-root[data-view="home"] .reciter-card[data-playing="true"] {
+  border-color: color-mix(in srgb, var(--primary) 58%, var(--theme-border, var(--border)));
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 93%, var(--primary) 7%) !important;
+  box-shadow: inset 3px 0 var(--primary), 0 8px 22px color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+html body .app-root[data-view="home"] .reciter-card__main {
+  display: grid !important;
+  grid-template-columns: 3.25rem minmax(0, 1fr) 0.9rem !important;
+  align-items: center !important;
+  min-width: 0 !important;
+  min-height: 44px;
+  gap: 0.72rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media {
+  position: relative !important;
+  isolation: isolate;
+  inline-size: 3.25rem !important;
+  block-size: 3.25rem !important;
+  border-radius: 50%;
+  flex: 0 0 3.25rem !important;
+  overflow: hidden;
+  background: var(--theme-bg-alt, var(--bg-secondary)) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > :is(img, span) {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: inherit;
+}
+
+html body .app-root[data-view="home"] .reciter-card__media > img {
+  z-index: 1 !important;
+  display: block !important;
+  object-fit: cover;
+}
+
+html body .app-root[data-view="home"] :is(.reciter-card__copy, .reciter-card__name, .reciter-card__meta) {
+  min-width: 0 !important;
+  border: 0;
+  background: transparent !important;
+  box-shadow: none;
+}
+
+html body .app-root[data-view="home"] .reciter-card__name {
+  display: -webkit-box !important;
+  overflow: hidden;
+  font-size: 0.9rem !important;
+  line-height: 1.22 !important;
+  white-space: normal !important;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+html body .app-root[data-view="home"] .reciter-card__meta {
+  margin-top: 0.28rem;
+  font-size: 0.68rem !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__actions {
+  margin-top: 0;
+  gap: 0.42rem;
+  padding: 0 0 0 0.65rem;
+  border-inline-start: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 68%, transparent) !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: transparent !important;
+  box-shadow: none;
+}
+
+html body .app-root[data-view="home"] :is(.reciter-card__favorite, .reciter-card__listen) {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__favorite {
+  /* max() : la racine est à 15 px, donc 2.65rem ne faisait que 36 px de cible. */
+  width: max(2.65rem, 44px) !important;
+  min-width: max(2.65rem, 44px) !important;
+  min-height: max(2.65rem, 44px) !important;
+  border: 1px solid var(--theme-border, var(--border));
+  border-radius: 12px;
+  color: var(--text-muted) !important;
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+html body .app-root[data-view="home"] .reciter-card__favorite:active {
+  transform: scale(0.94);
+}
+
+html body .app-root[data-view="home"] .reciter-card__favorite--active {
+  border-color: color-mix(in srgb, #b5841d 35%, var(--border));
+  background: color-mix(in srgb, #b5841d 10%, transparent) !important;
+  color: #a87816 !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__actions .reciter-card__listen {
+  min-width: max(2.65rem, 44px) !important;
+  min-height: max(2.65rem, 44px) !important;
+  border-radius: 12px;
+  background: var(--primary) !important;
+  /* --primary est plus clair en sombre : le blanc n'y tient pas 4,5:1. */
+  color: var(--theme-text-inverse, #ffffff) !important;
+  border-color: var(--primary);
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing {
+  z-index: 3 !important;
+  inset: auto 0.18rem 0.18rem auto !important;
+  display: inline-flex !important;
+  width: 1rem !important;
+  height: 1rem !important;
+  align-items: flex-end !important;
+  justify-content: center !important;
+  gap: 1px;
+  border: 2px solid var(--theme-surface, var(--bg-card));
+  border-radius: 50%;
+  padding: 0.18rem;
+  background: var(--primary) !important;
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing i {
+  width: 1px;
+  height: 100%;
+  transform-origin: bottom;
+  border-radius: 2px;
+  background: #fff;
+  /* scaleY plutôt que height : la barre animée ne recalcule plus la mise en
+     page à chaque image. */
+  animation: reciterPlayingBar 720ms ease-in-out infinite alternate;
+}
+
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(1) { transform: scaleY(0.45); }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(2) { transform: scaleY(0.85); animation-delay: -240ms; }
+html body .app-root[data-view="home"] .reciter-card__playing i:nth-child(3) { transform: scaleY(0.62); animation-delay: -480ms; }
+
+@keyframes reciterPlayingBar {
+  to { transform: scaleY(1); }
+}
+
+html body .app-root[data-view="home"] .home-reciter-load-more {
+  grid-column: 1 / -1;
+  display: inline-flex;
+  min-height: max(2.8rem, 44px);
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed color-mix(in srgb, var(--primary) 36%, var(--theme-border, var(--border)));
+  border-radius: 14px;
+  padding: 0.65rem 1rem;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 95%, var(--primary) 5%);
+  font-size: 0.76rem;
+  font-weight: 760;
+  transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  html body .app-root[data-view="home"] .home-reciter-load-more:hover {
+    border-style: solid;
+    border-color: color-mix(in srgb, var(--primary) 64%, var(--theme-border, var(--border)));
+    background: color-mix(in srgb, var(--theme-surface, var(--bg-card)) 89%, var(--primary) 11%);
+  }
+}
+
+html body .app-root[data-view="home"] .home-reciter-load-more:active {
+  transform: scale(0.98);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="home"] .reciter-card__playing i {
+    animation: none;
+  }
+}
+
+@media (max-width: 900px) {
+  html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  html body .app-root[data-view="home"] .notes-fab--mobile {
+    display: none !important;
+  }
+}
+
+
+html body .app-root[data-view="home"] .home-content-toolbar {
+  position: relative !important;
+  top: auto !important;
+  z-index: 1 !important;
+  border: 1px solid color-mix(in srgb, var(--theme-border, #d4d4d4) 78%, transparent);
+  border-radius: 16px;
+  background: var(--theme-panel-bg-strong, var(--bg-card)) !important;
+  box-shadow: 0 8px 24px rgba(15, 48, 34, 0.07);
+  backdrop-filter: none;
+}
+
+html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"],
+html body .app-root[data-view="home"] .home-content-toolbar input {
+  border-radius: 12px;
+}
+
+html body .app-root[data-view="home"] .home-content-toolbar [role="tab"][aria-selected="true"] {
+  border-radius: 10px;
+  background: var(--primary) !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
+  box-shadow: none;
+}
+
+@media (min-width: 900px) {
+  html body .app-root[data-view="home"] .home-content-toolbar {
+    display: grid !important;
+    grid-template-columns: auto minmax(12rem, 1fr) auto !important;
+    align-items: center !important;
+    gap: 0.65rem;
+    padding: 0.65rem;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > [role="tablist"] {
+    grid-column: 1 !important;
+    width: auto !important;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > .relative {
+    grid-column: 2 !important;
+    min-width: 0 !important;
+    width: 100% !important;
+  }
+
+  html body .app-root[data-view="home"] .home-content-toolbar > .flex:last-child {
+    grid-column: 3 !important;
+    width: auto !important;
+  }
+}
+
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+  display: grid !important;
+  grid-template-columns: auto minmax(0, 1fr) minmax(6rem, 7.5rem) 42px !important;
+  align-items: center !important;
+  gap: 0.8rem;
+  min-height: 6.1rem !important;
+  padding: 0.8rem 0.9rem;
+  border-radius: 16px;
+  transform: none;
+  box-shadow: 0 4px 16px rgba(15, 48, 34, 0.06);
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah:hover {
+  transform: translateY(-1px);
+  border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+  box-shadow: 0 7px 18px rgba(15, 48, 34, 0.09);
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-open {
+  position: absolute !important;
+  inset: 0 !important;
+  width: auto !important;
+  height: auto !important;
+  min-width: 0 !important;
+  min-height: 0 !important;
+  border-radius: 8px;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-num,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-content,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar,
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+  grid-row: 1 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-num {
+  grid-column: 1 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-content {
+  grid-column: 2 !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
+  grid-column: 3 !important;
+  min-width: 6rem !important;
+  max-width: 7.5rem !important;
+  padding: 0.2rem 0 0.2rem 0.8rem;
+  overflow: visible;
+  border-inline-start: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border)) !important;
+  color: color-mix(in srgb, var(--text-primary) 82%, var(--primary) 18%) !important;
+  font-family: "surahnames", serif !important;
+  font-size: clamp(1.72rem, 1.25rem + 0.72vw, 2.08rem) !important;
+  line-height: 1.1 !important;
+  text-align: end !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+  grid-column: 4 !important;
+  position: relative !important;
+  inset: auto !important;
+  width: 42px !important;
+  height: 42px !important;
+  min-width: 42px !important;
+  min-height: 42px !important;
+  padding: 0;
+  gap: 0;
+  border-color: var(--primary);
+  border-radius: 50%;
+  background: var(--primary) !important;
+  color: var(--theme-text-inverse, #ffffff) !important;
+  opacity: 1;
+  transform: none;
+  box-shadow: 0 5px 12px rgba(var(--primary-rgb, 11, 98, 53), 0.18);
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play:hover {
+  transform: none;
+  background: color-mix(in srgb, var(--primary) 88%, #000000 12%) !important;
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play svg {
+  width: 16px !important;
+  height: 16px !important;
+  padding: 0;
+  font-size: 16px !important;
+  flex: 0 0 16px !important;
+}
+
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing {
+  border-color: color-mix(in srgb, var(--primary) 62%, var(--border) 38%);
+  background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 12%) !important;
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play {
+  isolation: isolate;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--primary) 18%, transparent), 0 6px 16px color-mix(in srgb, var(--primary) 30%, transparent);
+}
+
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play::before {
+  position: absolute;
+  inset: -5px;
+  z-index: -1;
+  border: 1px solid color-mix(in srgb, var(--primary) 58%, transparent);
+  border-radius: inherit;
+  content: "";
+  animation: hp-audio-pulse 1.6s ease-out infinite;
+}
+
+@keyframes hp-audio-pulse {
+  0% { opacity: 0.75; transform: scale(0.82); }
+  75%, 100% { opacity: 0; transform: scale(1.28); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah.playing .hp-card-play::before {
+    animation: none;
+  }
+}
+
+@media (max-width: 520px) {
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+    grid-template-columns: auto minmax(0, 1fr) auto 38px !important;
+    gap: 0.55rem;
+    min-height: 5.5rem !important;
+    padding: 0.65rem;
+  }
+
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
+    min-width: 4.1rem !important;
+    max-width: 5rem !important;
+    padding-inline-start: 0 !important;
+    border-inline-start: 0 !important;
+    font-size: 1.38rem !important;
+  }
+
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card-play {
+    width: 38px !important;
+    height: 38px !important;
+    min-width: 38px !important;
+    min-height: 38px !important;
+  }
+}

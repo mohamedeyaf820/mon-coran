@@ -1,0 +1,84 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 96,
+  "number_of_ayahs": 19,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "iq'ra bi-is'mi rabbika alladhī khalaqa"
+    },
+    {
+      "ayah_number": 2,
+      "text": "khalaqa l-insāna min ʿalaqin"
+    },
+    {
+      "ayah_number": 3,
+      "text": "iq'ra warabbuka l-akramu"
+    },
+    {
+      "ayah_number": 4,
+      "text": "alladhī ʿallama bil-qalami"
+    },
+    {
+      "ayah_number": 5,
+      "text": "ʿallama l-insāna mā lam yaʿlam"
+    },
+    {
+      "ayah_number": 6,
+      "text": "kallā inna l-insāna layaṭghā"
+    },
+    {
+      "ayah_number": 7,
+      "text": "an raāhu is'taghnā"
+    },
+    {
+      "ayah_number": 8,
+      "text": "inna ilā rabbika l-ruj'ʿā"
+    },
+    {
+      "ayah_number": 9,
+      "text": "ara-ayta alladhī yanhā"
+    },
+    {
+      "ayah_number": 10,
+      "text": "ʿabdan idhā ṣallā"
+    },
+    {
+      "ayah_number": 11,
+      "text": "ara-ayta in kāna ʿalā l-hudā"
+    },
+    {
+      "ayah_number": 12,
+      "text": "aw amara bil-taqwā"
+    },
+    {
+      "ayah_number": 13,
+      "text": "ara-ayta in kadhaba watawallā"
+    },
+    {
+      "ayah_number": 14,
+      "text": "alam yaʿlam bi-anna l-laha yarā"
+    },
+    {
+      "ayah_number": 15,
+      "text": "kallā la-in lam yantahi lanasfaʿan bil-nāṣiyati"
+    },
+    {
+      "ayah_number": 16,
+      "text": "nāṣiyatin kādhibatin khāṭi-atin"
+    },
+    {
+      "ayah_number": 17,
+      "text": "falyadʿu nādiyahu"
+    },
+    {
+      "ayah_number": 18,
+      "text": "sanadʿu l-zabāniyata"
+    },
+    {
+      "ayah_number": 19,
+      "text": "kallā lā tuṭiʿ'hu wa-us'jud wa-iq'tarib"
+    }
+  ]
+}

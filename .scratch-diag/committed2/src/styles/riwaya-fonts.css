@@ -1,0 +1,121 @@
+@font-face {
+  font-family: "Scheherazade New";
+  src: url("/fonts/scheherazade-new-400.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Scheherazade New";
+  src: url("/fonts/scheherazade-new-700.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --qd-reading-font-size: clamp(28px, 5.8vw, 48px);
+  --qd-font-size: clamp(28px, 5.8vw, 48px);
+  --quran-font-size: clamp(28px, 5.8vw, 48px);
+  --quran-line-height: 2.16;
+  --font-quran-hafs: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", "Amiri Quran", "Scheherazade New", "Noto Naskh Arabic", "Geeza Pro", serif;
+  --font-quran-warsh: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", "Noto Naskh Arabic", "Geeza Pro", serif;
+  --font-quran-indopak: "IndoPak", "QPC IndoPak", "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", serif;
+  --font-quran-nastaleeq: "KFGQPC Nastaleeq", "QPC Nastaleeq", "IndoPak", "QPC Hafs", "Amiri Quran", serif;
+  --font-quran-warsh-kfgqpc: "KFGQPC Warsh", "warsh10", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", "Amiri Quran", serif;
+  --font-surah-hafs: var(--font-quran-hafs);
+  --font-surah-warsh: var(--font-quran-warsh);
+}
+
+.app-root .quran-display--hafs {
+  --font-quran: var(--qd-font-family, var(--font-quran-hafs));
+  --font-surah: var(--font-surah-hafs);
+  --font-quran-tajweed: var(--qd-font-family, var(--font-quran-hafs));
+  --waqf-font-family: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "Amiri Quran", "Scheherazade New", serif;
+}
+
+.app-root .quran-display--warsh {
+  --font-quran: var(--qd-font-family, var(--font-quran-warsh));
+  --font-surah: var(--font-surah-warsh);
+  --font-quran-tajweed: var(--qd-font-family, var(--font-quran-warsh));
+  --waqf-font-family: "KFGQPC Warsh", "QPC Warsh", "KFGQPC Uthmanic Script WARSH", "Scheherazade New", serif;
+}
+
+.app-root .quran-display--hafs :is(
+  .qc-ayah-text-ar,
+  .rd-arabic,
+  .quran-arabic,
+  .quran-text,
+  .ayah-text,
+  .mp-ayahs-flow,
+  .cpv-flow,
+  .qcom-continuous-list
+) {
+  font-family: var(--qd-font-family, var(--font-quran-hafs)) !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  font-kerning: normal;
+  font-synthesis: none;
+  -webkit-font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  direction: rtl;
+  unicode-bidi: isolate;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
+
+.app-root .quran-display--warsh :is(
+  .qc-ayah-text-ar,
+  .rd-arabic,
+  .quran-arabic,
+  .quran-text,
+  .ayah-text,
+  .warsh-unicode-text,
+  .warsh-unicode-word,
+  .qcm-word--warsh,
+  .mp-ayahs-flow,
+  .cpv-flow,
+  .qcom-continuous-list
+) {
+  font-family: var(--qd-font-family, var(--font-quran-warsh)) !important;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  font-kerning: normal;
+  font-synthesis: none;
+  -webkit-font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-feature-settings: "kern" 1, "liga" 1, "calt" 1, "mark" 1, "mkmk" 1;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-font-smoothing: antialiased;
+  direction: rtl;
+  unicode-bidi: isolate;
+  letter-spacing: 0 !important;
+  -webkit-letter-spacing: 0 !important;
+  word-spacing: normal !important;
+  word-break: normal !important;
+  overflow-wrap: normal !important;
+  white-space: normal !important;
+}
+
+.app-root .quran-display--warsh .warsh-waqf-marker {
+  transform: translateY(-0.03em);
+}
+
+/* Amiri Quran and Noto Naskh Arabic draw U+06DD as an empty or broken rosette
+   that never composes the ayah digits. Their digit-only markers are shaped by
+   the QPC Hafs calt rosette instead. The #root anchor keeps this above the
+   "html body .app-root ... .quran-arabic-text *" !important font rules. */
+html body #root .app-root :is(
+    [data-quran-font="amiri-quran"],
+    [data-quran-font="noto-naskh-arabic"]
+  ) .native-ayah-marker {
+  font-family: "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif !important;
+}

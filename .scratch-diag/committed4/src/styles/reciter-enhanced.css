@@ -1,0 +1,20 @@
+/* The feature layer owns appearance; this file only keeps scroll behavior. */
+.rd-scrollable-body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) transparent;
+}
+.reciter-bio-collapse {
+  position: relative;
+}
+
+.reciter-bio-collapse__content {
+  position: relative;
+}
+
+.reciter-bio-collapse:not(.is-open) .reciter-bio-collapse__content {
+  -webkit-mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 65%, transparent 100%);
+}

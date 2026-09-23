@@ -1,0 +1,23 @@
+fix(recitation): complète les portraits vérifiés et répare les citations bio
+
+Audit des 52 fiches récitateurs : les 47 portraits existants répondent tous
+(200, image/*, aucun doublon ni silhouette par défaut) et chaque visage est
+bien celui du récitateur de la page qui le nomme. Trois corrections suivent.
+
+- Deux portraits manquants ajoutés, pris chez Assabile sur la page même qui
+  nomme le récitateur : Yassin Al-Jazaery (fiche 37) et Mohamed Abdulkareem
+  (fiche 50). Les trois autres candidats ont été écartés faute de preuve :
+  l'image d'Assabile pour Rachid Belalia est une carte typographique et non
+  une photo, et les portraits Way2Quran sont interdits par le test
+  « curated portrait URLs » — vérifié sur le terrain, leur « Yassen » n'est
+  pas le même homme que celui d'Assabile. Saad al-Moqren et Abdelkarim
+  ad-Daghour restent donc sur leur pastille d'initiales.
+- Le lien « Sources vérifiées » de quatre fiches menait à un vidage JSON de
+  l'API QuranPedia. Saad al-Moqren et Abdulbari ath-Thubaity citent
+  désormais leur page MP3Quran (titre vérifié, et c'est l'hébergeur de leur
+  audio) ; les deux fiches Warsh QuranPedia pointent sur le site humain et
+  gardent l'URL d'API et le numéro d'enregistrement pour la vérification.
+- La fiche de Yassen consigne aussi sa source d'identité et de portrait.
+
+Contrat de test tenu : 49 portraits, plus que trois récitateurs sans photo,
+et les citations QuranPedia restent vérifiables machine.

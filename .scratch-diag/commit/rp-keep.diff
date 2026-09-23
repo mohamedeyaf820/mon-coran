@@ -1,0 +1,403 @@
+diff --git a/src/styles/domains/recitation-polish.css b/src/styles/domains/recitation-polish.css
+index 2075b4b..2b14a3b 100644
+--- a/src/styles/domains/recitation-polish.css
++++ b/src/styles/domains/recitation-polish.css
+@@ -89,10 +89,10 @@
+     background: linear-gradient(90deg, transparent, var(--primary) 30%, var(--color-gold, #c6a44b) 60%, transparent);
+     opacity: 0.9;
+-    animation: rd-accent-slide 3s ease-in-out infinite alternate;
++    animation: rd-accent-in 420ms var(--ease-out, cubic-bezier(0.22, 1, 0.36, 1)) both;
+ }
+ 
+-@keyframes rd-accent-slide {
+-    from { opacity: 0.75; transform: scaleX(0.88); }
+-    to   { opacity: 1;    transform: scaleX(1); }
++@keyframes rd-accent-in {
++    from { opacity: 0;   transform: scaleX(0.6); }
++    to   { opacity: 0.9; transform: scaleX(1); }
+ }
+ 
+@@ -108,13 +108,14 @@
+ }
+ 
+-/* Fond immersif injecté via la gradient de l'avatar */
++/* Lavis de marque, seulement teinté par la couleur du récitateur. Le dégradé
++   complet de l'avatar reste dans la pastille : en fond plein écran, il écrasait
++   le vert du mushaf, le liseré doré et le libellé de l'eyebrow. */
+ .rd-hero-bg {
+     position: absolute;
+     inset: 0;
+     background:
+-        radial-gradient(ellipse at 15% -10%, rgba(var(--primary-rgb), 0.12) 0%, transparent 52%),
+-        radial-gradient(ellipse at 90% 100%, rgba(var(--primary-rgb), 0.07) 0%, transparent 45%),
+-        var(--reciter-avatar-gradient, linear-gradient(135deg, rgba(var(--primary-rgb), 0.05), transparent));
+-    opacity: 0.55;
++        radial-gradient(ellipse at 15% -10%, rgba(var(--primary-rgb), 0.14) 0%, transparent 52%),
++        radial-gradient(ellipse at 92% 108%, color-mix(in srgb, var(--reciter-avatar-color, var(--primary)) 16%, transparent) 0%, transparent 55%),
++        linear-gradient(180deg, color-mix(in srgb, var(--reciter-avatar-color, var(--primary)) 7%, var(--theme-surface)) 0%, var(--theme-surface) 72%);
+     pointer-events: none;
+     z-index: 0;
+@@ -150,9 +151,16 @@
+ }
+ 
+-.reciter-detail__close:hover {
+-    border-color: rgba(190, 56, 56, 0.3);
+-    background: rgba(190, 56, 56, 0.08);
+-    color: #b92f3a;
+-    transform: rotate(3deg);
++/* Le survol est réservé à la souris : sur tactile, :hover reste collé après le
++   tap et le bouton de fermeture garderait une teinte d'alerte. */
++@media (hover: hover) and (pointer: fine) {
++    .reciter-detail__close:hover {
++        border-color: rgba(190, 56, 56, 0.3);
++        background: rgba(190, 56, 56, 0.08);
++        color: #b92f3a;
++    }
++}
++
++.reciter-detail__close:active {
++    transform: scale(0.94);
+ }
+ 
+@@ -190,26 +198,6 @@
+     position: absolute;
+     inset: -5px;
+-    border: 2px solid rgba(var(--primary-rgb), 0.28);
+-    border-radius: 50%;
+-    animation: rd-ring-pulse 3s ease-in-out infinite;
+-}
+-
+-@keyframes rd-ring-pulse {
+-    0%, 100% { opacity: 0.4; transform: scale(1); }
+-    50%       { opacity: 0.8; transform: scale(1.04); }
+-}
+-
+-.reciter-hero__portrait::after {
+-    content: "";
+-    position: absolute;
+-    right: -3px;
+-    bottom: 5px;
+-    width: 16px;
+-    height: 16px;
+-    border: 3px solid var(--theme-surface, var(--bg-card));
++    border: 2px solid rgba(var(--primary-rgb), 0.24);
+     border-radius: 50%;
+-    background: #1c9b63;
+-    box-shadow: 0 2px 10px rgba(28, 155, 99, 0.4);
+-    z-index: 3;
+ }
+ 
+@@ -310,4 +300,16 @@
+ }
+ 
++/* The sheet is a full-screen portal, so the page-level `.app-root` rules never
++   reach it. Two panes leave the list ~377px at a 768px viewport while a row's
++   fixed chrome (index + four 44px actions) needs ~300px, which collapsed the
++   surah name to 34px. Stack the panes until the list can hold a whole row:
++   measured at 901px the row is 503px and the longest name ("La Famille
++   d'Imran") still loses 9px, and it only clears the chrome from ~960px up. */
++@media (max-width: 960px) {
++    .reciter-detail__layout {
++        grid-template-columns: minmax(0, 1fr);
++    }
++}
++
+ .reciter-detail__aside {
+     min-width: 0;
+@@ -366,4 +368,7 @@
+ 
+ .reciter-detail__source-links a {
++    display: inline-flex;
++    align-items: center;
++    min-height: 44px;
+     border: 1px solid rgba(var(--primary-rgb), 0.17);
+     border-radius: 999px;
+@@ -375,6 +380,8 @@
+ }
+ 
+-.reciter-detail__source-links a:hover {
+-    background: rgba(var(--primary-rgb), 0.12);
++@media (hover: hover) and (pointer: fine) {
++    .reciter-detail__source-links a:hover {
++        background: rgba(var(--primary-rgb), 0.12);
++    }
+ }
+ 
+@@ -413,7 +420,9 @@
+ }
+ 
+-.reciter-detail__source-row a:hover {
+-    color: var(--primary);
+-    text-decoration-color: currentColor;
++@media (hover: hover) and (pointer: fine) {
++    .reciter-detail__source-row a:hover {
++        color: var(--primary);
++        text-decoration-color: currentColor;
++    }
+ }
+ 
+@@ -513,5 +522,5 @@
+     margin-bottom: 0.12rem;
+     color: var(--primary);
+-    font-size: 0.57rem;
++    font-size: max(0.62rem, 10px);
+     font-weight: 850;
+     letter-spacing: 0.1em;
+@@ -540,5 +549,5 @@
+     margin-top: 0.35rem;
+     color: var(--text-muted);
+-    font-size: 0.57rem;
++    font-size: max(0.66rem, 10px);
+     line-height: 1.35;
+ }
+@@ -597,5 +606,5 @@
+ .full-quran-download__remove {
+     display: inline-flex;
+-    min-height: 38px;
++    min-height: 44px;
+     align-items: center;
+     justify-content: center;
+@@ -626,6 +635,6 @@
+ 
+ .full-quran-download__remove {
+-    width: 38px;
+-    flex: 0 0 38px;
++    width: 44px;
++    flex: 0 0 44px;
+     border: 1px solid var(--border);
+     background: var(--theme-surface);
+@@ -733,6 +742,6 @@
+ .recitation-library__search button {
+     display: inline-flex;
+-    width: 36px;
+-    height: 36px;
++    width: 44px;
++    height: 44px;
+     flex: 0 0 auto;
+     align-items: center;
+@@ -740,4 +749,9 @@
+     border-radius: 9px;
+     color: var(--text-muted);
++    transition: transform 160ms ease;
++}
++
++.recitation-library__search button:active {
++    transform: scale(0.94);
+ }
+ 
+@@ -779,11 +793,13 @@
+ }
+ 
+-.recitation-row:hover {
+-    background: color-mix(in srgb, rgba(var(--primary-rgb), 0.06) 100%, transparent);
+-    box-shadow: inset 3px 0 var(--primary);
+-}
++@media (hover: hover) and (pointer: fine) {
++    .recitation-row:hover {
++        background: color-mix(in srgb, rgba(var(--primary-rgb), 0.06) 100%, transparent);
++        box-shadow: inset 3px 0 var(--primary);
++    }
+ 
+-[dir="rtl"] .recitation-row:hover {
+-    box-shadow: inset -3px 0 var(--primary);
++    [dir="rtl"] .recitation-row:hover {
++        box-shadow: inset -3px 0 var(--primary);
++    }
+ }
+ 
+@@ -809,7 +825,9 @@
+ }
+ 
+-.recitation-row:hover .recitation-row__index {
+-    background: rgba(var(--primary-rgb), 0.14);
+-    border-color: rgba(var(--primary-rgb), 0.32);
++@media (hover: hover) and (pointer: fine) {
++    .recitation-row:hover .recitation-row__index {
++        background: rgba(var(--primary-rgb), 0.14);
++        border-color: rgba(var(--primary-rgb), 0.32);
++    }
+ }
+ 
+@@ -831,4 +849,13 @@
+ }
+ 
++/* `text-overflow` on the flex container above is inert: it can only ellipsize
++   inline content, so a long surah name was hard-cut mid-letter and pushed the
++   Meccan/Medinan badge out of the box. The name needs its own shrinking box. */
++.recitation-row__name {
++    min-width: 0;
++    overflow: hidden;
++    text-overflow: ellipsis;
++}
++
+ .recitation-row__meta {
+     display: flex;
+@@ -858,5 +885,5 @@
+     border-radius: 5px;
+     padding: 0.1rem 0.35rem;
+-    font-size: 0.58rem;
++    font-size: max(0.62rem, 10px);
+     font-weight: 800;
+     letter-spacing: 0.04em;
+@@ -900,10 +927,17 @@ html[data-theme="dark"] .recitation-row__type--meccan {
+ }
+ 
+-.recitation-action-btn:hover:not(:disabled) {
+-    border-color: rgba(var(--primary-rgb), 0.26);
+-    background: rgba(var(--primary-rgb), 0.06);
+-    color: var(--primary);
+-    transform: translateY(-1px);
+-    box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.12);
++@media (hover: hover) and (pointer: fine) {
++    .recitation-action-btn:hover:not(:disabled) {
++        border-color: rgba(var(--primary-rgb), 0.26);
++        background: rgba(var(--primary-rgb), 0.06);
++        color: var(--primary);
++        transform: translateY(-1px);
++        box-shadow: 0 4px 12px rgba(var(--primary-rgb), 0.12);
++    }
++}
++
++/* Le feedback au tap doit exister sans survol : l'échelle agit sur tactile. */
++.recitation-action-btn:active:not(:disabled) {
++    transform: scale(0.96);
+ }
+ 
+@@ -966,5 +1002,5 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ 
+ .recitation-download-progress {
+-    font-size: 0.56rem;
++    font-size: max(0.62rem, 10px);
+     font-weight: 800;
+     font-variant-numeric: tabular-nums;
+@@ -986,6 +1022,8 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ }
+ 
+-.recitation-row--load-more:hover {
+-    background: rgba(var(--primary-rgb), 0.06);
++@media (hover: hover) and (pointer: fine) {
++    .recitation-row--load-more:hover {
++        background: rgba(var(--primary-rgb), 0.06);
++    }
+ }
+ 
+@@ -1134,5 +1172,4 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ 
+     .recitation-row__type {
+-        font-size: 0.52rem;
+         padding: 0.08rem 0.28rem;
+     }
+@@ -1196,5 +1233,5 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ 
+     .reciter-radio-button {
+-        min-height: 36px;
++        min-height: 44px;
+         padding: 0.38rem 0.62rem;
+         font-size: 0.64rem;
+@@ -1218,7 +1255,7 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ 
+     .reciter-detail__source-links a {
+-        min-height: 0;
+-        padding: 0.18rem 0.36rem;
+-        font-size: 0.58rem;
++        min-height: 44px;
++        padding: 0 0.42rem;
++        font-size: 0.62rem;
+     }
+ 
+@@ -1289,11 +1326,25 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ }
+ 
++/* Mouvement réduit : on garde ce qui informe (fondus, couleurs, rouets de
++   chargement) et on retire ce qui déplace — translations, échelles et boucles
++   décoratives. Un knock-out total (`transition-duration: 0.01ms`) supprimait
++   aussi les fondus, ce qui rend l'interface cassée plutôt que calme. */
+ @media (prefers-reduced-motion: reduce) {
+     .reciter-detail *,
+     .reciter-detail *::before,
+-    .reciter-detail *::after {
++    .reciter-detail *::after,
++    .app-root .reciter-card,
++    .app-root .reciter-card::before,
++    .app-root .reciter-card__listen,
++    .app-root .reciter-card__media::after {
+         scroll-behavior: auto !important;
+-        transition-duration: 0.01ms !important;
+-        animation-duration: 0.01ms !important;
++        transition-property: color, background-color, border-color, opacity, box-shadow, filter !important;
++        animation-name: none !important;
++    }
++
++    .recitation-download-spinner,
++    .reciter-detail__loading-spinner {
++        animation-name: reciter-detail-spin !important;
++        animation-duration: 1.4s !important;
+     }
+ }
+@@ -1312,8 +1363,15 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ }
+ 
+-.app-root .reciter-card:hover {
+-    transform: translateY(-3px);
+-    border-color: rgba(var(--primary-rgb), 0.3);
+-    box-shadow: 0 12px 32px color-mix(in srgb, var(--primary) 8%, rgba(0,0,0,0.12));
++@media (hover: hover) and (pointer: fine) {
++    .app-root .reciter-card:hover {
++        transform: translateY(-3px);
++        border-color: rgba(var(--primary-rgb), 0.3);
++        box-shadow: 0 12px 32px color-mix(in srgb, var(--primary) 8%, rgba(0,0,0,0.12));
++    }
++}
++
++/* Retour au tap sur toute la carte : :active remonte aux ancêtres du bouton. */
++.app-root .reciter-card:active {
++    transform: scale(0.98);
+ }
+ 
+@@ -1331,7 +1389,9 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
+ }
+ 
+-.app-root .reciter-card:hover::before {
+-    opacity: 0.7;
+-    transform: scaleX(1);
++@media (hover: hover) and (pointer: fine) {
++    .app-root .reciter-card:hover::before {
++        opacity: 0.7;
++        transform: scaleX(1);
++    }
+ }
+ 
+@@ -1442,6 +1508,30 @@ html[data-theme="dark"] .full-quran-download.is-ready .full-quran-download__icon
+ }
+ 
+-.recitation-row--load-more:hover {
+-    background: rgba(var(--primary-rgb), 0.08);
+-    color: var(--primary);
++@media (hover: hover) and (pointer: fine) {
++    .recitation-row--load-more:hover {
++        background: rgba(var(--primary-rgb), 0.08);
++        color: var(--primary);
++    }
++}
++
++/* Four 44px actions plus the index chip need ~240px of a row, so on a phone the
++   list column leaves the surah name ~50px: "La Famille d'Imran" ellipsised to
++   "La F…". The row's own width, not the viewport, decides this — a 768px
++   viewport can still hand the list only 380px. Wrap the actions onto a second
++   line when the row cannot hold them beside a readable name, keeping every
++   action at its 44px target. */
++.recitation-surah-list {
++    container-type: inline-size;
++}
++
++@container (max-width: 25rem) {
++    .recitation-row {
++        grid-template-columns: 34px minmax(0, 1fr);
++        row-gap: 0.4rem;
++    }
++
++    .recitation-row__actions {
++        grid-column: 1 / -1;
++        justify-content: flex-end;
++    }
+ }

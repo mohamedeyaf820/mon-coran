@@ -1,0 +1,24 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index 5221eda..f0b5980 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -1722,4 +1757,19 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* The home header's centre cell is 117px wide at 280px (44px menu + 90px of
++   riwaya/more controls leave nothing else), while "Reprendre la lecture"
++   measures 129px: the nowrap+ellipsis contract showed "Reprendre la lectur…".
++   Letting it wrap costs one 14px line inside the untouched 44px touch target
++   and keeps every control reachable, so the label stays readable instead of
++   silently truncated. Arabic already fits on one line at these widths. */
++@media (max-width: 320px) {
++  html body .app-root > .mp-header .mp-header__home-summary-clean {
++    white-space: normal !important;
++    overflow: visible !important;
++    line-height: 1.15 !important;
++    text-align: center !important;
++  }
++}
++
+ /* Final responsive contract for persistent reader overlays. */
+ @media (max-width: 599px) {

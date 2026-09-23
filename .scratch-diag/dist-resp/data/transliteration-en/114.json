@@ -1,0 +1,32 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 114,
+  "number_of_ayahs": 6,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "qul aʿūdhu birabbi l-nāsi"
+    },
+    {
+      "ayah_number": 2,
+      "text": "maliki l-nāsi"
+    },
+    {
+      "ayah_number": 3,
+      "text": "ilāhi l-nāsi"
+    },
+    {
+      "ayah_number": 4,
+      "text": "min sharri l-waswāsi l-khanāsi"
+    },
+    {
+      "ayah_number": 5,
+      "text": "alladhī yuwaswisu fī ṣudūri l-nāsi"
+    },
+    {
+      "ayah_number": 6,
+      "text": "mina l-jinati wal-nāsi"
+    }
+  ]
+}

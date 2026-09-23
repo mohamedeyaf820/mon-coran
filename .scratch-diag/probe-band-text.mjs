@@ -1,0 +1,21 @@
+import { chromium } from "playwright";
+const BASE = "http://127.0.0.1:4173";
+const browser = await chromium.launch();
+const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+const page = await ctx.newPage();
+await page.addInitScript(() => localStorage.setItem("mushaf-plus-settings", JSON.stringify({ theme: "light", riwaya: "hafs", showTajwid: false, displayMode: "page", mushafLayout: "mushaf", currentPage: 572 })));
+await page.goto(`${BASE}/page/572`, { waitUntil: "domcontentloaded" });
+const skip = page.locator(".splash-screen button", { hasText: /Passer|Skip/ });
+if (await skip.count()) await skip.first().click().catch(() => {});
+await page.waitForSelector(".qcm-lines, .mushaf-page-wrapper", { timeout: 20000 });
+await page.locator(".reader-fullscreen-trigger").first().click();
+await page.waitForSelector(".mfp-portal-root .qcm-lines", { timeout: 20000 });
+await page.waitForTimeout(1500);
+const info = await page.evaluate(() => {
+  const cps = (s) => Array.from(s).map((c) => `U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")}`).join(" ");
+  const name = document.querySelector(".mfp-portal-root .qcm-surah-title__name");
+  const head = document.querySelector(".mfp-portal-root .qcm-page-header");
+  return { nameText: name?.textContent, cps: cps(name?.textContent || ""), head: head?.textContent?.slice(0, 80) };
+});
+console.log(JSON.stringify(info, null, 1));
+await browser.close();

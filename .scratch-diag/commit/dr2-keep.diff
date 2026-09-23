@@ -1,0 +1,36 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index e7a12c0..6a26b60 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -861,11 +862,14 @@ html body .app-root > .mp-header .mp-header__title-sub-track {
+ }
+ 
+-/* Phones: replace the rotating title cycle with the static compact lockup. */
++/* Phones: the static compact lockup replaces the rotating cycle, which reads as
++   duplicated text at this width. Both changes are guarded by `:has()` because
++   the compact markup is not rendered by every build: hiding the cycle with no
++   replacement left the surah title at zero height from 280 to 640px, and
++   relaxing the stack height lets the 104px cycle track set the header height.
++   A browser without `:has()` drops these two rules and keeps the rotating
++   cycle, which is the legible direction to fail in. */
+ @media (max-width: 640px) {
+-  html body .app-root > .mp-header .mp-header__title-cycle-viewport {
+-    display: none !important;
+-  }
+-
+-  html body .app-root > .mp-header .mp-header__title-stack {
++  html body .app-root > .mp-header
++    .mp-header__title-stack:has(.mp-header__title-compact) {
+     height: auto !important;
+     max-height: none !important;
+@@ -873,4 +877,10 @@ html body .app-root > .mp-header .mp-header__title-sub-track {
+   }
+ 
++  html body .app-root > .mp-header
++    .mp-header__title-stack:has(.mp-header__title-compact)
++    .mp-header__title-cycle-viewport {
++    display: none !important;
++  }
++
+   html body .app-root > .mp-header .mp-header__title-compact {
+     display: flex;

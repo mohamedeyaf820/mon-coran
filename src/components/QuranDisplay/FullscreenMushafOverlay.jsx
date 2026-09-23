@@ -19,6 +19,9 @@ const ZOOM_STORAGE_KEY = "mushafplus-fullscreen-zoom";
 const TOTAL_PAGES = 604;
 const DARK_THEMES = new Set(["dark", "night-blue", "oled"]);
 const CHROME_HIDE_DELAY = 5500;
+// One polite status per overlay: the arrows describe themselves through it, so
+// a retry stays announced without each control owning a live region.
+const NAV_STATUS_ID = "mfp-nav-status";
 
 // A Mushaf spread only shows two faces when there is real room for them and
 // the window is not portrait; otherwise a single leaf keeps its measure.
@@ -38,6 +41,18 @@ function getSpread(page) {
 
 function clampZoom(value) {
   return Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, value));
+}
+
+// Which arrow a leaf was meant for: a neighbour that cannot be fetched is the
+// same request the arrow would make, so it carries the same retry state.
+function turnDirection(page, fromPage) {
+  return page > fromPage ? "next" : "prev";
+}
+
+// The pill sits inside the failing control so it follows it across themes and
+// layouts; assistive tech gets the same words from the polite status region.
+function TurnAlert({ lang }) {
+  return <span className="mfp-nav-alert" aria-hidden="true">{t("quran.pageLoadFailed", lang)}</span>;
 }
 
 function getInitialZoom() {
@@ -95,7 +110,7 @@ function getThemeOverlayStyle(theme) {
 
 function AudioControls({ audioAyah, compact = false, hasSession, isPlaying, lang, onOpenPlayer, onStart }) {
   const track = audioService.currentAyah || audioAyah;
-  const trackLabel = track?.surah ? `${track.surah}${track.ayah ? `:${track.ayah}` : ""}` : t("audio.ready", lang);
+  const trackLabel = track?.surah ? `${track.surah}${track.ayah ? `:${track.ayah}` : ""}` : "";
   const toggleLabel = isPlaying ? t("audio.pause", lang) : t("audio.play", lang);
   const toggle = () => { if (hasSession) audioService.toggle(); else onStart?.(); };
 
@@ -104,7 +119,7 @@ function AudioControls({ audioAyah, compact = false, hasSession, isPlaying, lang
       {!compact ? <button type="button" className="mfp-icon-btn mfp-audio-skip" onClick={() => audioService.prev()} disabled={!hasSession || audioService.playlistIndex <= 0} aria-label={t("audio.prev", lang)}><SkipBack size={16} aria-hidden="true" /></button> : null}
       <button type="button" className="mfp-icon-btn mfp-audio-toggle" onClick={toggle} aria-label={toggleLabel} title={`${toggleLabel} (Espace)`}>{isPlaying ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}</button>
       {!compact ? <button type="button" className="mfp-icon-btn mfp-audio-skip" onClick={() => audioService.next()} disabled={!hasSession || audioService.playlistIndex >= audioService.playlist.length - 1} aria-label={t("audio.next", lang)}><SkipForward size={16} aria-hidden="true" /></button> : null}
-      <span className="mfp-audio-track" aria-live="polite"><strong>{trackLabel}</strong><small>{isPlaying ? t("audio.playing", lang) : t("audio.ready", lang)}</small></span>
+      <span className="mfp-audio-track" aria-live="polite">{trackLabel ? <strong>{trackLabel}</strong> : null}<small>{isPlaying ? t("audio.playing", lang) : t("audio.ready", lang)}</small></span>
       <button type="button" className="mfp-icon-btn" onClick={onOpenPlayer} aria-label={t("settings.audio", lang)}><Settings2 size={17} aria-hidden="true" /></button>
     </div>
   );
@@ -126,6 +141,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   ));
   const pageCacheRef = useRef(pageCache);
   const [isPageChanging, setIsPageChanging] = useState(false);
+  // Which leaf turn could not be served: the arrow stays live as its own retry
+  // control but carries a localized indication instead of failing silently.
+  const [failedTurn, setFailedTurn] = useState(null);
   // Verse whose end-marker was tapped: fullscreen had no way to reach the
   // action sheet, so marker taps now open it locally instead of doing nothing.
   const [actionsAyah, setActionsAyah] = useState(null);
@@ -205,6 +223,8 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
       .filter((page) => page >= 1 && page <= 604 && !pageCacheRef.current.has(page));
     (async () => {
       for (const page of neighbours) {
+        const direction = turnDirection(page, currentPage);
+        const isNeighbour = page !== currentPage;
         try {
           const result = await preloadQuranDisplayData({ currentJuz: state.currentJuz, currentPage: page, currentSurah, displayMode: "page", lang, riwaya, warshStrictMode: state.warshStrictMode });
           if (cancelled) return;
@@ -213,8 +233,16 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
             pageCacheRef.current = next;
             return next;
           });
+          if (isNeighbour && result.ayahs?.length) {
+            setFailedTurn((current) => (current === direction ? null : current));
+          }
         } catch {
           if (cancelled) return;
+          if (!isNeighbour) return;
+          // A neighbour that cannot be fetched is the same request its arrow
+          // would make: show the retry state there instead of waiting for the
+          // tap to fail as well.
+          setFailedTurn((current) => current || direction);
         }
       }
     })();
@@ -224,6 +252,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const navigateToPage = useCallback(async (targetPage, direction) => {
     if (targetPage < 1 || targetPage > 604 || isPageChanging) return;
     turnRef.current = direction;
+    setFailedTurn(null);
     setIsPageChanging(true);
 
     try {
@@ -238,6 +267,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
           warshStrictMode: state.warshStrictMode,
         });
         if (!result.ayahs?.length) {
+          // An empty leaf is as unusable as a rejected one: the arrow says so
+          // instead of the tap looking like it did nothing.
+          setFailedTurn(direction);
           setIsPageChanging(false);
           return;
         }
@@ -249,11 +281,19 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
       }
       dispatch({ type: "NAVIGATE_PAGE", payload: { page: targetPage } });
     } catch {
-      // Keep the current Quran page readable. The same control remains
-      // available to retry when the page source becomes reachable again.
+      // Keep the current Quran page readable. The same control stays enabled as
+      // the retry path and now shows why the leaf did not arrive, so an offline
+      // turn is a visible state instead of a swallowed error.
+      setFailedTurn(direction);
       setIsPageChanging(false);
     }
   }, [currentSurah, dispatch, isPageChanging, lang, riwaya, state.currentJuz, state.warshStrictMode]);
+
+  // Landing on another leaf — by arrow, key, swipe or an external navigation —
+  // retires the indication; it belongs to the turn that was attempted.
+  useEffect(() => {
+    setFailedTurn(null);
+  }, [currentPage]);
 
   // The action sheet belongs to a verse on the leaf that was turned to; any
   // page change removes that verse from the screen.
@@ -424,7 +464,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
       <header className="mfp-header">
         <div className="mfp-header__identity">
           <button ref={closeButtonRef} type="button" className="mfp-icon-btn" onClick={onClose} aria-label={t("audio.close", lang)} title={`${t("audio.close", lang)} (Esc)`}><X size={18} aria-hidden="true" /></button>
-          <div className="mfp-header__copy"><h2>{t("quran.page", lang)} {pageLabel}<span> / 604 · {riwaya === "warsh" ? "Warsh" : "Hafs"}{currentJuz ? ` · ${t("sidebar.juz", lang)} ${currentJuz}` : ""}</span></h2></div>
+          <div className="mfp-header__copy"><h2>{t("quran.page", lang)} {pageLabel}<span className="mfp-header__total">{" / 604"}</span><span className="mfp-header__context">{` · ${riwaya === "warsh" ? "Warsh" : "Hafs"}${currentJuz ? ` · ${t("sidebar.juz", lang)} ${currentJuz}` : ""}`}</span></h2></div>
         </div>
         <div className="mfp-header__tools">
           <AudioControls {...audioProps} />
@@ -447,11 +487,12 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
           })}
         </div>
       </main>
-      <button type="button" className="mfp-side-nav mfp-side-nav--next" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} aria-label={t("nav.nextPage", lang)} title={`${t("nav.nextPage", lang)} (←)`}><ChevronLeft size={22} /></button>
-      <button type="button" className="mfp-side-nav mfp-side-nav--prev" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} aria-label={t("nav.prevPage", lang)} title={`${t("nav.prevPage", lang)} (→)`}><ChevronRight size={22} /></button>
+      <button type="button" className="mfp-side-nav mfp-side-nav--next" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} data-load-failed={failedTurn === "next" || undefined} aria-describedby={failedTurn === "next" ? NAV_STATUS_ID : undefined} aria-label={t("nav.nextPage", lang)} title={`${t("nav.nextPage", lang)} (←)`}>{failedTurn === "next" ? <TurnAlert lang={lang} /> : null}<ChevronLeft size={22} /></button>
+      <button type="button" className="mfp-side-nav mfp-side-nav--prev" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} data-load-failed={failedTurn === "prev" || undefined} aria-describedby={failedTurn === "prev" ? NAV_STATUS_ID : undefined} aria-label={t("nav.prevPage", lang)} title={`${t("nav.prevPage", lang)} (→)`}>{failedTurn === "prev" ? <TurnAlert lang={lang} /> : null}<ChevronRight size={22} /></button>
+      <span id={NAV_STATUS_ID} className="sr-only" role="status" aria-live="polite">{failedTurn ? t("quran.pageLoadFailed", lang) : ""}</span>
       <footer className="mfp-mobile-footer">
         <AudioControls compact {...audioProps} />
-        <div className="mfp-mobile-pagination" dir="ltr"><button type="button" className="mfp-icon-btn" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} aria-label={t("nav.nextPage", lang)}><ChevronLeft size={20} /></button><strong>{pageLabel} / 604</strong><button type="button" className="mfp-icon-btn" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} aria-label={t("nav.prevPage", lang)}><ChevronRight size={20} /></button></div>
+        <div className="mfp-mobile-pagination" dir="ltr"><button type="button" className="mfp-icon-btn" onClick={handleNext} disabled={isPageChanging || currentPage >= 604} aria-busy={isPageChanging || undefined} data-load-failed={failedTurn === "next" || undefined} aria-describedby={failedTurn === "next" ? NAV_STATUS_ID : undefined} aria-label={t("nav.nextPage", lang)}>{failedTurn === "next" ? <TurnAlert lang={lang} /> : null}<ChevronLeft size={20} /></button><strong>{pageLabel} / 604</strong><button type="button" className="mfp-icon-btn" onClick={handlePrev} disabled={isPageChanging || currentPage <= 1} aria-busy={isPageChanging || undefined} data-load-failed={failedTurn === "prev" || undefined} aria-describedby={failedTurn === "prev" ? NAV_STATUS_ID : undefined} aria-label={t("nav.prevPage", lang)}>{failedTurn === "prev" ? <TurnAlert lang={lang} /> : null}<ChevronRight size={20} /></button></div>
       </footer>
       <AyahActionsModal
         activeAyah={actionsAyah}

@@ -1,0 +1,33 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index d07e735..8cfa5c0 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -1696,4 +1731,28 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* Below 301px the reader header holds six 44px controls, which leaves the
++   title cell 27px at 280px: the Arabic surah ligature renders as an
++   unreadable fragment. Prev/next surah is also reachable from the sidebar's
++   surah list, so at this width the name takes the space. This block sits after
++   the (max-width: 360px) reader-header contract because that one reserves the
++   two arrow tracks with `html body #root .app-root.app-root` specificity. */
++@media (max-width: 300px) {
++  html body #root .app-root.app-root[data-view="reading"] > .mp-header
++    .mp-header__nav-arrow {
++    display: none !important;
++  }
++
++  html body #root .app-root.app-root[data-view="reading"] > .mp-header
++    .mp-header__nav {
++    grid-template-columns: minmax(0, 1fr) !important;
++    width: 100% !important;
++  }
++
++  html body #root .app-root.app-root[data-view="reading"] > .mp-header
++    .mp-header__title-btn {
++    width: 100% !important;
++  }
++}
++
+ /* Final responsive contract for persistent reader overlays. */
+ @media (max-width: 599px) {

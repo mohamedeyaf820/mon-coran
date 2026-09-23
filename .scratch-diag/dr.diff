@@ -1,0 +1,89 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index d5bb867..f902cab 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -380,9 +380,9 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+ @media (max-width: 640px) {
+   .app-root .duas-page {
+     width: 100% !important;
+     max-width: 100% !important;
+-    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem);
++    padding: 0.65rem 0.875rem calc(var(--player-h, 96px) + 2rem);
+     gap: 1rem;
+   }
+ 
+   .app-root .duas-hero {
+@@ -411,8 +411,9 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+ 
+   html body .app-root.app-root[data-view="duas"] .duas-page--platform
+     :is(.dua-open-btn-v5, .dua-card-footer-link, .duas-back-btn, .duas-cat-btn) {
+     min-height: 44px !important;
++    min-width: 44px !important;
+   }
+ 
+   .app-root .settings-drawer,
+   .app-root .audio-player-modal__surface,
+@@ -1222,10 +1223,13 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   background: transparent !important;
+   box-shadow: none !important;
+ }
+ 
++/* Each verse is wrapped in its own `.virtualized-item`, so every card is a
++   `:last-child` of its wrapper. Selecting the stream's last item is the only
++   way to reach the genuinely final verse. */
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+-  .qc-list-card.qc-list-card:last-child {
++  .qc-verse-by-verse-view > .virtualized-item:last-child .qc-list-card {
+   border-bottom: 0 !important;
+ }
+ 
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+@@ -1262,14 +1266,34 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   text-align: right !important;
+   text-wrap: pretty;
+ }
+ 
++/* In the French/English reader the Arabic must share the left edge with its
++   transliteration and translation; a verse reads as three disconnected
++   fragments when the Arabic is pinned to the opposite edge of a wide column.
++   `match-parent` cannot express this because the Arabic keeps direction:rtl for
++   correct bidi, and `[dir=…]` selectors are dropped by the production CSS
++   build, so the card carries the reading direction as a data attribute. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card[data-verse-dir="ltr"] .qc-ayah-text-ar {
++  text-align: left !important;
++}
++
++/* A verse is one group: the three lines stay close together and only the
++   boundary between verses gets air. Without this, the transliteration and the
++   translation were spaced like separate verses. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card .qc-ayah-transliteration {
++  margin-block: 0.25rem 0 !important;
++  padding-block: 0 !important;
++}
++
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__translation-slot {
+   min-height: 0 !important;
+-  margin-top: 0.6rem !important;
+-  padding-top: 0.7rem;
+-  border-top: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
++  margin-top: 0.35rem !important;
++  padding-top: 0 !important;
++  max-width: 72ch;
+ }
+ 
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__translation-slot.is-loading {
+@@ -1723,9 +1747,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   }
+ 
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__reference.qc-list-card__reference {
+-    font-size: 0.67rem !important;
++    font-size: max(0.8rem, 13px) !important;
+   }
+ 
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__top .ayah-actions button svg {

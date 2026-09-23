@@ -1,0 +1,85 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 101,
+  "number_of_ayahs": 10,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1,
+        2
+      ],
+      "text": "Le Fracas! Mais qu’est-ce donc que le Fracas ?"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Et qui te fera jamais savoir ce que c’est que le Fracas ?"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "C’est le jour où les hommes seront tels des papillons dispersés,"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "où les montagnes seront comme de la laine démêlée en flocons."
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Quant à celui dont les (œuvres) seront lourdes à la balance,"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "il aura une vie agréable,",
+      "footnotes": [
+        {
+          "ref": 617,
+          "text": "L’adjectif est employé ici dans son sens premier : une vie qu’il agrée, dont il est satisfait."
+        }
+      ]
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "et quant à celui dont les (œuvres) seront légères à la balance,"
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "sa destination sera l’abîme."
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "Et qui te fera jamais savoir ce que c’est (que l’abîme)?"
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "Un Feu très ardent !"
+    }
+  ]
+}

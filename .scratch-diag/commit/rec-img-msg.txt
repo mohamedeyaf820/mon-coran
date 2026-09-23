@@ -1,0 +1,42 @@
+feat(recitation): sert les portraits des récitateurs en WebP local
+
+La bibliothèque de récitation tirait ses visages de fichiers hot-linkés chez
+Quran.com, Assabile et Way2Quran : 39 fichiers distincts dont 28 dépassaient
+60 kB, un à 451 kB, soit environ 3 Mo d'images pour afficher 51 avatars de
+45 à 96 px sur un téléphone, et rien hors ligne.
+
+scripts/build-reciter-images.mjs (npm run images:reciters) télécharge chaque
+source une fois, recadre carré autour du point de focus déjà déclaré pour
+l'entrée, et écrit un WebP 256 px sous public/images/reciters/. Le manifeste
+généré src/data/reciterPortraits.js garde, pour chaque visage, le fournisseur,
+la page qui le nomme et l'URL du fichier d'origine : la provenance reste
+vérifiable alors que l'image est devenue locale. 51 portraits, 324 kB au total,
+6,4 kB en moyenne.
+
+getReciterPhoto sert désormais le fichier local ; getReciterVisual dérive son
+crédit « Portrait · … » du catalogue source, jamais du manifeste, pour qu'une
+reconstruction ne puisse pas hériter d'une attribution périmée. Comme plus
+aucune image ne vient d'un tiers, img-src passe à 'self' data: blob: dans la
+politique CSP centralisée, vercel.json et netlify.toml, et le vieux catalogue
+RECITER_PHOTOS de homeConstants (importé nulle part, pointant static.quran.com
+et ui-avatars.com, donc déjà bloqué par la CSP) est supprimé.
+
+Deux visages ajoutés sur la demande explicite de l'utilisateur : Saad al-Moqren
+et Rachid Belalaya, dont la seule photographie vérifiable est chez Way2Quran —
+Assabile ne publie pour eux qu'une carte de visite grise. Le test qui interdisait
+media.way2quran.com est remplacé par une exception bornée à ces deux ids, et
+leurs fiches portent désormais portraitStatus: verified.
+
+Vérifié dans le build : 103 requêtes image, toutes same-origin, zéro 4xx ; les
+fiches de Saad al-Moqren, Rachid Belalaya, Yassin Al-Jazaery et Mishary
+al-Afasy chargent bien leur fichier local, Abdelkrim Ad-Dagous reste à ses
+initiales, et la ligne « Portrait · Way2Quran » est visible. 326/328 tests
+unitaires (les 2 rouges sont étrangers : editorial-copy et mushaf-book.css en
+cours d'édition), 7/7 smoke e2e, budgets d'écran et en-têtes de sécurité OK.
+
+NEEDS_QURANIC_VALIDATION : l'entrée muhsin_al_qasim (audio EveryAyah
+« Muhsin Al Qasim ») porte le portrait, le lien Assabile n°45 et les trois
+biographies d'Abdul Mohsin Al-Qasim. EveryAyah comme mp3quran ne cataloguent
+qu'un seul Al-Qasim, donc soit le nom affiché est tronqué, soit l'app montre le
+frère. Ces données sont laissées telles quelles ici : aucun changement par
+rapport à l'état actuel, à trancher avant d'y toucher.

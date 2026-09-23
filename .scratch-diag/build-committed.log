@@ -1,0 +1,394 @@
+
+> mushafplus@1.1.0 build:ci
+> vite build && node scripts/generate-shell-manifest.mjs && node scripts/purge-css.mjs && node scripts/generate-seo-pages.mjs && node scripts/check-seo-output.mjs && node scripts/audit-performance.mjs && node scripts/check-screen-budget.mjs && node scripts/check-bundle-budget.mjs && node scripts/audit-css-architecture.mjs --check && node scripts/check-security-headers.mjs
+
+[36mvite v8.2.0 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...Found 22 warnings while optimizing generated CSS:
+
+Issue #1:
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ghunna) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ghunna);[22m
+[2m│ }[22m
+
+Issue #2:
+[2m│   color: var(--tajwid-ghunna);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ikhfa) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ikhfa);[22m
+[2m│ }[22m
+
+Issue #3:
+[2m│   color: var(--tajwid-ikhfa);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-qalqala) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-qalqala);[22m
+[2m│ }[22m
+
+Issue #4:
+[2m│   color: var(--tajwid-qalqala);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-idgham) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-idgham);[22m
+[2m│ }[22m
+
+Issue #5:
+[2m│   color: var(--tajwid-idgham);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-iqlab) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-iqlab);[22m
+[2m│ }[22m
+
+Issue #6:
+[2m│   color: var(--tajwid-iqlab);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-normal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-normal);[22m
+[2m│ }[22m
+
+Issue #7:
+[2m│   color: var(--tajwid-madd-normal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-separated) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-separated);[22m
+[2m│ }[22m
+
+Issue #8:
+[2m│   color: var(--tajwid-madd-separated);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-connected) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-connected);[22m
+[2m│ }[22m
+
+Issue #9:
+[2m│   color: var(--tajwid-madd-connected);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd);[22m
+[2m│ }[22m
+
+Issue #10:
+[2m│   color: var(--tajwid-madd);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-necessary) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-necessary);[22m
+[2m│ }[22m
+
+Issue #11:
+[2m│   color: var(--tajwid-madd-necessary);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-badal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-badal);[22m
+[2m│ }[22m
+
+Issue #12:
+[2m│   color: var(--tajwid-madd-badal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-lam-shamsiyya) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-lam-shamsiyya);[22m
+[2m│ }[22m
+
+Issue #13:
+[2m│   color: var(--tajwid-lam-shamsiyya);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-silent) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-silent);[22m
+[2m│ }[22m
+
+Issue #14:
+[2m│   color: var(--tajwid-silent);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tafkhim) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tafkhim);[22m
+[2m│ }[22m
+
+Issue #15:
+[2m│   color: var(--tajwid-tafkhim);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-naql) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-naql);[22m
+[2m│ }[22m
+
+Issue #16:
+[2m│   color: var(--tajwid-naql);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tashil) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tashil);[22m
+[2m│ }[22m
+
+Issue #17:
+[2m│   color: var(--tajwid-tashil);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ibdal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ibdal);[22m
+[2m│ }[22m
+
+Issue #18:
+[2m│   color: var(--tajwid-ibdal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-sila-kubra) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-sila-kubra);[22m
+[2m│ }[22m
+
+Issue #19:
+[2m│   color: var(--tajwid-sila-kubra);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tarqiq-ra) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tarqiq-ra);[22m
+[2m│ }[22m
+
+Issue #20:
+[2m│   color: var(--tajwid-tarqiq-ra);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-idgham-warsh) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+
+Issue #21:
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-hover) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: rgba(var(--primary-rgb), 0.14);[22m
+[2m│ }[22m
+
+Issue #22:
+[2m│   background-color: rgba(var(--primary-rgb), 0.14);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-playing) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: rgba(var(--primary-rgb), 0.16);[22m
+[2m│ }[22m
+
+✓ 2062 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/assets/searchQuery.worker-Bf3ToBWn.js    4.56 kB
+dist/index.html                              11.60 kB │ gzip:   2.80 kB
+dist/.vite/manifest.json                     16.45 kB │ gzip:   2.25 kB
+dist/assets/B6ZHQdcM.css                      1.02 kB │ gzip:   0.47 kB
+dist/assets/g0gj47i5.css                      7.41 kB │ gzip:   1.66 kB
+dist/assets/DrPO9yhe.css                      7.68 kB │ gzip:   1.93 kB
+dist/assets/Csd29z0r.css                     10.44 kB │ gzip:   2.28 kB
+dist/assets/D8iJMN5-.css                     14.76 kB │ gzip:   3.36 kB
+dist/assets/C0THsqbn.css                     16.49 kB │ gzip:   3.52 kB
+dist/assets/B_Vv3o9c.css                     27.73 kB │ gzip:   5.60 kB
+dist/assets/DnMEyzp_.css                     47.39 kB │ gzip:   6.12 kB
+dist/assets/DdoeXRh4.css                     59.22 kB │ gzip:   9.19 kB
+dist/assets/Cn8bnFbQ.css                     81.92 kB │ gzip:  13.30 kB
+dist/assets/Cow9sMfY.css                    265.91 kB │ gzip:  39.17 kB
+dist/assets/Nq80AuJZ.css                    305.16 kB │ gzip:  47.68 kB
+dist/assets/zl_2K1v6.css                    660.20 kB │ gzip: 112.22 kB
+dist/assets/CO-28j1N2.js                      0.05 kB │ gzip:   0.07 kB
+dist/assets/B9wZ-J5c2.js                      0.06 kB │ gzip:   0.08 kB
+dist/assets/p5mvA6Hr.js                       0.33 kB │ gzip:   0.22 kB
+dist/assets/B5mE2qJ-.js                       0.36 kB │ gzip:   0.25 kB
+dist/assets/BV6TkdGG.js                       0.77 kB │ gzip:   0.46 kB
+dist/assets/DCLj4XDt2.js                      1.07 kB │ gzip:   0.51 kB
+dist/assets/Dd_uD5pT.js                       1.10 kB │ gzip:   0.62 kB
+dist/assets/DHvnusEs.js                       1.10 kB │ gzip:   0.54 kB
+dist/assets/BNo1PqHf.js                       1.32 kB │ gzip:   0.78 kB
+dist/assets/CcrV64of.js                       1.57 kB │ gzip:   0.78 kB
+dist/assets/DuUexLtA.js                       1.61 kB │ gzip:   0.92 kB
+dist/assets/DdtanL0G2.js                      1.70 kB │ gzip:   0.89 kB
+dist/assets/DJ7VoPMh.js                       1.95 kB │ gzip:   0.87 kB
+dist/assets/CA2v4QQt.js                       2.57 kB │ gzip:   1.22 kB
+dist/assets/B__YD9IK2.js                      2.59 kB │ gzip:   1.22 kB
+dist/assets/Bw1Mrdk5.js                       2.98 kB │ gzip:   1.02 kB
+dist/assets/BQETMH0i.js                       3.04 kB │ gzip:   1.32 kB
+dist/assets/BtcNfqYj.js                       3.32 kB │ gzip:   1.34 kB
+dist/assets/RcmrQRC_2.js                      3.67 kB │ gzip:   1.54 kB
+dist/assets/BOGtzPQy.js                       3.70 kB │ gzip:   1.56 kB
+dist/assets/jkh5ohSt.js                       3.73 kB │ gzip:   1.24 kB
+dist/assets/D5y38FhP.js                       4.40 kB │ gzip:   1.62 kB
+dist/assets/CAGkQ57M.js                       5.24 kB │ gzip:   2.24 kB
+dist/assets/1MTNkBLe2.js                      6.77 kB │ gzip:   2.82 kB
+dist/assets/C7y051N9.js                       8.38 kB │ gzip:   3.11 kB
+dist/assets/CBv1USn_2.js                      8.42 kB │ gzip:   3.28 kB
+dist/assets/CQcG9ITd2.js                      9.68 kB │ gzip:   3.00 kB
+dist/assets/CsAENo4O.js                       9.69 kB │ gzip:   3.55 kB
+dist/assets/gVooCA6h2.js                     10.44 kB │ gzip:   3.94 kB
+dist/assets/CZrSC9Uf.js                      11.01 kB │ gzip:   3.83 kB
+dist/assets/BJRW6dXJ2.js                     11.62 kB │ gzip:   4.16 kB
+dist/assets/CJKQHwEI2.js                     11.76 kB │ gzip:   4.53 kB
+dist/assets/IOdwdptV2.js                     13.37 kB │ gzip:   4.79 kB
+dist/assets/uQNpWlo22.js                     13.41 kB │ gzip:   4.38 kB
+dist/assets/Bf2UVK6W2.js                     14.56 kB │ gzip:   4.60 kB
+dist/assets/kZ13X0c6.js                      15.05 kB │ gzip:   5.91 kB
+dist/assets/B-cWXayw2.js                     15.15 kB │ gzip:   4.95 kB
+dist/assets/BOSOIsIb.js                      16.35 kB │ gzip:   6.37 kB
+dist/assets/Pc1HiVft.js                      20.97 kB │ gzip:   7.06 kB
+dist/assets/Q-AVg879.js                      23.56 kB │ gzip:   6.55 kB
+dist/assets/BbV1xr_y.js                      26.02 kB │ gzip:  10.04 kB
+dist/assets/CjUdLvEO.js                      27.39 kB │ gzip:   8.77 kB
+dist/assets/LmKLrSL-2.js                     30.41 kB │ gzip:   9.17 kB
+dist/assets/DlqF-Q9R.js                      31.06 kB │ gzip:  10.35 kB
+dist/assets/CtlOVN0x.js                      33.09 kB │ gzip:  11.48 kB
+dist/assets/Az_lAj5z2.js                     33.47 kB │ gzip:  10.91 kB
+dist/assets/C341yGq-2.js                     34.33 kB │ gzip:  12.65 kB
+dist/assets/B7mxK0iG.js                      53.52 kB │ gzip:  17.42 kB
+dist/assets/C7wlPZ8I2.js                     55.05 kB │ gzip:  18.00 kB
+dist/assets/Cs_S6In6.js                      58.23 kB │ gzip:  18.99 kB
+dist/assets/X1YyJ6Jm.js                      61.40 kB │ gzip:  18.19 kB
+dist/assets/BPkmKnI42.js                     63.09 kB │ gzip:  16.06 kB
+dist/assets/DnwugcIX.js                      69.48 kB │ gzip:  24.09 kB
+dist/assets/WdCAoVEb.js                      69.49 kB │ gzip:  23.26 kB
+dist/assets/DBS6dEDT.js                     139.58 kB │ gzip:  45.23 kB
+dist/assets/BDVEqCrL.js                     166.99 kB │ gzip:  51.02 kB
+
+[32m✓ built in 1.51s[39m
+[shell-manifest] Wrote 35 app-shell assets.
+[purge-css] Starting CSS purge...
+[purge-css] Found 13 CSS files
+[purge-css] Expanding content paths...
+[purge-css] Found 58 content files
+
+[purge-css] Processing B6ZHQdcM.css...
+   Original size: 1.00 KB
+   New size: 1.00 KB
+   Reduction: 0.0%
+   Removed selectors: 0
+
+[purge-css] Processing B_Vv3o9c.css...
+   Original size: 27.09 KB
+   New size: 24.11 KB
+   Reduction: 11.0%
+   Removed selectors: 18
+
+[purge-css] Processing C0THsqbn.css...
+   Original size: 16.10 KB
+   New size: 12.09 KB
+   Reduction: 24.9%
+   Removed selectors: 24
+
+[purge-css] Processing Cn8bnFbQ.css...
+   Original size: 80.00 KB
+   New size: 52.82 KB
+   Reduction: 34.0%
+   Removed selectors: 166
+
+[purge-css] Processing Cow9sMfY.css...
+   Original size: 259.68 KB
+   New size: 201.30 KB
+   Reduction: 22.5%
+   Removed selectors: 386
+
+[purge-css] Processing Csd29z0r.css...
+   Original size: 10.20 KB
+   New size: 8.14 KB
+   Reduction: 20.2%
+   Removed selectors: 10
+
+[purge-css] Processing D8iJMN5-.css...
+   Original size: 14.42 KB
+   New size: 13.54 KB
+   Reduction: 6.1%
+   Removed selectors: 10
+
+[purge-css] Processing DdoeXRh4.css...
+   Original size: 57.84 KB
+   New size: 50.84 KB
+   Reduction: 12.1%
+   Removed selectors: 58
+
+[purge-css] Processing DnMEyzp_.css...
+   Original size: 46.28 KB
+   New size: 46.00 KB
+   Reduction: 0.6%
+   Removed selectors: 8
+
+[purge-css] Processing DrPO9yhe.css...
+   Original size: 7.51 KB
+   New size: 7.51 KB
+   Reduction: 0.0%
+   Removed selectors: 0
+
+[purge-css] Processing g0gj47i5.css...
+   Original size: 7.24 KB
+   New size: 7.00 KB
+   Reduction: 3.3%
+   Removed selectors: 4
+
+[purge-css] Processing Nq80AuJZ.css...
+   Original size: 298.01 KB
+   New size: 234.69 KB
+   Reduction: 21.2%
+   Removed selectors: 381
+
+[purge-css] Processing zl_2K1v6.css...
+   Original size: 644.73 KB
+   New size: 366.27 KB
+   Reduction: 43.2%
+   Removed selectors: 1917
+
+[purge-css] CSS purge complete.
+[seo] 120 pages indexables + 404 générées, 120 URLs dans le sitemap.
+[seo-check] OK — 120 indexable URLs, OG image 77.8 kB.
+
+[perf-audit] Build asset summary
+- CSS total: 1025.3 kB
+- JS total: 1197.1 kB
+- Largest asset: zl_2K1v6.css (366.3 kB)
+- Largest asset: Nq80AuJZ.css (234.7 kB)
+- Largest asset: Cow9sMfY.css (201.3 kB)
+- Largest asset: BDVEqCrL.js (163.1 kB)
+- Largest asset: DBS6dEDT.js (136.3 kB)
+[perf-audit] Warning: CSS bundle is still above 500 kB.
+
+[perf-audit] Network probes
+- API metadata: 200 in 478 ms
+- Islamic CDN audio: 200 in 338 ms
+- EveryAyah CDN audio: 200 in 280 ms
+[screen-budget] src/components/HomePage.jsx: 33.5 kB (limit 40 kB) -> OK
+[screen-budget] src/components/QuranDisplay.jsx: 21.7 kB (limit 24 kB) -> OK
+[screen-budget] src/components/AudioPlayer.jsx: 41.5 kB (limit 42 kB) -> OK
+[screen-budget] src/components/SettingsModal.jsx: 43.0 kB (limit 44 kB) -> OK
+[screen-budget] src/components/LibraryModal.jsx: 16.7 kB (limit 24 kB) -> OK
+[screen-budget] src/components/AyahActions.jsx: 46.6 kB (limit 90 kB) -> OK
+[screen-budget] src/services/audioService.js: 45.0 kB (limit 45 kB) -> EXCEEDED
+[screen-budget] src/context/AppContext.jsx: 29.3 kB (limit 34 kB) -> OK
+[screen-budget] src/services/quranAPI.js: 24.9 kB (limit 29 kB) -> OK
+[screen-budget] src/services/quranComAPI.js: 18.9 kB (limit 20 kB) -> OK

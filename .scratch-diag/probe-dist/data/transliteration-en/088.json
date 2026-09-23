@@ -1,0 +1,112 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 88,
+  "number_of_ayahs": 26,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "hal atāka ḥadīthu l-ghāshiyati"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wujūhun yawma-idhin khāshiʿatun"
+    },
+    {
+      "ayah_number": 3,
+      "text": "ʿāmilatun nāṣibatun"
+    },
+    {
+      "ayah_number": 4,
+      "text": "taṣlā nāran ḥāmiyatan"
+    },
+    {
+      "ayah_number": 5,
+      "text": "tus'qā min ʿaynin āniyatin"
+    },
+    {
+      "ayah_number": 6,
+      "text": "laysa lahum ṭaʿāmun illā min ḍarīʿin"
+    },
+    {
+      "ayah_number": 7,
+      "text": "lā yus'minu walā yugh'nī min jūʿin"
+    },
+    {
+      "ayah_number": 8,
+      "text": "wujūhun yawma-idhin nāʿimatun"
+    },
+    {
+      "ayah_number": 9,
+      "text": "lisaʿyihā rāḍiyatun"
+    },
+    {
+      "ayah_number": 10,
+      "text": "fī jannatin ʿāliyatin"
+    },
+    {
+      "ayah_number": 11,
+      "text": "lā tasmaʿu fīhā lāghiyatan"
+    },
+    {
+      "ayah_number": 12,
+      "text": "fīhā ʿaynun jāriyatun"
+    },
+    {
+      "ayah_number": 13,
+      "text": "fīhā sururun marfūʿatun"
+    },
+    {
+      "ayah_number": 14,
+      "text": "wa-akwābun mawḍūʿatun"
+    },
+    {
+      "ayah_number": 15,
+      "text": "wanamāriqu maṣfūfatun"
+    },
+    {
+      "ayah_number": 16,
+      "text": "wazarābiyyu mabthūthatun"
+    },
+    {
+      "ayah_number": 17,
+      "text": "afalā yanẓurūna ilā l-ibili kayfa khuliqat"
+    },
+    {
+      "ayah_number": 18,
+      "text": "wa-ilā l-samāi kayfa rufiʿat"
+    },
+    {
+      "ayah_number": 19,
+      "text": "wa-ilā l-jibāli kayfa nuṣibat"
+    },
+    {
+      "ayah_number": 20,
+      "text": "wa-ilā l-arḍi kayfa suṭiḥat"
+    },
+    {
+      "ayah_number": 21,
+      "text": "fadhakkir innamā anta mudhakkirun"
+    },
+    {
+      "ayah_number": 22,
+      "text": "lasta ʿalayhim bimuṣayṭirin"
+    },
+    {
+      "ayah_number": 23,
+      "text": "illā man tawallā wakafara"
+    },
+    {
+      "ayah_number": 24,
+      "text": "fayuʿadhibuhu l-lahu l-ʿadhāba l-akbara"
+    },
+    {
+      "ayah_number": 25,
+      "text": "inna ilaynā iyābahum"
+    },
+    {
+      "ayah_number": 26,
+      "text": "thumma inna ʿalaynā ḥisābahum"
+    }
+  ]
+}

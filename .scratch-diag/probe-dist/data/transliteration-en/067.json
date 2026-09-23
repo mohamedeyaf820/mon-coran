@@ -1,0 +1,128 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 67,
+  "number_of_ayahs": 30,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "tabāraka alladhī biyadihi l-mul'ku wahuwa ʿalā kulli shayin qadīrun"
+    },
+    {
+      "ayah_number": 2,
+      "text": "alladhī khalaqa l-mawta wal-ḥayata liyabluwakum ayyukum aḥsanu ʿamalan wahuwa l-ʿazīzu l-ghafūru"
+    },
+    {
+      "ayah_number": 3,
+      "text": "alladhī khalaqa sabʿa samāwātin ṭibāqan mā tarā fī khalqi l-raḥmāni min tafāwutin fa-ir'jiʿi l-baṣara hal tarā min fuṭūrin"
+    },
+    {
+      "ayah_number": 4,
+      "text": "thumma ir'jiʿi l-baṣara karratayni yanqalib ilayka l-baṣaru khāsi-an wahuwa ḥasīrun"
+    },
+    {
+      "ayah_number": 5,
+      "text": "walaqad zayyannā l-samāa l-dun'yā bimaṣābīḥa wajaʿalnāhā rujūman lilshayāṭīni wa-aʿtadnā lahum ʿadhāba l-saʿīri"
+    },
+    {
+      "ayah_number": 6,
+      "text": "walilladhīna kafarū birabbihim ʿadhābu jahannama wabi'sa l-maṣīru"
+    },
+    {
+      "ayah_number": 7,
+      "text": "idhā ul'qū fīhā samiʿū lahā shahīqan wahiya tafūru"
+    },
+    {
+      "ayah_number": 8,
+      "text": "takādu tamayyazu mina l-ghayẓi kullamā ul'qiya fīhā fawjun sa-alahum khazanatuhā alam yatikum nadhīrun"
+    },
+    {
+      "ayah_number": 9,
+      "text": "qālū balā qad jāanā nadhīrun fakadhabnā waqul'nā mā nazzala l-lahu min shayin in antum illā fī ḍalālin kabīrin"
+    },
+    {
+      "ayah_number": 10,
+      "text": "waqālū law kunnā nasmaʿu aw naʿqilu mā kunnā fī aṣḥābi l-saʿīri"
+    },
+    {
+      "ayah_number": 11,
+      "text": "fa-iʿ'tarafū bidhanbihim fasuḥ'qan li-aṣḥābi l-saʿīri"
+    },
+    {
+      "ayah_number": 12,
+      "text": "inna alladhīna yakhshawna rabbahum bil-ghaybi lahum maghfiratun wa-ajrun kabīrun"
+    },
+    {
+      "ayah_number": 13,
+      "text": "wa-asirrū qawlakum awi ij'harū bihi innahu ʿalīmun bidhāti l-ṣudūri"
+    },
+    {
+      "ayah_number": 14,
+      "text": "alā yaʿlamu man khalaqa wahuwa l-laṭīfu l-khabīru"
+    },
+    {
+      "ayah_number": 15,
+      "text": "huwa alladhī jaʿala lakumu l-arḍa dhalūlan fa-im'shū fī manākibihā wakulū min riz'qihi wa-ilayhi l-nushūru"
+    },
+    {
+      "ayah_number": 16,
+      "text": "a-amintum man fī l-samāi an yakhsifa bikumu l-arḍa fa-idhā hiya tamūru"
+    },
+    {
+      "ayah_number": 17,
+      "text": "am amintum man fī l-samāi an yur'sila ʿalaykum ḥāṣiban fasataʿlamūna kayfa nadhīri"
+    },
+    {
+      "ayah_number": 18,
+      "text": "walaqad kadhaba alladhīna min qablihim fakayfa kāna nakīri"
+    },
+    {
+      "ayah_number": 19,
+      "text": "awalam yaraw ilā l-ṭayri fawqahum ṣāffātin wayaqbiḍ'na mā yum'sikuhunna illā l-raḥmānu innahu bikulli shayin baṣīrun"
+    },
+    {
+      "ayah_number": 20,
+      "text": "amman hādhā alladhī huwa jundun lakum yanṣurukum min dūni l-raḥmāni ini l-kāfirūna illā fī ghurūrin"
+    },
+    {
+      "ayah_number": 21,
+      "text": "amman hādhā alladhī yarzuqukum in amsaka riz'qahu bal lajjū fī ʿutuwwin wanufūrin"
+    },
+    {
+      "ayah_number": 22,
+      "text": "afaman yamshī mukibban ʿalā wajhihi ahdā amman yamshī sawiyyan ʿalā ṣirāṭin mus'taqīmin"
+    },
+    {
+      "ayah_number": 23,
+      "text": "qul huwa alladhī ansha-akum wajaʿala lakumu l-samʿa wal-abṣāra wal-afidata qalīlan mā tashkurūna"
+    },
+    {
+      "ayah_number": 24,
+      "text": "qul huwa alladhī dhara-akum fī l-arḍi wa-ilayhi tuḥ'sharūna"
+    },
+    {
+      "ayah_number": 25,
+      "text": "wayaqūlūna matā hādhā l-waʿdu in kuntum ṣādiqīna"
+    },
+    {
+      "ayah_number": 26,
+      "text": "qul innamā l-ʿil'mu ʿinda l-lahi wa-innamā anā nadhīrun mubīnun"
+    },
+    {
+      "ayah_number": 27,
+      "text": "falammā ra-awhu zul'fatan sīat wujūhu alladhīna kafarū waqīla hādhā alladhī kuntum bihi taddaʿūna"
+    },
+    {
+      "ayah_number": 28,
+      "text": "qul ara-aytum in ahlakaniya l-lahu waman maʿiya aw raḥimanā faman yujīru l-kāfirīna min ʿadhābin alīmin"
+    },
+    {
+      "ayah_number": 29,
+      "text": "qul huwa l-raḥmānu āmannā bihi waʿalayhi tawakkalnā fasataʿlamūna man huwa fī ḍalālin mubīnin"
+    },
+    {
+      "ayah_number": 30,
+      "text": "qul ara-aytum in aṣbaḥa māukum ghawran faman yatīkum bimāin maʿīnin"
+    }
+  ]
+}

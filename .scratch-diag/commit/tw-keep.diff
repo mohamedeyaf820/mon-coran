@@ -1,0 +1,54 @@
+diff --git a/src/components/Quran/TajweedText.jsx b/src/components/Quran/TajweedText.jsx
+index b90e7d7..6554df6 100644
+--- a/src/components/Quran/TajweedText.jsx
++++ b/src/components/Quran/TajweedText.jsx
+@@ -16,4 +17,5 @@ import {
+ } from '../../utils/tajweedHighlights';
+ import useKaraokeWordIndex from '../../hooks/useKaraokeWordIndex';
++import { ruleFromClassName } from '../../utils/quranComTajweedClasses';
+ 
+ const AYAH_MARKER_TOKEN_RE = /^[\u06DD\u06DE\u06E9\uFC00-\uFD1C\uFD3F\uFD3E\d\u0660-\u0669\u06F0-\u06F9]+$/u;
+@@ -24,43 +26,4 @@ function isMarkerToken(str) {
+ }
+ 
+-const QURAN_COM_CLASS_MAP = {
+-    ghunnah: 'ghunna',
+-    ghunna: 'ghunna',
+-    ikhafa: 'ikhfa',
+-    ikhfa: 'ikhfa',
+-    ikhfa_shafawi: 'ikhfa',
+-    idgham_ghunnah: 'idgham',
+-    idgham_without_ghunnah: 'silent',
+-    idgham_wo_ghunnah: 'silent',
+-    idgham_shafawi: 'idgham',
+-    idgham_mutamathilayn: 'idgham',
+-    idgham: 'idgham',
+-    iqlab: 'iqlab',
+-    qalqalah: 'qalqala',
+-    qalaqah: 'qalqala',
+-    madda_necessary: 'madd',
+-    madda_obligatory: 'madd-connected',
+-    madda_permissible: 'madd-separated',
+-    madda_normal: 'madd-normal',
+-    madd_lazim: 'madd',
+-    madd_muttasil: 'madd-connected',
+-    madd_munfasil: 'madd-separated',
+-    ham_wasl: 'silent',
+-    laam_shamsiyah: 'lam-shamsiyya',
+-    silent: 'silent',
+-};
+-
+-function ruleFromClassName(className = '') {
+-    const classes = String(className).split(/\s+/).filter(Boolean);
+-    for (const item of classes) {
+-        const normalized = item
+-            .replace(/^tajweed[-_]?/i, '')
+-            .replace(/-/g, '_')
+-            .toLowerCase();
+-        if (QURAN_COM_CLASS_MAP[normalized]) return QURAN_COM_CLASS_MAP[normalized];
+-    }
+-    return null;
+-}
+-
+ function parseQuranComTajweedHtml(html) {
+     if (!html || !/<[a-z][\s\S]*>/i.test(html)) return null;

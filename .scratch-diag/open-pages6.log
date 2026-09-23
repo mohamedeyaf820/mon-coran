@@ -1,0 +1,17 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+locator.click: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.reader-fullscreen-trigger, .srh-fullscreen-btn').first()[22m
+
+    at shot (C:\Users\amirou\Documents\Quran App\.scratch-diag\capture-open-pages.mjs:27:78)
+    at async file:///C:/Users/amirou/Documents/Quran%20App/.scratch-diag/capture-open-pages.mjs:54:1 {
+  log: [
+    "  - waiting for locator('.reader-fullscreen-trigger, .srh-fullscreen-btn').first()"
+  ],
+  name: 'TimeoutError'
+}
+
+Node.js v24.19.0

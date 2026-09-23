@@ -1,0 +1,85 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 93,
+  "number_of_ayahs": 11,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "By the morning hours"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "And by the night when it is stillest,"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Thy Lord hath not forsaken thee nor doth He hate thee,"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "And verily the latter portion will be better for thee than the former,"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "And verily thy Lord will give unto thee so that thou wilt be content."
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Did He not find thee an orphan and protect (thee)?"
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "Did He not find thee wandering and direct (thee)?"
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "Did He not find thee destitute and enrich (thee)?"
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "Therefor the orphan oppress not,"
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "Therefor the beggar drive not away,"
+    },
+    {
+      "ayah_number": 11,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "Therefor of the bounty of thy Lord be thy discourse."
+    }
+  ]
+}

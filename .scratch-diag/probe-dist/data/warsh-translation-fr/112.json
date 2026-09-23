@@ -1,0 +1,42 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 112,
+  "number_of_ayahs": 4,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Dis : « Il est Allah, l’Un."
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Allah, le Primultime.",
+      "footnotes": [
+        {
+          "ref": 622,
+          "text": "Nous recourons à ce néologisme pour condenser le maximum de nuances exprimées par le seul attribut arabe « Aç-Çamad »الصمد :le premier et le dernier à être imploré. Le premier à être et le dernier à rester (primus, ultimus)."
+        }
+      ]
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Il n’a pas engendré ni n’a été engendré."
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Et nul n’est Son égal ! »"
+    }
+  ]
+}

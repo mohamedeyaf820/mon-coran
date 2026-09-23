@@ -1,0 +1,79 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 101,
+  "number_of_ayahs": 10,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1,
+        2
+      ],
+      "text": "The Calamity! What is the Calamity?"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Ah, what will convey unto thee what the Calamity is!"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "A day wherein mankind will be as thickly-scattered moths"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "And the mountains will become as carded wool."
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Then, as for him whose scales are heavy (with good works),"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "He will live a pleasant life."
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "But as for him whose scales are light,"
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "A bereft and Hungry One will be his mother,"
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "Ah, what will convey unto thee what she is! -"
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "Raging Fire."
+    }
+  ]
+}

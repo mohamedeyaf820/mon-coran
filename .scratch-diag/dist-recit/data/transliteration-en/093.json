@@ -1,0 +1,52 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 93,
+  "number_of_ayahs": 11,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "wal-ḍuḥā"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wa-al-layli idhā sajā"
+    },
+    {
+      "ayah_number": 3,
+      "text": "mā waddaʿaka rabbuka wamā qalā"
+    },
+    {
+      "ayah_number": 4,
+      "text": "walalākhiratu khayrun laka mina l-ūlā"
+    },
+    {
+      "ayah_number": 5,
+      "text": "walasawfa yuʿ'ṭīka rabbuka fatarḍā"
+    },
+    {
+      "ayah_number": 6,
+      "text": "alam yajid'ka yatīman faāwā"
+    },
+    {
+      "ayah_number": 7,
+      "text": "wawajadaka ḍāllan fahadā"
+    },
+    {
+      "ayah_number": 8,
+      "text": "wawajadaka ʿāilan fa-aghnā"
+    },
+    {
+      "ayah_number": 9,
+      "text": "fa-ammā l-yatīma falā taqhar"
+    },
+    {
+      "ayah_number": 10,
+      "text": "wa-ammā l-sāila falā tanhar"
+    },
+    {
+      "ayah_number": 11,
+      "text": "wa-ammā biniʿ'mati rabbika faḥaddith"
+    }
+  ]
+}

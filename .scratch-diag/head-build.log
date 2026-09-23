@@ -1,0 +1,301 @@
+
+> mushafplus@1.1.0 build
+> vite build && node scripts/generate-shell-manifest.mjs && node scripts/purge-css.mjs && node scripts/generate-seo-pages.mjs && node scripts/check-seo-output.mjs && node scripts/audit-performance.mjs
+
+[36mvite v8.2.0 [32mbuilding client environment for production...[36m[39m
+[2Ktransforming...Found 22 warnings while optimizing generated CSS:
+
+Issue #1:
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ghunna) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ghunna);[22m
+[2m│ }[22m
+
+Issue #2:
+[2m│   color: var(--tajwid-ghunna);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ikhfa) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ikhfa);[22m
+[2m│ }[22m
+
+Issue #3:
+[2m│   color: var(--tajwid-ikhfa);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-qalqala) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-qalqala);[22m
+[2m│ }[22m
+
+Issue #4:
+[2m│   color: var(--tajwid-qalqala);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-idgham) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-idgham);[22m
+[2m│ }[22m
+
+Issue #5:
+[2m│   color: var(--tajwid-idgham);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-iqlab) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-iqlab);[22m
+[2m│ }[22m
+
+Issue #6:
+[2m│   color: var(--tajwid-iqlab);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-normal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-normal);[22m
+[2m│ }[22m
+
+Issue #7:
+[2m│   color: var(--tajwid-madd-normal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-separated) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-separated);[22m
+[2m│ }[22m
+
+Issue #8:
+[2m│   color: var(--tajwid-madd-separated);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-connected) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-connected);[22m
+[2m│ }[22m
+
+Issue #9:
+[2m│   color: var(--tajwid-madd-connected);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd);[22m
+[2m│ }[22m
+
+Issue #10:
+[2m│   color: var(--tajwid-madd);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-necessary) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-necessary);[22m
+[2m│ }[22m
+
+Issue #11:
+[2m│   color: var(--tajwid-madd-necessary);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-madd-badal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-madd-badal);[22m
+[2m│ }[22m
+
+Issue #12:
+[2m│   color: var(--tajwid-madd-badal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-lam-shamsiyya) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-lam-shamsiyya);[22m
+[2m│ }[22m
+
+Issue #13:
+[2m│   color: var(--tajwid-lam-shamsiyya);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-silent) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-silent);[22m
+[2m│ }[22m
+
+Issue #14:
+[2m│   color: var(--tajwid-silent);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tafkhim) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tafkhim);[22m
+[2m│ }[22m
+
+Issue #15:
+[2m│   color: var(--tajwid-tafkhim);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-naql) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-naql);[22m
+[2m│ }[22m
+
+Issue #16:
+[2m│   color: var(--tajwid-naql);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tashil) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tashil);[22m
+[2m│ }[22m
+
+Issue #17:
+[2m│   color: var(--tajwid-tashil);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-ibdal) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-ibdal);[22m
+[2m│ }[22m
+
+Issue #18:
+[2m│   color: var(--tajwid-ibdal);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-sila-kubra) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-sila-kubra);[22m
+[2m│ }[22m
+
+Issue #19:
+[2m│   color: var(--tajwid-sila-kubra);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-tarqiq-ra) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-tarqiq-ra);[22m
+[2m│ }[22m
+
+Issue #20:
+[2m│   color: var(--tajwid-tarqiq-ra);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-idgham-warsh) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+
+Issue #21:
+[2m│   color: var(--tajwid-idgham-warsh);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-hover) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: rgba(var(--primary-rgb), 0.14);[22m
+[2m│ }[22m
+
+Issue #22:
+[2m│   background-color: rgba(var(--primary-rgb), 0.14);[22m
+[2m│ }[22m
+[2m│[22m ::highlight(tajwid-playing) {
+[2m┆[22m             [33m[2m^--[22m 'highlight' is not recognized as a valid pseudo-element. Did you mean ':highlight' (pseudo-class) or is this a typo?[39m
+[2m┆[22m
+[2m│   background-color: rgba(var(--primary-rgb), 0.16);[22m
+[2m│ }[22m
+
+
+/fonts/amiri-quran-v19-arabic.woff2 referenced in /fonts/amiri-quran-v19-arabic.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/fonts/amiri-quran-v19-latin.woff2 referenced in /fonts/amiri-quran-v19-latin.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/fonts/noto-naskh-arabic-v44-ui.woff2 referenced in /fonts/noto-naskh-arabic-v44-ui.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/fonts/noto-naskh-arabic-v44-arabic.woff2 referenced in /fonts/noto-naskh-arabic-v44-arabic.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+
+/fonts/noto-naskh-arabic-v44-latin.woff2 referenced in /fonts/noto-naskh-arabic-v44-latin.woff2 didn't resolve at build time, it will remain unchanged to be resolved at runtime
+✓ 1943 modules transformed.
+[31m✗[39m Build failed in 16.32s
+[31merror during build:
+[31mBuild failed with 6 errors:
+
+[31m[UNRESOLVED_IMPORT] [0mCould not resolve './warshTranslationService.js' in src/services/storageService.js
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/services/storageService.js:10:79 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m10 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m{[0m[38;5;249m [0m[38;5;249mW[0m[38;5;249mA[0m[38;5;249mR[0m[38;5;249mS[0m[38;5;249mH[0m[38;5;249m_[0m[38;5;249mT[0m[38;5;249mR[0m[38;5;249mA[0m[38;5;249mN[0m[38;5;249mS[0m[38;5;249mL[0m[38;5;249mA[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mD[0m[38;5;249mI[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mI[0m[38;5;249mD[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mW[0m[38;5;249mA[0m[38;5;249mR[0m[38;5;249mS[0m[38;5;249mH[0m[38;5;249m_[0m[38;5;249mT[0m[38;5;249mR[0m[38;5;249mA[0m[38;5;249mN[0m[38;5;249mS[0m[38;5;249mL[0m[38;5;249mA[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mD[0m[38;5;249mI[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mI[0m[38;5;249mD[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mN[0m[38;5;249m [0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m"./warshTranslationService.js"[38;5;249m;[0m
+ [38;5;240m   │[0m                                                                               ───────────────┬──────────────  
+ [38;5;240m   │[0m                                                                                              ╰──────────────── Module not found.
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: 'src/services/storageService.js' is imported by the following path:
+ [38;5;240m   │[0m         - src/services/storageService.js
+ [38;5;240m   │[0m         - src/context/AppContext.jsx
+ [38;5;240m   │[0m         - src/main.jsx
+ [38;5;240m   │[0m         - index.html
+[38;5;246m────╯[0m
+
+[31m[UNRESOLVED_IMPORT] [0mCould not resolve './warshTranslationService' in src/services/quranAPI.js
+   [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/services/quranAPI.js:7:134 [38;5;246m][0m
+   [38;5;246m│[0m
+ [38;5;246m7 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m{[0m[38;5;249m [0m[38;5;249mW[0m[38;5;249mA[0m[38;5;249mR[0m[38;5;249mS[0m[38;5;249mH[0m[38;5;249m_[0m[38;5;249mT[0m[38;5;249mR[0m[38;5;249mA[0m[38;5;249mN[0m[38;5;249mS[0m[38;5;249mL[0m[38;5;249mA[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mD[0m[38;5;249mI[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mI[0m[38;5;249mD[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mW[0m[38;5;249mA[0m[38;5;249mR[0m[38;5;249mS[0m[38;5;249mH[0m[38;5;249m_[0m[38;5;249mT[0m[38;5;249mR[0m[38;5;249mA[0m[38;5;249mN[0m[38;5;249mS[0m[38;5;249mL[0m[38;5;249mA[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mD[0m[38;5;249mI[0m[38;5;249mT[0m[38;5;249mI[0m[38;5;249mO[0m[38;5;249mN[0m[38;5;249m_[0m[38;5;249mI[0m[38;5;249mD[0m[38;5;249m_[0m[38;5;249mE[0m[38;5;249mN[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mg[0m[38;5;249me[0m[38;5;249mt[0m[38;5;249mW[0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249mh[0m[38;5;249mT[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249ms[0m[38;5;249mW[0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249ms[0m[38;5;249mh[0m[38;5;249mT[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mE[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249m [0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m"./warshTranslationService"[38;5;249m;[0m
+ [38;5;240m  │[0m                                                                                                                                      ─────────────┬─────────────  
+ [38;5;240m  │[0m                                                                                                                                                   ╰─────────────── Module not found.
+ [38;5;240m  │[0m 
+ [38;5;240m  │[0m [38;5;115mHelp[0m: 'src/services/quranAPI.js' is imported by the following path:
+ [38;5;240m  │[0m         - src/services/quranAPI.js
+ [38;5;240m  │[0m         - src/App.jsx
+ [38;5;240m  │[0m         - src/main.jsx
+ [38;5;240m  │[0m         - index.html
+[38;5;246m───╯[0m
+
+[31m[UNRESOLVED_IMPORT] [0mCould not resolve './QuranDisplay/useTransliterationData' in src/components/QuranDisplay.jsx
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/QuranDisplay.jsx:21:36 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m21 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mT[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249ms[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mD[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249ma[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m"./QuranDisplay/useTransliterationData"[38;5;249m;[0m
+ [38;5;240m   │[0m                                    ───────────────────┬───────────────────  
+ [38;5;240m   │[0m                                                       ╰───────────────────── Module not found.
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: 'src/components/QuranDisplay.jsx' is imported by the following path:
+ [38;5;240m   │[0m         - src/components/QuranDisplay.jsx
+ [38;5;240m   │[0m         - src/App.jsx
+ [38;5;240m   │[0m         - src/main.jsx
+ [38;5;240m   │[0m         - index.html
+[38;5;246m────╯[0m
+
+[31m[UNRESOLVED_IMPORT] [0mCould not resolve '../hooks/useDirectionAwareKeys' in src/components/AudioPlayer.jsx
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/components/AudioPlayer.jsx:17:39 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m17 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m{[0m[38;5;249m [0m[38;5;249mu[0m[38;5;249ms[0m[38;5;249me[0m[38;5;249mD[0m[38;5;249mi[0m[38;5;249mr[0m[38;5;249me[0m[38;5;249mc[0m[38;5;249mt[0m[38;5;249mi[0m[38;5;249mo[0m[38;5;249mn[0m[38;5;249mA[0m[38;5;249mw[0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249me[0m[38;5;249mK[0m[38;5;249me[0m[38;5;249my[0m[38;5;249ms[0m[38;5;249m [0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m"../hooks/useDirectionAwareKeys"[38;5;249m;[0m
+ [38;5;240m   │[0m                                       ────────────────┬───────────────  
+ [38;5;240m   │[0m                                                       ╰───────────────── Module not found.
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: 'src/components/AudioPlayer.jsx' is imported by the following path:
+ [38;5;240m   │[0m         - src/components/AudioPlayer.jsx
+ [38;5;240m   │[0m         - src/App.jsx
+ [38;5;240m   │[0m         - src/main.jsx
+ [38;5;240m   │[0m         - index.html
+[38;5;246m────╯[0m
+
+[31m[UNRESOLVED_IMPORT] [0mCould not resolve './audioUrlBuilder.js' in src/services/audioService.js
+    [38;5;246m╭[0m[38;5;246m─[0m[38;5;246m[[0m src/services/audioService.js:10:166 [38;5;246m][0m
+    [38;5;246m│[0m
+ [38;5;246m10 │[0m [38;5;249mi[0m[38;5;249mm[0m[38;5;249mp[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mt[0m[38;5;249m [0m[38;5;249m{[0m[38;5;249m [0m[38;5;249mb[0m[38;5;249mu[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249md[0m[38;5;249mL[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249mn[0m[38;5;249mc[0m[38;5;249my[0m[38;5;249mK[0m[38;5;249me[0m[38;5;249my[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mb[0m[38;5;249mu[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249md[0m[38;5;249mP[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249my[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249mS[0m[38;5;249mi[0m[38;5;249mg[0m[38;5;249mn[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249me[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mb[0m[38;5;249mu[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249md[0m[38;5;249mU[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mb[0m[38;5;249mu[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249md[0m[38;5;249mU[0m[38;5;249mr[0m[38;5;249ml[0m[38;5;249mC[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249md[0m[38;5;249mi[0m[38;5;249md[0m[38;5;249ma[0m[38;5;249mt[0m[38;5;249me[0m[38;5;249ms[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mh[0m[38;5;249ma[0m[38;5;249mf[0m[38;5;249ms[0m[38;5;249mF[0m[38;5;249mi[0m[38;5;249ml[0m[38;5;249me[0m[38;5;249mN[0m[38;5;249mu[0m[38;5;249mm[0m[38;5;249mb[0m[38;5;249me[0m[38;5;249mr[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mi[0m[38;5;249ms[0m[38;5;249mS[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mh[0m[38;5;249mS[0m[38;5;249mt[0m[38;5;249mr[0m[38;5;249me[0m[38;5;249ma[0m[38;5;249mm[0m[38;5;249mC[0m[38;5;249md[0m[38;5;249mn[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mn[0m[38;5;249mo[0m[38;5;249mr[0m[38;5;249mm[0m[38;5;249ma[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249mz[0m[38;5;249me[0m[38;5;249mP[0m[38;5;249ml[0m[38;5;249ma[0m[38;5;249my[0m[38;5;249ml[0m[38;5;249mi[0m[38;5;249ms[0m[38;5;249mt[0m[38;5;249mA[0m[38;5;249my[0m[38;5;249ma[0m[38;5;249mh[0m[38;5;249ms[0m[38;5;249m,[0m[38;5;249m [0m[38;5;249mw[0m[38;5;249mi[0m[38;5;249mt[0m[38;5;249mh[0m[38;5;249mQ[0m[38;5;249mu[0m[38;5;249mr[0m[38;5;249ma[0m[38;5;249mn[0m[38;5;249mC[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249mP[0m[38;5;249mr[0m[38;5;249mi[0m[38;5;249mm[0m[38;5;249ma[0m[38;5;249mr[0m[38;5;249my[0m[38;5;249m [0m[38;5;249m}[0m[38;5;249m [0m[38;5;249mf[0m[38;5;249mr[0m[38;5;249mo[0m[38;5;249mm[0m[38;5;249m [0m"./audioUrlBuilder.js"[38;5;249m;[0m
+ [38;5;240m   │[0m                                                                                                                                                                      ───────────┬──────────  
+ [38;5;240m   │[0m                                                                                                                                                                                 ╰──────────── Module not found.
+ [38;5;240m   │[0m 
+ [38;5;240m   │[0m [38;5;115mHelp[0m: 'src/services/audioService.js' is imported by the following path:
+ [38;5;240m   │[0m         - src/services/audioService.js
+ [38;5;240m   │[0m         - src/components/HomePage.jsx
+ [38;5;240m   │[0m         - src/App.jsx
+ [38;5;240m   │[0m         - src/main.jsx
+ [38;5;240m   │[0m         - index.html
+[38;5;246m────╯[0m
+
+...[31m
+    at aggregateBindingErrorsIntoJsError (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/rolldown/dist/shared/error-BgfXq0Tb.mjs:48:18)
+    at unwrapBindingResult (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/rolldown/dist/shared/error-BgfXq0Tb.mjs:18:128)
+    at #build (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/rolldown/dist/shared/rolldown-DP_p9pd3.mjs:132:34)
+    at async buildEnvironment (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/vite/dist/node/chunks/node.js:33669:66)
+    at async Object.build (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/vite/dist/node/chunks/node.js:34091:19)
+    at async Object.buildApp (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/vite/dist/node/chunks/node.js:34088:153)
+    at async CAC.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/node_modules/vite/dist/node/cli.js:776:3) {
+  errors: [Getter/Setter]
+}[39m

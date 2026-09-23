@@ -1,0 +1,30 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 103,
+  "number_of_ayahs": 3,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1,
+        2
+      ],
+      "text": "By the declining day, Lo! man is a state of loss,"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Save those who believe and do good works, and exhort one another to truth and exhort one another to endurance."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Save those who believe and do good works, and exhort one another to truth and exhort one another to endurance."
+    }
+  ]
+}

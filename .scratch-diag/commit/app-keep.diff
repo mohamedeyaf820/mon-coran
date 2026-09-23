@@ -1,0 +1,167 @@
+diff --git a/src/styles/app-system.css b/src/styles/app-system.css
+index 63c53a2..78acb07 100644
+--- a/src/styles/app-system.css
++++ b/src/styles/app-system.css
+@@ -511,4 +512,5 @@ html body .app-root {
+   color: inherit;
+   background: rgba(var(--primary-rgb), 0.1);
++  font-size: max(0.66rem, 10px);
+ }
+ 
+@@ -837,5 +839,5 @@ html body .app-root {
+   color: #f0d786;
+   background: rgba(255, 255, 255, 0.07);
+-  font-size: 0.64rem;
++  font-size: max(0.66rem, 10px);
+   font-weight: 800;
+   letter-spacing: 0.1em;
+@@ -872,5 +874,5 @@ html body .app-root {
+ .app-root[data-view="home"] .home-resume-panel__target-label {
+   color: rgba(255, 255, 255, 0.56);
+-  font-size: 0.56rem;
++  font-size: max(0.66rem, 10px);
+   font-weight: 760;
+   letter-spacing: 0.09em;
+@@ -919,5 +921,6 @@ html body .app-root {
+   color: rgba(255, 255, 255, 0.82);
+   background: rgba(3, 20, 12, 0.2);
+-  font-size: 0.66rem;
++  /* 0.66rem measures 9.9px at the fluid 15px root on a phone. */
++  font-size: max(0.66rem, 10px);
+   font-weight: 680;
+   transition: border-color 160ms ease, background-color 160ms ease, transform 160ms ease;
+@@ -1013,5 +1016,5 @@ html body .app-root {
+   overflow: hidden;
+   color: var(--text-muted);
+-  font-size: 0.64rem;
++  font-size: max(0.66rem, 10px);
+   font-weight: 650;
+   text-overflow: ellipsis;
+@@ -1036,5 +1039,5 @@ html body .app-root {
+   grid-column: 1;
+   color: var(--primary);
+-  font-size: 0.61rem;
++  font-size: max(0.66rem, 10px);
+   font-weight: 850;
+   letter-spacing: 0.09em;
+@@ -1069,5 +1072,5 @@ html body .app-root {
+   gap: 0.3rem;
+   color: var(--primary);
+-  font-size: 0.65rem;
++  font-size: max(0.66rem, 10px);
+   font-weight: 800;
+ }
+@@ -1085,5 +1088,5 @@ html body .app-root {
+   gap: 0.5rem;
+   width: 100%;
+-  min-height: 2.75rem;
++  min-height: max(2.75rem, 44px);
+   border: 0;
+   border-radius: 0.75rem;
+@@ -1129,5 +1132,5 @@ html body .app-root {
+   margin-top: 0.08rem;
+   color: var(--text-muted);
+-  font-size: 0.58rem;
++  font-size: max(0.66rem, 10px);
+ }
+ 
+@@ -1235,5 +1238,5 @@ html body .app-root {
+   color: inherit;
+   background: color-mix(in srgb, currentColor 12%, transparent);
+-  font-size: 0.57rem;
++  font-size: max(0.62rem, 10px);
+ }
+ 
+@@ -1256,5 +1259,5 @@ html body .app-root {
+ .app-root[data-view="home"] .home-style-filter {
+   display: inline-flex;
+-  min-height: 2.25rem;
++  min-height: max(2.25rem, 44px);
+   flex: 0 0 auto;
+   align-items: center;
+@@ -1285,5 +1288,5 @@ html body .app-root {
+   background: rgba(var(--primary-rgb, 11, 98, 53), 0.14);
+   color: var(--primary);
+-  font-size: 0.56rem;
++  font-size: max(0.62rem, 10px);
+   font-weight: 800;
+   font-variant-numeric: tabular-nums;
+@@ -1298,5 +1301,5 @@ html body .app-root {
+   margin: 0.35rem 0 0;
+   color: var(--text-muted);
+-  font-size: 0.6rem;
++  font-size: max(0.66rem, 10px);
+   line-height: 1.35;
+ }
+@@ -1355,5 +1358,5 @@ html body .app-root {
+ 
+   .app-root[data-view="home"] .home-resume-panel__library > button {
+-    min-height: 2.3rem;
++    min-height: max(2.75rem, 44px);
+     padding-inline: 0.42rem;
+   }
+@@ -1367,5 +1370,5 @@ html body .app-root {
+     width: 100%;
+     min-width: 0;
+-    min-height: 2.55rem;
++    min-height: max(2.75rem, 44px);
+     padding-inline: 0.6rem;
+     font-size: 0.7rem;
+@@ -1471,4 +1474,21 @@ html body .app-root {
+     font-size: 1.48rem;
+   }
++
++  /* The verse reference sits in an `auto` track, so on a phone it claims half
++     the card and leaves the translation ~100px for a whole sentence: measured
++     229px of clipped text at 280px. Stack the card and let the sentence wrap.
++     The footer's verse card makes the same downgrade at 480px. */
++  .app-root[data-view="home"] .home-today-verse {
++    grid-template-columns: minmax(0, 1fr);
++  }
++
++  .app-root[data-view="home"] .home-today-verse__reference {
++    grid-column: 1;
++    align-self: start;
++  }
++
++  .app-root[data-view="home"] .home-today-verse__translation {
++    white-space: normal;
++  }
+ }
+ 
+@@ -1501,4 +1521,16 @@ html body .app-root {
+   }
+ 
++  /* Three equal columns give the label 60px at 390px and 24px at 280px against
++     a 42px measure for "0 Favoris", so the count ellipsised on every phone. The
++     trailing chevron is decorative here — the whole button is the link — so it
++     surrenders its 16px to the label, and the padding tightens with it. */
++  .app-root[data-view="home"] .home-resume-panel__library > button {
++    padding-inline: 0.3rem;
++  }
++
++  .app-root[data-view="home"] .home-resume-panel__library > button > svg:last-of-type {
++    display: none;
++  }
++
+   .app-root[data-view="home"] .home-resume-panel__watermark {
+     max-width: 42%;
+@@ -1517,4 +1549,18 @@ html body .app-root {
+ }
+ 
++/* Below 300px (Galaxy Fold cover) the Arabic "0 ملاحظات" still needs 47px in a
++   44px measure after the chevron is dropped. The column gap and the button
++   padding give up the last 4px rather than the 10px text floor. */
++@media (max-width: 300px) {
++  .app-root[data-view="home"] .home-resume-panel__library {
++    gap: 0.22rem;
++  }
++
++  .app-root[data-view="home"] .home-resume-panel__library > button {
++    gap: 0.25rem;
++    padding-inline: 0.2rem;
++  }
++}
++
+ /* ========================================================================== */
+ /* Audio studio — two stable states, quiet diagnostics and device-aware input */

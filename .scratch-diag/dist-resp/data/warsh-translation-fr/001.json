@@ -1,0 +1,75 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 1,
+  "number_of_ayahs": 7,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Louange à Allah, Seigneur de l’Univers."
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Le Tout Clément, le Tout Miséricordieux."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Souverain du Jour de la Rétribution.",
+      "footnotes": [
+        {
+          "ref": 3,
+          "text": "ملك se lit de deux façons : en allongeant la première syllabe, au sens littéral de « possesseur », ou en la raccourcissant, au sens de « roi ». La traduction par « souverain » inclut, nous semble-t-il, les deux sens. Notons que la lecture de Hafç, adoptée pour la présente traduction, opte pour la première prononciation."
+        }
+      ]
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "C’est Toi (Seul) Que nous adorons, et c’est Toi (Seul) Dont nous cherchons l’assistance."
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Guide-nous sur la voie droite,"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "voie de ceux que Tu as comblés de Tes grâces, non celle des réprouvés, ni celle des égarés.",
+      "footnotes": [
+        {
+          "ref": 4,
+          "text": "Par Ta colère. Nous avons préféré traduire غير المغضوب عليهم par le passif, plus fidèle à la structure du texte coranique, et en évitant de traduire par la proposition relative « ceux qui sont réprouvés », « ceux qui ont encouru Ta colère », qui sont des traductions de segments arabes introduits par الذين. Or, ce pronom relatif ne s’est produit que dans الذين أنعمت عليهم , que nous avons effectivement traduit par « ceux que Tu as comblés de Tes grâces ». Du reste, l’égalité et la symétrie des segments : « non celle des réprouvés, ni celle des égarés » évite au rythme le trébuchement dû à la structure déséquilibrée : « non de ceux qui sont réprouvés, ni des égarés », ou « non de ceux qui ont encouru Ta colère, ni des égarés »."
+        }
+      ]
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "voie de ceux que Tu as comblés de Tes grâces, non celle des réprouvés, ni celle des égarés.",
+      "footnotes": [
+        {
+          "ref": 4,
+          "text": "Par Ta colère. Nous avons préféré traduire غير المغضوب عليهم par le passif, plus fidèle à la structure du texte coranique, et en évitant de traduire par la proposition relative « ceux qui sont réprouvés », « ceux qui ont encouru Ta colère », qui sont des traductions de segments arabes introduits par الذين. Or, ce pronom relatif ne s’est produit que dans الذين أنعمت عليهم , que nous avons effectivement traduit par « ceux que Tu as comblés de Tes grâces ». Du reste, l’égalité et la symétrie des segments : « non celle des réprouvés, ni celle des égarés » évite au rythme le trébuchement dû à la structure déséquilibrée : « non de ceux qui sont réprouvés, ni des égarés », ou « non de ceux qui ont encouru Ta colère, ni des égarés »."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+diff --git a/src/components/Header.jsx b/src/components/Header.jsx
+index 0aa257a..e716efd 100644
+--- a/src/components/Header.jsx
++++ b/src/components/Header.jsx
+@@ -636,5 +625,5 @@ export default function Header({ immersiveHidden = false }) {
+                   align="center"
+                   sideOffset={10}
+-                  className="z-[300] w-64 rounded-2xl border border-border bg-bg-primary p-0 shadow-xl"
++                  className="z-[300] w-64 rounded-2xl border border-[var(--border)] bg-[var(--bg-primary)] p-0 shadow-xl"
+                 >
+                   <form

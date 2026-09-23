@@ -1,4 +1,4 @@
-import { getJuzForAyah } from "../../data/juz";
+import { getHizbForAyah, getJuzForAyah } from "../../data/juz";
 import SURAHS, { toAr } from "../../data/surahs";
 
 // Composition helpers shared by the Hafs and Warsh page renderers: both
@@ -67,41 +67,48 @@ export function markSurahEndings(lines) {
   return lines;
 }
 
+/**
+ * Page furniture for the printed sheet.
+ *
+ * Everything rendered *inside* the frame stays Arabic and Arabic-Indic, the
+ * way every authoritative Madani print sets it: the running head carries the
+ * juz, the surah and the page, the margins carry the hizb and quarter, and the
+ * folio sits in its rosette. Translation belongs to the reader chrome around
+ * the sheet (ReaderContextCard, toolbar), never to the page itself — a French
+ * or English label inside the frame would misrepresent the printed Mushaf.
+ * `lang` therefore only drives the text alternatives.
+ */
 export function getPageMeta(ayahs, currentPage, lang) {
   const first = ayahs[0] || {};
-  const last = ayahs[ayahs.length - 1] || first;
+  const surahNumber = first.surah?.number;
   const juz =
-    first.juz ||
-    getJuzForAyah(first.surah?.number, first.numberInSurah) ||
-    "";
-  const hizb = first.hizb || "";
-  const rub = first.rubElHizb || "";
+    first.juz || getJuzForAyah(surahNumber, first.numberInSurah) || null;
+  // Warsh sheets come from a text source without the API's marginal fields, so
+  // the boundaries are derived from the canonical hizb table instead.
+  const hizb =
+    first.hizb || getHizbForAyah(surahNumber, first.numberInSurah) || null;
+  const rub = first.rubElHizb || null;
   const page = lang === "ar" ? toAr(currentPage) : currentPage;
   // The printed folio medallion always uses Arabic-Indic digits, the way the
   // Madani Mushaf sets it, whatever the interface language.
   const folio = toAr(currentPage);
-  const surahMeta = getSurahMeta(first.surah?.number);
-  const surahName = surahMeta
-    ? lang === "ar"
-      ? surahMeta.ar
-      : lang === "en"
-        ? surahMeta.en
-        : surahMeta.fr
-    : first.surah?.name || "";
+  const surahMeta = getSurahMeta(surahNumber);
+  const surahArabic = surahMeta?.ar || first.surah?.name || "";
 
   return {
     page,
     folio,
-    surahName,
-    top: lang === "ar" ? `صفحة ${page}` : `Page ${page}`,
-    middle:
-      lang === "ar"
-        ? first.surah?.number
-          ? `سورة ${toAr(first.surah.number)} · ${toAr(first.numberInSurah || "")}‏–‏${toAr(last.numberInSurah || "")}`
-          : ""
-        : `Surah ${first.surah?.number || ""} · ${first.numberInSurah || ""}–${last.numberInSurah || ""}`,
-    sideA: juz ? `${lang === "ar" ? "جزء" : "Juz"} ${lang === "ar" ? toAr(juz) : juz}` : "",
-    sideB: hizb ? `${lang === "ar" ? "حزب" : "Hizb"} ${lang === "ar" ? toAr(hizb) : hizb}` : "",
-    sideC: rub ? `${lang === "ar" ? "ربع" : "Rubʿ"} ${lang === "ar" ? toAr(rub) : rub}` : "",
+    surahName: surahArabic ? `سورة ${surahArabic}` : "",
+    surahNameLocalized: surahMeta
+      ? lang === "ar"
+        ? surahMeta.ar
+        : lang === "en"
+          ? surahMeta.en
+          : surahMeta.fr
+      : surahArabic,
+    top: `صفحة ${folio}`,
+    sideA: juz ? `الجزء ${toAr(juz)}` : "",
+    sideB: hizb ? `الحزب ${toAr(hizb)}` : "",
+    sideC: rub ? `الربع ${toAr(rub)}` : "",
   };
 }

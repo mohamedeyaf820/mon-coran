@@ -1,0 +1,23 @@
+{
+  "supportsHighlightAPI": true,
+  "tajwidRender": "word-fallback",
+  "ayahHTML": "<span class=\"quran-tajwid-text\" dir=\"rtl\" lang=\"ar\" data-tajwid-render=\"word-fallback\"><span class=\"quran-word-item cursor-pointer\" data-tajwid-word=\"0\" data-tajwid=\"tafkhim\" data-tajwid-name=\"Tafkhim (lourd)\" data-tajwid-desc=\"Prononciation emphatique/lourde (lettres مستعلية)\" role=\"button\" tabindex=\"0\" style=\"color: var(--tajwid-tafkhim);\">قُلَ</span> <span class=\"quran-word-item cursor-pointer\" data-tajwid-word=\"1\" data-tajwid=\"madd-normal\" data-tajwid-name=\"Madd Tabī'ī (مد طبيعي)\" data-tajwid-desc=\"Allongement naturel ou normal (2 temps).\" role=\"button\" tabindex=\"0\" style=\"color: var(--tajwid-madd-normal);\">اَعُوذُ</span> <span class=\"quran-word-item cursor-pointer\" data-tajwid-word=\"2\" role=\"button\" tabindex=\"0\" style=\"color: inherit;\">بِرَبِّ</span> <span class=\"quran-word-item cursor-pointer\" data-tajwid-word=\"3\" data-tajwid=\"tafkhim\" data-tajwid-name=\"Tafkhim (lourd)\" data-tajwid-desc=\"Prononciation emphatique/lourde (lettres مستعلية)\" role=\"button\" tabindex=\"0\" style=\"color: var(--tajwid-tafkhim);\">اِ۟لْفَلَقِ</span> <span class=\"native-ayah-marker\" data-tajwid-word=\"4\" role=\"button\" tabindex=\"0\" aria-label=\"Verset 1\" style=\"color: inherit;\">١</span></span>",
+  "wordCount": 4,
+  "wordClasses": [
+    "quran-word-item cursor-pointer|قُلَ",
+    "quran-word-item cursor-pointer|اَعُوذُ",
+    "quran-word-item cursor-pointer|بِرَبِّ",
+    "quran-word-item cursor-pointer|اِ۟لْفَلَقِ"
+  ],
+  "style": {
+    "textAlign": "right",
+    "wordSpacing": "0px",
+    "letterSpacing": "normal",
+    "unicodeBidi": "isolate",
+    "direction": "rtl",
+    "fontFamily": "QPC Warsh, KFGQPC Uthmanic Script WARSH, serif",
+    "fontKerning": "normal",
+    "fontFeatureSettings": "\"calt\", \"kern\", \"liga\", \"mark\", \"mkmk\""
+  },
+  "highlightRules": 0
+}

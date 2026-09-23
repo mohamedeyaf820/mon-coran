@@ -1,0 +1,124 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index 669e55d..53c9155 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -382,5 +382,5 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+     width: 100% !important;
+     max-width: 100% !important;
+-    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem);
++    padding: 0.65rem 0.875rem calc(var(--player-h, 96px) + 2rem);
+     gap: 1rem;
+   }
+@@ -413,4 +413,5 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+     :is(.dua-open-btn-v5, .dua-card-footer-link, .duas-back-btn, .duas-cat-btn) {
+     min-height: 44px !important;
++    min-width: 44px !important;
+   }
+ 
+@@ -492,4 +493,14 @@ html body .settings-drawer__title {
+ }
+ 
++/* The Audio tab's first-visit dot is drawn at `-right-1 -top-1`, i.e. 4px
++   outside the button box, while the base reset in tailwind.css clips every
++   `button`/`[role="button"]`/`.btn` with `overflow: hidden`. Above 640px the
++   dot therefore painted as a shaved corner instead of a circle; the (max-width:
++   640px) toolbar block already un-clips it for the scroll-snap row, so extend
++   the same allowance to every width. Nothing in these tabs relies on clipping. */
++html body .app-root[data-view="home"] .home-content-toolbar [role="tab"] {
++  overflow: visible;
++}
++
+ @media (max-width: 640px) {
+   html body .app-root[data-view="home"] .home-content-toolbar [role="tablist"] {
+@@ -1285,6 +1296,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* Each verse is wrapped in its own `.virtualized-item`, so every card is a
++   `:last-child` of its wrapper. Selecting the stream's last item is the only
++   way to reach the genuinely final verse. */
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+-  .qc-list-card.qc-list-card:last-child {
++  .qc-verse-by-verse-view > .virtualized-item:last-child .qc-list-card {
+   border-bottom: 0 !important;
+ }
+@@ -1296,6 +1310,4 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
+-html body #root .app-root[data-view="reading"] .quran-display--platform
+-  .qc-list-card__reference.qc-list-card__reference,
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__top .ayah-actions button {
+@@ -1307,4 +1319,17 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* The reference is a text target ("2:253"), not an icon: a 44px square with no
++   padding pressed the digits against both edges. Keep the 44px touch floor and
++   let the box grow with the number of digits. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card__reference.qc-list-card__reference {
++  width: auto !important;
++  min-width: 44px !important;
++  height: 44px !important;
++  min-height: 44px !important;
++  padding-inline: 0.3rem !important;
++  border-radius: 0.72rem !important;
++}
++
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__top .ayah-actions button svg {
+@@ -1329,10 +1354,30 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* In the French/English reader the Arabic must share the left edge with its
++   transliteration and translation; a verse reads as three disconnected
++   fragments when the Arabic is pinned to the opposite edge of a wide column.
++   `match-parent` cannot express this because the Arabic keeps direction:rtl for
++   correct bidi, and `[dir=…]` selectors are dropped by the production CSS
++   build, so the card carries the reading direction as a data attribute. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card[data-verse-dir="ltr"] .qc-ayah-text-ar {
++  text-align: left !important;
++}
++
++/* A verse is one group: the three lines stay close together and only the
++   boundary between verses gets air. Without this, the transliteration and the
++   translation were spaced like separate verses. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card .qc-ayah-transliteration {
++  margin-block: 0.25rem 0 !important;
++  padding-block: 0 !important;
++}
++
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__translation-slot {
+   min-height: 0 !important;
+-  margin-top: 0.6rem !important;
+-  padding-top: 0.7rem;
+-  border-top: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
++  margin-top: 0.35rem !important;
++  padding-top: 0 !important;
++  max-width: 72ch;
+ }
+ 
+@@ -1751,5 +1796,5 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+     width: min(calc(100% - 1rem), 480px) !important;
+     margin-inline: auto !important;
+-    z-index: 950 !important;
++    z-index: var(--z-dock) !important;
+     visibility: visible !important;
+     opacity: 1 !important;
+@@ -1828,6 +1873,4 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   }
+ 
+-  html body #root .app-root[data-view="reading"] .quran-display--platform
+-    .qc-list-card__reference.qc-list-card__reference,
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__top .ayah-actions button {
+@@ -1838,5 +1881,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__reference.qc-list-card__reference {
+-    font-size: 0.67rem !important;
++    padding-block: 0 !important;
++    font-size: max(0.8rem, 13px) !important;
+   }
+ 

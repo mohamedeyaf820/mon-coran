@@ -1,0 +1,936 @@
+/* ==========================================================================
+   Mushaf book — fullscreen page
+
+   The immersive overlay is portaled on <body>, outside .app-root, so it never
+   received the reader's page styles. It now renders the exact 15-line Madani
+   page (QuranMushafPage, QCF page fonts) as a printed sheet: paper, an
+   ornamental editorial frame with corner rosettes and a repeating geometric
+   rule, the surah and juz in the running head, the folio at the bottom.
+   Colours reuse the reader page tokens; the theme attribute on the portal
+   root selects light, sepia or dark paper.
+
+   ROOT-CAUSE FIX: lines no longer use justify-content: space-between.
+   Words flow at their natural glyph width; QCF page glyphs are cut so a
+   full line fills the measure without stretching.
+   ========================================================================== */
+
+.mfp-portal-root {
+  position: fixed;
+  z-index: 3000;
+  inset: 0;
+  display: flex;
+  overflow: hidden;
+  flex-direction: column;
+  --reader-page-paper: var(--theme-bg-alt, #fdfaf4);
+  --reader-page-ink: var(--theme-arabic, var(--text-primary, #18181b));
+  --reader-page-muted: var(--theme-text-muted, var(--text-muted, #6b7280));
+  --reader-page-rule: var(--theme-border, rgba(24, 24, 27, 0.14));
+  --reader-page-shadow: 0 18px 48px rgba(24, 24, 27, 0.12);
+  --mushaf-gold-deep: #8c7020;
+  --mushaf-gold-mid: #b8963f;
+  --mushaf-gold-soft: rgba(200, 168, 75, 0.45);
+  --mushaf-gold: var(--mushaf-gold-mid, #c8a84b);
+  /* The page geometry is canonical: every sheet has the same width, height,
+     aspect-ratio, border and margin regardless of text density. */
+  --mfp-page-aspect: 0.735; /* Madani page portrait ratio */
+  --mfp-frame-outer: 2px;
+  --mfp-frame-inner: 1px;
+  --mfp-corner-size: 0.65rem;
+  --mfp-page-gutter: 4rem;
+}
+
+/* ── Overlay chrome (web toolbar replacement) ────────────────────────── */
+
+.mfp-header {
+  position: absolute;
+  top: 0;
+  right: 0;
+  left: 0;
+  z-index: 30;
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+  padding: max(0.5rem, env(safe-area-inset-top)) 1rem 0.5rem;
+  /* Floating scrim: the leaf reads to the very edge of the screen, and the
+     chrome recedes over it instead of cutting a solid bar out of the page. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--mfp-header-bg, #fff) 96%, transparent) 55%,
+    transparent
+  );
+}
+
+.mfp-header__identity,
+.mfp-header__tools,
+.mfp-audio-controls,
+.mfp-zoom-controls,
+.mfp-mobile-pagination {
+  display: flex;
+  align-items: center;
+}
+
+.mfp-header__identity,
+.mfp-header__tools { gap: 0.65rem; }
+.mfp-header__copy { min-width: 0; }
+.mfp-header__copy h2 { margin: 0; color: var(--mfp-btn-text); }
+.mfp-header__copy h2 { font-size: 0.82rem; line-height: 1.1; }
+.mfp-header__copy h2 span { opacity: 0.62; font-size: 0.7rem; font-weight: 500; }
+
+.mfp-icon-btn,
+.mfp-zoom-value {
+  display: inline-flex;
+  min-width: 44px;
+  min-height: 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--mfp-btn-border);
+  border-radius: 0.7rem;
+  background: var(--mfp-btn-bg);
+  color: var(--mfp-btn-text);
+  cursor: pointer;
+}
+
+.mfp-icon-btn:disabled { cursor: not-allowed; opacity: 0.3; }
+.mfp-icon-btn:focus-visible,
+.mfp-zoom-value:focus-visible { outline: 3px solid color-mix(in srgb, var(--primary) 55%, transparent); outline-offset: 2px; }
+
+.mfp-audio-controls {
+  gap: 0.25rem;
+  padding: 0.2rem;
+  border: 1px solid var(--mfp-btn-border);
+  border-radius: 0.8rem;
+  background: var(--mfp-btn-bg);
+}
+
+.mfp-audio-controls .mfp-icon-btn,
+.mfp-zoom-controls .mfp-icon-btn,
+.mfp-zoom-value { border: 0; background: transparent; }
+.mfp-audio-toggle { border-radius: 50% !important; background: var(--mfp-btn-text) !important; color: var(--mfp-btn-bg) !important; }
+.mfp-audio-track { display: flex; min-width: 3.75rem; max-width: 7rem; flex-direction: column; padding-inline: 0.25rem; color: var(--mfp-btn-text); }
+.mfp-audio-track strong { overflow: hidden; font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+.mfp-audio-track small { margin-top: 0.15rem; opacity: 0.62; font-size: 0.6rem; }
+
+.mfp-zoom-controls {
+  gap: 0.1rem;
+  padding: 0.2rem;
+  border: 1px solid var(--mfp-btn-border);
+  border-radius: 0.8rem;
+  background: var(--mfp-btn-bg);
+}
+.mfp-zoom-value { min-width: 3.25rem; font-size: 0.7rem; font-weight: 750; font-variant-numeric: tabular-nums; }
+
+.mfp-viewport {
+  display: flex;
+  overflow: auto;
+  flex: 1 1 auto;
+  /* The header floats over the sheet; this top room keeps a height-filled
+     leaf from sliding under the chrome pills. */
+  padding: 4rem 0.5rem clamp(1rem, 3vh, 2rem);
+  overscroll-behavior: contain;
+}
+
+.mfp-side-nav {
+  position: fixed;
+  z-index: 40;
+  top: 50%;
+  display: flex;
+  width: 52px;
+  height: 52px;
+  align-items: center;
+  justify-content: center;
+  transform: translateY(-50%);
+  border: 1px solid var(--mfp-nav-border);
+  border-radius: 50%;
+  background: var(--mfp-nav-bg);
+  color: var(--mfp-btn-text);
+}
+.mfp-side-nav--next { left: 0.75rem; }
+.mfp-side-nav--prev { right: 0.75rem; }
+.mfp-side-nav:disabled { pointer-events: none; opacity: 0.2; }
+
+/* Immediate turn feedback: while the next leaf loads, the pressed control
+   shows a small rotating ring instead of only dimming. */
+.mfp-side-nav[aria-busy="true"]::after,
+.mfp-mobile-pagination button[aria-busy="true"]::after {
+  content: "";
+  position: absolute;
+  inset-block-start: calc(50% - 9px);
+  inset-inline-start: calc(50% - 9px);
+  width: 18px;
+  height: 18px;
+  border: 2px solid color-mix(in srgb, var(--mfp-btn-text) 35%, transparent);
+  border-top-color: var(--mfp-btn-text);
+  border-radius: 50%;
+  animation: mfp-spin 700ms linear infinite;
+}
+
+.mfp-mobile-pagination button {
+  position: relative;
+}
+
+@keyframes mfp-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* The global button:active { transform: scale(.96) } press effect replaces
+   this rule's centering translateY(-50%) outright, which would drop the
+   fixed button ~27px on mousedown — the same tap's pointerup then lands on
+   the page below and the page turn never registers. Re-state the centering
+   at higher specificity than that global rule. */
+#root ~ .mfp-portal-root .mfp-side-nav:active:not(:disabled) {
+  transform: translateY(-50%) scale(0.96);
+}
+
+.mfp-mobile-footer { display: none !important; }
+
+.mfp-portal-root[data-theme="light"] {
+  --reader-page-paper: #fdfaf4;
+  --reader-page-ink: #18181b;
+  --reader-page-muted: #6b6b6b;
+  --reader-page-rule: rgba(24, 24, 27, 0.14);
+}
+
+.mfp-portal-root[data-theme="sepia"] {
+  --reader-page-paper: #fff6e3;
+  --reader-page-ink: #241505;
+  --reader-page-muted: #6b502a;
+  --reader-page-rule: rgba(124, 74, 23, 0.25);
+  --reader-page-shadow: 0 18px 48px rgba(36, 21, 5, 0.1);
+}
+
+.mfp-portal-root[data-theme="dark"],
+.mfp-portal-root[data-theme="night-blue"],
+.mfp-portal-root[data-theme="oled"] {
+  --reader-page-paper: var(--theme-bg-alt, #15181c);
+  --reader-page-ink: var(--theme-arabic, #f3f4f6);
+  --reader-page-muted: var(--theme-text-muted, #9ca3af);
+  --reader-page-rule: rgba(255, 255, 255, 0.14);
+  --reader-page-shadow: 0 18px 48px rgba(0, 0, 0, 0.4);
+  --mushaf-gold-mid: #b8963f;
+  --mushaf-gold-deep: #7a601a;
+}
+
+/* ── Theme-aware overlay chrome ────────────────────────────────────── */
+
+.theme-overlay-bg {
+  background: var(--reader-page-paper);
+}
+
+/* ── The sheet (printed Mushaf page) ────────────────────────────────── */
+
+.mfp-portal-root .mfp-book {
+  width: 100%;
+  /* margin auto in the flex viewport centers the leaf on both axes without
+     clipping the top when zoomed past the viewport. */
+  margin: auto;
+}
+
+/* Side gutters (juz, hizb) stay quiet: small caps in the margin like a
+   printed running head. */
+#root ~ .mfp-portal-root .qcm-edge {
+  color: var(--reader-page-muted);
+  font-size: 0.7rem;
+  letter-spacing: 0.04em;
+  /* Side gutter (juz, hizb) labels are margin decoration: the fixed
+     side-nav arrows sit over these gutters and must receive the clicks. */
+  pointer-events: none;
+  /* Juz / Hizb / Rubʿ labels sit at the outer margin of the spread. */
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+#root ~ .mfp-portal-root .qcm-page {
+  position: relative;
+  /* Outer frame: a deep-gold rule, the page's outer edge. */
+  border: var(--mfp-frame-outer) solid var(--mushaf-gold-deep);
+  border-radius: 0.15rem;
+  background: var(--reader-page-paper);
+  box-shadow: var(--reader-page-shadow);
+}
+
+/* Inner frame: a soft-gold rule inset from the outer edge, doubled by a
+   hairline so the frame reads as an editorial rule, not a card border.
+   The QuranSafeArea is the space strictly inside this rule. */
+#root ~ .mfp-portal-root .qcm-page::before {
+  content: "";
+  position: absolute;
+  /* Behind the page text: Mushaf glyph ink overflows the line measure at
+     line ends, and a positioned z-index:0 layer paints over static text —
+     its paper inset-shadow would then shear the overflowing ink. */
+  z-index: -1;
+  inset: 5px;
+  border: var(--mfp-frame-inner) solid var(--mushaf-gold-soft);
+  border-radius: 0.1rem;
+  box-shadow:
+    inset 0 0 0 3px var(--reader-page-paper),
+    inset 0 0 0 4px color-mix(in srgb, var(--mushaf-gold) 30%, transparent);
+  pointer-events: none;
+}
+
+/* Four symmetric corner rosettes. Each is a small diamond with an inner
+   dot: an original MushafPlus motif inspired by geometric Islamic ornament,
+   not a copy of any printed edition. */
+#root ~ .mfp-portal-root .qcm-page .qcm-corner {
+  position: absolute;
+  z-index: 2;
+  width: var(--mfp-corner-size);
+  height: var(--mfp-corner-size);
+  border: 1px solid var(--mushaf-gold-deep);
+  background: var(--reader-page-paper);
+  transform: rotate(45deg);
+  pointer-events: none;
+}
+
+#root ~ .mfp-portal-root .qcm-page .qcm-corner::after {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid var(--mushaf-gold-soft);
+}
+
+#root ~ .mfp-portal-root .qcm-page .qcm-corner--tl { top: 3px; left: 3px; }
+#root ~ .mfp-portal-root .qcm-page .qcm-corner--tr { top: 3px; right: 3px; }
+#root ~ .mfp-portal-root .qcm-page .qcm-corner--bl { bottom: 3px; left: 3px; }
+#root ~ .mfp-portal-root .qcm-page .qcm-corner--br { bottom: 3px; right: 3px; }
+
+/* Running head and folio: plain text, no uppercase tracking. */
+#root ~ .mfp-portal-root .qcm-page-header,
+#root ~ .mfp-portal-root .qcm-edge,
+#root ~ .mfp-portal-root .qcm-page-footer {
+  font-size: 0.78rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--reader-page-muted);
+}
+
+#root ~ .mfp-portal-root .qcm-page-header {
+  padding-bottom: 0.5rem;
+  /* Integrated running head: thin gold rule + discrete badges, not a toolbar */
+  display: flex;
+  align-items: center;
+  gap: clamp(0.4rem, 1vw, 0.7rem);
+  border-bottom: 1px solid color-mix(in srgb, var(--mushaf-gold) 35%, transparent);
+}
+
+/* Header badges — small, discrete, not pills */
+#root ~ .mfp-portal-root .qcm-page .qcm-header-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.15rem 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 48%, transparent);
+  border-radius: 0.15rem;
+  background: color-mix(in srgb, var(--mushaf-gold) 6%, transparent);
+  font-size: 0.68rem;
+  font-weight: 600;
+  line-height: 1;
+  color: color-mix(in srgb, var(--mushaf-gold) 75%, var(--reader-page-ink));
+}
+
+#root ~ .mfp-portal-root .qcm-page-header strong {
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .qcm-page-footer {
+  justify-content: center;
+  gap: 0.6rem;
+  padding-inline: 0.2rem;
+  margin-top: 1.1rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid color-mix(in srgb, var(--mushaf-gold) 35%, transparent);
+  /* Page number medallion */
+}
+
+#root ~ .mfp-portal-root .qcm-page-footer .qcm-page-folio {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  border: 1.5px solid var(--mushaf-gold-deep);
+  border-radius: 50%;
+  background: var(--reader-page-paper);
+  color: color-mix(in srgb, var(--mushaf-gold) 75%, var(--reader-page-ink));
+  font-family: var(--font-ui, sans-serif);
+  font-size: 0.72rem;
+  font-weight: 750;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  box-shadow:
+    inset 0 0 0 3px var(--reader-page-paper),
+    inset 0 0 0 5px color-mix(in srgb, var(--mushaf-gold) 28%, transparent),
+    0 0 0 7px color-mix(in srgb, var(--mushaf-gold) 10%, transparent);
+}
+
+/* The line rules of the grid are a screen aid, not a printed feature. */
+#root ~ .mfp-portal-root .qcm-line {
+  border-bottom-color: transparent;
+}
+
+/* ─── Overlay chrome ────────────────────────────────────────────────── */
+
+.mfp-portal-root .mfp-riwaya {
+  color: var(--reader-page-muted);
+  font-size: 0.78rem;
+  font-weight: 500;
+}
+
+/* ─── Set like print ────────────────────────────────────────────────── */
+/* In the QCF page fonts a full Madani line measures about 16.6 em and the
+   printed line pitch is close to 1.6 em, so the page takes its measure from
+   the type: the size follows the screen (width on a phone, height on a
+   desktop) and the sheet is exactly as wide and tall as the fifteen lines
+   need, the way a book page is. Below the floor the sheet scrolls instead. */
+
+.mfp-portal-root {
+  --mfp-cols: 1;
+  --mfp-line-measure: 16.7em;
+  --mfp-line-pitch: 1.62em;
+  /* Vertical room taken by the overlay bar, the running head, the folio and
+     the sheet margins; horizontal room taken by the gutters and the frame. */
+  --mfp-chrome: 250px;
+  --mfp-hchrome: 260px;
+  --mfp-min-font: 22px;
+  --mfp-font: clamp(
+    var(--mfp-min-font),
+    min(
+      calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+      calc((100vh - var(--mfp-chrome)) / 24.8)
+    ),
+    64px
+  );
+  --mfp-font: clamp(
+    var(--mfp-min-font),
+    min(
+      calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+      calc((100dvh - var(--mfp-chrome)) / 24.8)
+    ),
+    64px
+  );
+}
+
+#root ~ .mfp-portal-root .mfp-book--exact {
+  width: max-content;
+  max-width: none;
+  margin-inline: auto;
+  /* Whole-page zoom: the layout box itself is scaled, so frame, rosettes,
+     running head, folio and markers grow with the words and the viewport
+     scroll bounds stay correct. */
+  zoom: var(--mfp-zoom, 1);
+}
+
+/* ─── Double-page spread (desktop) ──────────────────────────────────── */
+
+/* Two leaves: the type scales down so both faces plus the gutter fit the
+   viewport, and the shared --mfp-font keeps them at one scale. */
+.mfp-portal-root[data-layout="double"] {
+  --mfp-cols: 2;
+  --mfp-hchrome: 350px;
+  --mfp-page-gutter: 2.5rem;
+}
+
+/* ─── Single-page layout (mobile / tablet portrait) ────────────────── */
+
+/* One leaf needs no side gutters: dropping them lets the type scale grow to
+   the true measure of the sheet instead of a gutter it never prints. */
+.mfp-portal-root[data-layout="single"] {
+  --mfp-hchrome: 92px;
+  --mfp-min-font: 15px;
+}
+
+#root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-edge {
+  display: none;
+}
+
+#root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-page-shell {
+  grid-template-columns: minmax(0, max-content);
+}
+
+.mfp-portal-root[data-layout="single"] .mfp-book--exact {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 100vw;
+}
+
+/* ─── Inner page shell ──────────────────────────────────────────────── */
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
+  grid-template-columns: auto minmax(0, max-content) auto;
+  width: max-content;
+  min-width: 100%;
+  padding-block: 0.75rem 1rem;
+  /* The QuranSafeArea: content sits strictly inside the ornamental frame. */
+  --quran-safe-inset: 0;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page {
+  width: max-content;
+  max-width: none;
+  min-height: 0;
+  /* Padding = QuranSafeArea inset: no text may enter the frame ornaments. */
+  padding: 1.1rem clamp(1.3rem, 4vw, 2.4rem) 0.9rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-edge {
+  padding-block: 3rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-header {
+  padding-bottom: 0.4rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-footer {
+  margin-top: 0.75rem;
+  padding-top: 0.45rem;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-lines {
+  width: var(--mfp-line-measure);
+  max-width: 100%;
+  margin-inline: auto;
+  font-size: var(--mfp-font);
+  line-height: 1;
+  min-height: 0;
+  grid-template-rows: repeat(15, var(--mfp-line-pitch));
+  margin-top: 0.4em;
+}
+
+/* The words are cut at the line size: the responsive reading rules of the
+   in-app reader must not rescale them here. */
+#root ~ .mfp-portal-root .mfp-book .qcm-word {
+  font-size: 1em !important;
+  line-height: 1 !important;
+  word-spacing: 0 !important;
+  padding: 0;
+  margin: 0;
+}
+
+/* The global button/[role="button"] reset must not clip page ink: v4
+   COLRv1 glyphs paint outside their em box (ascenders, superscripts). */
+#root .qcm-word,
+#root ~ .mfp-portal-root .mfp-book .qcm-word {
+  overflow: visible;
+}
+
+/* ─── ROOT CAUSE FIX ────────────────────────────────────────────────── */
+/* Words flow at natural glyph width. QCF page glyphs are cut so that a full
+   Madani line fills the 16.7em measure at the computed font size.
+   Justify-content is flex-start (natural RTL flow from the right), NOT
+   space-between which created artificial gaps and the word-grid look. */
+#root ~ .mfp-portal-root .mfp-book .qcm-line {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 0;
+  min-width: 0;
+  direction: rtl;
+  white-space: nowrap;
+  overflow: visible;
+}
+
+/* Pages 1 and 2, and the final line of a surah, are centred. */
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-line,
+#root ~ .mfp-portal-root .mfp-book .qcm-line--surah-end {
+  justify-content: center;
+  gap: 0.3em;
+}
+
+/* The two illuminated opening leaves use a narrower, centred text block in
+   print. Keep their title, basmala and short verses together around the
+   optical centre instead of leaving the composition stuck to the top. */
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines {
+  position: relative;
+  top: 1.5em;
+  /* The boost must stay under both viewport fits the clamp computed for the
+     unboosted sheet, or the opening leaf overflows a phone screen (width) or
+     pushes the footer past the fold on a tablet (height). */
+  font-size: min(
+    calc(var(--mfp-font) * 1.08),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 24.8)
+  );
+  font-size: min(
+    calc(var(--mfp-font) * 1.08),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 24.8)
+  );
+}
+
+#root ~ .mfp-portal-root .mfp-book[data-page-kind="opening"] .qcm-lines[data-warsh="true"] {
+  font-size: min(
+    calc(var(--mfp-font) * 1.04),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100vh - var(--mfp-chrome)) / 24.8)
+  );
+  font-size: min(
+    calc(var(--mfp-font) * 1.04),
+    calc((100vw - var(--mfp-hchrome)) / (16.7 * var(--mfp-cols, 1))),
+    calc((100dvh - var(--mfp-chrome)) / 24.8)
+  );
+}
+
+/* Surah title band: a thin double frame around the calligraphic name. */
+#root ~ .mfp-portal-root .mfp-book .qcm-line--surah-header,
+#root ~ .mfp-portal-root .mfp-book .qcm-line--basmala {
+  justify-content: center;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-surah-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 1.45em;
+  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
+  box-shadow:
+    inset 0 0 0 3px var(--reader-page-paper),
+    inset 0 0 0 4px color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-surah-title__name {
+  font-family: "surahnames", serif;
+  font-size: 1.1em;
+  line-height: 1;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-basmala {
+  font-size: 1em;
+  line-height: 1;
+  color: var(--reader-page-ink);
+}
+
+/* Warsh prints as one continuous justified flow, like the Madinah mushaf:
+   words wrap typographically inside .qcm-flow segments, and the renderer's
+   fit loop scales --qcm-flow-fit (the glyph size) until the segments fill
+   exactly the fifteen printed lines. The block is plain flow, not a 15-row
+   grid: the surah openings (one .qcm-line each) and the wrapped body share
+   the same constant row pitch, so the sheet never drifts off the grid. */
+#root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] {
+  display: block;
+  width: var(--mfp-line-measure);
+  font-size: var(--mfp-font);
+  line-height: var(--mfp-line-pitch);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-lines[data-warsh="true"] .qcm-line {
+  /* A title band or basmala occupies exactly one printed line. */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--mfp-line-pitch);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-flow {
+  /* Glyphs scale with the fit; the line-height divides the same factor out
+     so every wrapped row keeps the page's constant pitch. Full rows are
+     justified to the measure, the last row of a segment is centred —
+     exactly how the printed sheet sets continuous ayahs. */
+  font-size: calc(1em * var(--qcm-flow-fit, 1));
+  line-height: calc(var(--mfp-line-pitch) / var(--qcm-flow-fit, 1));
+  direction: rtl;
+  text-align: justify;
+  text-align-last: center;
+}
+
+/* Narrow screens: no side gutters, the sheet takes the width. */
+@media (max-width: 640px) {
+  /* Same attribute specificity as the single-layout rule above so these
+     phone values win over it (source order). */
+  .mfp-portal-root[data-layout="single"] {
+    --mfp-chrome: 150px;
+    --mfp-hchrome: 44px;
+    --mfp-min-font: 14px;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+    padding-block: 0.5rem 1rem;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-edge {
+    display: none;
+  }
+
+  #root ~ .mfp-portal-root .mfp-book .qcm-page {
+    padding: 0.75rem 0.7rem 0.9rem;
+    outline-offset: -5px;
+  }
+
+  .mfp-header { padding-inline: 0.5rem; }
+  .mfp-header__tools > .mfp-audio-controls { display: none; }
+  /* The phone header only carries close and the core zoom controls; the
+     sheet is already fitted by the type-scale calculation, and the
+     zoom-value reset returns to it. */
+  .mfp-zoom-fit { display: none; }
+  .mfp-zoom-controls .mfp-icon-btn { min-width: 40px; }
+  .mfp-side-nav { display: none; }
+  .mfp-viewport { padding: 3.5rem 0.35rem 5.5rem; }
+  .mfp-mobile-footer {
+    position: sticky;
+    z-index: 30;
+    bottom: 0;
+    display: flex !important;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.4rem;
+    width: 100%;
+    padding: 0.4rem max(0.5rem, env(safe-area-inset-right)) max(0.4rem, env(safe-area-inset-bottom)) max(0.5rem, env(safe-area-inset-left));
+    border-top: 1px solid var(--mfp-header-border);
+    background: var(--mfp-header-bg);
+  }
+  .mfp-audio-controls--compact { flex: 0 1 auto; }
+  .mfp-audio-controls--compact .mfp-audio-track { display: none; }
+  .mfp-mobile-pagination { gap: 0.25rem; color: var(--mfp-btn-text); font-size: 0.72rem; }
+}
+
+@media (max-width: 380px) {
+  .mfp-header__copy { display: none; }
+  .mfp-zoom-value { min-width: 44px; padding: 0; }
+}
+
+/* ─── Leafing ───────────────────────────────────────────────────────── */
+/* The next leaf comes from the left, the previous one from the right, as the
+   page turns in an Arabic book. The sheet keeps its own transform (zoom), so
+   the motion uses the separate translate property. */
+@media (prefers-reduced-motion: no-preference) {
+  .mfp-portal-root .mfp-book[data-turn="next"] {
+    animation: mfp-turn-next 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .mfp-portal-root .mfp-book[data-turn="prev"] {
+    animation: mfp-turn-prev 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
+@keyframes mfp-turn-next {
+  from {
+    translate: -1.25% 0;
+  }
+}
+
+@keyframes mfp-turn-prev {
+  from {
+    translate: 1.25% 0;
+  }
+}
+
+/* ── Base page layout (self-sufficient) ───────────────────────────── */
+/* This sheet now owns the immersive portal entirely. The legacy .qcm-* rules
+   in reading-platform.css were scoped back to the in-app reader, so they can
+   no longer fight this sheet (that duplication produced the artificial word
+   spacing). The declarations below are the base the printed page needs,
+   stated once, here rather than borrowed from another stylesheet. */
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
+  position: relative;
+  display: grid;
+  align-items: stretch;
+  justify-content: center;
+  gap: clamp(0.5rem, 2vw, 1rem);
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-font-warning {
+  grid-column: 1 / -1;
+  padding: 0.5rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--warning, #f59e0b) 30%, transparent);
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--warning, #f59e0b) 12%, transparent);
+  color: var(--reader-page-muted);
+  font-size: 0.75rem;
+  text-align: center;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page,
+#root ~ .mfp-portal-root .mfp-book .qcm-lines {
+  color: var(--reader-page-ink);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-lines {
+  display: grid;
+  direction: rtl;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-line {
+  width: 100%;
+}
+
+/* Empty slots still hold their printed row so the grid stays at 15 lines. */
+#root ~ .mfp-portal-root .mfp-book .qcm-line--empty::after {
+  content: "";
+  display: block;
+  width: 100%;
+}
+
+/* Warsh words flow inline at the line measure so the per-line fit scale can
+   size each row; the hardcoded word size must not defeat it. */
+#root ~ .mfp-portal-root .mfp-book .qcm-lines .qcm-word--warsh {
+  display: inline;
+  white-space: nowrap;
+  unicode-bidi: plaintext;
+  font-size: 1em;
+  line-height: inherit;
+}
+
+#root ~ .mfp-portal-root .mfp-book :is(.qcm-page-header, .qcm-page-footer) {
+  display: flex;
+  align-items: center;
+  min-height: 1.4rem;
+  font-family: var(--font-ui, system-ui, sans-serif);
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-header {
+  justify-content: space-between;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-header__meta {
+  color: var(--reader-page-muted);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-page-header__name {
+  overflow: hidden;
+  color: var(--reader-page-ink);
+  font-family: var(--font-surah-display, var(--font-quran, serif));
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-word {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--reader-page-ink);
+  cursor: pointer;
+  border-radius: 0.2em;
+  transition: color 150ms ease, background-color 150ms ease;
+  /* The global <=1023px role="button" touch clamp must not size mushaf words:
+     they are glyph flow that scales with the per-line fit, and a fixed 44px
+     floor makes dense lines overflow the frame at every fit value. */
+  min-width: 0;
+  min-height: 0;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-word:hover,
+#root ~ .mfp-portal-root .mfp-book .qcm-word:focus-visible,
+#root ~ .mfp-portal-root .mfp-book .qcm-word--active {
+  color: var(--mushaf-gold-deep);
+  outline: none;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-word--playing {
+  color: var(--primary);
+  background: rgba(var(--primary-rgb), 0.1);
+}
+
+#root ~ .mfp-portal-root .mfp-book :is(.qcm-ayah-marker, .qcm-line .ayah-marker, .qcm-line .ayat-marker) {
+  flex: 0 0 auto;
+  margin-inline: 0.18em;
+  transform: translateY(-0.02em);
+  min-width: 0;
+  min-height: 0;
+}
+
+#root ~ .mfp-portal-root .mfp-book .qcm-edge {
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ── Double-page spread: one open book ─────────────────────────────── */
+/* Two leaves share one scale (the same --mfp-font), one top and one bottom,
+   and are joined by a central gutter. The right leaf (lower page number in
+   the RTL reading order) sits on the right, the left leaf on the left, so the
+   pair reads as a single open Mushaf rather than two cards. */
+
+.mfp-portal-root[data-layout="double"] .mfp-book--exact {
+  display: grid;
+  grid-template-columns: repeat(2, max-content);
+  align-items: start;
+  justify-content: center;
+  column-gap: var(--mfp-page-gutter);
+  width: max-content;
+  max-width: 100vw;
+  margin-inline: auto;
+  /* The Mushaf always opens right-to-left: the lower folio stays on the
+     right even when the interface language is left-to-right. */
+  direction: rtl;
+}
+
+/* The spine: a soft inner shadow on the two facing edges, never over text. */
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell {
+  position: relative;
+}
+
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:first-child::after,
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:last-child::before {
+  content: "";
+  position: absolute;
+  z-index: 3;
+  top: 0;
+  bottom: 0;
+  width: 1.4rem;
+  pointer-events: none;
+}
+
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:first-child::after {
+  right: calc(var(--mfp-page-gutter) / -2 - 0.7rem);
+  background: linear-gradient(to left, rgba(0, 0, 0, 0.12), transparent);
+}
+
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell:last-child::before {
+  left: calc(var(--mfp-page-gutter) / -2 - 0.7rem);
+  background: linear-gradient(to right, rgba(0, 0, 0, 0.12), transparent);
+}
+
+/* ── Zen mode: the chrome recedes while reading ────────────────────── */
+/* After a few idle seconds the header and mobile footer fade out; any
+   pointer, key or touch brings them back. The page itself is never hidden,
+   and the edge arrows keep working while faded (tap-the-edge = page turn). */
+
+.mfp-portal-root--zen .mfp-header,
+.mfp-portal-root--zen .mfp-mobile-footer {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 320ms ease;
+}
+
+/* The arrows stay clickable while faded: a tap on the page edge is a page
+   turn in every immersive reader, and the same press reveals the chrome. */
+.mfp-portal-root--zen .mfp-side-nav {
+  opacity: 0;
+  transition: opacity 320ms ease;
+}
+
+.mfp-portal-root .mfp-header,
+.mfp-portal-root .mfp-side-nav,
+.mfp-portal-root .mfp-mobile-footer {
+  transition: opacity 220ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mfp-portal-root .mfp-header,
+  .mfp-portal-root .mfp-side-nav,
+  .mfp-portal-root .mfp-mobile-footer {
+    transition: none;
+  }
+}
+
+/* Below the width two leaves need, the component itself falls back to a
+   single page (computeLayout), so no CSS override is required here. */

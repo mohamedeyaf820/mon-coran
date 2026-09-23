@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" data-beasties-container>
+  <head>
+    <title>دليل التطبيقات القرآنية الشامل - أفضل تطبيقات القرآن الكريم</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Content Security Policy for Angular dynamic module loading -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; img-src 'self' data: blob: https:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https: blob:; script-src-elem 'self' 'unsafe-inline' https: blob:; worker-src 'self' blob:; font-src 'self' data: https:; connect-src 'self' https: http://localhost:8000; media-src 'self' https:; object-src 'none'; frame-src 'self' https:; child-src 'self' blob:;">
+
+    <!-- HTTP/2 optimized resource hints -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://pub-e11717db663c469fb51c65995892b449.r2.dev" crossorigin>
+    <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+    <link rel="preconnect" href="https://google-analytics.com" crossorigin>
+    
+    <!-- HTTP/2 benefits: Multiple requests over single connection -->
+    <!-- DNS prefetch for additional domains (HTTP/2 multiplexing ready) -->
+    <link rel="dns-prefetch" href="https://www.google-analytics.com">
+    <link rel="dns-prefetch" href="https://googletagmanager.com">
+    
+    <!-- Ultra-optimized font loading with subsetting and critical path optimization -->
+    <!-- Preload full Rubik family (including Arabic glyphs) to avoid broken shaping in placeholders -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&amp;display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;700&display=swap" rel="stylesheet"></noscript>
+    
+    <!-- Expo Arabic Font - Primary font for the application -->
+    <style>
+      @font-face {
+        font-family: 'Expo Arabic';
+        src: url('/assets/fonts/ExpoArabic-Book.woff2') format('woff2');
+        font-weight: 400;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Expo Arabic';
+        src: url('/assets/fonts/ExpoArabic-Medium.woff2') format('woff2');
+        font-weight: 500;
+        font-style: normal;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Expo Arabic';
+        src: url('/assets/fonts/ExpoArabic-Bold.woff2') format('woff2');
+        font-weight: 700;
+        font-style: normal;
+        font-display: swap;
+      }
+    </style>
+
+    <!-- Font fallback with perfect metrics matching to prevent CLS -->
+    <style>
+      @font-face {
+        font-family: 'Expo Arabic Fallback';
+        src: local('Arial'), local('Helvetica'), local('Tahoma');
+        font-weight: 400;
+        font-display: swap;
+      }
+      @font-face {
+        font-family: 'Expo Arabic Fallback';
+        src: local('Arial Bold'), local('Helvetica Bold'), local('Tahoma Bold');
+        font-weight: 700;
+        font-display: swap;
+      }
+    </style>
+    
+    <!-- Preload critical above-the-fold images -->
+    <link rel="preload" href="/assets/images/logo-svg.svg" as="image" type="image/svg+xml">
+    <link rel="preload" href="/assets/images/banner.webp" as="image" type="image/webp">
+    
+    <!-- Preload hero section background -->
+    <link rel="preload" href="/assets/images/Social-Media-Thumnail.webp" as="image" type="image/webp">
+    
+    <!-- Critical CSS for above-the-fold content -->
+    <style>
+      /* Critical font fallback to prevent layout shift */
+      html, body {
+        overscroll-behavior-y: contain;
+      }
+      body {
+        font-family: 'Expo Arabic', 'Expo Arabic Fallback', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        line-height: 1.6;
+        background-color: #ffffff;
+      }
+      
+      /* Critical layout styles - prevent CLS */
+      .app-layout {
+        min-height: 100vh;
+        background: #ffffff;
+      }
+      .app-header {
+        background: #ffffff;
+        border-bottom: 1px solid #f0f0f0;
+        padding: 0;
+        height: 64px;
+        line-height: 64px;
+        margin-top: 30px;
+      }
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        padding: 0 1.5rem;
+        margin: 0 auto;
+      }
+      .app-header--content {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+        margin-top: 30px;
+      }
+      .logo-container img {
+        height: 40px;
+        width: auto;
+      }
+      
+      /* Critical above-the-fold card styles */
+      .app-grid {
+        display: block;
+      }
+      .app-card {
+        border-radius: 8px;
+        background-color: #ffffff;
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+      }
+      .app-card:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+      }
+      
+      /* Critical typography */
+      h1, h2, h3, h4, h5, h6 {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+        color: #000000d9;
+        font-weight: 700;
+      }
+      
+      /* Header critical styles */
+      nz-header, .ant-layout-header {
+        background: #fff !important;
+        border-bottom: 1px solid #e8e8e8;
+        padding: 0 24px;
+        height: 64px;
+        line-height: 64px;
+      }
+      
+      /* Container critical styles */
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 16px;
+      }
+      
+      /* Navigation critical styles */
+      .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 24px;
+      }
+      
+      /* Critical app grid layout to prevent CLS */
+      .app-grid-row {
+        margin-left: -12px !important;
+        margin-right: -12px !important;
+      }
+      
+      .app-card {
+        height: 100%;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+        border-radius: 8px;
+        overflow: hidden;
+        /* Reserve space to prevent layout shift */
+        min-height: 360px;
+      }
+      
+      .app-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+      }
+      
+      /* Critical image placeholder to prevent CLS */
+      .app-card .ant-card-cover {
+        position: relative;
+        /* background-color: #f5f5f5; */
+        /* Fixed aspect ratio for cover images */
+        aspect-ratio: 16/9;
+        /* overflow: hidden; */
+        height: 60% !important;
+      }
+      
+      .app-card .ant-card-cover img,
+      .app-card .ant-card-cover picture {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: opacity 0.3s ease;
+      }
+      
+      /* Icon container styling to prevent layout shift */
+      .app-icon-container {
+        width: 60px;
+        height: 60px;
+        margin-right: 16px;
+        flex-shrink: 0;
+        /* background-color: #f5f5f5; */
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      
+      .app-icon {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+    </style>
+    
+    <!-- Enhanced preload directives for critical resources -->
+    <link rel="preload" href="/assets/images/logo-with-text.svg" as="image" fetchpriority="high">
+    <!-- Preload next-gen image formats with fallbacks -->
+    <link rel="preload" href="/assets/images/banner.avif" as="image" type="image/avif" fetchpriority="high">
+    <link rel="preload" href="/assets/images/banner.webp" as="image" type="image/webp" fetchpriority="high">
+    <link rel="preload" href="/assets/images/banner.png" as="image" type="image/png" fetchpriority="high">
+    
+    <!-- Note: Translation files are loaded on-demand, no need to preload -->
+    
+    <!-- Favicons and Icons -->
+    <link rel="icon" type="image/x-icon" href="/assets/images/fav/favicon.ico">
+    <link rel="icon" type="image/svg+xml" href="/assets/images/fav/favicon.svg">
+    <link rel="icon" type="image/png" sizes="96x96" href="/assets/images/fav/favicon-96x96.png">
+    <link rel="apple-touch-icon" href="/assets/images/fav/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    
+    <!-- Theme and Browser Configuration -->
+    <meta name="theme-color" content="#A0533B">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    
+    <!-- SEO and Language Configuration -->
+    <meta name="“google-site-verification”" content="“SdNpzwXoDh15G_0vNzzYwI1oeDdwQLG9hBXZKfLxxg0&quot;">
+    <link rel="alternate" hreflang="ar" href="https://quran-apps.itqan.dev/ar">
+    <link rel="alternate" hreflang="en" href="https://quran-apps.itqan.dev/en">
+    <link rel="alternate" hreflang="x-default" href="https://quran-apps.itqan.dev/en">
+    <link rel="canonical" href="https://quran-apps.itqan.dev/">
+    <!-- SEO Meta Tags -->
+    <meta name="title" content="دليل التطبيقات القرآنية الشامل - أفضل تطبيقات القرآن الكريم">
+    <meta name="description" content="الدليل الشامل لأفضل تطبيقات القرآن الكريم - تطبيقات المصحف، التفسير، التلاوة، التحفيظ والتدبر. اكتشف أكثر من 100 تطبيق قرآني مجاني ومدفوع لجميع الأجهزة من مجتمع إتقان لتقنيات القرآن">
+    <meta name="keywords" content="دليل التطبيقات القرآنية, دليل قرآني شامل, Comprehensive Quranic Directory, Quranic Directory, تطبيقات القرآن, مصحف إلكتروني, تفسير القرآن, تلاوة القرآن, تحفيظ القرآن, تطبيقات إسلامية, Best Quran Apps, Islamic Apps, Quran Reading Apps, Quran Memorization, Tafsir Apps, إتقان, ITQAN, تقنيات القرآن, Quran Technology">
+    <meta name="language" content="Arabic">
+    <meta name="author" content="مجتمع إتقان لتقنيات القرآن">
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="googlebot" content="index, follow, max-image-preview:large, max-snippet:-1">
+    <meta name="bingbot" content="index, follow, max-image-preview:large, max-snippet:-1">
+    
+    <!-- Enhanced Structured Data for Website -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "دليل التطبيقات القرآنية الشامل",
+      "alternateName": ["Comprehensive Quranic Directory", "دليل التطبيقات القرآنية", "Quran Apps Directory"],
+      "url": "https://quran-apps.itqan.dev/",
+      "description": "الدليل الشامل لأفضل تطبيقات القرآن الكريم - تطبيقات المصحف، التفسير، التلاوة، التحفيظ والتدبر. اكتشف أكثر من 40 تطبيق قرآني مجاني ومدفوع",
+      "inLanguage": ["ar", "en"],
+      "about": {
+        "@type": "Thing",
+        "name": "Quran Mobile Applications",
+        "sameAs": ["https://en.wikipedia.org/wiki/Quran", "https://ar.wikipedia.org/wiki/القرآن"]
+      },
+      "audience": {
+        "@type": "Audience",
+        "audienceType": "Muslims and Quran Students",
+        "geographicArea": "Worldwide"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "مجتمع إتقان لتقنيات القرآن",
+        "alternateName": "ITQAN Community for Quran Technologies",
+        "url": "https://quran-apps.itqan.dev/",
+        "foundingDate": "2020",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://quran-apps.itqan.dev/assets/images/logo-with-text.svg",
+          "width": 400,
+          "height": 100
+        },
+        "contactPoint": [{
+          "@type": "ContactPoint",
+          "contactType": "customer support",
+          "url": "https://quran-apps.itqan.dev/en/contact-us",
+          "email": "connect@itqan.dev",
+          "availableLanguage": ["Arabic", "English"]
+        }],
+        "sameAs": [
+          "https://github.com/Itqan-community",
+          "https://x.com/itqan_community", 
+          "https://community.itqan.dev",
+          "https://discord.gg/24CskUbuuB"
+        ]
+      },
+      "potentialAction": [{
+        "@type": "SearchAction",
+        "target": {
+          "@type": "EntryPoint",
+          "urlTemplate": "https://quran-apps.itqan.dev/{lang}?search={search_term_string}"
+        },
+        "query-input": "required name=search_term_string"
+      }],
+      "mainEntity": {
+        "@type": "ItemList",
+        "name": "Quran Mobile Applications Directory",
+        "description": "Comprehensive collection of verified Quran mobile applications",
+        "numberOfItems": "40+",
+        "itemListOrder": "https://schema.org/ItemListOrderAscending"
+      },
+      "keywords": [
+        "Quran apps", "Islamic apps", "Mobile Quran", "Mushaf apps", "Tafsir apps", 
+        "تطبيقات القرآن", "تطبيقات إسلامية", "مصحف إلكتروني", "تطبيقات التفسير"
+      ]
+    }
+    </script>
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://quran-apps.itqan.dev/">
+    <meta property="og:title" content="دليل التطبيقات القرآنية الشامل">
+    <meta property="og:description" content="الدليل الشامل لأفضل تطبيقات القرآن الكريم - تطبيقات المصحف، التفسير، التلاوة، التحفيظ والتدبر. اكتشف أكثر من 100 تطبيق قرآني مجاني ومدفوع">
+    <meta property="og:image" content="https://quran-apps.itqan.dev/assets/images/Social-Media-Thumnail-2x.jpg">
+    <meta property="og:image:alt" content="دليل التطبيقات القرآنية الشامل">
+    <meta property="og:image:width" content="2400">
+    <meta property="og:image:height" content="1260">
+    <meta property="og:locale" content="ar_SA">
+    <meta property="og:locale:alternate" content="en_US">
+    <meta property="og:site_name" content="دليل التطبيقات القرآنية">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://quran-apps.itqan.dev/">
+    <meta property="twitter:title" content="دليل التطبيقات القرآنية الشامل">
+    <meta property="twitter:description" content="الدليل الشامل لأفضل تطبيقات القرآن الكريم - تطبيقات المصحف، التفسير، التلاوة، التحفيظ والتدبر">
+    <meta property="twitter:image" content="https://quran-apps.itqan.dev/assets/images/Social-Media-Thumnail.webp">
+    <meta property="twitter:image:alt" content="دليل التطبيقات القرآنية الشامل">
+
+    <!-- Google Analytics loaded dynamically after user interaction for better performance -->
+
+    <base href="/">
+
+    <!-- Stale deploy recovery: if cached HTML references JS files that no longer exist,
+         clear everything and reload. Uses capture phase to catch script load errors. -->
+    <script>
+      (function() {
+        var errors = 0;
+        var loaded = false;
+        window.addEventListener('load', function() {
+          loaded = true;
+          sessionStorage.removeItem('sw_recovery');
+        });
+        window.addEventListener('error', function(e) {
+          if (e.target && e.target.tagName === 'SCRIPT') {
+            errors++;
+            if (errors >= 3 && !loaded && !sessionStorage.getItem('sw_recovery')) {
+              sessionStorage.setItem('sw_recovery', '1');
+              if ('caches' in window) {
+                caches.keys().then(function(n) { n.forEach(function(k) { caches.delete(k); }); });
+              }
+              if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.getRegistrations().then(function(r) { r.forEach(function(sw) { sw.unregister(); }); });
+              }
+              setTimeout(function() { location.reload(); }, 300);
+            }
+          }
+        }, true);
+      })();
+    </script>
+  <style>html,body{width:100%;height:100%}*,*:before,*:after{box-sizing:border-box}html{font-family:sans-serif;line-height:1.15;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;-ms-overflow-style:scrollbar;-webkit-tap-highlight-color:rgba(0,0,0,0)}@-ms-viewport{width:device-width}body{margin:0;color:#000000d9;font-size:14px;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,Noto Sans,sans-serif,"Apple Color Emoji","Segoe UI Emoji",Segoe UI Symbol,"Noto Color Emoji";font-variant:tabular-nums;line-height:1.5715;background-color:#fff;font-feature-settings:"tnum"}html{--antd-wave-shadow-color:#1890ff;--scroll-bar:0}:root{--primary-color:#a0533b;--border-radius:8px;--font-weight-bold:700;--transition-fast:.2s ease;--shadow-light:0 2px 8px rgba(0, 0, 0, .1);--swiper-pagination-bottom:20px;--swiper-pagination-color:var(--primary-color);--swiper-pagination-color-active:var(--primary-color);--swiper-pagination-color-inactive:#e8e8e8;--hero-base:#ffffff;--hero-warm-soft:rgba(153, 96, 10, .25);--hero-mint-soft:rgba(18, 188, 172, .35)}html{background:#fff}body{margin:0;background:#fff;display:block;min-height:100vh;font-family:Expo Arabic,Expo Arabic Fallback,-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica Neue,Arial,sans-serif}*,*:before,*:after{font-family:inherit}app-root{display:block;min-height:100vh;background:#fff}:root{--bg-color:#ffffff;--surface-color:#f8f9fa;--text-color:#212529;--text-secondary:#6c757d;--border-color:#dee2e6;--card-bg:#ffffff;--hover-bg:rgba(0, 0, 0, .06);--shadow:0 2px 8px rgba(0, 0, 0, .1);--primary-color:#a0533b;--primary-hover:#8a462f}*{transition:background-color .3s ease,color .3s ease,border-color .3s ease,box-shadow .3s ease,transform .2s ease}html,body{background-color:var(--bg-color)!important;color:var(--text-color)!important}*:not(.ant-btn):not(.ant-card):not(.ant-input):not(.ant-tooltip){color:inherit}</style><link rel="stylesheet" href="styles-FX3PGY53.css" crossorigin="anonymous" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-FX3PGY53.css" crossorigin="anonymous"></noscript></head>
+  <body>
+    <app-root></app-root>
+  <link rel="modulepreload" href="chunk-HNK4J4F5.js"><link rel="modulepreload" href="chunk-FR2LJKMH.js"><link rel="modulepreload" href="chunk-MXGX2OVY.js"><link rel="modulepreload" href="chunk-OFBTHEVO.js"><link rel="modulepreload" href="chunk-ZTUGMENZ.js"><link rel="modulepreload" href="chunk-AZKQ5YKL.js"><link rel="modulepreload" href="chunk-A2ZOMQAY.js"><link rel="modulepreload" href="chunk-HNV4OJED.js"><link rel="modulepreload" href="chunk-27DUNTKI.js"><link rel="modulepreload" href="chunk-O77NU6AN.js"><script src="polyfills-JUTM3XWE.js" type="module" crossorigin="anonymous"></script><script src="main-2QOJDIGQ.js" type="module" crossorigin="anonymous"></script><!-- Cloudflare Pages Analytics --><script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "f2bd3efea725477786f4fd6db7a5c61a"}'></script><!-- Cloudflare Pages Analytics --></body>
+</html>

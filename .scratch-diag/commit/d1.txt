@@ -1,0 +1,779 @@
+diff --git a/src/styles/audio-player-simple.css b/src/styles/audio-player-simple.css
+index 4a0ce8a..1e65d09 100644
+--- a/src/styles/audio-player-simple.css
++++ b/src/styles/audio-player-simple.css
+@@ -6,7 +6,7 @@
+   --simple-player-line: color-mix(in srgb, var(--theme-border) 74%, transparent 26%);
+   --simple-player-surface: color-mix(in srgb, var(--theme-panel-bg-strong) 96%, var(--theme-primary) 4%);
+   position: fixed !important;
+-  z-index: 410 !important;
++  z-index: var(--z-player) !important;
+   overflow: hidden;
+   border: 1px solid var(--simple-player-line);
+   background:
+@@ -257,8 +257,8 @@ html body .app-root .audio-player-simple .mp-player-options-trigger {
+   align-items: center;
+   justify-content: center;
+   flex: 0 0 auto;
+-  min-width: 2.5rem !important;
+-  min-height: 2.5rem !important;
++  min-width: max(2.5rem, 44px) !important;
++  min-height: max(2.5rem, 44px) !important;
+   padding: 0;
+   border: 1px solid transparent;
+   border-radius: .8rem;
+@@ -269,12 +269,19 @@ html body .app-root .audio-player-simple .mp-player-options-trigger {
+   transition: color 150ms ease, background-color 150ms ease, border-color 150ms ease, transform 150ms ease;
+ }
+ 
+-.app-root .audio-player-simple .simple-player__icon-button:hover,
+-.app-root .audio-player-simple .simple-player__speed:hover {
+-  border-color: color-mix(in srgb, var(--theme-primary) 24%, transparent 76%);
+-  background: color-mix(in srgb, var(--theme-primary) 10%, transparent 90%) !important;
+-  color: var(--theme-primary) !important;
+-  transform: translateY(-1px);
++@media (hover: hover) and (pointer: fine) {
++  .app-root .audio-player-simple .simple-player__icon-button:hover,
++  .app-root .audio-player-simple .simple-player__speed:hover {
++    border-color: color-mix(in srgb, var(--theme-primary) 24%, transparent 76%);
++    background: color-mix(in srgb, var(--theme-primary) 10%, transparent 90%) !important;
++    color: var(--theme-primary) !important;
++    transform: translateY(-1px);
++  }
++}
++
++.app-root .audio-player-simple .simple-player__icon-button:active,
++.app-root .audio-player-simple .simple-player__speed:active {
++  transform: scale(0.95);
+ }
+ 
+ .app-root .audio-player-simple .simple-player__icon-button:focus-visible,
+@@ -479,13 +486,19 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+   border-color: color-mix(in srgb, var(--theme-primary) 72%, #fff 28%);
+   border-radius: 50%;
+   background: var(--theme-primary) !important;
+-  color: #fff !important;
++  color: var(--theme-text-inverse, #fff) !important;
+   box-shadow: 0 9px 22px rgba(var(--theme-primary-rgb), .28);
+ }
+ 
+-.app-root .audio-player-simple .simple-player__play:hover {
+-  background: color-mix(in srgb, var(--theme-primary) 88%, #fff 12%) !important;
+-  color: #fff !important;
++@media (hover: hover) and (pointer: fine) {
++  .app-root .audio-player-simple .simple-player__play:hover {
++    background: color-mix(in srgb, var(--theme-primary) 88%, #fff 12%) !important;
++    color: var(--theme-text-inverse, #fff) !important;
++  }
++}
++
++.app-root .audio-player-simple .simple-player__play:active {
++  transform: scale(0.95);
+ }
+ 
+ .app-root .audio-player-simple .simple-player__play-glyph {
+@@ -583,14 +596,15 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+ }
+ 
+ .app-root .audio-player-simple .simple-player__play--compact {
+-  width: 2.45rem !important;
+-  height: 2.45rem !important;
+-  min-width: 2.45rem !important;
+-  min-height: 2.45rem !important;
++  /* max() garde 44 px même avec la racine à 15 px du projet. */
++  width: max(2.75rem, 44px) !important;
++  height: max(2.75rem, 44px) !important;
++  min-width: max(2.75rem, 44px) !important;
++  min-height: max(2.75rem, 44px) !important;
+   border-radius: 50% !important;
+-  background: linear-gradient(135deg, #0d5c4a, #168a70) !important;
+-  color: #ffffff !important;
+-  box-shadow: 0 4px 12px rgba(13, 92, 74, 0.32) !important;
++  background: linear-gradient(135deg, var(--theme-primary, var(--primary)), color-mix(in srgb, var(--theme-primary, var(--primary)) 76%, #fff 24%)) !important;
++  color: var(--theme-text-inverse, #ffffff) !important;
++  box-shadow: 0 4px 12px rgba(var(--theme-primary-rgb, 13, 92, 74), 0.32) !important;
+   display: inline-flex !important;
+   align-items: center !important;
+   justify-content: center !important;
+@@ -599,16 +613,22 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+   transition: transform 160ms ease, box-shadow 160ms ease !important;
+ }
+ 
+-.app-root .audio-player-simple .simple-player__play--compact:hover {
+-  transform: scale(1.06) !important;
+-  box-shadow: 0 6px 16px rgba(13, 92, 74, 0.42) !important;
++@media (hover: hover) and (pointer: fine) {
++  .app-root .audio-player-simple .simple-player__play--compact:hover {
++    transform: scale(1.06) !important;
++    box-shadow: 0 6px 16px rgba(var(--theme-primary-rgb, 13, 92, 74), 0.42) !important;
++  }
++}
++
++.app-root .audio-player-simple .simple-player__play--compact:active {
++  transform: scale(0.94) !important;
+ }
+ 
+ .app-root .audio-player-simple .simple-player__expand-btn {
+-  width: 2.1rem !important;
+-  height: 2.1rem !important;
+-  min-width: 2.1rem !important;
+-  min-height: 2.1rem !important;
++  width: max(2.75rem, 44px) !important;
++  height: max(2.75rem, 44px) !important;
++  min-width: max(2.75rem, 44px) !important;
++  min-height: max(2.75rem, 44px) !important;
+   border-radius: 50% !important;
+   background: color-mix(in srgb, var(--text-primary) 8%, transparent) !important;
+   color: var(--text-primary) !important;
+@@ -617,13 +637,49 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+   align-items: center !important;
+   justify-content: center !important;
+   cursor: pointer !important;
+-  transition: all 160ms ease !important;
++  /* Propriétés explicites : « all » animait aussi la taille et déclenchait
++     layout/paint à chaque changement d'état. */
++  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease, transform 160ms ease !important;
++}
++
++@media (hover: hover) and (pointer: fine) {
++  .app-root .audio-player-simple .simple-player__expand-btn:hover {
++    background: color-mix(in srgb, var(--primary) 15%, transparent) !important;
++    color: var(--primary) !important;
++    border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
++  }
++}
++
++.app-root .audio-player-simple .simple-player__expand-btn:active {
++  transform: scale(0.94) !important;
++}
++
++/* Persistent playback failure in the compact bar: icon + wording, never colour alone.
++   Typography/truncation come from .simple-player__compact-reciter on the same node;
++   danger ink is mixed with the player ink so it stays readable on light and dark surfaces. */
++.app-root .audio-player-simple .simple-player__compact-error {
++  display: flex !important;
++  align-items: center !important;
++  gap: .28rem !important;
++  color: color-mix(in srgb, var(--c-danger-hover) 78%, var(--simple-player-ink)) !important;
++  font-weight: 700 !important;
+ }
+ 
+-.app-root .audio-player-simple .simple-player__expand-btn:hover {
+-  background: color-mix(in srgb, var(--primary) 15%, transparent) !important;
+-  color: var(--primary) !important;
+-  border-color: color-mix(in srgb, var(--primary) 30%, transparent) !important;
++.app-root .audio-player-simple .simple-player__compact-error > span {
++  min-width: 0 !important;
++  overflow: hidden !important;
++  text-overflow: ellipsis !important;
++  white-space: nowrap !important;
++}
++
++.app-root .audio-player-simple .simple-player__compact-error svg {
++  flex: 0 0 auto;
++}
++
++.app-root .audio-player-simple .simple-player__expand-btn--alert {
++  color: color-mix(in srgb, var(--c-danger-hover) 78%, var(--simple-player-ink)) !important;
++  background: color-mix(in srgb, var(--c-danger) 12%, transparent) !important;
++  border-color: color-mix(in srgb, var(--c-danger) 42%, transparent) !important;
+ }
+ 
+ /* text info block (title + ar-name + reciter stacked) */
+@@ -634,13 +690,6 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+   gap: 0;
+ }
+ 
+-.app-root .audio-player-simple .simple-player__play--compact {
+-  width: var(--mp-device-touch) !important;
+-  height: var(--mp-device-touch) !important;
+-  min-width: var(--mp-device-touch) !important;
+-  min-height: var(--mp-device-touch) !important;
+-}
+-
+ .app-root .audio-player-simple.simple-player--compact .simple-player__timeline {
+   padding: 0;
+ }
+@@ -881,7 +930,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+ }
+ 
+ @media (max-width: 380px) {
+-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
++  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock:not(.simple-player--mobile-open) {
+     box-sizing: border-box !important;
+     height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+     max-height: calc(4rem + env(safe-area-inset-bottom, 0px)) !important;
+@@ -925,14 +974,10 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+ 
+   .app-root .audio-player-simple .simple-player__compact-meta .simple-player__compact-reciter {
+     margin-top: .08rem;
+-    font-size: .56rem !important;
++    font-size: max(.62rem, 10px) !important;
+   }
+ 
+   .app-root .audio-player-simple .simple-player__play--compact {
+-    width: 2.35rem !important;
+-    height: 2.35rem !important;
+-    min-width: 2.35rem !important;
+-    min-height: 2.35rem !important;
+     border-radius: .78rem;
+   }
+ 
+@@ -952,7 +997,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+ }
+ 
+ @media (min-width: 381px) and (max-width: 599px) {
+-  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
++  html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock:not(.simple-player--mobile-open) {
+     max-height: calc(5rem + env(safe-area-inset-bottom, 0px)) !important;
+     border-radius: 1.15rem 1.15rem 0 0;
+   }
+@@ -972,13 +1017,6 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+   .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .simple-player__icon-button:last-child {
+     display: none;
+   }
+-
+-  .app-root .audio-player-simple .simple-player__play--compact {
+-    width: 2.65rem !important;
+-    height: 2.65rem !important;
+-    min-width: 2.65rem !important;
+-    min-height: 2.65rem !important;
+-  }
+ }
+ 
+ @media (min-width: 600px) and (max-width: 1024px) {
+@@ -1004,13 +1042,6 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
+     width: 2.3rem !important;
+     height: 2.3rem !important;
+   }
+-
+-  .app-root .audio-player-simple.simple-player--compact .simple-player__play--compact {
+-    width: 2.55rem !important;
+-    height: 2.55rem !important;
+-    min-width: 2.55rem !important;
+-    min-height: 2.55rem !important;
+-  }
+ }
+ 
+ @media (prefers-reduced-motion: reduce) {
+diff --git a/src/styles/mushaf-page-polish.css b/src/styles/mushaf-page-polish.css
+index 9275b86..b41dc19 100644
+--- a/src/styles/mushaf-page-polish.css
++++ b/src/styles/mushaf-page-polish.css
+@@ -330,7 +330,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+ @media (max-width: 480px) {
+   .app-root[data-view="reading"] .quran-mode-pane--mushaf .bismillah-translation {
+     white-space: normal !important;
+-    font-size: clamp(0.65rem, 2.5vw, 0.75rem) !important;
++    font-size: clamp(max(0.66rem, 10px), 2.5vw, 0.75rem) !important;
+   }
+ }
+ 
+@@ -772,34 +772,42 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   margin-inline: auto;
+   border: var(--mfp-frame-outer) solid var(--mushaf-gold-deep);
+   border-radius: 0.15rem;
+-  background: var(--reader-page-paper);
++  /* Warm paper with a faint gilded vignette toward the edges, like the
++     Madinah folios. Decoration only — the ink grid is untouched. */
++  background:
++    radial-gradient(
++      140% 100% at 50% 45%,
++      transparent 62%,
++      color-mix(in srgb, var(--mushaf-gold) 8%, transparent) 100%
++    ),
++    var(--reader-page-paper);
+   box-shadow: var(--reader-page-shadow);
+   padding: 0.75rem 0.7rem 0.9rem;
+   color: var(--reader-page-ink);
+ }
+ 
+-/* Inner frame, painted behind the ink (same reasoning as the portal). */
++/* Inner frame, painted behind the ink (same reasoning as the portal). The
++   printed Madani folio rules its inner line a clear few points inside the
++   outer one, so the gap reads as a band, not as a double-stroke border. */
+ .quran-mode-pane--mushaf .qcm-page::before {
+   content: "";
+   position: absolute;
+   z-index: -1;
+-  inset: 5px;
+-  border: var(--mfp-frame-inner) solid var(--mushaf-gold-soft);
++  inset: 7px;
++  border: var(--mfp-frame-inner) solid color-mix(in srgb, var(--mushaf-gold) 72%, var(--mushaf-gold-soft));
+   border-radius: 0.1rem;
+-  box-shadow:
+-    inset 0 0 0 3px var(--reader-page-paper),
+-    inset 0 0 0 4px color-mix(in srgb, var(--mushaf-gold) 30%, transparent);
+   pointer-events: none;
+ }
+ 
++/* Corners: the print closes the double frame with small filled squares at
++   the inner-line junctions, not with floating lozenges. */
+ .quran-mode-pane--mushaf .qcm-page .qcm-corner {
+   position: absolute;
+   z-index: 2;
+   width: var(--mfp-corner-size);
+   height: var(--mfp-corner-size);
+   border: 1px solid var(--mushaf-gold-deep);
+-  background: var(--reader-page-paper);
+-  transform: rotate(45deg);
++  background: color-mix(in srgb, var(--mushaf-gold) 55%, var(--reader-page-paper));
+   pointer-events: none;
+ }
+ 
+@@ -807,13 +815,23 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   content: "";
+   position: absolute;
+   inset: 2px;
+-  border: 1px solid var(--mushaf-gold-soft);
++  border: 1px solid var(--reader-page-paper);
++  background: color-mix(in srgb, var(--mushaf-gold) 40%, var(--mushaf-gold-deep));
+ }
+ 
+-.quran-mode-pane--mushaf .qcm-page .qcm-corner--tl { top: 3px; left: 3px; }
+-.quran-mode-pane--mushaf .qcm-page .qcm-corner--tr { top: 3px; right: 3px; }
+-.quran-mode-pane--mushaf .qcm-page .qcm-corner--bl { bottom: 3px; left: 3px; }
+-.quran-mode-pane--mushaf .qcm-page .qcm-corner--br { bottom: 3px; right: 3px; }
++/* Lighter pip at the heart of each corner square. */
++.quran-mode-pane--mushaf .qcm-page .qcm-corner::before {
++  content: "";
++  position: absolute;
++  z-index: 1;
++  inset: 38%;
++  background: var(--reader-page-paper);
++}
++
++.quran-mode-pane--mushaf .qcm-page .qcm-corner--tl { top: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); left: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); }
++.quran-mode-pane--mushaf .qcm-page .qcm-corner--tr { top: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); right: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); }
++.quran-mode-pane--mushaf .qcm-page .qcm-corner--bl { bottom: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); left: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); }
++.quran-mode-pane--mushaf .qcm-page .qcm-corner--br { bottom: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); right: calc(7px - var(--mfp-corner-size) / 2 + 0.5px); }
+ 
+ .quran-mode-pane--mushaf :is(.qcm-page-header, .qcm-page-footer) {
+   display: flex;
+@@ -827,11 +845,20 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   color: var(--reader-page-muted);
+ }
+ 
++/* The running head sits in a cartouche — the gilded band the Madani print
++   closes around the juz and surah line — instead of resting on a bare rule. */
+ .quran-mode-pane--mushaf .qcm-page-header {
+   justify-content: space-between;
+   gap: clamp(0.4rem, 1vw, 0.7rem);
+-  padding-bottom: 0.4rem;
+-  border-bottom: 1px solid color-mix(in srgb, var(--mushaf-gold) 35%, transparent);
++  margin-top: 0.1rem;
++  padding: 0.16rem 0.9rem;
++  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 62%, transparent);
++  border-radius: 999px;
++  background: linear-gradient(
++    to bottom,
++    color-mix(in srgb, var(--mushaf-gold) 5%, transparent),
++    color-mix(in srgb, var(--mushaf-gold) 11%, transparent)
++  );
+ }
+ 
+ .quran-mode-pane--mushaf .qcm-page-header strong {
+@@ -841,7 +868,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+ }
+ 
+ .quran-mode-pane--mushaf .qcm-page-header__meta {
+-  color: var(--reader-page-muted);
++  color: color-mix(in srgb, var(--mushaf-gold-deep) 55%, var(--reader-page-muted));
+   font-size: 0.68rem;
+   font-weight: 600;
+   letter-spacing: 0.02em;
+@@ -858,32 +885,36 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   white-space: nowrap;
+ }
+ 
++/* Twin gilled lozenges flanking the surah name — the running-head ornament
++   of the Madinah folios. Pseudo-elements sit inside the name box, so a very
++   long name simply clips them before it ever overflows the sheet. */
++.quran-mode-pane--mushaf .qcm-page-header__name::before,
++.quran-mode-pane--mushaf .qcm-page-header__name::after {
++  content: "";
++  display: inline-block;
++  width: 0.28rem;
++  height: 0.28rem;
++  margin-inline: 0.42rem;
++  vertical-align: 0.12em;
++  transform: rotate(45deg);
++  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 75%, transparent);
++  background: color-mix(in srgb, var(--mushaf-gold) 30%, transparent);
++}
++
++/* The folio is the printed page's quiet number: the Madani mushaf sets it in
++   a small rosette below the text block, without a rule above it. */
+ .quran-mode-pane--mushaf .qcm-page-footer {
+   justify-content: center;
+   gap: 0.6rem;
+-  margin-top: 0.75rem;
+-  padding-top: 0.45rem;
+-  border-top: 1px solid color-mix(in srgb, var(--mushaf-gold) 35%, transparent);
++  margin-top: 0.6rem;
++  padding-top: 0.1rem;
+ }
+ 
+ .quran-mode-pane--mushaf .qcm-page-footer .qcm-page-folio {
+   display: inline-flex;
+   align-items: center;
+   justify-content: center;
+-  min-width: 2.5rem;
+-  height: 2.5rem;
+-  border: 1.5px solid var(--mushaf-gold-deep);
+-  border-radius: 50%;
+-  background: var(--reader-page-paper);
+-  color: color-mix(in srgb, var(--mushaf-gold) 75%, var(--reader-page-ink));
+-  font-family: var(--font-ui, sans-serif);
+-  font-size: 0.72rem;
+-  font-weight: 750;
+   line-height: 1;
+-  box-shadow:
+-    inset 0 0 0 3px var(--reader-page-paper),
+-    inset 0 0 0 5px color-mix(in srgb, var(--mushaf-gold) 28%, transparent),
+-    0 0 0 7px color-mix(in srgb, var(--mushaf-gold) 10%, transparent);
+ }
+ 
+ /* Fifteen printed lines; the type scale follows the pane so one full Madani
+@@ -895,7 +926,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   max-width: 100%;
+   margin-inline: auto;
+   margin-top: 0.4em;
+-  font-size: clamp(14px, calc((100cqi - 3rem) / 16.7), 34px);
++  font-size: clamp(14px, var(--qcm-mushaf-font-size, 34px), calc((100cqi - 3rem) / 16.7));
+   line-height: 1;
+   grid-template-rows: repeat(15, var(--mfp-line-pitch));
+   color: var(--reader-page-ink);
+@@ -929,17 +960,57 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   align-items: center;
+   justify-content: center;
+   width: 100%;
+-  height: 1.45em;
++  height: 1.55em;
+   border: 1px solid color-mix(in srgb, var(--mushaf-gold) 80%, transparent);
++  border-radius: 0.9em;
++  background: linear-gradient(
++    to bottom,
++    color-mix(in srgb, var(--mushaf-gold) 6%, var(--reader-page-paper)),
++    color-mix(in srgb, var(--mushaf-gold) 14%, var(--reader-page-paper))
++  );
+   box-shadow:
+-    inset 0 0 0 3px var(--reader-page-paper),
+-    inset 0 0 0 4px color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
++    inset 0 0 0 2.5px var(--reader-page-paper),
++    inset 0 0 0 3.5px color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
+   color: var(--reader-page-ink);
+ }
+ 
++/* Gilded diamonds close the band at each end of the name. */
++.quran-mode-pane--mushaf .qcm-surah-title::before,
++.quran-mode-pane--mushaf .qcm-surah-title::after {
++  content: "";
++  flex: 0 0 auto;
++  width: 0.22em;
++  height: 0.22em;
++  margin-inline: 0.55em;
++  background: color-mix(in srgb, var(--mushaf-gold) 85%, var(--mushaf-gold-deep));
++  transform: rotate(45deg);
++  opacity: 0.85;
++}
++
++/* Readable name + numbered rosette, mirroring the immersive band: the
++   "surahnames" digit ligature read as ornament, not as the surah's name. */
+ .quran-mode-pane--mushaf .qcm-surah-title__name {
+-  font-family: "surahnames", serif;
+-  font-size: 1.1em;
++  font-family: var(--font-quran, "Amiri Quran"), serif;
++  font-size: 1.05em;
++  line-height: 1.2;
++  color: var(--mushaf-gold-deep);
++}
++
++.quran-mode-pane--mushaf .qcm-surah-title__num {
++  display: inline-flex;
++  align-items: center;
++  justify-content: center;
++  flex: 0 0 auto;
++  min-width: 1.3em;
++  height: 1.3em;
++  margin-inline-start: 0.15em;
++  border: 1px solid color-mix(in srgb, var(--mushaf-gold) 70%, transparent);
++  border-radius: 50%;
++  background: color-mix(in srgb, var(--mushaf-gold) 10%, var(--reader-page-paper));
++  color: var(--mushaf-gold-deep);
++  font-family: var(--font-quran, "Amiri Quran"), serif;
++  font-size: max(0.58em, 10px);
++  font-weight: 700;
+   line-height: 1;
+ }
+ 
+@@ -949,11 +1020,134 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   color: var(--reader-page-ink);
+ }
+ 
++/* Illuminated opening leaves (pages 1-2): mirrors the portal treatment so
++   the inline stream and the immersive book print the same frame. Decoration
++   only — it is painted behind the ink and carries no text. */
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame {
++  position: absolute;
++  inset: 0;
++  z-index: -1;
++  pointer-events: none;
++  color: color-mix(in srgb, var(--mushaf-gold) 72%, var(--mushaf-gold-deep));
++}
++
++/* Same promotion trap as the portal: the leaf must own its stacking context
++   for the frame to paint on the paper. */
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-page {
++  isolation: isolate;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-page .qcm-corner {
++  display: none;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-page::before {
++  content: none;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] :is(.qcm-page-header, .qcm-page-footer) {
++  border-color: transparent;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-page-header {
++  padding-top: 0.45rem;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__panel {
++  position: absolute;
++  inset: 0.32rem 0.32rem 0.3rem;
++  border: 1px solid currentColor;
++  border-radius: 0.4rem;
++  box-shadow:
++    inset 0 0 0 2px var(--reader-page-paper),
++    inset 0 0 0 3px color-mix(in srgb, var(--mushaf-gold) 34%, transparent);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__rosette {
++  position: absolute;
++  width: 0.7rem;
++  height: 0.7rem;
++  background: var(--reader-page-paper);
++  border-radius: 50%;
++  padding: 1px;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__rosette--tl {
++  top: 0;
++  left: 0;
++  transform: translate(-50%, -50%);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__rosette--tr {
++  top: 0;
++  right: 0;
++  transform: translate(50%, -50%);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__rosette--bl {
++  bottom: 0;
++  left: 0;
++  transform: translate(-50%, 50%);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-opening-frame__rosette--br {
++  bottom: 0;
++  right: 0;
++  transform: translate(50%, 50%);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-surah-title {
++  width: min(100%, 13.5em);
++  border-width: 1.5px;
++  border-radius: 1.1em;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-surah-title::before,
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-surah-title::after {
++  content: "";
++  flex: 0 0 auto;
++  width: 0.3em;
++  height: 0.3em;
++  margin-inline: 0.9em;
++  background: color-mix(in srgb, var(--mushaf-gold) 85%, var(--mushaf-gold-deep));
++  transform: rotate(45deg);
++  opacity: 0.9;
++}
++
++/* A short opening page keeps the fifteen-line leaf height but spreads its
++   lines evenly through the panel instead of stacking them against the
++   running head. */
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines:not([data-warsh="true"]) {
++  display: flex;
++  flex-direction: column;
++  justify-content: space-evenly;
++  min-height: 24.3em;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-warsh="true"] {
++  display: flex;
++  flex-direction: column;
++  justify-content: center;
++  min-height: 24.3em;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines[data-warsh="true"] .qcm-flow {
++  margin-inline: 0.55em;
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-lines:not([data-warsh="true"]) .qcm-line {
++  min-height: var(--mfp-line-pitch);
++}
++
++.quran-mode-pane--mushaf .qcm-page-shell[data-page-kind="opening"] .qcm-line--empty {
++  display: none;
++}
++
+ /* Warsh: one continuous justified body over the same row pitch. */
+ .quran-mode-pane--mushaf .qcm-lines[data-warsh="true"] {
+   display: block;
+   width: var(--mfp-line-measure);
+-  font-size: clamp(14px, calc((100cqi - 3rem) / 16.7), 34px);
++  font-size: clamp(14px, var(--qcm-mushaf-font-size, 34px), calc((100cqi - 3rem) / 16.7));
+   line-height: var(--mfp-line-pitch);
+ }
+ 
+@@ -1000,6 +1194,18 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   overflow: visible;
+ }
+ 
++/* Rule-based Warsh tajweed: the colour is carried per whole word by the
++   renderer (sub-word ranges slice cursive ink). :where keeps the selector at
++   the base specificity so the hover/active/focus/playing rules below still
++   win over the ink. */
++.quran-mode-pane--mushaf .qcm-word:where([data-tajwid]) {
++  color: color-mix(
++    in srgb,
++    var(--qcm-word-tajwid, var(--reader-page-ink)) 48%,
++    var(--reader-page-ink)
++  );
++}
++
+ .quran-mode-pane--mushaf :is(.qcm-word:hover, .qcm-word--active) {
+   color: var(--mushaf-gold-deep);
+ }
+@@ -1021,10 +1227,79 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
+   background: rgba(var(--primary-rgb), 0.1);
+ }
+ 
+-.quran-mode-pane--mushaf .qcm-line :is(.qcm-ayah-marker, .ayah-marker, .ayat-marker) {
++/* reading-platform.css resets every .native-ayah-marker to margin 0
++   !important under .app-root; out-specify it inside the page stream so the
++   medallion hugs the last word of its own ayah (start) and leaves a clear
++   gap before the next ayah (end). */
++html body .app-root .quran-mode-pane--mushaf .qcm-line
++  :is(.qcm-ayah-marker, .ayah-marker, .ayat-marker) {
+   flex: 0 0 auto;
+-  margin-inline: 0.18em;
++  display: inline-flex;
++  align-items: center;
++  vertical-align: middle;
++  margin-inline: 0.1em 0.7em !important;
+   min-width: 0;
+   min-height: 0;
+   overflow: visible;
+ }
++
++/* The khatam rosette — shared by the inline sheet and the fullscreen portal
++   (both render MushafAyahMarker / the folio rosette from MushafPageShell).
++   The ornament is decoration: the number is ink, the gilding stays quiet so
++   the text remains the loudest thing on the page. */
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette {
++  display: block;
++  width: 1.06em;
++  height: 1.06em;
++  overflow: visible;
++}
++
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette__ring {
++  fill: var(--reader-page-paper);
++  stroke: color-mix(in srgb, var(--mushaf-gold) 80%, var(--mushaf-gold-deep));
++  stroke-width: 1.1;
++}
++
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette__disc {
++  fill: none;
++  stroke: color-mix(in srgb, var(--mushaf-gold) 55%, transparent);
++  stroke-width: 0.8;
++}
++
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette__num {
++  fill: var(--reader-page-ink);
++  font-family: var(--font-ui, system-ui, sans-serif);
++  font-size: 9.5px;
++  font-weight: 700;
++}
++
++/* Juz opening: the printed Mushaf gilds the medallion of the verse a juz
++   begins with, so the boundary reads from across the page. */
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-ayah-marker--juz .qcm-rosette__ring {
++  fill: color-mix(in srgb, var(--mushaf-gold) 16%, var(--reader-page-paper));
++  stroke: var(--mushaf-gold-deep);
++}
++
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-ayah-marker--juz .qcm-rosette__num {
++  fill: var(--mushaf-gold-deep);
++}
++
++/* The verse being recited gilds its own khatam, like the word highlight. */
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-ayah-marker.is-playing .qcm-rosette__ring {
++  stroke: var(--primary);
++  fill: rgba(var(--primary-rgb), 0.1);
++}
++
++/* The folio rosette is set small, like the print's quiet page number. */
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-rosette--folio {
++  width: 1.7rem;
++  height: 1.7rem;
++}
++
++/* Hafs tajweed comes from the coloured QCF v4 glyphs — the ink is painted by
++   the font itself, unreachable to CSS colour. Desaturating the word box mutes
++   the gilded palette toward the black ink of the uncoloured letters without
++   touching them (grey stays grey under saturate). */
++:is(.quran-mode-pane--mushaf, #root ~ .mfp-portal-root .mfp-book) .qcm-lines[data-tajweed="on"]:not([data-warsh="true"]) .qcm-word {
++  filter: saturate(0.5) brightness(0.92);
++}
+diff --git a/src/styles/settings-theme-previews.css b/src/styles/settings-theme-previews.css
+index 4b8cfa6..6fea04f 100644
+--- a/src/styles/settings-theme-previews.css
++++ b/src/styles/settings-theme-previews.css
+@@ -80,7 +80,7 @@
+   overflow: hidden;
+   color: var(--theme-text);
+   font-family: var(--font-quran, serif);
+-  font-size: clamp(0.62rem, 1.15vw, 0.82rem);
++  font-size: clamp(max(0.66rem, 10px), 1.15vw, 0.82rem);
+   font-weight: 650;
+   line-height: 1.25;
+   text-align: end;
+@@ -144,7 +144,7 @@
+   border-radius: 999px;
+   background: color-mix(in srgb, var(--theme-primary) 7%, var(--theme-bg) 93%);
+   color: var(--theme-primary);
+-  font-size: 0.52rem;
++  font-size: max(0.62rem, 10px);
+   font-weight: 750;
+   letter-spacing: 0.04em;
+   line-height: 1.2;
+@@ -167,10 +167,6 @@
+     padding: 0.3rem 0.38rem;
+   }
+ 
+-  .settings-theme-preview__arabic {
+-    font-size: 0.58rem;
+-  }
+-
+   .settings-theme-tile__heading {
+     align-items: flex-start;
+     flex-direction: column;

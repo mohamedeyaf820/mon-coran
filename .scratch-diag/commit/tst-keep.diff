@@ -1,0 +1,37 @@
+diff --git a/tests/tajwid-segments.test.mjs b/tests/tajwid-segments.test.mjs
+index 06a72de..7d365e8 100644
+--- a/tests/tajwid-segments.test.mjs
++++ b/tests/tajwid-segments.test.mjs
+@@ -10,4 +10,5 @@ import {
+   normalizeQuranGlyphText,
+ } from "../src/utils/quranUtils.js";
++import { ruleFromClassName } from "../src/utils/quranComTajweedClasses.js";
+ 
+ test("tajwid segments keep leading Arabic marks attached to their base glyph", () => {
+@@ -121,2 +122,26 @@ test("Hafs and Warsh use the shared Quran.com Tajweed color semantics", () => {
+   }
+ });
++
++// Census of every class name Quran.com emits in text_uthmani_tajweed across the
++// full verse corpus. An unmapped rule class silently renders in default ink, so
++// a new name upstream must fail here rather than lose its colour.
++const QURAN_COM_EMITTED_CLASSES = [
++  "ham_wasl", "laam_shamsiyah", "madda_normal", "ghunnah", "slnt",
++  "madda_permissible", "idgham_shafawi", "ikhafa", "madda_obligatory",
++  "idgham_ghunnah", "qalaqah", "iqlab", "idgham_wo_ghunnah", "ikhafa_shafawi",
++  "madda_necessary", "idgham_mutajanisayn", "idgham_mutaqaribayn",
++  "madda_obligatory_monfasel", "madda_obligatory_mottasel",
++];
++
++test("every Quran.com tajweed rule class resolves to a coloured rule", () => {
++  for (const className of QURAN_COM_EMITTED_CLASSES) {
++    assert.ok(ruleFromClassName(className), `${className} maps to no rule`);
++  }
++});
++
++test("Quran.com markup and glyph classes stay uncoloured", () => {
++  for (const className of ["end", "custom-alef-maksora"]) {
++    assert.equal(ruleFromClassName(className), null, `${className} is not a rule`);
++  }
++  assert.equal(ruleFromClassName("custom-alef-maksora tajweed-ikhafa"), "ikhfa");
++});

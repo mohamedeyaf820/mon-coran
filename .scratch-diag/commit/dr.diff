@@ -1,0 +1,131 @@
+diff --git a/src/styles/device-responsive.css b/src/styles/device-responsive.css
+index 53ff31d..5388001 100644
+--- a/src/styles/device-responsive.css
++++ b/src/styles/device-responsive.css
+@@ -382,5 +382,5 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+     width: 100% !important;
+     max-width: 100% !important;
+-    padding: 0.65rem 0.35rem calc(var(--player-h, 96px) + 2rem);
++    padding: 0.65rem 0.875rem calc(var(--player-h, 96px) + 2rem);
+     gap: 1rem;
+   }
+@@ -413,4 +413,5 @@ html body .app-root[data-view="home"] .reciter-card__copy {
+     :is(.dua-open-btn-v5, .dua-card-footer-link, .duas-back-btn, .duas-cat-btn) {
+     min-height: 44px !important;
++    min-width: 44px !important;
+   }
+ 
+@@ -1276,6 +1277,9 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* Each verse is wrapped in its own `.virtualized-item`, so every card is a
++   `:last-child` of its wrapper. Selecting the stream's last item is the only
++   way to reach the genuinely final verse. */
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+-  .qc-list-card.qc-list-card:last-child {
++  .qc-verse-by-verse-view > .virtualized-item:last-child .qc-list-card {
+   border-bottom: 0 !important;
+ }
+@@ -1287,6 +1291,4 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
+-html body #root .app-root[data-view="reading"] .quran-display--platform
+-  .qc-list-card__reference.qc-list-card__reference,
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__top .ayah-actions button {
+@@ -1298,4 +1300,17 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* The reference is a text target ("2:253"), not an icon: a 44px square with no
++   padding pressed the digits against both edges. Keep the 44px touch floor and
++   let the box grow with the number of digits. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card__reference.qc-list-card__reference {
++  width: auto !important;
++  min-width: 44px !important;
++  height: 44px !important;
++  min-height: 44px !important;
++  padding-inline: 0.3rem !important;
++  border-radius: 0.72rem !important;
++}
++
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__top .ayah-actions button svg {
+@@ -1320,10 +1335,30 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+ }
+ 
++/* In the French/English reader the Arabic must share the left edge with its
++   transliteration and translation; a verse reads as three disconnected
++   fragments when the Arabic is pinned to the opposite edge of a wide column.
++   `match-parent` cannot express this because the Arabic keeps direction:rtl for
++   correct bidi, and `[dir=…]` selectors are dropped by the production CSS
++   build, so the card carries the reading direction as a data attribute. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card[data-verse-dir="ltr"] .qc-ayah-text-ar {
++  text-align: left !important;
++}
++
++/* A verse is one group: the three lines stay close together and only the
++   boundary between verses gets air. Without this, the transliteration and the
++   translation were spaced like separate verses. */
++html body #root .app-root[data-view="reading"] .quran-display--platform
++  .qc-list-card .qc-ayah-transliteration {
++  margin-block: 0.25rem 0 !important;
++  padding-block: 0 !important;
++}
++
+ html body #root .app-root[data-view="reading"] .quran-display--platform
+   .qc-list-card__translation-slot {
+   min-height: 0 !important;
+-  margin-top: 0.6rem !important;
+-  padding-top: 0.7rem;
+-  border-top: 1px solid color-mix(in srgb, var(--border) 76%, transparent);
++  margin-top: 0.35rem !important;
++  padding-top: 0 !important;
++  max-width: 72ch;
+ }
+ 
+@@ -1701,5 +1736,5 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+     width: min(calc(100% - 1rem), 480px) !important;
+     margin-inline: auto !important;
+-    z-index: 950 !important;
++    z-index: var(--z-dock) !important;
+     visibility: visible !important;
+     opacity: 1 !important;
+@@ -1778,6 +1813,4 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   }
+ 
+-  html body #root .app-root[data-view="reading"] .quran-display--platform
+-    .qc-list-card__reference.qc-list-card__reference,
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__top .ayah-actions button {
+@@ -1788,5 +1821,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
+   html body #root .app-root[data-view="reading"] .quran-display--platform
+     .qc-list-card__reference.qc-list-card__reference {
+-    font-size: 0.67rem !important;
++    padding-block: 0 !important;
++    font-size: max(0.8rem, 13px) !important;
+   }
+ 
+@@ -1970,2 +2004,21 @@ html body #root#root :is(
+ }
+ 
++/* The reciter card gave its text column only 73.5px at 280px (card 233.4px
++   minus a 39.8px avatar and the 44+44px action pair), so "Arabie Saoudite"
++   rendered 42 of 79px. Below 360px the actions drop under the name and align
++   to the inline end, which returns the full measure to the meta line. This
++   rule lives here because deferredStyles.js loads this file last: the same
++   specificity in home-audio-ux-refonte.css lost to the
++   `grid-template-columns: minmax(0, 1fr) auto` pairs in experience-polish.css
++   (<=430px) and in this file (<=640px). */
++@media (max-width: 360px) {
++  html body .app-root[data-view="home"] .reciter-card {
++    grid-template-columns: minmax(0, 1fr) !important;
++  }
++
++  html body .app-root[data-view="home"] .reciter-card__actions {
++    justify-self: end;
++    padding: 0 !important;
++    border-inline-start: 0 !important;
++  }
++}

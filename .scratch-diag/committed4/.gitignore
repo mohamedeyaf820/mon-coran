@@ -1,0 +1,49 @@
+# Dependencies
+node_modules/
+.npm-cache/
+
+# Build output
+dist/
+
+# Test artifacts
+test-results/
+playwright-report/
+coverage/
+
+# Local dev artifacts
+.claude/settings.local.json
+.codex-artifacts/
+.codex-*.log
+vite-dev*.log
+vite-preview*.log
+vite-preview*.err.log
+vite.config.js.timestamp-*.mjs
+debug.log
+currentAyah_matches*.txt
+template_currentAyah*.txt
+scratch/
+
+# Backend cache
+server/.cache/
+
+# IDE
+.vscode/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Env
+.env
+.env.local
+design-audit/
+design-audit-2/
+.vercel
+
+# Local Netlify folder
+.netlify
+
+# Vercel CLI local state (device/session ids) — must never be tracked
+.vercel-cli-data/
