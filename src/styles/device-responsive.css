@@ -86,19 +86,6 @@ html body #root .app-root
   word-spacing: normal !important;
 }
 
-html body #root .app-root
-  :is(.wbw-marker-token, .native-ayah-marker, .warsh-karaoke-ayah-marker, .ayah-marker) {
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  vertical-align: middle !important;
-  white-space: nowrap !important;
-  margin-inline-start: 0.35em !important;
-  margin-inline-end: 0 !important;
-  line-height: 1 !important;
-  font-size: 0.88em !important;
-}
-
 
 /* content-visibility still clips complex Arabic glyph bounds on some iOS
    WebKit releases. The reader is already windowed, so disabling it only on

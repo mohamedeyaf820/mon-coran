@@ -76,7 +76,8 @@ test("first launch keeps the critical network payload compact", async ({ page })
     `[startup-metrics] requests=${parsedRequests.length} js=${firstLaunchJs.length} css=${firstLaunchCss.length}`,
   );
   expect(parsedRequests.length).toBeLessThanOrEqual(45);
-  expect(firstLaunchJs.length).toBeLessThanOrEqual(31);
+  // Performance observers load as one small optional module after first paint.
+  expect(firstLaunchJs.length).toBeLessThanOrEqual(32);
   expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
   expect(
     parsedRequests.filter(

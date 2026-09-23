@@ -214,7 +214,6 @@
 
 .app-root[data-view="reading"] [class*="page-divider"],
 .app-root[data-view="reading"] [class*="page-chip"],
-.app-root[data-view="reading"] .verse-page-chip,
 .app-root[data-view="reading"] .surah-page-divider {
     border: 1px solid color-mix(in srgb, var(--primary) 25%, var(--border)) !important;
     border-radius: 999px !important;
@@ -339,10 +338,6 @@
    ─ Richer gold ring
    ═══════════════════════════════════════════════════════════════ */
 
-.verse-stop-medallion {
-    filter: drop-shadow(0 1px 3px rgba(197, 160, 75, 0.35)) !important;
-}
-
 /* ─── Verse-end marker: force QPC Hafs rosette glyph ────────────
    reading-platform.css sets:
      .quran-arabic-text * { font-family: var(--quran-font-family) !important }
@@ -452,8 +447,7 @@ html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
 .quran-display--platform .quran-nav,
 .quran-display--platform .page-header-bar,
 .quran-display--platform .chunk-nav-bar,
-.quran-display--platform .mushaf-layout-toggle-bar,
-.quran-display--platform .warsh-notice {
+.quran-display--platform .mushaf-layout-toggle-bar {
     backdrop-filter: none !important;
     -webkit-backdrop-filter: none !important;
 }
@@ -507,15 +501,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 
 html body #root .app-root[data-view="reading"] .quran-display--platform
   :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
-  :is(.canonical-quran-text, .quran-tajwid-text, .tajweed-text, .verse-text, .quran-arabic-text, .quran-word-item, .tajwid-rule-segment) {
-    display: inline !important;
-    letter-spacing: inherit !important;
-    word-spacing: inherit !important;
-    line-height: inherit !important;
-  }
-
-html body #root .app-root[data-view="reading"] .quran-display--platform
-  :is(.qc-list-card .qc-ayah-text-ar, .quran-mode-pane--mushaf .mushaf-text-block)
   .waqf-marker {
     margin-inline: 0.012em !important;
     padding-inline: 0 !important;
@@ -551,7 +536,6 @@ html body .mfp-portal-root [dir="rtl"] .quran-canonical-text,
 html body .mfp-portal-root [dir="rtl"] .quran-canonical-text > span,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text > span,
-html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
 html body .mfp-portal-root [dir="rtl"] .verse-text,
 html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
 html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
@@ -565,7 +549,6 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
 
 html body .mfp-portal-root [dir="rtl"] .quran-canonical-text,
 html body .mfp-portal-root [dir="rtl"] .quran-tajwid-text,
-html body .mfp-portal-root [dir="rtl"] .tajweed-rule-segment,
 html body .mfp-portal-root [dir="rtl"] .verse-text,
 html body .mfp-portal-root [dir="rtl"] .quran-arabic-text,
 html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
@@ -729,10 +712,6 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
     animation: tajweed-tip-pop 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
-.tajweed-rich-tooltip--bottom {
-    transform: translate(-50%, 0);
-}
-
 @keyframes tajweed-tip-pop {
     0% {
         opacity: 0;
@@ -742,10 +721,6 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
         opacity: 1;
         transform: translate(-50%, -100%) scale(1);
     }
-}
-
-.tajweed-rich-tooltip--bottom {
-    animation-name: tajweed-tip-pop-bottom;
 }
 
 @keyframes tajweed-tip-pop-bottom {

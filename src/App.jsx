@@ -91,7 +91,7 @@ function AppLoadingFallback({ lang, variant = "page" }) {
           ? "var(--header-h, 56px)"
           : isOverlay
             ? "100dvh"
-            : "min(42vh, 320px)",
+            : "100dvh",
         display: "grid",
         placeItems: "center",
         padding: isHeader ? "0.4rem" : "clamp(0.8rem, 3vw, 1.5rem)",

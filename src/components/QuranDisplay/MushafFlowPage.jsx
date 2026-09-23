@@ -112,6 +112,7 @@ export default function MushafFlowPage({
   currentPage,
   currentPlayingAyah,
   fallbackFontFamily,
+  fontReady = true,
   fitSignal,
   fontFamily,
   lang,
@@ -313,6 +314,7 @@ export default function MushafFlowPage({
         dir="rtl"
         lang="ar"
         data-flow="true"
+        data-font-ready={fontReady ? "true" : "false"}
         data-warsh={riwaya === "warsh" ? "true" : undefined}
         data-tajweed={showTajwid ? "on" : undefined}
       >

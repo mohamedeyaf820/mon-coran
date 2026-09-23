@@ -112,8 +112,7 @@
 .app-view-reading .quran-display--platform .quran-nav,
 .app-view-reading .quran-display--platform .page-header-bar,
 .app-view-reading .quran-display--platform .chunk-nav-bar,
-.app-view-reading .quran-display--platform .mushaf-layout-toggle-bar,
-.app-view-reading .quran-display--platform .warsh-notice {
+.app-view-reading .quran-display--platform .mushaf-layout-toggle-bar {
     border-radius: var(--app-radius-lg);
     background: linear-gradient(
         180deg,

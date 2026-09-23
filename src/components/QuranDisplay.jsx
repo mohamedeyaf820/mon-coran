@@ -497,16 +497,19 @@ export default function QuranDisplay() {
           />
         ) : null}
         {displayMode === "page" ? (
-          <Suspense
-            fallback={
-              <AyahSkeleton
-                count={3}
-                lang={lang}
-                showTranslation={showTranslation}
-              />
-            }
-          >
-            <PageMode
+          <div className="reader-page-slot" style={{ minHeight: "100dvh" }}>
+            <Suspense
+              fallback={
+                <div className="reader-loading-content" style={{ minHeight: "100dvh" }}>
+                  <AyahSkeleton
+                    count={3}
+                    lang={lang}
+                    showTranslation={showTranslation}
+                  />
+                </div>
+              }
+            >
+              <PageMode
               activeAyah={activeAyah}
               ayahs={ayahs}
               calibration={karaokeCalibration}
@@ -537,8 +540,9 @@ export default function QuranDisplay() {
               showTranslation={showTranslation}
               showTransliteration={showTransliteration}
               surahGroups={surahGroups}
-            />
-          </Suspense>
+              />
+            </Suspense>
+          </div>
         ) : null}
         {displayMode === "juz" ? (
           <Suspense
@@ -581,7 +585,7 @@ export default function QuranDisplay() {
           </Suspense>
         ) : null}
         {readerBusy ? (
-          <div className="reader-loading-content">
+          <div className="reader-loading-content" style={{ minHeight: "100dvh" }}>
             <AyahSkeleton
               count={5}
               lang={lang}

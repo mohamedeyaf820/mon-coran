@@ -687,52 +687,6 @@ html body .app-root[data-view="reading"] .tajwid-rule-segment[data-state="instan
   box-shadow: inset 0 -0.07em color-mix(in srgb, currentColor 42%, transparent);
 }
 
-html body .tajwid-rule-tooltip {
-  z-index: calc(var(--z-player) + 10);
-  display: grid;
-  width: max-content;
-  max-width: min(18rem, calc(100vw - 1.25rem));
-  gap: 0.5rem;
-  padding: 0.78rem 0.82rem;
-  overflow: visible;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
-  border-radius: 0.88rem;
-  background: var(--bg-card);
-  color: var(--text-primary);
-  box-shadow: 0 16px 42px color-mix(in srgb, #020817 24%, transparent), inset 3px 0 var(--primary);
-  font-family: var(--font-ui);
-  text-align: start;
-}
-
-html body .tajwid-rule-tooltip__head {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-}
-
-html body .tajwid-rule-tooltip__head strong {
-  color: var(--text-primary);
-  font-size: 0.8rem;
-  font-weight: 820;
-  line-height: 1.25;
-}
-
-html body .tajwid-rule-tooltip__swatch {
-  width: 0.62rem;
-  height: 0.62rem;
-  flex: 0 0 auto;
-  border: 1px solid color-mix(in srgb, #000 15%, transparent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-card) 80%, transparent);
-}
-
-html body .tajwid-rule-tooltip__description {
-  color: var(--text-secondary);
-  font-size: 0.7rem;
-  font-weight: 520;
-  line-height: 1.5;
-}
-
 @media (max-width: 880px) {
   html body .app-root[data-view="reading"] .tajweed-legend__helper {
     max-width: none;
@@ -1026,34 +980,11 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.
 }
 
 /* Ayat marker pendant la lecture — off for surah-stream reciters */
-html:not([data-audio-mode="surah"]) body .app-root :is(
-  .qurancom-ayah-marker,
-  .verse-end-marker,
-  .ayat-marker,
-  .mp-ayah-marker,
-  .verse-stop-medallion,
-  .cpv-medallion
-).is-playing {
-  animation: ayah-marker-playing 1.8s ease-in-out infinite;
-  transform: none;
-}
 
 @media (prefers-reduced-motion: reduce) {
   html:not([data-audio-mode="surah"]) body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
     animation: none;
     box-shadow: inset 3px 0 0 var(--primary);
-  }
-
-  html:not([data-audio-mode="surah"]) body .app-root :is(
-    .qurancom-ayah-marker,
-    .verse-end-marker,
-    .ayat-marker,
-    .mp-ayah-marker,
-    .verse-stop-medallion,
-    .cpv-medallion
-  ).is-playing {
-    animation: none;
-    transform: scale(1.1) translateY(0.06em);
   }
 }
 
@@ -1279,17 +1210,11 @@ html body .app-root[data-view="reading"] .quran-display--platform {
 
 /* Prevent layout thrashing on animated elements by pre-declaring will-change */
 .srh-play-btn,
-.mfp-context-player__toggle,
-.mfp-context-navigation__step,
 .qc-list-card__reference {
   will-change: transform;
 }
 
 /* Transitions on color/opacity only (GPU-compositable) */
-.mfp-ayah {
-  /* Override any non-compositable transitions */
-  transition: color 120ms ease, background-color 120ms ease !important;
-}
 
 /* Touch devices: hint the browser can handle scroll without JS blocking */
 .mfp-portal-root .mfp-viewport,

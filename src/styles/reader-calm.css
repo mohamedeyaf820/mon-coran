@@ -370,6 +370,20 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
   margin-top: clamp(1rem, 2.5vw, 2rem);
 }
 
+@media (max-width: 640px) {
+  /* Keep the following sheet below the first viewport while the requested
+     Warsh or Hafs page gains its text and Quran font on a cold deep link. */
+  #root .quran-mode-pane--mushaf .page-stream__page {
+    min-height: 70dvh;
+  }
+}
+
+/* Lay out the verified words while their chosen local font resolves, then
+   reveal the finished lines together so fallback glyph metrics cannot jump. */
+.quran-mode-pane--mushaf .qcm-lines[data-flow="true"][data-font-ready="false"] {
+  visibility: hidden;
+}
+
 #root .app-root[data-view="reading"] .page-stream__status {
   margin: 1.25rem 0 0;
   color: var(--text-muted);

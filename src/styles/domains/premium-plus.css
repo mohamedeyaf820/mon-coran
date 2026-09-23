@@ -83,11 +83,7 @@
 .app-root.premium-plus
     .app-view-reading
     .quran-display--platform
-    .mushaf-layout-toggle-bar,
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .warsh-notice {
+    .mushaf-layout-toggle-bar {
     border-color: color-mix(
         in srgb,
         var(--theme-border-strong) 22%,
@@ -541,11 +537,7 @@
 .app-root.premium-plus
     .app-view-reading
     .quran-display--platform
-    .mushaf-layout-toggle-bar,
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .warsh-notice {
+    .mushaf-layout-toggle-bar {
     border-radius: var(--pp-radius-md);
 }
 
@@ -720,7 +712,7 @@
 
 @media (max-width: 640px) {
 
-    
+
     .app-root.premium-plus .audio-player-modal {
         animation: pp-audio-modal-fade 180ms ease;
     }
@@ -828,7 +820,7 @@
         }
     }
 
-    
+
     @media (max-width: 640px) {
         .app-root.premium-plus .mp-audio-player--mobile {
             left: max(0.36rem, env(safe-area-inset-left));

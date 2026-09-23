@@ -841,64 +841,6 @@ html[data-split-view="on"]
     font-size: clamp(1.22rem, 1.02rem + 1vw, 1.85rem) !important;
 }
 
-
-.verse-compare-card__top button,
-.verse-compare-card__link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.42rem;
-    border: 1px solid color-mix(in srgb, var(--border) 78%, transparent 22%);
-    border-radius: 0.62rem;
-    background: var(--bg-card);
-    color: var(--text-secondary);
-    font-family: var(--font-ui);
-    font-size: 0.76rem;
-    font-weight: 700;
-}
-
-.verse-compare-card {
-    display: grid;
-    gap: 0.52rem;
-    padding: 0.74rem;
-    border: 1px solid color-mix(in srgb, var(--border) 76%, transparent 24%);
-    border-radius: 0.78rem;
-    background: color-mix(in srgb, var(--bg-secondary) 70%, var(--bg-card) 30%);
-}
-
-.verse-compare-card__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.55rem;
-    color: var(--text-secondary);
-    font-family: var(--font-ui);
-    font-size: 0.74rem;
-    font-weight: 800;
-}
-
-.verse-compare-card__top button {
-    width: 1.84rem;
-    height: 1.84rem;
-    padding: 0;
-}
-
-.verse-compare-card p {
-    margin: 0;
-    color: var(--text-quran, var(--text-primary));
-    font-family: var(--font-quran), serif;
-    font-size: clamp(1.3rem, 1.08rem + 0.82vw, 1.72rem);
-    line-height: 2.05;
-    text-align: right;
-}
-
-.verse-compare-card__link {
-    min-height: 2rem;
-    width: fit-content;
-    padding: 0.32rem 0.62rem;
-    color: var(--primary);
-}
-
 @media (max-width: 760px) {
     html[data-split-view="on"]
         .app-root

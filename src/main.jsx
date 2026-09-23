@@ -1,7 +1,6 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { initErrorAnalytics } from "./services/errorAnalytics.js";
-import { initPerformanceMetrics } from "./services/performanceMetrics.js";
 import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
@@ -134,7 +133,6 @@ if (!rootElement) {
   document.body.replaceChildren(fallback);
 } else {
   initErrorAnalytics();
-  initPerformanceMetrics();
   ReactDOM.createRoot(rootElement).render(
     <React.StrictMode>
       <ErrorBoundary>
@@ -146,6 +144,14 @@ if (!rootElement) {
       </ErrorBoundary>
     </React.StrictMode>,
   );
+  // All observers use buffered entries, so installing them after the first
+  // paint preserves startup metrics without making their code part of the
+  // critical JavaScript entry.
+  requestAnimationFrame(() => {
+    import("./services/performanceMetrics.js")
+      .then(({ initPerformanceMetrics }) => initPerformanceMetrics())
+      .catch(() => {});
+  });
 }
 
 // Service Worker: actif uniquement en production

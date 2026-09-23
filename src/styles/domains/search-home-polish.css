@@ -1125,69 +1125,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     display: none !important;
 }
 
-.app-root :is(.ayah-marker-wrap.verse-stop-medallion, .verse-stop-medallion, .mp-ayah-marker) {
-    --stop-medallion-ink: #1f2119;
-    --stop-medallion-gold: #b58b31;
-    --stop-medallion-green: #254d3d;
-    width: var(--verse-stop-size, 1.42em);
-    height: var(--verse-stop-size, 1.42em);
-    margin-inline: 0.24em;
-    border: 1.5px solid var(--stop-medallion-green);
-    background:
-        radial-gradient(circle at 50% 48%, rgba(255, 253, 244, 0.99) 0 44%, rgba(242, 232, 203, 0.98) 45% 100%);
-    box-shadow:
-        inset 0 0 0 0.08em rgba(255, 250, 236, 0.98),
-        inset 0 0 0 0.18em rgba(181, 139, 49, 0.58),
-        0 1px 2px rgba(31, 33, 25, 0.16);
-    color: var(--stop-medallion-ink);
-}
-
-.app-root :is(.ayah-marker-wrap.verse-stop-medallion, .verse-stop-medallion, .mp-ayah-marker)::before {
-    top: -0.42em;
-    width: 0.82em;
-    height: 0.64em;
-    background:
-        radial-gradient(circle at 50% 84%, var(--stop-medallion-gold) 0 15%, transparent 16%),
-        radial-gradient(circle at 50% 30%, var(--stop-medallion-green) 0 24%, transparent 25%),
-        radial-gradient(circle at 25% 62%, var(--stop-medallion-green) 0 12%, transparent 13%),
-        radial-gradient(circle at 75% 62%, var(--stop-medallion-green) 0 12%, transparent 13%),
-        radial-gradient(circle at 16% 88%, var(--stop-medallion-gold) 0 7%, transparent 8%),
-        radial-gradient(circle at 84% 88%, var(--stop-medallion-gold) 0 7%, transparent 8%);
-}
-
-.app-root .verse-stop-medallion__ring {
-    inset: 0.13em;
-    border-color: rgba(181, 139, 49, 0.78);
-    box-shadow: inset 0 0 0 1px rgba(37, 77, 61, 0.2);
-}
-
-.app-root :is(.verse-stop-number, .mp-ayah-num) {
-    font-size: 0.47em;
-    color: var(--stop-medallion-ink);
-}
-
-[data-theme="dark"] .app-root :is(.ayah-marker-wrap.verse-stop-medallion, .verse-stop-medallion, .mp-ayah-marker) {
-    --stop-medallion-ink: #f9efd3;
-    --stop-medallion-gold: #d3b66d;
-    --stop-medallion-green: #7ecdb5;
-    border-color: rgba(211, 182, 109, 0.92);
-    background:
-        radial-gradient(circle at 50% 48%, rgba(31, 50, 45, 0.98) 0 44%, rgba(15, 35, 31, 0.99) 45% 100%);
-    box-shadow:
-        inset 0 0 0 0.08em rgba(10, 26, 23, 0.94),
-        inset 0 0 0 0.18em rgba(211, 182, 109, 0.48),
-        0 1px 3px rgba(0, 0, 0, 0.35);
-}
-
-[data-theme="sepia"] .app-root :is(.ayah-marker-wrap.verse-stop-medallion, .verse-stop-medallion, .mp-ayah-marker) {
-    --stop-medallion-ink: #392711;
-    --stop-medallion-gold: #a47728;
-    --stop-medallion-green: #466f48;
-    border-color: rgba(70, 111, 72, 0.95);
-    background:
-        radial-gradient(circle at 50% 48%, rgba(255, 248, 226, 0.99) 0 44%, rgba(232, 212, 170, 0.98) 45% 100%);
-}
-
 .app-root .waqf-marker {
     display: inline-block !important;
     min-width: 0 !important;
@@ -1679,33 +1616,7 @@ html[data-theme="dark"] .search-pro__close:hover {
     color: color-mix(in srgb, var(--reader-flow-ink-dark) 86%, #d4a820 14%) !important;
 }
 
-.app-root .quran-display--platform :is(.cpv-flow, .qc-ayah-text-ar, .mp-ayahs-flow) :is(
-    .tajwid-ghunna,
-    .tajwid-idgham,
-    .tajwid-ikhfa,
-    .tajwid-iqlab,
-    .tajwid-qalqala,
-    .tajwid-madd,
-    .tajwid-madd-normal,
-    .tajwid-madd-separated,
-    .tajwid-madd-connected,
-    .tajwid-madd-necessary,
-    .tajwid-lam-shamsiyya,
-    .tajwid-tafkhim,
-    .tajwid-silent,
-    .tajwid-naql,
-    .tajwid-tashil,
-    .tajwid-ibdal,
-    .tajwid-madd-badal,
-    .tajwid-sila-kubra,
-    .tajwid-tarqiq-ra,
-    .tajwid-idgham-warsh
-) {
-    font-weight: inherit;
-    text-shadow: none;
-}
 
-.app-root .quran-display--platform .cpv-flow .verse-stop-medallion,
 .app-root .quran-display--platform .cpv-flow .ayah-marker-wrap,
 .app-root .quran-display--platform .cpv-flow .mp-ayah-marker {
     --verse-stop-size: 1.28em;
@@ -1854,7 +1765,7 @@ html[data-theme="dark"] .search-pro__close:hover {
         line-height: 1.85 !important;
     }
 
-    .app-root .quran-display--platform .cpv-flow .verse-stop-medallion,
+
     .app-root .quran-display--platform .cpv-flow .ayah-marker-wrap,
     .app-root .quran-display--platform .cpv-flow .mp-ayah-marker {
         --verse-stop-size: 1.14em;

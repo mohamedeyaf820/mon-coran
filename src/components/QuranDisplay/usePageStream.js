@@ -279,6 +279,10 @@ export default function usePageStream({
     const page = window_.end + 1;
     if (page > LAST_PAGE || loadingRef.current.has(page)) return;
     if (pausedAtSurah) return;
+    // On a cold deep link the bottom sentinel is visible while the current
+    // sheet is still empty. Loading the following sheet then paints it first
+    // and pushes it through the viewport when the requested Quran text lands.
+    if (!window_.pages.get(window_.end)?.length) return;
     loadingRef.current.add(page);
     fetchPage(page)
       .then((pageAyahs) => {
@@ -306,7 +310,7 @@ export default function usePageStream({
         announceStreamFailure(page);
       })
       .finally(() => loadingRef.current.delete(page));
-  }, [announceStreamFailure, fetchPage, pausedAtSurah, window_.end]);
+  }, [announceStreamFailure, fetchPage, pausedAtSurah, window_.end, window_.pages]);
 
   const continueStream = useCallback(() => {
     setContinuedPast(window_.end);

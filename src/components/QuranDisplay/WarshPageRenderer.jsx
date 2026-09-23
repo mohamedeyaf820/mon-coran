@@ -30,6 +30,7 @@ export default function WarshPageRenderer({
 }) {
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
+  const [fontSettled, setFontSettled] = useState(false);
 
   const segments = useMemo(
     () =>
@@ -48,10 +49,16 @@ export default function WarshPageRenderer({
   useEffect(() => {
     let cancelled = false;
     setFontLoaded(false);
+    setFontSettled(false);
     // Load the Warsh font file so --font-quran resolves correctly.
     // fontFamily defaults to "qpc-warsh" when not supplied.
     ensureFontLoaded(fontFamily || "qpc-warsh").then((result) => {
-      if (!cancelled) setFontLoaded(Boolean(result.loaded || result.cached));
+      if (!cancelled) {
+        setFontLoaded(Boolean(result.loaded || result.cached));
+        setFontSettled(true);
+      }
+    }).catch(() => {
+      if (!cancelled) setFontSettled(true);
     });
     return () => {
       cancelled = true;
@@ -64,6 +71,7 @@ export default function WarshPageRenderer({
       currentPage={currentPage}
       currentPlayingAyah={currentPlayingAyah}
       fallbackFontFamily={fallbackFontFamily}
+      fontReady={fontSettled}
       fitSignal={`${fontLoaded}|${fontFamily}|${showTajwid ? "t" : "-"}`}
       fontFamily={fontFamily}
       lang={lang}

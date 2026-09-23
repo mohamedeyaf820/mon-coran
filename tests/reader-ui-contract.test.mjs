@@ -112,7 +112,7 @@ test("Tajweed legend groups rules without compressing their labels", () => {
   const styles = source("src/styles/experience-polish.css");
   assert.match(styles, /tajweed-legend__rules[\s\S]*?repeat\(4, minmax\(0, 1fr\)\)/);
   assert.match(styles, /grid-template-rows: repeat\(2, minmax\(1\.8rem, auto\)\)/);
-  assert.match(styles, /tajwid-rule-tooltip[\s\S]*?background: var\(--bg-card\)/);
+  assert.match(styles, /tajweed-legend:not\(\[open\]\) > \.tajweed-legend__rules[\s\S]*?display: none/);
 });
 
 test("page atmospheres remain contextual, theme-aware and asset-free", () => {
@@ -379,9 +379,9 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
     /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-madani-page",/,
   );
 
-  // The page classes are composed in template strings: PurgeCSS must keep them.
+  // QCF line classes need their explicit safelist; the book's mfp classes are
+  // present as literals in the overlay and can be retained by content scan.
   assert.match(purgeConfig, /\/\^qcm-\//);
-  assert.match(purgeConfig, /\/\^mfp-\//);
 });
 
 test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page controls", () => {

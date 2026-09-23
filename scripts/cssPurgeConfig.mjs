@@ -14,25 +14,19 @@ export const CSS_SAFELIST = {
     /^type$/,
     /^lang$/,
     /^input$/,
-    // Madani page (QuranMushafPage) and fullscreen book classes are
-    // composed in template strings: the bare tokens never appear in the
-    // built JS, and purging `.qcm-line` turns the 15-line flex grid into
-    // plain blocks.
+    // Madani page classes are composed in template strings: the bare tokens
+    // may not appear in the built JS, and purging `.qcm-line` turns the
+    // 15-line flex grid into plain blocks. Fullscreen book classes are
+    // retained by their literal names in the overlay module.
     /^qcm-/,
-    /^mfp-/,
     /^qcom-list-study/,
     /^qc-list-card__study$/,
-    /^tajweed-/,
     // Tajweed rule classes of the span fallback (browsers without the
     // Custom Highlight API) are composed from the rule id.
     /^tajwid-/,
     // Search dialog parts are composed in the JSX; the purge dropped the
     // voice button from a `:is()` list.
     /^search-pro__/,
-    /^verse-/,
-    /^warsh-/,
-    /^data-/,
-    /^aria-/,
     "animate-in",
     "animate-out",
     "fade-in",
@@ -49,8 +43,6 @@ export const CSS_SAFELIST = {
     "data-[state=closed]",
   ],
   deep: [
-    /^data-/,
-    /^aria-/,
     /^qcom-list-study/,
     /^qc-list-card__study$/,
   ],
