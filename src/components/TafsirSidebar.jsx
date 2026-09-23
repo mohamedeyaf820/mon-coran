@@ -3,16 +3,13 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   AlertCircle,
   BookOpen,
-  ExternalLink,
   Languages,
   RefreshCw,
   X,
-  Info,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { getSurah } from "../data/surahs";
 import {
-  getQuranComVerseUrl,
   getVerseTafsir,
   getVerseTranslation,
 } from "../services/quranComStudyService";
@@ -69,6 +66,7 @@ const TAFSIR_OPTIONS = [
     labelFr: "Al-Tabari",
     labelEn: "Al-Tabari",
     labelAr: "\u0627\u0644\u0637\u0628\u0631\u064a",
+    qiraat: true,
   },
   {
     key: "ar-qurtubi",
@@ -79,6 +77,7 @@ const TAFSIR_OPTIONS = [
     labelFr: "Al-Qurtubi",
     labelEn: "Al-Qurtubi",
     labelAr: "\u0627\u0644\u0642\u0631\u0637\u0628\u064a",
+    qiraat: true,
   },
   {
     key: "ar-baghawi",
@@ -89,6 +88,7 @@ const TAFSIR_OPTIONS = [
     labelFr: "Al-Baghawi",
     labelEn: "Al-Baghawi",
     labelAr: "\u0627\u0644\u0628\u063a\u0648\u064a",
+    qiraat: true,
   },
   {
     key: "en-maarif",
@@ -102,6 +102,21 @@ const TAFSIR_OPTIONS = [
   },
 ];
 
+// Grouped by the language each tafsir is written in, readings-aware ones
+// first: a Warsh reader is looking for them. No French group exists because no
+// French tafsir corpus does — the French reader gets the verse translation.
+// The `qiraat` flag is measured, not assumed: over 1:5, 2:189, 5:6 and 36:52
+// these three cite the reciters and the readings (qara'a / qira'at) while
+// Al-Muyassar and Al-Saadi never do — Al-Qurtubi is the richest, and names
+// Warsh's own transmitter Nafi'.
+const TAFSIR_GROUPS = ["ar", "en"].map((code) => ({
+  code,
+  labelKey: code === "ar" ? "tafsir.groupArabic" : "tafsir.groupEnglish",
+  options: TAFSIR_OPTIONS.filter((o) => o.lang === code).sort(
+    (a, b) => Number(Boolean(b.qiraat)) - Number(Boolean(a.qiraat)),
+  ),
+}));
+
 function getTafsirLabel(option, lang) {
   const name =
     lang === "ar"
@@ -109,12 +124,15 @@ function getTafsirLabel(option, lang) {
       : lang === "fr"
         ? option.labelFr
         : option.labelEn;
-  return `${name} [${option.langBadge}]`;
+  const badge = option.qiraat
+    ? ` \u00b7 ${t("tafsir.qiraatBadge", lang)}`
+    : "";
+  return `${name} [${option.langBadge}]${badge}`;
 }
 
 export default function TafsirSidebar() {
   const { state, set } = useApp();
-  const { lang, tafsirSidebarVerse } = state;
+  const { lang, riwaya, tafsirSidebarVerse } = state;
   const closeButtonRef = useRef(null);
   const sidebarRef = useRef(null);
 
@@ -138,8 +156,7 @@ export default function TafsirSidebar() {
   const surahNumber = Number(verse.surah);
   const ayahNumber = Number(verse.ayah);
   // `ayah` is the Hafs coordinate every tafsir resource is keyed on. In Warsh
-  // the reader shows a different number for the same verse, so the title quotes
-  // the displayed one and only the Quran.com attribution keeps the Hafs one.
+  // the title quotes the number shown in the reader.
   const displayAyahNumber = Number(verse.displayAyah) || ayahNumber;
   const surahInfo = useMemo(() => getSurah(surahNumber), [surahNumber]);
   const selectedOption =
@@ -149,7 +166,6 @@ export default function TafsirSidebar() {
     TAFSIR_OPTIONS.find((o) => o.key === tafsirState.data?.tafsirId) ||
     selectedOption;
   const isArabicTafsir = displayedOption.lang === "ar";
-  const quranComUrl = getQuranComVerseUrl(surahNumber, ayahNumber);
 
   useEffect(() => {
     // Only reset tafsir key if the current selection is no longer valid for this lang;
@@ -267,7 +283,7 @@ export default function TafsirSidebar() {
               <div className="min-w-0">
                 <p className="mb-1 flex items-center gap-2 text-[0.68rem] font-bold uppercase tracking-[0.16em] text-[color-mix(in_srgb,var(--theme-primary)_72%,var(--theme-text)_28%)]">
                   <BookOpen size={15} />
-                  Tafsir
+                  {t("tafsir.title", lang)}
                 </p>
                 <h2
                   id="tafsir-sidebar-title"
@@ -303,12 +319,17 @@ export default function TafsirSidebar() {
                   id="tafsir-source-select"
                   value={selectedTafsirKey}
                   onChange={(e) => setSelectedTafsirKey(e.target.value)}
-                  className="w-full rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_88%,transparent_12%)] px-3 py-2 text-sm font-semibold outline-none focus:border-[color-mix(in_srgb,var(--theme-primary)_52%,transparent_48%)] focus:ring-2 focus:ring-[rgba(var(--theme-primary-rgb),0.16)]"
+                  style={{ appearance: "auto", backgroundImage: "none" }}
+                  className="min-h-11 w-full rounded-xl border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_88%,transparent_12%)] px-3 py-2 text-sm font-semibold outline-none focus:border-[color-mix(in_srgb,var(--theme-primary)_52%,transparent_48%)] focus:ring-2 focus:ring-[rgba(var(--theme-primary-rgb),0.16)]"
                 >
-                  {TAFSIR_OPTIONS.map((opt) => (
-                    <option key={opt.key} value={opt.key}>
-                      {getTafsirLabel(opt, lang)}
-                    </option>
+                  {TAFSIR_GROUPS.map((group) => (
+                    <optgroup key={group.code} label={t(group.labelKey, lang)}>
+                      {group.options.map((opt) => (
+                        <option key={opt.key} value={opt.key}>
+                          {getTafsirLabel(opt, lang)}
+                        </option>
+                      ))}
+                    </optgroup>
                   ))}
                 </select>
                 {lang !== "ar" && (
@@ -319,6 +340,12 @@ export default function TafsirSidebar() {
                         ? t("tafsir.shownInEnglish", lang)
                         : t("tafsir.shownInArabic", lang)}
                     </span>
+                  </div>
+                )}
+                {riwaya === "warsh" && (
+                  <div className="mt-2 flex items-start gap-1.5 text-[0.7rem] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-text)_20%)]">
+                    <BookOpen size={12} className="mt-0.5 shrink-0" />
+                    <span>{t("tafsir.warshHint", lang)}</span>
                   </div>
                 )}
               </section>
@@ -390,12 +417,15 @@ export default function TafsirSidebar() {
                 ) : tafsirState.data?.text ? (
                   <>
                     {/* Language badge */}
-                    <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_28%,transparent_72%)] bg-[rgba(var(--theme-primary-rgb),0.08)] px-2.5 py-1 text-[0.68rem] font-bold text-[color-mix(in_srgb,var(--theme-primary)_80%,var(--theme-text)_20%)]">
-                      <BookOpen size={11} />
-                      {getTafsirLabel(displayedOption, lang)}
-                      {tafsirState.data.cached
-                        ? ` - ${t("tafsir.offlineBadge", lang)}`
-                        : ""}
+                    <div className="mb-3 flex flex-wrap items-center gap-2 text-[0.68rem]">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-[color-mix(in_srgb,var(--theme-primary)_28%,transparent_72%)] bg-[rgba(var(--theme-primary-rgb),0.08)] px-2.5 py-1 font-bold text-[color-mix(in_srgb,var(--theme-primary)_80%,var(--theme-text)_20%)]">
+                        <BookOpen size={11} />
+                        {getTafsirLabel(displayedOption, lang)}
+                        {tafsirState.data.cached
+                          ? ` - ${t("tafsir.offlineBadge", lang)}`
+                          : ""}
+                      </span>
+                      <span className="text-[var(--text-secondary)]">Quran.com</span>
                     </div>
                     <article
                       dir={isArabicTafsir ? "rtl" : "ltr"}
@@ -421,21 +451,6 @@ export default function TafsirSidebar() {
               </section>
             </div>
 
-            {/* Footer */}
-            <div className="border-t border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)] px-4 py-3 sm:px-5">
-              <p className="mb-2 text-center text-[0.7rem] font-medium text-[var(--text-secondary)]">
-                Quran.com / Quran Foundation
-              </p>
-              <a
-                href={quranComUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-[color-mix(in_srgb,var(--theme-border)_58%,transparent_42%)] bg-[color-mix(in_srgb,var(--theme-panel-bg)_78%,transparent_22%)] px-3 py-2 text-sm font-bold transition hover:border-[color-mix(in_srgb,var(--theme-primary)_46%,transparent_54%)]"
-              >
-                <ExternalLink size={16} />
-                Quran.com {surahNumber}:{ayahNumber}
-              </a>
-            </div>
           </aside>
         </Dialog.Content>
       </Dialog.Portal>

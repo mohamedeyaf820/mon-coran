@@ -718,3 +718,22 @@ test("tajweed colours words through a text-clipped gradient, never a sub-word ra
   assert.match(styles, /\.is-tajweed-painted:hover,\s*\.is-tajweed-painted:focus-visible/);
   assert.match(styles, /\.is-tajweed-painted\.qcm-word--playing\s*\{[^}]*-webkit-text-fill-color: currentColor/);
 });
+
+test("tafsir sources are grouped by language with the reading-aware ones first", async () => {
+  const sidebar = source("src/components/TafsirSidebar.jsx");
+  const { default: locales } = await import("../src/i18n/index.js");
+
+  assert.match(sidebar, /<optgroup/);
+  assert.match(sidebar, /TAFSIR_OPTIONS\.filter\(\(o\) => o\.lang === code\)/);
+  assert.match(
+    sidebar,
+    /Number\(Boolean\(b\.qiraat\)\) - Number\(Boolean\(a\.qiraat\)\)/,
+  );
+  // The marker and the Warsh note must exist in every locale, not just French.
+  for (const key of ["groupArabic", "groupEnglish", "qiraatBadge", "warshHint"]) {
+    for (const lang of ["fr", "en", "ar"]) {
+      assert.ok(locales[lang].tafsir[key], `${lang}.tafsir.${key}`);
+    }
+  }
+  assert.match(sidebar, /riwaya === ["']warsh["'][\s\S]*?tafsir\.warshHint/);
+});

@@ -19,6 +19,16 @@ test("tafsir: exposes stable keys for selector values", () => {
   const kathir = sources.find((source) => source.key === "en-kathir");
   assert.equal(kathir.id, 169);
   assert.equal(kathir.lang, "en");
+  // Resource 816 was advertised as a French tafsir but Quran.com answers 503
+  // for it on every verse and lists no French tafsir at all: offering it would
+  // only make every French request fail before falling back.
+  assert.equal(sources.some((source) => source.id === 816), false);
+  assert.equal(sources.some((source) => source.lang === "fr"), false);
+  // The Warsh reader is pointed at the sources that record the readings.
+  assert.deepEqual(
+    sources.filter((source) => source.qiraat).map((source) => source.key).sort(),
+    ["ar-baghawi", "ar-qurtubi", "ar-tabari"],
+  );
 });
 
 test("tafsir: accepts numeric resource ids and keeps selected source", async () => {
@@ -69,8 +79,10 @@ test("tafsir: falls back when the selected resource fails", async () => {
       tafsirId: "ar-qurtubi",
     });
     assert.equal(result.text, "Fallback tafsir");
-    assert.equal(result.tafsirId, "fr-mukhtasar");
-    assert.equal(result.note, null);
+    assert.equal(result.tafsirId, "en-kathir");
+    // A French reader who lands on a non-French source is told so: no French
+    // tafsir corpus exists to promise.
+    assert.match(result.note, /Aucun tafsir français/);
     assert.equal(calls.length, 2);
   } finally {
     restore();

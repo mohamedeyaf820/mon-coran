@@ -23,7 +23,9 @@ const LIMITS = {
   initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
   // 2026-09-21: +2 kB headroom; cumulative print-engine and audio campaigns
   // measured 422.3 kB of initial JS against the old 422 cap.
-  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 424),
+  // 2026-09-23: +1 kB; the tafsir selector now ships language group labels and
+  // a Warsh reading note in all three dictionaries (424.3 kB measured).
+  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 425),
   initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),
