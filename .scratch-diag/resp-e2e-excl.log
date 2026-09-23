@@ -1,0 +1,202 @@
+
+Running 36 tests using 1 worker
+
+[1/36] [chromium] › tests\e2e\responsive-density.spec.mjs:167:1 › home density: mobile and tablet text, icons and cards scale with viewport
+[2/36] [chromium] › tests\e2e\responsive-density.spec.mjs:184:1 › mobile surah rows keep names, metadata, Arabic labels and play controls aligned
+[3/36] [chromium] › tests\e2e\responsive-density.spec.mjs:240:1 › tablet and desktop surah cards give Arabic names a clear visual column
+[4/36] [chromium] › tests\e2e\responsive-density.spec.mjs:290:1 › home audit breakpoints preserve hierarchy without horizontal overflow
+[5/36] [chromium] › tests\e2e\responsive-density.spec.mjs:358:1 › reader header keeps the Arabic title and search affordance legible
+[6/36] [chromium] › tests\e2e\responsive-density.spec.mjs:385:1 › reader chrome yields the screen while scrolling and remains easy to reveal
+[7/36] [chromium] › tests\e2e\responsive-density.spec.mjs:406:1 › Mushaf mode mounts only the pages near the reading viewport
+[8/36] [chromium] › tests\e2e\responsive-density.spec.mjs:425:1 › reader typography and action glyphs follow the connected device scale
+[9/36] [chromium] › tests\e2e\responsive-density.spec.mjs:460:1 › mobile QCF4 Mushaf mode reveals the complete reader command bar on demand
+[10/36] [chromium] › tests\e2e\responsive-density.spec.mjs:486:1 › mobile Mushaf keeps desktop proportions at the largest text preference
+[11/36] [chromium] › tests\e2e\responsive-density.spec.mjs:502:1 › compact tablet reader keeps one surface, an independent surah identity and a contained player
+[12/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-hafs keeps exactly one canonical ayah medallion
+[13/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-indopak keeps exactly one canonical ayah medallion
+[14/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new keeps exactly one canonical ayah medallion
+[15/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › amiri-quran keeps exactly one canonical ayah medallion
+[16/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › noto-naskh-arabic keeps exactly one canonical ayah medallion
+[17/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-warsh keeps exactly one canonical ayah medallion
+[18/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › kfgqpc-warsh keeps exactly one canonical ayah medallion
+[19/36] [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new-warsh keeps exactly one canonical ayah medallion
+[20/36] [chromium] › tests\e2e\responsive-density.spec.mjs:563:1 › surah information dossier stays accessible and contained on mobile
+[21/36] [chromium] › tests\e2e\responsive-density.spec.mjs:599:1 › Tajweed guide stays compact and explains coloured rules on hover
+[22/36] [chromium] › tests\e2e\responsive-density.spec.mjs:675:1 › verse list cards preserve touch targets while typography scales with the device
+[23/36] [chromium] › tests\e2e\responsive-density.spec.mjs:702:1 › mobile density: header, reading toolbar and audio player fit without horizontal overflow
+[24/36] [chromium] › tests\e2e\responsive-density.spec.mjs:759:1 › mobile reader header keeps Home visible and exposes only contextual quick actions
+[25/36] [chromium] › tests\e2e\responsive-density.spec.mjs:796:1 › tiny phone keeps the quick menu and compact player calm and dismissible
+[26/36] [chromium] › tests\e2e\responsive-density.spec.mjs:823:1 › general pages use a compact quick-command palette on narrow phones
+[27/36] [chromium] › tests\e2e\responsive-density.spec.mjs:853:1 › compact player is a full-width bottom bar on tablet and desktop
+[28/36] [chromium] › tests\e2e\responsive-density.spec.mjs:871:1 › tiny mobile density keeps the reader usable at 280px
+[29/36] [chromium] › tests\e2e\responsive-density.spec.mjs:902:1 › mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
+[30/36] [chromium] › tests\e2e\responsive-density.spec.mjs:952:1 › tablet density: header controls and audio options modal remain compact
+[31/36] [chromium] › tests\e2e\responsive-density.spec.mjs:981:1 › small phone: verse actions and search stay usable inside the viewport
+[32/36] [chromium] › tests\e2e\responsive-density.spec.mjs:1032:1 › device typography: interface and Quran text scale progressively
+[33/36] [chromium] › tests\e2e\responsive-density.spec.mjs:1061:1 › Arabic reading controls visibly reduce and enlarge device-aware text
+[34/36] [chromium] › tests\e2e\responsive-density.spec.mjs:1110:1 › duas page: cards, Arabic text and controls adapt to phone and tablet
+[35/36] [chromium] › tests\e2e\responsive-density.spec.mjs:1143:1 › duas dark theme keeps its devotional palette on a direct load
+[36/36] [chromium] › tests\e2e\responsive-density.spec.mjs:1170:1 › short landscape: reader search remains fully reachable
+[37/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:167:1 › home density: mobile and tablet text, icons and cards scale with viewport (retry #1)
+[38/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:184:1 › mobile surah rows keep names, metadata, Arabic labels and play controls aligned (retry #1)
+[39/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:240:1 › tablet and desktop surah cards give Arabic names a clear visual column (retry #1)
+[40/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:290:1 › home audit breakpoints preserve hierarchy without horizontal overflow (retry #1)
+[41/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:358:1 › reader header keeps the Arabic title and search affordance legible (retry #1)
+[42/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:385:1 › reader chrome yields the screen while scrolling and remains easy to reveal (retry #1)
+[43/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:406:1 › Mushaf mode mounts only the pages near the reading viewport (retry #1)
+[44/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:425:1 › reader typography and action glyphs follow the connected device scale (retry #1)
+[45/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:460:1 › mobile QCF4 Mushaf mode reveals the complete reader command bar on demand (retry #1)
+[46/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:486:1 › mobile Mushaf keeps desktop proportions at the largest text preference (retry #1)
+[47/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:502:1 › compact tablet reader keeps one surface, an independent surah identity and a contained player (retry #1)
+[48/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-hafs keeps exactly one canonical ayah medallion (retry #1)
+[49/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-indopak keeps exactly one canonical ayah medallion (retry #1)
+[50/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new keeps exactly one canonical ayah medallion (retry #1)
+[51/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › amiri-quran keeps exactly one canonical ayah medallion (retry #1)
+[52/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › noto-naskh-arabic keeps exactly one canonical ayah medallion (retry #1)
+[53/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-warsh keeps exactly one canonical ayah medallion (retry #1)
+[54/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › kfgqpc-warsh keeps exactly one canonical ayah medallion (retry #1)
+[55/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new-warsh keeps exactly one canonical ayah medallion (retry #1)
+[56/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:563:1 › surah information dossier stays accessible and contained on mobile (retry #1)
+[57/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:599:1 › Tajweed guide stays compact and explains coloured rules on hover (retry #1)
+[58/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:675:1 › verse list cards preserve touch targets while typography scales with the device (retry #1)
+[59/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:702:1 › mobile density: header, reading toolbar and audio player fit without horizontal overflow (retry #1)
+[60/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:759:1 › mobile reader header keeps Home visible and exposes only contextual quick actions (retry #1)
+[61/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:796:1 › tiny phone keeps the quick menu and compact player calm and dismissible (retry #1)
+[62/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:823:1 › general pages use a compact quick-command palette on narrow phones (retry #1)
+[63/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:853:1 › compact player is a full-width bottom bar on tablet and desktop (retry #1)
+[64/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:871:1 › tiny mobile density keeps the reader usable at 280px (retry #1)
+[65/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:902:1 › mobile surfaces: sidebar, settings drawer and audio modal fit the viewport (retry #1)
+[66/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:952:1 › tablet density: header controls and audio options modal remain compact (retry #1)
+[67/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:981:1 › small phone: verse actions and search stay usable inside the viewport (retry #1)
+[68/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1032:1 › device typography: interface and Quran text scale progressively (retry #1)
+[69/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1061:1 › Arabic reading controls visibly reduce and enlarge device-aware text (retry #1)
+[70/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1110:1 › duas page: cards, Arabic text and controls adapt to phone and tablet (retry #1)
+[71/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1143:1 › duas dark theme keeps its devotional palette on a direct load (retry #1)
+[72/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1170:1 › short landscape: reader search remains fully reachable (retry #1)
+[73/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:167:1 › home density: mobile and tablet text, icons and cards scale with viewport (retry #2)
+[74/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:184:1 › mobile surah rows keep names, metadata, Arabic labels and play controls aligned (retry #2)
+[75/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:240:1 › tablet and desktop surah cards give Arabic names a clear visual column (retry #2)
+[76/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:290:1 › home audit breakpoints preserve hierarchy without horizontal overflow (retry #2)
+[77/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:358:1 › reader header keeps the Arabic title and search affordance legible (retry #2)
+[78/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:385:1 › reader chrome yields the screen while scrolling and remains easy to reveal (retry #2)
+[79/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:406:1 › Mushaf mode mounts only the pages near the reading viewport (retry #2)
+[80/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:425:1 › reader typography and action glyphs follow the connected device scale (retry #2)
+[81/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:460:1 › mobile QCF4 Mushaf mode reveals the complete reader command bar on demand (retry #2)
+[82/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:486:1 › mobile Mushaf keeps desktop proportions at the largest text preference (retry #2)
+[83/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:502:1 › compact tablet reader keeps one surface, an independent surah identity and a contained player (retry #2)
+[84/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-hafs keeps exactly one canonical ayah medallion (retry #2)
+[85/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-indopak keeps exactly one canonical ayah medallion (retry #2)
+[86/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new keeps exactly one canonical ayah medallion (retry #2)
+[87/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › amiri-quran keeps exactly one canonical ayah medallion (retry #2)
+[88/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › noto-naskh-arabic keeps exactly one canonical ayah medallion (retry #2)
+[89/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › qpc-warsh keeps exactly one canonical ayah medallion (retry #2)
+[90/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › kfgqpc-warsh keeps exactly one canonical ayah medallion (retry #2)
+[91/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:546:3 › scheherazade-new-warsh keeps exactly one canonical ayah medallion (retry #2)
+[92/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:563:1 › surah information dossier stays accessible and contained on mobile (retry #2)
+[93/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:599:1 › Tajweed guide stays compact and explains coloured rules on hover (retry #2)
+[94/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:675:1 › verse list cards preserve touch targets while typography scales with the device (retry #2)
+[95/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:702:1 › mobile density: header, reading toolbar and audio player fit without horizontal overflow (retry #2)
+  1) [chromium] › tests\e2e\responsive-density.spec.mjs:702:1 › mobile density: header, reading toolbar and audio player fit without horizontal overflow 
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 40.1
+    Received:    44
+
+      721 |   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
+      722 |   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
+    > 723 |   expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+          |                                   ^
+      724 |   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      725 |   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      726 |   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
+        at C:\Users\amirou\Documents\Quran App\.scratch-diag\committed3\tests\e2e\responsive-density.spec.mjs:723:35
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium\error-context.md
+
+    Retry #1 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 40.1
+    Received:    44
+
+      721 |   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
+      722 |   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
+    > 723 |   expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+          |                                   ^
+      724 |   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      725 |   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      726 |   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
+        at C:\Users\amirou\Documents\Quran App\.scratch-diag\committed3\tests\e2e\responsive-density.spec.mjs:723:35
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry1\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry1\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry1\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry1\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry1\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Retry #2 ───────────────────────────────────────────────────────────────────────────────────────
+
+    Error: expect(received).toBeLessThanOrEqual(expected)
+
+    Expected: <= 40.1
+    Received:    44
+
+      721 |   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(39.9);
+      722 |   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(39.9);
+    > 723 |   expect(firstAction?.width || 0).toBeLessThanOrEqual(40.1);
+          |                                   ^
+      724 |   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      725 |   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
+      726 |   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
+        at C:\Users\amirou\Documents\Quran App\.scratch-diag\committed3\tests\e2e\responsive-density.spec.mjs:723:35
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry2\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: video (video/webm) ──────────────────────────────────────────────────────────────
+    test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry2\video.webm
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: test-results\responsive-density-mobile--b670a-without-horizontal-overflow-chromium-retry2\error-context.md
+
+
+[96/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:759:1 › mobile reader header keeps Home visible and exposes only contextual quick actions (retry #2)
+[97/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:796:1 › tiny phone keeps the quick menu and compact player calm and dismissible (retry #2)
+[98/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:823:1 › general pages use a compact quick-command palette on narrow phones (retry #2)
+[99/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:853:1 › compact player is a full-width bottom bar on tablet and desktop (retry #2)
+[100/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:871:1 › tiny mobile density keeps the reader usable at 280px (retry #2)
+[101/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:902:1 › mobile surfaces: sidebar, settings drawer and audio modal fit the viewport (retry #2)
+[102/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:952:1 › tablet density: header controls and audio options modal remain compact (retry #2)
+[103/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:981:1 › small phone: verse actions and search stay usable inside the viewport (retry #2)
+[104/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1032:1 › device typography: interface and Quran text scale progressively (retry #2)
+[105/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1061:1 › Arabic reading controls visibly reduce and enlarge device-aware text (retry #2)
+[106/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1110:1 › duas page: cards, Arabic text and controls adapt to phone and tablet (retry #2)
+[107/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1143:1 › duas dark theme keeps its devotional palette on a direct load (retry #2)
+[108/36] (retries) [chromium] › tests\e2e\responsive-density.spec.mjs:1170:1 › short landscape: reader search remains fully reachable (retry #2)
+  1 failed
+    [chromium] › tests\e2e\responsive-density.spec.mjs:702:1 › mobile density: header, reading toolbar and audio player fit without horizontal overflow 
+  13 did not run
+  22 passed (4.4m)

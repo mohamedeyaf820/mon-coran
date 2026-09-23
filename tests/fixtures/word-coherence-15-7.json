@@ -1,0 +1,322 @@
+{
+  "key": "15:7",
+  "verseText": {
+    "text_uthmani": "لَّوْ مَا تَأْتِينَا بِٱلْمَلَـٰٓئِكَةِ إِن كُنتَ مِنَ ٱلصَّـٰدِقِينَ",
+    "text_qpc_hafs": "لَّوۡمَا تَأۡتِينَا بِٱلۡمَلَٰٓئِكَةِ إِن كُنتَ مِنَ ٱلصَّٰدِقِينَ ٧",
+    "text_uthmani_simple": "لو ما تاتينا بالملئكة ان كنت من الصدقين",
+    "text_indopak": "لَوۡ مَا تَاۡتِيۡنَا بِالۡمَلٰۤٮِٕكَةِ اِنۡ كُنۡتَ مِنَ الصّٰدِقِيۡنَ‏"
+  },
+  "words": [
+    {
+      "id": 8233,
+      "position": 1,
+      "audio_url": "wbw/015_007_001.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:1",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "لَّوْ",
+      "text_uthmani_tajweed": "لَّوۡ",
+      "text_indopak": "لَوۡ",
+      "text_qpc_hafs": "لَّوۡ",
+      "text_imlaei": "لَّوْ",
+      "code_v1": "ﮄ",
+      "code_v2": "ﱴ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱴ",
+      "translation": {
+        "text": "Why",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "law",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8234,
+      "position": 2,
+      "audio_url": "wbw/015_007_002.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:2",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "مَا",
+      "text_uthmani_tajweed": "مَا",
+      "text_indopak": "مَا",
+      "text_qpc_hafs": "مَا",
+      "text_imlaei": "مَا",
+      "code_v1": "ﮅ",
+      "code_v2": "ﱵ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱵ",
+      "translation": {
+        "text": "not",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "mā",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8235,
+      "position": 3,
+      "audio_url": "wbw/015_007_003.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:3",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "تَأْتِينَا",
+      "text_uthmani_tajweed": "تَأۡتِينَا",
+      "text_indopak": "تَاۡتِيۡنَا",
+      "text_qpc_hafs": "تَأۡتِينَا",
+      "text_imlaei": "تَأْتِينَا",
+      "code_v1": "ﮆ",
+      "code_v2": "ﱶ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱶ",
+      "translation": {
+        "text": "you bring to us",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "tatīnā",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8236,
+      "position": 4,
+      "audio_url": "wbw/015_007_004.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:4",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "بِٱلْمَلَـٰٓئِكَةِ",
+      "text_uthmani_tajweed": "بِ<rule class=ham_wasl>ٱ</rule>لۡمَلَ<rule class=madda_obligatory_mottasel>ـٰٓ</rule>ئِكَةِ",
+      "text_indopak": "بِالۡمَلٰۤٮِٕكَةِ",
+      "text_qpc_hafs": "بِٱلۡمَلَٰٓئِكَةِ",
+      "text_imlaei": "بِالْمَلَائِكَةِ",
+      "code_v1": "ﮇ",
+      "code_v2": "ﱷ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱷ",
+      "translation": {
+        "text": "the Angels",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "bil-malāikati",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8237,
+      "position": 5,
+      "audio_url": "wbw/015_007_005.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:5",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "إِن",
+      "text_uthmani_tajweed": "إِ<rule class=ikhafa>ن</rule>",
+      "text_indopak": "اِنۡ",
+      "text_qpc_hafs": "إِن",
+      "text_imlaei": "إِن",
+      "code_v1": "ﮈ",
+      "code_v2": "ﱸ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱸ",
+      "translation": {
+        "text": "if",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "in",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8238,
+      "position": 6,
+      "audio_url": "wbw/015_007_006.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:6",
+      "line_number": 8,
+      "line_v1": 8,
+      "line_v2": 8,
+      "text_uthmani": "كُنتَ",
+      "text_uthmani_tajweed": "<rule class=ikhafa>ك</rule>ُ<rule class=ikhafa>نت</rule>َ",
+      "text_indopak": "كُنۡتَ",
+      "text_qpc_hafs": "كُنتَ",
+      "text_imlaei": "كُنتَ",
+      "code_v1": "ﮉ",
+      "code_v2": "ﱹ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱹ",
+      "translation": {
+        "text": "you are",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "kunta",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8239,
+      "position": 7,
+      "audio_url": "wbw/015_007_007.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:7",
+      "line_number": 9,
+      "line_v1": 9,
+      "line_v2": 9,
+      "text_uthmani": "مِنَ",
+      "text_uthmani_tajweed": "مِنَ",
+      "text_indopak": "مِنَ",
+      "text_qpc_hafs": "مِنَ",
+      "text_imlaei": "مِنَ",
+      "code_v1": "ﮊ",
+      "code_v2": "ﱺ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱺ",
+      "translation": {
+        "text": "of",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "mina",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8240,
+      "position": 8,
+      "audio_url": "wbw/015_007_008.mp3",
+      "char_type_name": "word",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:8",
+      "line_number": 9,
+      "line_v1": 9,
+      "line_v2": 9,
+      "text_uthmani": "ٱلصَّـٰدِقِينَ",
+      "text_uthmani_tajweed": "<rule class=ham_wasl>ٱ</rule><rule class=laam_shamsiyah>ل</rule>صَّ<rule class=madda_normal>ـٰ</rule>دِق<rule class=madda_permissible>ِي</rule>نَ",
+      "text_indopak": "الصّٰدِقِيۡنَ‏",
+      "text_qpc_hafs": "ٱلصَّٰدِقِينَ",
+      "text_imlaei": "الصَّادِقِينَ",
+      "code_v1": "ﮋ",
+      "code_v2": "ﱻ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱻ",
+      "translation": {
+        "text": "the truthful",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "l-ṣādiqīna",
+        "language_name": "english"
+      }
+    },
+    {
+      "id": 8241,
+      "position": 9,
+      "audio_url": "",
+      "char_type_name": "end",
+      "verse_id": 1809,
+      "chapter_id": 15,
+      "verse_key": "15:7",
+      "location": "15:7:9",
+      "line_number": 9,
+      "line_v1": 9,
+      "line_v2": 9,
+      "text_uthmani": "٧",
+      "text_uthmani_tajweed": "٧",
+      "text_indopak": "٧",
+      "text_qpc_hafs": "٧",
+      "text_imlaei": "٧",
+      "code_v1": "ﮌ",
+      "code_v2": "ﱼ",
+      "v1_page": 262,
+      "v2_page": 262,
+      "page_number": 262,
+      "text": "ﱼ",
+      "translation": {
+        "text": "(7)",
+        "language_name": "english"
+      },
+      "transliteration": {
+        "text": "",
+        "language_name": "english"
+      }
+    }
+  ],
+  "dom": {
+    "text": "لَّوۡمَا تَأۡتِينَا بِٱلۡمَلَٰٓئِكَةِ إِن كُنتَ مِنَ ٱلصَّٰدِقِينَ ٧",
+    "tokens": [
+      "لَّوۡمَا",
+      "تَأۡتِينَا",
+      "بِٱلۡمَلَٰٓئِكَةِ",
+      "إِن",
+      "كُنتَ",
+      "مِنَ",
+      "ٱلصَّٰدِقِينَ",
+      "٧"
+    ],
+    "clickable": [
+      "لَّوۡمَا",
+      "تَأۡتِينَا",
+      "بِٱلۡمَلَٰٓئِكَةِ",
+      "إِن",
+      "كُنتَ",
+      "مِنَ",
+      "ٱلصَّٰدِقِينَ",
+      "٧"
+    ]
+  }
+}

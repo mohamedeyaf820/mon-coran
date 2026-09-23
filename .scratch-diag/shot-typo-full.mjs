@@ -1,0 +1,12 @@
+import { chromium } from "playwright";
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1184, height: 800 }, deviceScaleFactor: 2 });
+await page.goto("http://127.0.0.1:4173/page/1", { waitUntil: "domcontentloaded" });
+await page.waitForSelector(".reader-typography-trigger", { timeout: 15000 });
+await page.waitForTimeout(1500);
+await page.click(".reader-typography-trigger");
+await page.waitForSelector(".reader-typography-panel--open");
+await page.waitForTimeout(400);
+await page.screenshot({ path: ".scratch-diag/captures/typo-panel-desktop-full.png" });
+await browser.close();
+console.log("done");

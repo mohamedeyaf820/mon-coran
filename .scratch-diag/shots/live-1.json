@@ -1,0 +1,84 @@
+{
+ "style": {
+  "zoom": "1",
+  "linesFont": "22.7273px",
+  "folioW": "21.4531px",
+  "folioH": "21.4531px",
+  "folioFs": "9.19692px",
+  "markerFs": "22.7273px",
+  "markerMl": "2.27273px",
+  "markerMr": "15.9091px"
+ },
+ "rects": {
+  "book": {
+   "x": 71,
+   "y": 96,
+   "w": 405,
+   "h": 692
+  },
+  "folio": {
+   "x": 262,
+   "y": 736,
+   "w": 21,
+   "h": 21
+  },
+  "header": {
+   "x": 0,
+   "y": 0,
+   "w": 546,
+   "h": 67
+  },
+  "footer": {
+   "x": 0,
+   "y": 835,
+   "w": 546,
+   "h": 65
+  },
+  "surahTitle": {
+   "x": 120,
+   "y": 222,
+   "w": 307,
+   "h": 35
+  },
+  "firstLine": {
+   "x": 83,
+   "y": 221,
+   "w": 380,
+   "h": 37
+  }
+ },
+ "counts": {
+  "lines": 15,
+  "words": 29,
+  "markers": 7
+ },
+ "titleText": "سورة الفاتحة١",
+ "markerLineKids": [
+  {
+   "cls": "qcm-word",
+   "x": 335,
+   "w": 44
+  },
+  {
+   "cls": "qcm-word",
+   "x": 308,
+   "w": 21
+  },
+  {
+   "cls": "qcm-word",
+   "x": 268,
+   "w": 32
+  },
+  {
+   "cls": "qcm-word",
+   "x": 209,
+   "w": 52
+  },
+  {
+   "cls": "ayah-marker-wrap ayat-mark",
+   "x": 183,
+   "w": 18
+  }
+ ],
+ "viewportH": 900
+}

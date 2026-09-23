@@ -1,0 +1,21 @@
+feat(recitation): ajoute Adel Al-Kalbani et rend Mahmoud Ali Al-Banna trouvable
+
+Albanna était déjà au catalogue mais introuvable : le nom enregistré porte un
+trait d'union (« Al-Banna ») que la recherche ne franchit pas, donc « albanna »
+et « mahmoud banna » — les formes que les lecteurs tapent — ne renvoyaient
+rien. Des alias le rendent atteignable sous ces orthographes.
+
+Adel Al-Kalbani rejoint le catalogue en flux par sourate : aucune source approuvée
+ne le publie verset par verset (EveryAyah : 88 dossiers, aucun pour lui ;
+l'API Quran.com n'expose que 12 récitations par verset ; MP3Quran ne sert que
+des fichiers de sourate entière sur server8). C'est le troisième voix dans ce
+cas, donc il emprunte le chemin isSurahStream déjà utilisé par Ath-Thubaity et
+Al-Muqren, et sa fiche annonce « Sourate complète » au lieu de le laisser
+découvrir à l'écoute. La CSP et le service worker autorisaient déjà
+*.mp3quran.net ; la liste d'hôtes du test de repli est étendue à server8.
+
+Biographie sourcée sur Wikipédia arabe (né à Riyad en 1959, imam de la mosquée
+du Roi Khaled, tarawih du Haram en Ramadan 1429 H) et portrait repris de sa
+fiche Assabile, recadré en WebP local comme les autres.
+
+Catalogue : 44 -> 45 voix Hafs, 52 -> 53 au total.

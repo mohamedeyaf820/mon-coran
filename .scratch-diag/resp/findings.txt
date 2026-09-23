@@ -1,0 +1,1311 @@
+TOTAL signatures: 1244  {"CLIP-X":28,"TINY":1131,"TARGET":85}
+nav failures: fr-light/search
+rows: 310/311
+
+===== fr-light / home-surah =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10px       @280-768px  small. “Lecture du midi”
+  TINY        10px       @414-768px  small. “Lecture suggérée”
+  TINY        10.37px    @768-768px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+  TINY        10px       @280-768px  span. “0 Favoris”
+  TINY        10px       @280-768px  span. “0 Listes”
+  TINY        10px       @280-768px  span. “0 Notes”
+  TINY        10.01px    @1024-1440px  span. “À propos”
+  TINY        10.01px    @1024-1440px  span. “Confidentialité”
+  TINY        10.01px    @1024-1440px  span. “Mentions légales”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “Sources”
+  TINY        10.2px     @280-414px  span.home-collection-heading__eyebrow.inline-flex.items-center “114 Sourates”
+  TINY        10px       @280-768px  span.home-resume-panel__eyebrow “HAFS”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “18”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “25”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “55”
+  TINY        10px       @280-768px  span.home-today-verse__label “VERSET DU JOUR”
+  TINY        10px       @280-768px  span.home-today-verse__reference “Ash-Shura 42:19”
+  TINY        10px       @280-768px  span.hp-card-type.inline-flex.items-center “Mecquoise”
+  TINY        10px       @280-768px  span.hp-card-type.inline-flex.items-center “Médinoise”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+
+===== fr-light / home-juz =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10px       @280-768px  small. “Lecture du midi”
+  TINY        10px       @414-768px  small. “Lecture suggérée”
+  TINY        10.37px    @768-768px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+  TINY        10px       @280-768px  span. “0 Favoris”
+  TINY        10px       @280-768px  span. “0 Listes”
+  TINY        10px       @280-768px  span. “0 Notes”
+  TINY        10.01px    @1024-1440px  span. “À propos”
+  TINY        10.01px    @1024-1440px  span. “Confidentialité”
+  TINY        10.01px    @1024-1440px  span. “Mentions légales”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “Sources”
+  TINY        10.2px     @280-414px  span.home-collection-heading__eyebrow.inline-flex.items-center “114 Sourates”
+  TINY        10px       @280-768px  span.home-resume-panel__eyebrow “HAFS”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “18”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “25”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “55”
+  TINY        10px       @280-768px  span.home-today-verse__label “VERSET DU JOUR”
+  TINY        10px       @280-768px  span.home-today-verse__reference “Ash-Shura 42:19”
+  TINY        10px       @280-768px  span.hp-card-type.inline-flex.items-center “Mecquoise”
+  TINY        10px       @280-768px  span.hp-card-type.inline-flex.items-center “Médinoise”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+
+===== fr-light / home-audio =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.37px    @768-768px  p.home-audio-browser__hint “Murattal : posé · Mujawwad : orné · Mual”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10px       @280-1440px  small. “4”
+  TINY        10px       @280-1440px  small. “49”
+  TINY        10px       @280-768px  small. “Lecture du midi”
+  TINY        10px       @414-768px  small. “Lecture suggérée”
+  TINY        10.37px    @768-768px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+  TINY        10px       @280-768px  span. “0 Favoris”
+  TINY        10px       @280-768px  span. “0 Listes”
+  TINY        10px       @280-768px  span. “0 Notes”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10.2px     @280-414px  span. “Arabie Saoudite”
+  TINY        10px       @768-1440px  span. “Confidentialité”
+  TINY        10.2px     @280-414px  span. “Égypte”
+  TINY        10px       @768-1440px  span. “Mentions légales”
+  TINY        10.2px     @280-414px  span. “Mujawwad”
+  TINY        10.2px     @280-414px  span. “Murattal”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @768-1440px  span. “Sources”
+  TINY        10.2px     @280-414px  span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”
+  TINY        10px       @280-768px  span.home-resume-panel__eyebrow “HAFS”
+  TINY        10px       @280-1440px  span.home-style-filter__count “5”
+  TINY        10px       @280-1440px  span.home-style-filter__count “54”
+  TINY        10px       @280-1440px  span.home-style-filter__count “59”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “18”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “25”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “55”
+  TINY        10px       @280-768px  span.home-today-verse__label “VERSET DU JOUR”
+  TINY        10px       @280-768px  span.home-today-verse__reference “Ash-Shura 42:19”
+  TINY        10.37px    @768-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @768-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+
+===== fr-light / reciter-detail =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.49px    @1024-1024px  a. “Assabile”
+  TINY        10.49px    @1024-1024px  a. “MP3Quran”
+  TINY        10.37px    @768-768px  button.full-quran-download__primary “Tout télécharger”
+  TINY        10.37px    @768-768px  p.home-audio-browser__hint “Murattal : posé · Mujawwad : orné · Mual”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10px       @280-1440px  small. “4”
+  TINY        10px       @280-1440px  small. “49”
+  TINY        10px       @280-768px  small. “Lecture du midi”
+  TINY        10px       @414-768px  small. “Lecture suggérée”
+  TINY        10.37px    @768-768px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+  TINY        10px       @280-768px  span. “0 Favoris”
+  TINY        10px       @280-768px  span. “0 Listes”
+  TINY        10px       @280-768px  span. “0 Notes”
+  TINY        10.05px    @768-1024px  span. “114 SOURATES”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10.2px     @280-414px  span. “Arabie Saoudite”
+  TINY        10px       @768-1440px  span. “Confidentialité”
+  TINY        10.2px     @280-414px  span. “Égypte”
+  TINY        10.37px    @768-768px  span. “Les fichiers restent disponibles tant qu”
+  TINY        10px       @768-1440px  span. “Mentions légales”
+  TINY        10.2px     @280-414px  span. “Mujawwad”
+  TINY        10.2px     @280-414px  span. “Murattal”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @768-1440px  span. “Sources”
+  TINY        10.37px    @768-768px  span. “Taille estimée : 2,7 Go”
+  TINY        10px       @768-1440px  span.full-quran-download__eyebrow “ÉCOUTE HORS CONNEXION”
+  TINY        10.2px     @280-414px  span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”
+  TINY        10px       @280-768px  span.home-resume-panel__eyebrow “HAFS”
+  TINY        10px       @280-1440px  span.home-style-filter__count “5”
+  TINY        10px       @280-1440px  span.home-style-filter__count “54”
+  TINY        10px       @280-1440px  span.home-style-filter__count “59”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “18”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “25”
+  TINY        10.2px     @280-414px  span.home-today-suggestion__number “55”
+  TINY        10px       @280-768px  span.home-today-verse__label “VERSET DU JOUR”
+  TINY        10px       @280-768px  span.home-today-verse__reference “Ash-Shura 42:19”
+  TINY        10.21px    @768-1024px  span.inline-flex.items-center.rounded-full “Arabie saoudite”
+  TINY        10.37px    @768-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @768-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+  TINY        10px       @768-1440px  span.recitation-row__type.recitation-row__type--meccan “MAK.”
+  TINY        10.01px    @1024-1440px  span.recitation-row__type.recitation-row__type--medinan “MÉD.”
+
+===== fr-light / read-list =====
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “1”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “10”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “4”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “5”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “6”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “7”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “8”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “9”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10.24px    @390-414px  small. “2 · 286 versets”
+  TINY        10px       @280-414px  span. “286 versets”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / read-mushaf =====
+  TINY        10px       @280-414px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10.24px    @390-414px  small. “2 · 286 versets”
+  TINY        10px       @280-414px  span. “286 versets”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / read-page =====
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:1”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:10”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:11”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:12”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:13”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:14”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:15”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:2”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:3”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:4”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:5”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:6”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:7”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:8”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3:9”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Famille d'Imran”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Aal-Imran”
+  TINY        10px       @280-768px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / read-juz =====
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:253”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:254”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:255”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:256”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:257”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:258”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:259”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:260”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:261”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:262”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:253”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:254”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:255”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:256”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:257”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:258”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:259”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:260”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:261”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2:262”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        10px       @280-768px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / fullscreen =====
+  TARGET      25.8x29    @280-1920px  span.qcm-word “ﱞ”
+  TARGET      39.7x29    @280-1920px  span.qcm-word “ﱟ”
+  TARGET      16.1x29    @280-1920px  span.qcm-word “ﱠ”
+  TARGET      32.9x29    @280-1920px  span.qcm-word “ﱡ”
+  TARGET      42.8x29    @280-1920px  span.qcm-word “ﱣ”
+  TARGET      21.3x29    @280-1920px  span.qcm-word “ﱤ”
+  TARGET      37.7x29    @280-1920px  span.qcm-word “ﱥ”
+  TARGET      20.3x29    @280-1920px  span.qcm-word “ﱦ”
+  TARGET      40.8x29    @280-1920px  span.qcm-word “ﱧﱨ”
+  TARGET      54.6x29    @280-1920px  span.qcm-word “ﱩ”
+  TARGET      30.3x29    @280-1920px  span.qcm-word “ﱪ”
+  TARGET      114.5x29   @280-1920px  span.qcm-word “ﱫ”
+  TARGET      16.5x29    @280-1920px  span.qcm-word “ﱛ”
+  TARGET      18.9x29    @280-1920px  span.qcm-word “ﱜ”
+  TARGET      13.7x14.2  @280-1920px  span.qcm-word “ﱁ”
+  TARGET      20.1x14    @280-1920px  span.qcm-word “ﱂ”
+  TARGET      25.6x29    @280-1920px  span.qcm-word “ﱃ”
+  TARGET      20.8x14    @280-1920px  span.qcm-word “ﱄ”
+  TARGET      10.1x29    @280-1920px  span.qcm-word “ﱅ”
+  TARGET      44.5x14.2  @280-1920px  span.qcm-word “ﱆ”
+  TARGET      30.3x29    @280-1920px  span.qcm-word “ﱆﱇ”
+  TARGET      10.3x14    @280-1920px  span.qcm-word “ﱇ”
+  TARGET      9.3x14     @280-1920px  span.qcm-word “ﱈ”
+  TARGET      19.7x29    @280-1920px  span.qcm-word “ﱈﱉ”
+  TARGET      40.1x14    @280-1920px  span.qcm-word “ﱉ”
+  TARGET      9.7x14     @280-1920px  span.qcm-word “ﱊ”
+  TARGET      29.9x14    @280-1920px  span.qcm-word “ﱋ”
+  TARGET      22.9x29    @280-1920px  span.qcm-word “ﱍ”
+  TARGET      14.6x14    @280-1920px  span.qcm-word “ﱎ”
+  TARGET      14.8x14    @280-1920px  span.qcm-word “ﱏ”
+  TARGET      31.4x14    @280-1920px  span.qcm-word “ﱐ”
+  TARGET      19.1x14    @280-1920px  span.qcm-word “ﱑ”
+  TARGET      27.7x29    @280-1920px  span.qcm-word “ﱒ”
+  TARGET      41.6x14    @280-1920px  span.qcm-word “ﱒﱓ”
+  TARGET      37.2x29    @280-1920px  span.qcm-word “ﱓ”
+  TARGET      22.2x14    @280-1920px  span.qcm-word “ﱔ”
+  TARGET      14.8x29    @280-1920px  span.qcm-word “ﱝ”
+  TARGET      27.9x29    @280-1920px  span.qcm-word “ﱖ”
+  TARGET      31.8x29    @280-1920px  span.qcm-word “ﱗ”
+  TARGET      20.5x29    @280-1920px  span.qcm-word “ﱘ”
+  TARGET      21.8x29    @280-1920px  span.qcm-word “ﱙ”
+  TARGET      27.4x29    @280-1920px  span.qcm-word “ﱚ”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10.37px    @768-768px  small. “Prêt”
+  TINY        10.1px     @280-320px  span. “١٠”
+  TINY        10.1px     @280-320px  span. “١١”
+  TINY        10.1px     @280-320px  span. “١٢”
+  TINY        10.1px     @280-320px  span. “١٣”
+  TINY        10.1px     @280-320px  span. “١٤”
+  TINY        10.1px     @280-320px  span. “١٥”
+  TINY        10.1px     @280-320px  span. “١٦”
+  TINY        10.1px     @280-320px  span. “٦”
+  TINY        10.1px     @280-320px  span. “٧”
+  TINY        10.1px     @280-320px  span. “٨”
+  TINY        10.1px     @280-320px  span. “٩”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10.2px     @280-414px  span.qcm-page-header__meta “Juz 1”
+  TINY        10.2px     @280-414px  span.qcm-page-header__meta “Page 2”
+  TINY        10.2px     @280-414px  span.qcm-page-header__meta “Page 3”
+  TINY        10px       @280-768px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / library =====
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “1”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “10”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “4”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “5”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “6”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “7”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “8”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “9”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10.24px    @390-414px  small. “2 · 286 versets”
+  TINY        10px       @280-414px  span. “286 versets”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / settings =====
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “1”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “10”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “2”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “3”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “4”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “5”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “6”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “7”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “8”
+  TINY        10.05px    @280-414px  button.qc-list-card__reference “9”
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10.24px    @390-414px  small. “2 · 286 versets”
+  TINY        10px       @280-768px  small. “Blanc doux, contraste net et vert profon”
+  TINY        10px       @280-768px  small. “Nuit bleu carbone, texte clair et accent”
+  TINY        10px       @280-768px  small. “Parchemin plus chaud, texture manuscrit ”
+  TINY        10px       @280-414px  span. “286 versets”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-414px  span.settings-tab-button__label “Affichage”
+  TINY        10px       @280-414px  span.settings-tab-button__label “Audio”
+  TINY        10px       @280-414px  span.settings-tab-button__label “Confidentialité”
+  TINY        10px       @280-414px  span.settings-tab-button__label “Général”
+  TINY        10px       @280-768px  span.settings-theme-preview__arabic “بِسْمِ اللَّهِ”
+  TINY        10px       @280-1440px  span.settings-theme-tile__period “JOUR”
+  TINY        10px       @280-1440px  span.settings-theme-tile__period “NUIT”
+  TINY        10px       @280-360px  span.simple-player__compact-reciter “Mishary Rashid Alafasy”
+
+===== fr-light / sidebar =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “À propos”
+  TINY        10.01px    @1024-1440px  span. “Confidentialité”
+  TINY        10.01px    @1024-1440px  span. “Mentions légales”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 109 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 110 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 111 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 123 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 128 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 135 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 165 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 206 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 52 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 98 v.”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “Mecquoise 99 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 120 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 129 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 176 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 200 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “Médinoise 43 v.”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “Médinoise 75 v.”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “Médinoise”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== fr-light / duas =====
+  TINY        10px       @280-768px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+  TINY        10px       @280-1440px  span. “À propos”
+  TINY        10px       @280-1440px  span. “Confidentialité”
+  TINY        10px       @280-1440px  span. “Mentions légales”
+  TINY        10px       @280-1440px  span. “MUSHAFPLUS”
+  TINY        10px       @280-1440px  span. “Sources”
+  TINY        10px       @280-768px  span.mp-footer-v2__brand “MushafPlus”
+  TINY        10px       @360-1440px  span.mp-footer-v2__credit “Lis, écoute, comprends”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Accueil”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Écouter”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Lire”
+  TINY        10px       @280-768px  span.mp-footer-v2__nav-label “Rechercher”
+  TINY        10px       @768-1440px  span.mp-footer-v2__privacy “Lecture privée, sans compte”
+  TINY        10px       @280-1440px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+
+===== fr-light / about =====
+  TINY        10px       @280-414px  a. “Nous contacter”
+  TINY        10px       @280-414px  a. “Voir le projet sur GitHub”
+  TINY        10px       @280-414px  a.is-primary “Signaler une correction”
+  TINY        10px       @280-414px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+  TINY        10px       @280-768px  span. “114 sourates”
+  TINY        10px       @280-768px  span. “Données locales”
+  TINY        10px       @280-768px  span. “v1.1.0”
+  TINY        10px       @280-768px  span.legal-page__card-index “01”
+  TINY        10px       @280-768px  span.legal-page__card-index “02”
+  TINY        10px       @280-768px  span.legal-page__card-index “03”
+  TINY        10px       @280-768px  span.legal-page__card-index “04”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+
+===== fr-light / notfound =====
+  TINY        10.05px    @280-360px  span.mp-header__title-meaning “La Vache”
+
+===== ar-dark / home-surah =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / home-juz =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / home-audio =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  small. “4”
+  TINY        10.01px    @1024-1440px  small. “49”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “5”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “54”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “59”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / reciter-detail =====
+  CLIP-X      -15px      @280-280px  div.home-resume-panel__watermark “002”
+  TINY        10.49px    @1024-1024px  a. “Assabile”
+  TINY        10.49px    @1024-1024px  a. “MP3Quran”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  small. “4”
+  TINY        10.01px    @1024-1440px  small. “49”
+  TINY        10.33px    @1024-1024px  span. “١١٤ سورة”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10.01px    @1024-1440px  span.full-quran-download__eyebrow “الاستماع دون اتصال”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “5”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “54”
+  TINY        10.01px    @1024-1440px  span.home-style-filter__count “59”
+  TINY        10.49px    @1024-1024px  span.inline-flex.items-center.rounded-full “السعودية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+  TINY        10.01px    @1024-1440px  span.recitation-row__type.recitation-row__type--meccan “مكية”
+  TINY        10.01px    @1024-1440px  span.recitation-row__type.recitation-row__type--medinan “مدنية”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / read-list =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / read-mushaf =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / read-page =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Famille d'Imran”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Aal-Imran”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / read-juz =====
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:253”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:254”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:255”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:256”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:257”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:258”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:259”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:260”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:261”
+  CLIP-X      -4px       @768-1920px  button.qc-list-card__reference “2:262”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / fullscreen =====
+  TARGET      25.8x29    @280-1920px  span.qcm-word “ﱞ”
+  TARGET      39.7x29    @280-1920px  span.qcm-word “ﱟ”
+  TARGET      16.1x29    @280-1920px  span.qcm-word “ﱠ”
+  TARGET      32.9x29    @280-1920px  span.qcm-word “ﱡ”
+  TARGET      42.8x29    @280-1920px  span.qcm-word “ﱣ”
+  TARGET      21.3x29    @280-1920px  span.qcm-word “ﱤ”
+  TARGET      37.7x29    @280-1920px  span.qcm-word “ﱥ”
+  TARGET      20.3x29    @280-1920px  span.qcm-word “ﱦ”
+  TARGET      40.8x29    @280-1920px  span.qcm-word “ﱧﱨ”
+  TARGET      54.6x29    @280-1920px  span.qcm-word “ﱩ”
+  TARGET      30.3x29    @280-1920px  span.qcm-word “ﱪ”
+  TARGET      114.5x29   @280-1920px  span.qcm-word “ﱫ”
+  TARGET      16.5x29    @280-1920px  span.qcm-word “ﱛ”
+  TARGET      18.9x29    @280-1920px  span.qcm-word “ﱜ”
+  TARGET      13.7x14.2  @280-1920px  span.qcm-word “ﱁ”
+  TARGET      20.1x14    @280-1920px  span.qcm-word “ﱂ”
+  TARGET      25.6x29    @280-1920px  span.qcm-word “ﱃ”
+  TARGET      20.8x14    @280-1920px  span.qcm-word “ﱄ”
+  TARGET      10.1x29    @280-1920px  span.qcm-word “ﱅ”
+  TARGET      44.5x14.2  @280-1920px  span.qcm-word “ﱆ”
+  TARGET      30.3x29    @280-1920px  span.qcm-word “ﱆﱇ”
+  TARGET      10.3x14    @280-1920px  span.qcm-word “ﱇ”
+  TARGET      9.3x14     @280-1920px  span.qcm-word “ﱈ”
+  TARGET      19.7x29    @280-1920px  span.qcm-word “ﱈﱉ”
+  TARGET      40.1x14    @280-1920px  span.qcm-word “ﱉ”
+  TARGET      9.7x14     @280-1920px  span.qcm-word “ﱊ”
+  TARGET      29.9x14    @280-1920px  span.qcm-word “ﱋ”
+  TARGET      22.9x29    @280-1920px  span.qcm-word “ﱍ”
+  TARGET      14.6x14    @280-1920px  span.qcm-word “ﱎ”
+  TARGET      14.8x14    @280-1920px  span.qcm-word “ﱏ”
+  TARGET      31.4x14    @280-1920px  span.qcm-word “ﱐ”
+  TARGET      19.1x14    @280-1920px  span.qcm-word “ﱑ”
+  TARGET      27.7x29    @280-1920px  span.qcm-word “ﱒ”
+  TARGET      41.6x14    @280-1920px  span.qcm-word “ﱒﱓ”
+  TARGET      37.2x29    @280-1920px  span.qcm-word “ﱓ”
+  TARGET      22.2x14    @280-1920px  span.qcm-word “ﱔ”
+  TARGET      14.8x29    @280-1920px  span.qcm-word “ﱝ”
+  TARGET      27.9x29    @280-1920px  span.qcm-word “ﱖ”
+  TARGET      31.8x29    @280-1920px  span.qcm-word “ﱗ”
+  TARGET      20.5x29    @280-1920px  span.qcm-word “ﱘ”
+  TARGET      21.8x29    @280-1920px  span.qcm-word “ﱙ”
+  TARGET      27.4x29    @280-1920px  span.qcm-word “ﱚ”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / search =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / library =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / settings =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10.01px    @1024-1440px  span.settings-theme-tile__period “ليلي”
+  TINY        10.01px    @1024-1440px  span.settings-theme-tile__period “نهاري”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / sidebar =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @390-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الرعد · ١٣:٢٨”
+  TINY        9.9px      @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        9.9px      @280-360px  span.mp-header__title-transliteration “Al-Baqara”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / duas =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10.01px    @1024-1440px  span. “MUSHAFPLUS”
+  TINY        10.01px    @1024-1440px  span. “إشعار قانوني”
+  TINY        10.01px    @1024-1440px  span. “الخصوصية”
+  TINY        10.01px    @1024-1440px  span. “المصادر”
+  TINY        10.01px    @1024-1440px  span. “حول التطبيق”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”
+  TINY        10.01px    @1024-1440px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / about =====
+  TARGET      40.2x46.4  @1024-1440px  a.
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.19px    @1024-1024px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== ar-dark / notfound =====
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “1”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “10”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “11”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “12”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “13”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “2”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “3”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “4”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “5”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “6”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “7”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “8”
+  TINY        10.2px     @280-414px  div.flex.h-7.w-7 “9”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 120 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 129 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 176 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 200 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 286 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 43 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مدنية 75 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 109 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 110 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 111 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 123 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 128 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 135 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 165 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 206 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 52 آية”
+  TINY        10px       @280-768px  span.flex.items-center.gap-1 “مكية 7 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 98 آية”
+  TINY        10.37px    @768-768px  span.flex.items-center.gap-1 “مكية 99 آية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+  TINY        10px       @280-768px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+  TINY        10.05px    @280-360px  span.mp-header__title-meaning “La Vache”
+  TINY        10px       @280-768px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+
+===== overflowX par vue/taille =====

@@ -1,0 +1,5555 @@
+[
+ {
+  "profile": "fr-light",
+  "view": "home-surah",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "strong.mp-header__home-summary-clean “Reprendre la lecture”",
+    "lost": 23,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 106.1
+   },
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 75.5
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “114 Sourates”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-surah",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “114 Sourates”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-surah",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “114 Sourates”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-surah",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "button.relative.flex.shrink-0 “Audio”",
+    "lost": 7,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 92.7
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Médinoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.hp-card-type.inline-flex.items-center “Mecquoise”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-surah",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "button.relative.flex.shrink-0 “Audio”",
+    "lost": 6,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 95.6
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”",
+    "fs": 10.19
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.01
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-audio",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "strong.mp-header__home-summary-clean “Reprendre la lecture”",
+    "lost": 23,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 106.1
+   },
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 10,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 39
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 7,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 30.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 10,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 39
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 7,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 30.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 75.5
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.2
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [
+   {
+    "el": "span.home-style-filter__count “5”",
+    "left": 285,
+    "right": 301.5,
+    "pos": "static"
+   },
+   {
+    "el": "span. “Muallim”",
+    "left": 330.5,
+    "right": 374.6,
+    "pos": "static"
+   },
+   {
+    "el": "path",
+    "left": 404.6,
+    "right": 414,
+    "pos": "static"
+   },
+   {
+    "el": "span. “Favoris”",
+    "left": 420.1,
+    "right": 457.8,
+    "pos": "static"
+   }
+  ],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-audio",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.2
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [
+   {
+    "el": "span. “Muallim”",
+    "left": 330.5,
+    "right": 374.6,
+    "pos": "static"
+   },
+   {
+    "el": "path",
+    "left": 404.6,
+    "right": 414,
+    "pos": "static"
+   },
+   {
+    "el": "span. “Favoris”",
+    "left": 420.1,
+    "right": 457.8,
+    "pos": "static"
+   }
+  ],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-audio",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.21
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [
+   {
+    "el": "span. “Muallim”",
+    "left": 330.8,
+    "right": 375,
+    "pos": "static"
+   },
+   {
+    "el": "path",
+    "left": 404.9,
+    "right": 414.3,
+    "pos": "static"
+   },
+   {
+    "el": "span. “Favoris”",
+    "left": 420.5,
+    "right": 458.1,
+    "pos": "static"
+   }
+  ],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-audio",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "p.home-audio-browser__hint “Murattal : posé · Mujawwad : orné · Mual”",
+    "fs": 10.37
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "home-audio",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”",
+    "fs": 10.19
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10.01
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.01
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "reciter-detail",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "strong.mp-header__home-summary-clean “Reprendre la lecture”",
+    "lost": 23,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 106.1
+   },
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 15,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 32,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 47.1
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 10,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 39
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 7,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 30.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 10,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 39
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 7,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 30.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Égypte”",
+    "lost": 3,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 75.5
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.2
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "reciter-detail",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 2,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 35.8
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "lost": 5,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 74
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.2
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.2
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.2
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "reciter-detail",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-today-suggestion__number “55”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “25”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-today-suggestion__number “18”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.home-collection-heading__eyebrow.inline-flex.items-center “53 contenus audio”",
+    "fs": 10.21
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Arabie Saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Murattal”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “Égypte”",
+    "fs": 10.21
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "reciter-detail",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.home-resume-panel__eyebrow “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Favoris”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Notes”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “0 Listes”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture du midi”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__label “VERSET DU JOUR”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.home-today-verse__reference “Ash-Shura 42:19”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “Lecture suggérée”",
+    "fs": 10.37
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10
+   },
+   {
+    "el": "p.home-audio-browser__hint “Murattal : posé · Mujawwad : orné · Mual”",
+    "fs": 10.37
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.rounded-full “Arabie saoudite”",
+    "fs": 10.21
+   },
+   {
+    "el": "span. “114 SOURATES”",
+    "fs": 10.05
+   },
+   {
+    "el": "span.full-quran-download__eyebrow “ÉCOUTE HORS CONNEXION”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Taille estimée : 2,7 Go”",
+    "fs": 10.37
+   },
+   {
+    "el": "span. “Les fichiers restent disponibles tant qu”",
+    "fs": 10.37
+   },
+   {
+    "el": "button.full-quran-download__primary “Tout télécharger”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "reciter-detail",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”",
+    "fs": 10.19
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10.01
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.inline-flex.items-center.rounded-full “Arabie saoudite”",
+    "fs": 10.49
+   },
+   {
+    "el": "span. “114 SOURATES”",
+    "fs": 10.33
+   },
+   {
+    "el": "span.full-quran-download__eyebrow “ÉCOUTE HORS CONNEXION”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “MÉD.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “MAK.”",
+    "fs": 10.01
+   },
+   {
+    "el": "a. “MP3Quran”",
+    "fs": 10.49
+   },
+   {
+    "el": "a. “Assabile”",
+    "fs": 10.49
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-surah",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-surah",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-surah",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-surah",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 52 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 99 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 128 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 110 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 98 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 135 آية”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-surah",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”",
+    "fs": 10.19
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “حول التطبيق”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “الخصوصية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “إشعار قانوني”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “المصادر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”",
+    "fs": 10.01
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-audio",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 8,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 40.8
+   },
+   {
+    "el": "span. “مصر”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (رواية بديلة)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (مجود)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 8,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 40.8
+   },
+   {
+    "el": "span. “مصر”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (مرتل)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-audio",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-audio",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-audio",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 52 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 99 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 128 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 110 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 98 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 135 آية”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "home-audio",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”",
+    "fs": 10.19
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10.01
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “حول التطبيق”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “الخصوصية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “إشعار قانوني”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “المصادر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”",
+    "fs": 10.01
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "reciter-detail",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [
+   {
+    "el": "div.home-resume-panel__watermark “002”",
+    "lost": 15,
+    "ellipsis": false,
+    "ws": "nowrap",
+    "w": 104.5
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Murattal”",
+    "lost": 9,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 28.7
+   },
+   {
+    "el": "span. “السعودية”",
+    "lost": 12,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 34.9
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 8,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 40.8
+   },
+   {
+    "el": "span. “مصر”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (رواية بديلة)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (مجود)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   },
+   {
+    "el": "span. “Mujawwad”",
+    "lost": 8,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 40.8
+   },
+   {
+    "el": "span. “مصر”",
+    "lost": 4,
+    "ellipsis": true,
+    "ws": "nowrap",
+    "w": 22.8
+   },
+   {
+    "el": "span.reciter-card__name “عبد الباسط عبد الصمد (مرتل)”",
+    "lost": 3,
+    "ellipsis": false,
+    "ws": "normal",
+    "w": 67.2
+   }
+  ],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "reciter-detail",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.2
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "reciter-detail",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “1”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “2”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “3”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “4”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “5”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “6”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “7”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “8”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “9”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “10”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “11”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “12”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10
+   },
+   {
+    "el": "div.flex.h-7.w-7 “13”",
+    "fs": 10.21
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "reciter-detail",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.shrink-0.text-[0.6rem].font-bold “HAFS”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 7 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 286 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 200 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 176 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 120 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 165 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 206 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 75 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 129 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 109 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 123 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مدنية 43 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مدنية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 52 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 99 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 128 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 111 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 110 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 98 آية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.inline-flex.items-center.text-[0.64rem] “مكية”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.flex.items-center.gap-1 “مكية 135 آية”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "ar-dark",
+  "view": "reciter-detail",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "home",
+  "theme": "dark",
+  "dir": "rtl",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”",
+    "fs": 10.19
+   },
+   {
+    "el": "small. “49”",
+    "fs": 10.01
+   },
+   {
+    "el": "small. “4”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “59”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “54”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.home-style-filter__count “5”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “حول التطبيق”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “الخصوصية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “إشعار قانوني”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “المصادر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “اقرأ، استمع، تدبّر”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “قراءة خاصة، بلا حساب”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.inline-flex.items-center.rounded-full “السعودية”",
+    "fs": 10.49
+   },
+   {
+    "el": "span. “١١٤ سورة”",
+    "fs": 10.33
+   },
+   {
+    "el": "span.full-quran-download__eyebrow “الاستماع دون اتصال”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--medinan “مدنية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.recitation-row__type.recitation-row__type--meccan “مكية”",
+    "fs": 10.01
+   },
+   {
+    "el": "a. “MP3Quran”",
+    "fs": 10.49
+   },
+   {
+    "el": "a. “Assabile”",
+    "fs": 10.49
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ }
+]

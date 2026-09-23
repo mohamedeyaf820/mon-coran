@@ -1,0 +1,231 @@
+{
+ "markers": [
+  {
+   "line": "1",
+   "kids": [
+    {
+     "cls": "qcm-word",
+     "txt": "ﱁ",
+     "x": 501,
+     "w": 23,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱂ",
+     "x": 452,
+     "w": 49,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱃ",
+     "x": 429,
+     "w": 24,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱄ",
+     "x": 395,
+     "w": 34,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱅ",
+     "x": 344,
+     "w": 51,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱆ",
+     "x": 301,
+     "w": 43,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱇ",
+     "x": 285,
+     "w": 16,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱈ",
+     "x": 229,
+     "w": 56,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱉ",
+     "x": 167,
+     "w": 61,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱊ",
+     "x": 94,
+     "w": 74,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "ayah-marker-wrap ayat-marker q",
+     "txt": "١٧",
+     "x": 67,
+     "w": 23,
+     "ml": "3.60719px",
+     "mr": "15.0299px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱌ",
+     "x": 22,
+     "w": 30,
+     "ml": "0px",
+     "mr": "0px"
+    }
+   ]
+  },
+  {
+   "line": "2",
+   "kids": [
+    {
+     "cls": "qcm-word",
+     "txt": "ﱍ",
+     "x": 457,
+     "w": 67,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "ayah-marker-wrap ayat-marker q",
+     "txt": "١٨",
+     "x": 430,
+     "w": 23,
+     "ml": "3.60719px",
+     "mr": "15.0299px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱏ",
+     "x": 370,
+     "w": 45,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱐ",
+     "x": 331,
+     "w": 39,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱑ",
+     "x": 283,
+     "w": 48,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱒ",
+     "x": 258,
+     "w": 25,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱓ",
+     "x": 221,
+     "w": 37,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱔ",
+     "x": 194,
+     "w": 27,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱕ",
+     "x": 140,
+     "w": 54,
+     "ml": "0px",
+     "mr": "0px"
+    },
+    {
+     "cls": "ayah-marker-wrap ayat-marker q",
+     "txt": "١٩",
+     "x": 113,
+     "w": 23,
+     "ml": "3.60719px",
+     "mr": "15.0299px"
+    },
+    {
+     "cls": "qcm-word",
+     "txt": "ﱗ",
+     "x": 22,
+     "w": 76,
+     "ml": "0px",
+     "mr": "0px"
+    }
+   ]
+  }
+ ],
+ "rects": {
+  "folio": {
+   "x": 22,
+   "y": 877,
+   "w": 502,
+   "h": 35
+  },
+  "folioCircle": {
+   "x": 259,
+   "y": 885,
+   "w": 28,
+   "h": 28
+  },
+  "surahTitle": null,
+  "header": {
+   "x": 0,
+   "y": 0,
+   "w": 546,
+   "h": 67
+  },
+  "footer": {
+   "x": 0,
+   "y": 835,
+   "w": 546,
+   "h": 65
+  },
+  "book": {
+   "x": 9,
+   "y": 73,
+   "w": 527,
+   "h": 870
+  }
+ }
+}

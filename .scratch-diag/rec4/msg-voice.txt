@@ -1,0 +1,21 @@
+fix(search): rend la dictée vocale utilisable et visible dans sa langue
+
+Le micro écoutait dans la langue déduite du texte déjà tapé (containsArabic(query))
+au lieu de la langue de ce qu'on allait dicter. Boîte vide en interface française,
+la session s'ouvrait donc en fr-FR : dicter un mot coranique arabe — l'usage
+principal, et pourtant l'une des trois suggestions affichées — traversait un modèle
+acoustique français, ne remontait rien, et se terminait sur « Aucune parole
+détectée ». Le message renvoyait l'utilisateur vers le micro, qui rejouait le même
+échec.
+
+La langue de dictée devient un choix explicite parmi العربية / Français / English,
+persisté, par défaut la langue de l'interface. Le badge sur le bouton micro et son
+aria-label nomment la langue active, parce qu'une langue mal réglée était
+auparavant invisible. Le sélecteur apparaît dès que la voix est engagée ou qu'une
+erreur est tombée, ce qui fait de « aucune parole » une récupération en un geste au
+lieu d'un cul-de-sac.
+
+Le micro ne donnait aucun signe de vie pendant la parole (interimResults false) :
+il affiche maintenant les mots arrivés. Et comme certaines implémentations mobiles
+ferment la session sans jamais marquer le dernier segment comme final, ce texte
+intermédiaire sert de repli plutôt que de déclarer une dictée muette.

@@ -1,0 +1,71 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 99,
+  "number_of_ayahs": 9,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "When Earth is shaken with her (final) earthquake"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "And Earth yieldeth up her burdens,"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "And man saith: What aileth her?"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "That day she will relate her chronicles,"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "Because thy Lord inspireth her."
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "That day mankind will issue forth in scattered groups to be shown their deeds."
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "That day mankind will issue forth in scattered groups to be shown their deeds."
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "And whoso doeth good an atom's weight will see it then,"
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "And whoso doeth ill an atom's weight will see it then."
+    }
+  ]
+}

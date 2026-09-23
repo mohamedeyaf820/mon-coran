@@ -1,0 +1,29 @@
+fix(recitation): rend tous les styles de récitation atteignables depuis le hub
+
+Le hub promettait 52 voix alors que la liste ne peut contenir que les 44 de
+la riwaya affichée, la puce « Muallim » était morte (Al-Husary Muallim était
+étiqueté murattal) et aucune ne proposait les styles vides de la riwaya Warsh.
+Les compteurs sont maintenant calculés sur la riwaya à l'écran, et une puce
+sans voix n'est plus offerte ; le filtre actif qui devient impossible se
+réinitialise au changement de riwaya.
+
+La liste des puces vit désormais dans le catalogue (RECITER_STYLE_FILTERS),
+donc un test prouve dans les deux sens qu'un style du catalogue a une puce et
+qu'une puce a au moins une voix : la classe de bug du filtre mort ne peut plus
+revenir silencieusement.
+
+Recherche : les lecteurs doublent une lettre pour noter un son entendu, pas une
+orthographe vue (« minshawwi »). La fold commune réduit les lettres latines
+doublées, sans toucher l'arabe ; « Minshawy », l'orthographe du CDN lui-même,
+est ajoutée comme alias.
+
+Sous 530 px les cinq puces ne tiennent plus et l'ascenseur est masqué : une
+puce coupée se lisait comme la fin de la liste. Le bord inline-end est
+maintenant dégradé, avec sa variante RTL.
+
+Enfin l'état sélectionné n'était jamais peint : la couche polish visait une
+classe .bg-primary que le composant n'applique pas, si bien que la puce active
+ressemblait trait pour trait aux autres et que son badge était blanc sur blanc.
+Le contraste mesuré passe de 1,0:1 à 7,5:1 en clair et 5,1:1 en sombre.
+
+Coût mesuré : +0,7 kB CSS, +0,4 kB JS.

@@ -1,0 +1,618 @@
+{
+ "home@280": [
+  {
+   "el": "span.home-today-verse__translation",
+   "dx": 229,
+   "w": 101.5,
+   "h": 15.2,
+   "top": 492,
+   "ox": "hidden",
+   "text": "Allah est plein de douceur envers ",
+   "scrollable": 0
+  },
+  {
+   "el": "article.home-resume-panel",
+   "dx": 120,
+   "w": 250.8,
+   "h": 289,
+   "top": 86,
+   "ox": "hidden",
+   "text": "002 BONJOUR lun. 21 sept. HAFS Lir",
+   "scrollable": 5
+  },
+  {
+   "el": "strong.mp-header__home-summary-clean",
+   "dx": 23,
+   "w": 106.1,
+   "h": 13.5,
+   "top": 25,
+   "ox": "hidden",
+   "text": "Reprendre la lecture",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 18,
+   "w": 23.6,
+   "h": 18.3,
+   "top": 272,
+   "ox": "hidden",
+   "text": "0 Favoris",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 18,
+   "w": 22.7,
+   "h": 8.6,
+   "top": 6205,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  },
+  {
+   "el": "div.home-resume-panel__watermark",
+   "dx": 15,
+   "w": 104.5,
+   "h": 97.5,
+   "top": 282,
+   "ox": "hidden",
+   "text": "002",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 13,
+   "w": 23.6,
+   "h": 18.3,
+   "top": 272,
+   "ox": "hidden",
+   "text": "0 Notes",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 11,
+   "w": 23.6,
+   "h": 18.3,
+   "top": 272,
+   "ox": "hidden",
+   "text": "0 Listes",
+   "scrollable": 0
+  },
+  {
+   "el": "strong.",
+   "dx": 9,
+   "w": 92.8,
+   "h": 17.3,
+   "top": 588,
+   "ox": "hidden",
+   "text": "Le Monothéisme Pur",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 5,
+   "w": 22.7,
+   "h": 8.6,
+   "top": 6205,
+   "ox": "hidden",
+   "text": "Écouter",
+   "scrollable": 0
+  },
+  {
+   "el": "div.flex.items-center.gap-1",
+   "dx": 3,
+   "w": 208.9,
+   "h": 53.5,
+   "top": 848,
+   "ox": "auto",
+   "text": "Sourates Juz Audio",
+   "scrollable": 3
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 3,
+   "w": 22.7,
+   "h": 8.6,
+   "top": 6205,
+   "ox": "hidden",
+   "text": "Accueil",
+   "scrollable": 0
+  }
+ ],
+ "read-mushaf@280": [
+  {
+   "el": "span.",
+   "dx": 67,
+   "w": 32,
+   "h": 13.5,
+   "top": 32955,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 54,
+   "w": 31.5,
+   "h": 13.5,
+   "top": 32955,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 17,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 33327,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 4,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 33327,
+   "ox": "hidden",
+   "text": "Écouter",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 2,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 33327,
+   "ox": "hidden",
+   "text": "Accueil",
+   "scrollable": 0
+  }
+ ],
+ "read-list@280": [
+  {
+   "el": "span.",
+   "dx": 67,
+   "w": 32,
+   "h": 13.5,
+   "top": 104341,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 54,
+   "w": 31.5,
+   "h": 13.5,
+   "top": 104341,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 17,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 104723,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 4,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 104723,
+   "ox": "hidden",
+   "text": "Écouter",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 2,
+   "w": 24.4,
+   "h": 8.6,
+   "top": 104723,
+   "ox": "hidden",
+   "text": "Accueil",
+   "scrollable": 0
+  }
+ ],
+ "duas@280": [
+  {
+   "el": "div.duas-categories.scrollbar-hide",
+   "dx": 894,
+   "w": 241.1,
+   "h": 47,
+   "top": 389,
+   "ox": "auto",
+   "text": "Toutes Adhkars du jour Protection ",
+   "scrollable": 14
+  },
+  {
+   "el": "section.duas-hero",
+   "dx": 15,
+   "w": 262.6,
+   "h": 366.8,
+   "top": 85,
+   "ox": "hidden",
+   "text": "Invocations & Citadelle du Musulma",
+   "scrollable": 15
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 15,
+   "w": 25.7,
+   "h": 8.6,
+   "top": 46309,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 2,
+   "w": 25.7,
+   "h": 8.6,
+   "top": 46309,
+   "ox": "hidden",
+   "text": "Écouter",
+   "scrollable": 0
+  }
+ ],
+ "home@320": [
+  {
+   "el": "span.home-today-verse__translation",
+   "dx": 189,
+   "w": 141.5,
+   "h": 15.2,
+   "top": 498,
+   "ox": "hidden",
+   "text": "Allah est plein de douceur envers ",
+   "scrollable": 0
+  },
+  {
+   "el": "article.home-resume-panel",
+   "dx": 120,
+   "w": 290.8,
+   "h": 294.3,
+   "top": 86,
+   "ox": "hidden",
+   "text": "002 BONJOUR lun. 21 sept. HAFS Lir",
+   "scrollable": 5
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 8,
+   "w": 32.7,
+   "h": 8.6,
+   "top": 6183,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 5,
+   "w": 37,
+   "h": 18.3,
+   "top": 277,
+   "ox": "hidden",
+   "text": "0 Favoris",
+   "scrollable": 0
+  },
+  {
+   "el": "div.flex.items-center.gap-1",
+   "dx": 3,
+   "w": 248.9,
+   "h": 53.5,
+   "top": 853,
+   "ox": "auto",
+   "text": "Sourates Juz Audio",
+   "scrollable": 3
+  }
+ ],
+ "read-mushaf@320": [
+  {
+   "el": "span.",
+   "dx": 49,
+   "w": 50,
+   "h": 13.5,
+   "top": 32920,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 36,
+   "w": 49.1,
+   "h": 13.5,
+   "top": 32920,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 7,
+   "w": 34.4,
+   "h": 8.6,
+   "top": 33280,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  }
+ ],
+ "read-list@320": [
+  {
+   "el": "span.",
+   "dx": 49,
+   "w": 50,
+   "h": 13.5,
+   "top": 103966,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 36,
+   "w": 49.1,
+   "h": 13.5,
+   "top": 103966,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 7,
+   "w": 34.4,
+   "h": 8.6,
+   "top": 104337,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  }
+ ],
+ "duas@320": [
+  {
+   "el": "div.duas-categories.scrollbar-hide",
+   "dx": 854,
+   "w": 281.1,
+   "h": 47,
+   "top": 390,
+   "ox": "auto",
+   "text": "Toutes Adhkars du jour Protection ",
+   "scrollable": 14
+  },
+  {
+   "el": "section.duas-hero",
+   "dx": 15,
+   "w": 302.6,
+   "h": 368.3,
+   "top": 85,
+   "ox": "hidden",
+   "text": "Invocations & Citadelle du Musulma",
+   "scrollable": 15
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 5,
+   "w": 35.7,
+   "h": 8.6,
+   "top": 42828,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  }
+ ],
+ "home@360": [
+  {
+   "el": "span.home-today-verse__translation",
+   "dx": 149,
+   "w": 181.5,
+   "h": 15.2,
+   "top": 502,
+   "ox": "hidden",
+   "text": "Allah est plein de douceur envers ",
+   "scrollable": 0
+  },
+  {
+   "el": "article.home-resume-panel",
+   "dx": 120,
+   "w": 330.7,
+   "h": 298.6,
+   "top": 86,
+   "ox": "hidden",
+   "text": "002 BONJOUR lun. 21 sept. HAFS Lir",
+   "scrollable": 5
+  },
+  {
+   "el": "div.flex.items-center.gap-1",
+   "dx": 3,
+   "w": 288.2,
+   "h": 53.5,
+   "top": 843,
+   "ox": "auto",
+   "text": "Sourates Juz Audio",
+   "scrollable": 3
+  },
+  {
+   "el": "span.mp-footer-v2__nav-label",
+   "dx": 2,
+   "w": 42.7,
+   "h": 9.6,
+   "top": 6307,
+   "ox": "hidden",
+   "text": "Rechercher",
+   "scrollable": 0
+  }
+ ],
+ "read-mushaf@360": [
+  {
+   "el": "span.",
+   "dx": 31,
+   "w": 67.9,
+   "h": 13.5,
+   "top": 32784,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 18,
+   "w": 66.8,
+   "h": 13.5,
+   "top": 32784,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  }
+ ],
+ "read-list@360": [
+  {
+   "el": "span.",
+   "dx": 31,
+   "w": 67.9,
+   "h": 13.5,
+   "top": 104134,
+   "ox": "hidden",
+   "text": "Sourate précédente",
+   "scrollable": 0
+  },
+  {
+   "el": "span.",
+   "dx": 18,
+   "w": 66.8,
+   "h": 13.5,
+   "top": 104134,
+   "ox": "hidden",
+   "text": "Sourate suivante",
+   "scrollable": 0
+  }
+ ],
+ "duas@360": [
+  {
+   "el": "div.duas-categories.scrollbar-hide",
+   "dx": 827,
+   "w": 321.1,
+   "h": 47,
+   "top": 375,
+   "ox": "auto",
+   "text": "Toutes Adhkars du jour Protection ",
+   "scrollable": 14
+  },
+  {
+   "el": "section.duas-hero",
+   "dx": 15,
+   "w": 342.6,
+   "h": 353.5,
+   "top": 85,
+   "ox": "hidden",
+   "text": "Invocations & Citadelle du Musulma",
+   "scrollable": 15
+  }
+ ],
+ "home@768": [
+  {
+   "el": "article.home-resume-panel",
+   "dx": 126,
+   "w": 745,
+   "h": 285.4,
+   "top": 108,
+   "ox": "hidden",
+   "text": "002 MushafPlus BONJOUR lun. 21 sep",
+   "scrollable": 5
+  },
+  {
+   "el": "button.relative.flex.items-center",
+   "dx": 6,
+   "w": 92.7,
+   "h": 44,
+   "top": 841,
+   "ox": "hidden",
+   "text": "Audio",
+   "scrollable": 0
+  }
+ ],
+ "read-mushaf@768": [],
+ "read-list@768": [],
+ "duas@768": [
+  {
+   "el": "div.duas-categories.scrollbar-hide",
+   "dx": 738,
+   "w": 701.5,
+   "h": 47.1,
+   "top": 345,
+   "ox": "auto",
+   "text": "Toutes Adhkars du jour Protection ",
+   "scrollable": 14
+  },
+  {
+   "el": "section.duas-hero",
+   "dx": 16,
+   "w": 740.4,
+   "h": 291.7,
+   "top": 120,
+   "ox": "hidden",
+   "text": "Invocations & Citadelle du Musulma",
+   "scrollable": 15
+  }
+ ],
+ "home@1280": [
+  {
+   "el": "article.home-resume-panel",
+   "dx": 132,
+   "w": 660.7,
+   "h": 443.8,
+   "top": 135,
+   "ox": "hidden",
+   "text": "002 MushafPlus BONJOUR lun. 21 sep",
+   "scrollable": 5
+  },
+  {
+   "el": "button.relative.flex.items-center",
+   "dx": 5,
+   "w": 98,
+   "h": 45.6,
+   "top": 754,
+   "ox": "hidden",
+   "text": "Audio",
+   "scrollable": 0
+  }
+ ],
+ "read-mushaf@1280": [],
+ "read-list@1280": [],
+ "duas@1280": [
+  {
+   "el": "div.duas-categories.scrollbar-hide",
+   "dx": 504,
+   "w": 1013.6,
+   "h": 48.9,
+   "top": 385,
+   "ox": "auto",
+   "text": "Toutes Adhkars du jour Protection ",
+   "scrollable": 14
+  },
+  {
+   "el": "section.duas-hero",
+   "dx": 17,
+   "w": 1070.3,
+   "h": 322,
+   "top": 141,
+   "ox": "hidden",
+   "text": "Invocations & Citadelle du Musulma",
+   "scrollable": 15
+  }
+ ]
+}

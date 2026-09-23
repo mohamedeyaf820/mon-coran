@@ -1,0 +1,2857 @@
+
+## fr-light / home-surah @ 280px  [app=home theme=light dir=ltr root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-surah @ 320px  [app=home theme=light dir=ltr root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-surah @ 360px  [app=home theme=light dir=ltr root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-surah @ 390px  [app=home theme=light dir=ltr root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-surah @ 414px  [app=home theme=light dir=ltr root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-surah @ 768px  [app=home theme=light dir=ltr root=15.7056px]
+clipped-x (1) ::
+    -7px  button.relative.flex.items-center “Audio”
+tiny text (40) ::
+    10.37px  span.home-resume-panel__eyebrow “HAFS”
+    10.37px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+    10.37px  span. “0 Favoris”
+    10.37px  span. “0 Notes”
+    10.37px  span. “0 Listes”
+    10.37px  small. “Lecture du matin”
+
+## fr-light / home-surah @ 1024px  [app=home theme=light dir=ltr root=16.1408px]
+clipped-x (1) ::
+    -7px  button.relative.flex.items-center “Audio”
+tiny text (9) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+
+## fr-light / home-surah @ 1280px  [app=home theme=light dir=ltr root=16.576px]
+clipped-x (1) ::
+    -8px  button.relative.flex.items-center “Audio”
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+
+## fr-light / home-surah @ 1440px  [app=home theme=light dir=ltr root=16.848px]
+clipped-x (1) ::
+    -9px  button.relative.flex.items-center “Audio”
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+
+## fr-light / home-surah @ 1920px  [app=home theme=light dir=ltr root=17px]
+clipped-x (1) ::
+    -7px  button.relative.flex.items-center “Audio”
+
+## fr-light / home-juz @ 280px  [app=home theme=light dir=ltr root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-juz @ 320px  [app=home theme=light dir=ltr root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-juz @ 360px  [app=home theme=light dir=ltr root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-juz @ 390px  [app=home theme=light dir=ltr root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-juz @ 414px  [app=home theme=light dir=ltr root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-juz @ 768px  [app=home theme=light dir=ltr root=15.7056px]
+clipped-x (1) ::
+    -6px  button.relative.flex.items-center “Audio”
+tiny text (40) ::
+    10.37px  span.home-resume-panel__eyebrow “HAFS”
+    10.37px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+    10.37px  span. “0 Favoris”
+    10.37px  span. “0 Notes”
+    10.37px  span. “0 Listes”
+    10.37px  small. “Lecture du matin”
+
+## fr-light / home-juz @ 1024px  [app=home theme=light dir=ltr root=16.1408px]
+clipped-x (1) ::
+    -7px  button.relative.flex.items-center “Audio”
+tiny text (9) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+
+## fr-light / home-juz @ 1280px  [app=home theme=light dir=ltr root=16.576px]
+clipped-x (1) ::
+    -8px  button.relative.flex.items-center “Audio”
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+
+## fr-light / home-juz @ 1440px  [app=home theme=light dir=ltr root=16.848px]
+clipped-x (1) ::
+    -9px  button.relative.flex.items-center “Audio”
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+
+## fr-light / home-juz @ 1920px  [app=home theme=light dir=ltr root=17px]
+clipped-x (1) ::
+    -9px  button.relative.flex.items-center “Audio”
+
+## fr-light / home-audio @ 280px  [app=home theme=light dir=ltr root=15px]
+painted past right edge :: span.home-style-filter__count “5” [285..301.5] | span. “Muallim” [330.5..374.6] | path [404.6..414]
+clipped-x (3) ::
+    -15px  div.home-resume-panel__watermark “002”
+    -4px  span.reciter-card__name “Al-Minshawi (Mujawwad)”
+    -2px  span.reciter-card__name “Abdul Basit (Enregistrement alternatif)”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-audio @ 320px  [app=home theme=light dir=ltr root=15px]
+painted past right edge :: span. “Muallim” [330.5..374.6] | path [404.6..414] | span. “Favoris” [420.1..457.8]
+clipped-x (1) ::
+    -2px  span.reciter-card__name “Abdul Basit (Enregistrement alternatif)”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-audio @ 360px  [app=home theme=light dir=ltr root=15.012px]
+painted past right edge :: span. “Muallim” [330.8..375] | path [404.9..414.3] | span. “Favoris” [420.5..458.1]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-audio @ 390px  [app=home theme=light dir=ltr root=15.063px]
+painted past right edge :: path [406.8..416.3] | span. “Favoris” [422.5..460.2]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-audio @ 414px  [app=home theme=light dir=ltr root=15.1038px]
+painted past right edge :: path [408.4..417.9] | span. “Favoris” [424.1..461.9]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / home-audio @ 768px  [app=home theme=light dir=ltr root=15.7056px]
+targets<44 (8) ::
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+tiny text (33) ::
+    10.37px  span.home-resume-panel__eyebrow “HAFS”
+    10.37px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+    10.37px  span. “0 Favoris”
+    10.37px  span. “0 Notes”
+    10.37px  span. “0 Listes”
+    10.37px  small. “Lecture du matin”
+
+## fr-light / home-audio @ 1024px  [app=home theme=light dir=ltr root=16.1408px]
+targets<44 (8) ::
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+tiny text (14) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+    10.01px  small. “49”
+    10.01px  small. “4”
+    10.01px  span.home-style-filter__count “59”
+    10.01px  span.home-style-filter__count “54”
+    10.01px  span.home-style-filter__count “5”
+
+## fr-light / home-audio @ 1280px  [app=home theme=light dir=ltr root=16.576px]
+tiny text (13) ::
+    10.28px  small. “49”
+    10.28px  small. “4”
+    10.28px  span.home-style-filter__count “59”
+    10.28px  span.home-style-filter__count “54”
+    10.28px  span.home-style-filter__count “5”
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+
+## fr-light / home-audio @ 1440px  [app=home theme=light dir=ltr root=16.848px]
+tiny text (13) ::
+    10.45px  small. “49”
+    10.45px  small. “4”
+    10.45px  span.home-style-filter__count “59”
+    10.45px  span.home-style-filter__count “54”
+    10.45px  span.home-style-filter__count “5”
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+
+## fr-light / reciter-detail @ 280px  [app=home theme=light dir=ltr root=15px]
+clipped-x (3) ::
+    -15px  div.home-resume-panel__watermark “002”
+    -4px  span.reciter-card__name “Al-Minshawi (Mujawwad)”
+    -2px  span.reciter-card__name “Abdul Basit (Enregistrement alternatif)”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / reciter-detail @ 320px  [app=home theme=light dir=ltr root=15px]
+clipped-x (1) ::
+    -2px  span.reciter-card__name “Abdul Basit (Enregistrement alternatif)”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / reciter-detail @ 360px  [app=home theme=light dir=ltr root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / reciter-detail @ 390px  [app=home theme=light dir=ltr root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / reciter-detail @ 414px  [app=home theme=light dir=ltr root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “HAFS”
+    10px  span. “0 Favoris”
+    10px  span. “0 Notes”
+    10px  span. “0 Listes”
+    10px  small. “Lecture du matin”
+    10px  span.home-today-verse__label “VERSET DU JOUR”
+
+## fr-light / reciter-detail @ 768px  [app=home theme=light dir=ltr root=15.7056px]
+targets<44 (8) ::
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+tiny text (40) ::
+    10.37px  span.home-resume-panel__eyebrow “HAFS”
+    10.37px  small.home-resume-panel__target-label “VOTRE PROCHAINE LECTURE”
+    10.37px  span. “0 Favoris”
+    10.37px  span. “0 Notes”
+    10.37px  span. “0 Listes”
+    10.37px  small. “Lecture du matin”
+
+## fr-light / reciter-detail @ 1024px  [app=home theme=light dir=ltr root=16.1408px]
+targets<44 (8) ::
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+tiny text (19) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+    10.01px  small. “49”
+    10.01px  small. “4”
+    10.01px  span.home-style-filter__count “59”
+    10.01px  span.home-style-filter__count “54”
+    10.01px  span.home-style-filter__count “5”
+
+## fr-light / reciter-detail @ 1280px  [app=home theme=light dir=ltr root=16.576px]
+tiny text (14) ::
+    10.28px  small. “49”
+    10.28px  small. “4”
+    10.28px  span.home-style-filter__count “59”
+    10.28px  span.home-style-filter__count “54”
+    10.28px  span.home-style-filter__count “5”
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+
+## fr-light / reciter-detail @ 1440px  [app=home theme=light dir=ltr root=16.848px]
+tiny text (14) ::
+    10.45px  small. “49”
+    10.45px  small. “4”
+    10.45px  span.home-style-filter__count “59”
+    10.45px  span.home-style-filter__count “54”
+    10.45px  span.home-style-filter__count “5”
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+
+## fr-light / read-list @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (25) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / read-list @ 320px  [app=reading theme=light dir=ltr root=15px]
+tiny text (25) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / read-list @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+tiny text (26) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / read-list @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+tiny text (26) ::
+    10.24px  small. “2 · 286 versets”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / read-list @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+tiny text (26) ::
+    10.27px  small. “2 · 286 versets”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / read-list @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (15) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## fr-light / read-list @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## fr-light / read-list @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / read-list @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / read-list @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / read-mushaf @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (16) ::
+    7.2px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+(mots cliquables <44: 59, plus petit 17.0px)
+
+## fr-light / read-mushaf @ 320px  [app=reading theme=light dir=ltr root=15px]
+tiny text (16) ::
+    7.2px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## fr-light / read-mushaf @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+tiny text (17) ::
+    7.21px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## fr-light / read-mushaf @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+tiny text (17) ::
+    10.24px  small. “2 · 286 versets”
+    7.23px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## fr-light / read-mushaf @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+tiny text (17) ::
+    10.27px  small. “2 · 286 versets”
+    7.25px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.35px  div.bismillah-translation.text-xs.italic “Au nom d'Allah, le Tout Miséricordieux, ”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## fr-light / read-mushaf @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+tiny text (15) ::
+    7.54px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 60, plus petit 19.3px)
+
+## fr-light / read-mushaf @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+tiny text (9) ::
+    7.99px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+(mots cliquables <44: 60, plus petit 21.6px)
+
+## fr-light / read-mushaf @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (9) ::
+    8.55px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+(mots cliquables <44: 58, plus petit 23.4px)
+
+## fr-light / read-mushaf @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (9) ::
+    8.9px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+(mots cliquables <44: 58, plus petit 23.4px)
+
+## fr-light / read-mushaf @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (1) ::
+    9.68px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+(mots cliquables <44: 58, plus petit 23.4px)
+
+## fr-light / fullscreen @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (54) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+    21.9x29  span.qcm-word “ﱁ”
+    25.6x29  span.qcm-word “ﱃ”
+    54.6x29  span.qcm-word “ﱄ”
+    10.1x29  span.qcm-word “ﱅ”
+    25x29  span.qcm-word “ﱆﱇ”
+    19.7x29  span.qcm-word “ﱈﱉ”
+    35.4x29  span.qcm-word “ﱊ”
+    37.4x29  span.qcm-word “ﱋ”
+    22.9x29  span.qcm-word “ﱍ”
+tiny text (31) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.2px  span.qcm-page-header__meta “Juz 1”
+    10.2px  span.qcm-page-header__meta “Page 2”
+    10.2px  span.qcm-page-header__meta “Juz 1”
+    10.2px  span.qcm-page-header__meta “Page 3”
+    10.1px  span. “٦”
+(mots cliquables <44: 6, plus petit 7.9px)
+
+## fr-light / fullscreen @ 320px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (54) ::
+    26.5x29  span.qcm-word “ﱁ”
+    30.9x29  span.qcm-word “ﱃ”
+    66x29  span.qcm-word “ﱄ”
+    12.1x29  span.qcm-word “ﱅ”
+    30.3x29  span.qcm-word “ﱆﱇ”
+    23.8x29  span.qcm-word “ﱈﱉ”
+    42.7x29  span.qcm-word “ﱊ”
+    45.1x29  span.qcm-word “ﱋ”
+    27.6x29  span.qcm-word “ﱍ”
+    37.7x29  span.qcm-word “ﱎ”
+tiny text (31) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.2px  span.qcm-page-header__meta “Juz 1”
+    10.2px  span.qcm-page-header__meta “Page 2”
+    10.2px  span.qcm-page-header__meta “Juz 1”
+    10.2px  span.qcm-page-header__meta “Page 3”
+    10.26px  span. “٦”
+(mots cliquables <44: 6, plus petit 8.0px)
+
+## fr-light / fullscreen @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    52.9x29  span.qcm-word “ﱋ”
+    32.4x29  span.qcm-word “ﱍ”
+    44.2x29  span.qcm-word “ﱎ”
+tiny text (21) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.21px  span.qcm-page-header__meta “Juz 1”
+    10.21px  span.qcm-page-header__meta “Page 2”
+    10.21px  span.qcm-page-header__meta “Juz 1”
+    10.21px  span.qcm-page-header__meta “Page 3”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+(mots cliquables <44: 6, plus petit 9.3px)
+
+## fr-light / fullscreen @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    58.7x29  span.qcm-word “ﱋ”
+    35.9x29  span.qcm-word “ﱍ”
+    49x29  span.qcm-word “ﱎ”
+tiny text (20) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.24px  span.qcm-page-header__meta “Juz 1”
+    10.24px  span.qcm-page-header__meta “Page 2”
+    10.24px  span.qcm-page-header__meta “Juz 1”
+    10.24px  span.qcm-page-header__meta “Page 3”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+(mots cliquables <44: 6, plus petit 10.3px)
+
+## fr-light / fullscreen @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    63.3x29  span.qcm-word “ﱋ”
+    38.8x29  span.qcm-word “ﱍ”
+    52.9x29  span.qcm-word “ﱎ”
+tiny text (20) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.27px  span.qcm-page-header__meta “Juz 1”
+    10.27px  span.qcm-page-header__meta “Page 2”
+    10.27px  span.qcm-page-header__meta “Juz 1”
+    10.27px  span.qcm-page-header__meta “Page 3”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+(mots cliquables <44: 6, plus petit 11.1px)
+
+## fr-light / fullscreen @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (54) ::
+    35x33  span.qcm-word “ﱁ”
+    40.9x33  span.qcm-word “ﱃ”
+    87.4x33  span.qcm-word “ﱄ”
+    16.1x33  span.qcm-word “ﱅ”
+    40.1x33  span.qcm-word “ﱆﱇ”
+    31.6x33  span.qcm-word “ﱈﱉ”
+    56.6x33  span.qcm-word “ﱊ”
+    76.8x33  span.qcm-word “ﱋ”
+    47x33  span.qcm-word “ﱍ”
+    64.1x33  span.qcm-word “ﱎ”
+tiny text (16) ::
+    10.37px  span.reader-context-card__riwaya.inline-flex.items-center “HAFS”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 6, plus petit 18.5px)
+
+## fr-light / fullscreen @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (54) ::
+    39.3x37  span.qcm-word “ﱁ”
+    45.8x37  span.qcm-word “ﱃ”
+    98x37  span.qcm-word “ﱄ”
+    18x37  span.qcm-word “ﱅ”
+    44.9x37  span.qcm-word “ﱆﱇ”
+    35.4x37  span.qcm-word “ﱈﱉ”
+    63.4x37  span.qcm-word “ﱊ”
+    86.1x37  span.qcm-word “ﱋ”
+    52.8x37  span.qcm-word “ﱍ”
+    71.9x37  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 6, plus petit 20.8px)
+
+## fr-light / fullscreen @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## fr-light / fullscreen @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## fr-light / fullscreen @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## fr-light / search @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (25) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / search @ 320px  [app=reading theme=light dir=ltr root=15px]
+tiny text (25) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / search @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+tiny text (26) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / search @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+tiny text (26) ::
+    10.24px  small. “2 · 286 versets”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / search @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+tiny text (26) ::
+    10.27px  small. “2 · 286 versets”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / search @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (15) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## fr-light / search @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## fr-light / search @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / search @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / search @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / library @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (6) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+    33.1x45.6  button.mp-header-menu__close
+    259.3x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “Rechercher”
+    128.5x30  button.mp-header-menu__item “Thème”
+    128.5x30  button.mp-header-menu__item “Paramètres”
+    259.3x30  button.mp-header-menu__item “Invocations”
+tiny text (15) ::
+    10px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+    10px  span. “286 versets”
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / library @ 320px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (5) ::
+    30x44  button.mp-header-menu__close
+    266.5x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “Rechercher”
+    132.1x30  button.mp-header-menu__item “Thème”
+    132.1x30  button.mp-header-menu__item “Paramètres”
+    266.5x30  button.mp-header-menu__item “Invocations”
+tiny text (25) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / library @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+targets<44 (5) ::
+    30x44  button.mp-header-menu__close
+    266.7x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “Rechercher”
+    132.2x30  button.mp-header-menu__item “Thème”
+    132.2x30  button.mp-header-menu__item “Paramètres”
+    266.7x30  button.mp-header-menu__item “Invocations”
+tiny text (26) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / library @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+targets<44 (2) ::
+    30.1x44  button.mp-header-menu__close
+    257.1x38  button.mp-header-menu__item “Invocations”
+tiny text (26) ::
+    10.24px  small. “2 · 286 versets”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / library @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+targets<44 (2) ::
+    30.2x44  button.mp-header-menu__close
+    257.8x38  button.mp-header-menu__item “Invocations”
+tiny text (26) ::
+    10.27px  small. “2 · 286 versets”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / library @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (3) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+    31.4x44  button.mp-header-menu__close
+tiny text (15) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## fr-light / library @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (5) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+    32.3x44.4  button.mp-header-menu__close
+    32.3x44.4  button.
+    32.3x44.4  button.
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## fr-light / library @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (4) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+    33.1x45.6  button.mp-header-menu__close
+    33.1x45.6  button.
+    33.1x45.6  button.
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / library @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (4) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+    33.7x46.3  button.mp-header-menu__close
+    33.7x46.3  button.
+    33.7x46.3  button.
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / library @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (4) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+    34x46.8  button.mp-header-menu__close
+    34x46.8  button.
+    34x46.8  button.
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / settings @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+clipped-x (3) ::
+    -9px  button.settings-segmented__item “Français”
+    -5px  button.settings-segmented__item “English”
+    -2px  button.settings-segmented__item “العربية”
+tiny text (38) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / settings @ 320px  [app=reading theme=light dir=ltr root=15px]
+tiny text (38) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / settings @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+tiny text (39) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / settings @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+tiny text (39) ::
+    10.24px  small. “2 · 286 versets”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / settings @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+tiny text (39) ::
+    10.27px  small. “2 · 286 versets”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / settings @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (24) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## fr-light / settings @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## fr-light / settings @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / settings @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / settings @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / sidebar @ 280px  [app=reading theme=light dir=ltr root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.2px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.2px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / sidebar @ 320px  [app=reading theme=light dir=ltr root=15px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.2px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.2px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## fr-light / sidebar @ 360px  [app=reading theme=light dir=ltr root=15.012px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.21px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.21px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / sidebar @ 390px  [app=reading theme=light dir=ltr root=15.063px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.24px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.24px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / sidebar @ 414px  [app=reading theme=light dir=ltr root=15.1038px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.27px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.27px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## fr-light / sidebar @ 768px  [app=reading theme=light dir=ltr root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (40) ::
+    10.37px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.37px  span.flex.items-center.gap-1 “Mecquoise 7 v.”
+    10.37px  span.inline-flex.items-center.text-[0.64rem] “Mecquoise”
+    10.37px  span.flex.items-center.gap-1 “Médinoise 286 v.”
+    10.37px  span.inline-flex.items-center.text-[0.64rem] “Médinoise”
+    10.37px  span.flex.items-center.gap-1 “Médinoise 200 v.”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## fr-light / sidebar @ 1024px  [app=reading theme=light dir=ltr root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## fr-light / sidebar @ 1280px  [app=reading theme=light dir=ltr root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / sidebar @ 1440px  [app=reading theme=light dir=ltr root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / sidebar @ 1920px  [app=reading theme=light dir=ltr root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## fr-light / duas @ 280px  [app=duas theme=light dir=ltr root=15px]
+tiny text (12) ::
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 320px  [app=duas theme=light dir=ltr root=15px]
+tiny text (12) ::
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 360px  [app=duas theme=light dir=ltr root=15.012px]
+tiny text (13) ::
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 390px  [app=duas theme=light dir=ltr root=15.063px]
+tiny text (13) ::
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 414px  [app=duas theme=light dir=ltr root=15.1038px]
+tiny text (13) ::
+    10px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 768px  [app=duas theme=light dir=ltr root=15.7056px]
+tiny text (14) ::
+    10.37px  p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”
+    10px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10px  span.mp-footer-v2__nav-label “Accueil”
+    10px  span.mp-footer-v2__nav-label “Lire”
+    10px  span.mp-footer-v2__nav-label “Rechercher”
+    10px  span.mp-footer-v2__nav-label “Écouter”
+
+## fr-light / duas @ 1024px  [app=duas theme=light dir=ltr root=16.1408px]
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “À propos”
+    10.01px  span. “Confidentialité”
+    10.01px  span. “Mentions légales”
+    10.01px  span. “Sources”
+
+## fr-light / duas @ 1280px  [app=duas theme=light dir=ltr root=16.576px]
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “À propos”
+    10.28px  span. “Confidentialité”
+    10.28px  span. “Mentions légales”
+    10.28px  span. “Sources”
+
+## fr-light / duas @ 1440px  [app=duas theme=light dir=ltr root=16.848px]
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “À propos”
+    10.45px  span. “Confidentialité”
+    10.45px  span. “Mentions légales”
+    10.45px  span. “Sources”
+
+## fr-light / about @ 280px  [app=legal theme=light dir=ltr root=15px]
+tiny text (11) ::
+    10px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+    10px  span. “114 sourates”
+    10px  span. “Données locales”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## fr-light / about @ 320px  [app=legal theme=light dir=ltr root=15px]
+tiny text (11) ::
+    10px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+    10px  span. “114 sourates”
+    10px  span. “Données locales”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## fr-light / about @ 360px  [app=legal theme=light dir=ltr root=15.012px]
+tiny text (11) ::
+    10px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+    10px  span. “114 sourates”
+    10px  span. “Données locales”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## fr-light / about @ 390px  [app=legal theme=light dir=ltr root=15.063px]
+tiny text (11) ::
+    10px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+    10px  span. “114 sourates”
+    10px  span. “Données locales”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## fr-light / about @ 414px  [app=legal theme=light dir=ltr root=15.1038px]
+tiny text (11) ::
+    10px  p.legal-page__eyebrow “BIBLIOTHÈQUE & TRANSPARENCE”
+    10px  span. “114 sourates”
+    10px  span. “Données locales”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## fr-light / about @ 768px  [app=legal theme=light dir=ltr root=15.7056px]
+tiny text (7) ::
+    10.37px  span. “114 sourates”
+    10.37px  span. “Données locales”
+    10.37px  span. “v1.1.0”
+    10.37px  span.legal-page__card-index “01”
+    10.37px  span.legal-page__card-index “02”
+    10.37px  span.legal-page__card-index “03”
+
+## fr-light / about @ 1024px  [app=legal theme=light dir=ltr root=16.1408px]
+tiny text (1) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 SOURATES · 30 JUZ”
+
+## ar-dark / home-surah @ 280px  [app=home theme=dark dir=rtl root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-surah @ 320px  [app=home theme=dark dir=rtl root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-surah @ 360px  [app=home theme=dark dir=rtl root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-surah @ 390px  [app=home theme=dark dir=rtl root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-surah @ 414px  [app=home theme=dark dir=rtl root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-surah @ 768px  [app=home theme=dark dir=rtl root=15.7056px]
+tiny text (40) ::
+    10.37px  span.home-resume-panel__eyebrow “رواية حفص”
+    10.37px  small.home-resume-panel__target-label “قراءتك التالية”
+    10.37px  span. “0 محفوظ”
+    10.37px  span. “0 ملاحظات”
+    10.37px  span. “0 قوائم”
+    10.37px  small. “ورد الصباح”
+
+## ar-dark / home-surah @ 1024px  [app=home theme=dark dir=rtl root=16.1408px]
+tiny text (9) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+
+## ar-dark / home-surah @ 1280px  [app=home theme=dark dir=rtl root=16.576px]
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+
+## ar-dark / home-surah @ 1440px  [app=home theme=dark dir=rtl root=16.848px]
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+
+## ar-dark / home-juz @ 280px  [app=home theme=dark dir=rtl root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-juz @ 320px  [app=home theme=dark dir=rtl root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-juz @ 360px  [app=home theme=dark dir=rtl root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-juz @ 390px  [app=home theme=dark dir=rtl root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-juz @ 414px  [app=home theme=dark dir=rtl root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-juz @ 768px  [app=home theme=dark dir=rtl root=15.7056px]
+tiny text (40) ::
+    10.37px  span.home-resume-panel__eyebrow “رواية حفص”
+    10.37px  small.home-resume-panel__target-label “قراءتك التالية”
+    10.37px  span. “0 محفوظ”
+    10.37px  span. “0 ملاحظات”
+    10.37px  span. “0 قوائم”
+    10.37px  small. “ورد الصباح”
+
+## ar-dark / home-juz @ 1024px  [app=home theme=dark dir=rtl root=16.1408px]
+tiny text (9) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+
+## ar-dark / home-juz @ 1280px  [app=home theme=dark dir=rtl root=16.576px]
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+
+## ar-dark / home-juz @ 1440px  [app=home theme=dark dir=rtl root=16.848px]
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+
+## ar-dark / home-audio @ 280px  [app=home theme=dark dir=rtl root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-audio @ 320px  [app=home theme=dark dir=rtl root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-audio @ 360px  [app=home theme=dark dir=rtl root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-audio @ 390px  [app=home theme=dark dir=rtl root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-audio @ 414px  [app=home theme=dark dir=rtl root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / home-audio @ 768px  [app=home theme=dark dir=rtl root=15.7056px]
+targets<44 (8) ::
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+tiny text (32) ::
+    10.37px  span.home-resume-panel__eyebrow “رواية حفص”
+    10.37px  small.home-resume-panel__target-label “قراءتك التالية”
+    10.37px  span. “0 محفوظ”
+    10.37px  span. “0 ملاحظات”
+    10.37px  span. “0 قوائم”
+    10.37px  small. “ورد الصباح”
+
+## ar-dark / home-audio @ 1024px  [app=home theme=dark dir=rtl root=16.1408px]
+targets<44 (8) ::
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+tiny text (14) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+    10.01px  small. “49”
+    10.01px  small. “4”
+    10.01px  span.home-style-filter__count “59”
+    10.01px  span.home-style-filter__count “54”
+    10.01px  span.home-style-filter__count “5”
+
+## ar-dark / home-audio @ 1280px  [app=home theme=dark dir=rtl root=16.576px]
+tiny text (13) ::
+    10.28px  small. “49”
+    10.28px  small. “4”
+    10.28px  span.home-style-filter__count “59”
+    10.28px  span.home-style-filter__count “54”
+    10.28px  span.home-style-filter__count “5”
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+
+## ar-dark / home-audio @ 1440px  [app=home theme=dark dir=rtl root=16.848px]
+tiny text (13) ::
+    10.45px  small. “49”
+    10.45px  small. “4”
+    10.45px  span.home-style-filter__count “59”
+    10.45px  span.home-style-filter__count “54”
+    10.45px  span.home-style-filter__count “5”
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+
+## ar-dark / reciter-detail @ 280px  [app=home theme=dark dir=rtl root=15px]
+clipped-x (1) ::
+    -15px  div.home-resume-panel__watermark “002”
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / reciter-detail @ 320px  [app=home theme=dark dir=rtl root=15px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / reciter-detail @ 360px  [app=home theme=dark dir=rtl root=15.012px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / reciter-detail @ 390px  [app=home theme=dark dir=rtl root=15.063px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / reciter-detail @ 414px  [app=home theme=dark dir=rtl root=15.1038px]
+tiny text (40) ::
+    10px  span.home-resume-panel__eyebrow “رواية حفص”
+    10px  span. “0 محفوظ”
+    10px  span. “0 ملاحظات”
+    10px  span. “0 قوائم”
+    10px  small. “ورد الصباح”
+    10px  span.home-today-verse__label “آية اليوم”
+
+## ar-dark / reciter-detail @ 768px  [app=home theme=dark dir=rtl root=15.7056px]
+targets<44 (8) ::
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+    41.6x44  button.reciter-card__favorite
+tiny text (39) ::
+    10.37px  span.home-resume-panel__eyebrow “رواية حفص”
+    10.37px  small.home-resume-panel__target-label “قراءتك التالية”
+    10.37px  span. “0 محفوظ”
+    10.37px  span. “0 ملاحظات”
+    10.37px  span. “0 قوائم”
+    10.37px  small. “ورد الصباح”
+
+## ar-dark / reciter-detail @ 1024px  [app=home theme=dark dir=rtl root=16.1408px]
+targets<44 (8) ::
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+    42.8x44.4  button.reciter-card__favorite
+tiny text (19) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+    10.01px  small. “49”
+    10.01px  small. “4”
+    10.01px  span.home-style-filter__count “59”
+    10.01px  span.home-style-filter__count “54”
+    10.01px  span.home-style-filter__count “5”
+
+## ar-dark / reciter-detail @ 1280px  [app=home theme=dark dir=rtl root=16.576px]
+tiny text (14) ::
+    10.28px  small. “49”
+    10.28px  small. “4”
+    10.28px  span.home-style-filter__count “59”
+    10.28px  span.home-style-filter__count “54”
+    10.28px  span.home-style-filter__count “5”
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+
+## ar-dark / reciter-detail @ 1440px  [app=home theme=dark dir=rtl root=16.848px]
+tiny text (14) ::
+    10.45px  small. “49”
+    10.45px  small. “4”
+    10.45px  span.home-style-filter__count “59”
+    10.45px  span.home-style-filter__count “54”
+    10.45px  span.home-style-filter__count “5”
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+
+## ar-dark / read-list @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / read-list @ 320px  [app=reading theme=dark dir=rtl root=15px]
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / read-list @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+tiny text (25) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / read-list @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+tiny text (25) ::
+    10.24px  small. “2 · 286 آيات”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / read-list @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+tiny text (25) ::
+    10.27px  small. “2 · 286 آيات”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / read-list @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (14) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “نهاية السورة”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## ar-dark / read-list @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## ar-dark / read-list @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / read-list @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / read-list @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / read-mushaf @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (14) ::
+    7.2px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span. “٢٨٦ آيات”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+(mots cliquables <44: 59, plus petit 17.0px)
+
+## ar-dark / read-mushaf @ 320px  [app=reading theme=dark dir=rtl root=15px]
+tiny text (14) ::
+    7.2px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span. “٢٨٦ آيات”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## ar-dark / read-mushaf @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+tiny text (15) ::
+    7.21px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span. “٢٨٦ آيات”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## ar-dark / read-mushaf @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+tiny text (15) ::
+    10.24px  small. “2 · 286 آيات”
+    7.23px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span. “٢٨٦ آيات”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## ar-dark / read-mushaf @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+tiny text (15) ::
+    10.27px  small. “2 · 286 آيات”
+    7.25px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span. “٢٨٦ آيات”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+(mots cliquables <44: 60, plus petit 17.0px)
+
+## ar-dark / read-mushaf @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+tiny text (14) ::
+    7.54px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 60, plus petit 19.3px)
+
+## ar-dark / read-mushaf @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+tiny text (9) ::
+    7.99px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+(mots cliquables <44: 60, plus petit 21.6px)
+
+## ar-dark / read-mushaf @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+tiny text (9) ::
+    8.55px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+(mots cliquables <44: 60, plus petit 23.3px)
+
+## ar-dark / read-mushaf @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+tiny text (9) ::
+    8.9px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+(mots cliquables <44: 60, plus petit 23.4px)
+
+## ar-dark / read-mushaf @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+tiny text (1) ::
+    9.68px  span.cpv-surah-name-tr.text-[9.5px].font-semibold “La Vache”
+(mots cliquables <44: 60, plus petit 23.4px)
+
+## ar-dark / fullscreen @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (54) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+    21.9x29  span.qcm-word “ﱁ”
+    25.6x29  span.qcm-word “ﱃ”
+    54.6x29  span.qcm-word “ﱄ”
+    10.1x29  span.qcm-word “ﱅ”
+    25x29  span.qcm-word “ﱆﱇ”
+    19.7x29  span.qcm-word “ﱈﱉ”
+    35.4x29  span.qcm-word “ﱊ”
+    37.4x29  span.qcm-word “ﱋ”
+    22.9x29  span.qcm-word “ﱍ”
+tiny text (30) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10.2px  span.qcm-page-header__meta “جزء ١”
+    10.2px  span.qcm-page-header__meta “صفحة ٢”
+    10.2px  span.qcm-page-header__meta “جزء ١”
+    10.2px  span.qcm-page-header__meta “صفحة ٣”
+    10.1px  span. “٦”
+(mots cliquables <44: 6, plus petit 7.9px)
+
+## ar-dark / fullscreen @ 320px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (54) ::
+    26.5x29  span.qcm-word “ﱁ”
+    30.9x29  span.qcm-word “ﱃ”
+    66x29  span.qcm-word “ﱄ”
+    12.1x29  span.qcm-word “ﱅ”
+    30.3x29  span.qcm-word “ﱆﱇ”
+    23.8x29  span.qcm-word “ﱈﱉ”
+    42.7x29  span.qcm-word “ﱊ”
+    45.1x29  span.qcm-word “ﱋ”
+    27.6x29  span.qcm-word “ﱍ”
+    37.7x29  span.qcm-word “ﱎ”
+tiny text (30) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10.2px  span.qcm-page-header__meta “جزء ١”
+    10.2px  span.qcm-page-header__meta “صفحة ٢”
+    10.2px  span.qcm-page-header__meta “جزء ١”
+    10.2px  span.qcm-page-header__meta “صفحة ٣”
+    10.26px  span. “٦”
+(mots cliquables <44: 6, plus petit 8.0px)
+
+## ar-dark / fullscreen @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    52.9x29  span.qcm-word “ﱋ”
+    32.4x29  span.qcm-word “ﱍ”
+    44.2x29  span.qcm-word “ﱎ”
+tiny text (20) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10.21px  span.qcm-page-header__meta “جزء ١”
+    10.21px  span.qcm-page-header__meta “صفحة ٢”
+    10.21px  span.qcm-page-header__meta “جزء ١”
+    10.21px  span.qcm-page-header__meta “صفحة ٣”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+(mots cliquables <44: 6, plus petit 9.3px)
+
+## ar-dark / fullscreen @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    58.7x29  span.qcm-word “ﱋ”
+    35.9x29  span.qcm-word “ﱍ”
+    49x29  span.qcm-word “ﱎ”
+tiny text (19) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10.24px  span.qcm-page-header__meta “جزء ١”
+    10.24px  span.qcm-page-header__meta “صفحة ٢”
+    10.24px  span.qcm-page-header__meta “جزء ١”
+    10.24px  span.qcm-page-header__meta “صفحة ٣”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+(mots cliquables <44: 6, plus petit 10.3px)
+
+## ar-dark / fullscreen @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+targets<44 (54) ::
+    30.8x29  span.qcm-word “ﱁ”
+    35.9x29  span.qcm-word “ﱃ”
+    76.8x29  span.qcm-word “ﱄ”
+    14.1x29  span.qcm-word “ﱅ”
+    35.2x29  span.qcm-word “ﱆﱇ”
+    27.7x29  span.qcm-word “ﱈﱉ”
+    49.7x29  span.qcm-word “ﱊ”
+    63.3x29  span.qcm-word “ﱋ”
+    38.8x29  span.qcm-word “ﱍ”
+    52.9x29  span.qcm-word “ﱎ”
+tiny text (19) ::
+    10px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10.27px  span.qcm-page-header__meta “جزء ١”
+    10.27px  span.qcm-page-header__meta “صفحة ٢”
+    10.27px  span.qcm-page-header__meta “جزء ١”
+    10.27px  span.qcm-page-header__meta “صفحة ٣”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+(mots cliquables <44: 6, plus petit 11.1px)
+
+## ar-dark / fullscreen @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (54) ::
+    35x33  span.qcm-word “ﱁ”
+    40.9x33  span.qcm-word “ﱃ”
+    87.4x33  span.qcm-word “ﱄ”
+    16.1x33  span.qcm-word “ﱅ”
+    40.1x33  span.qcm-word “ﱆﱇ”
+    31.6x33  span.qcm-word “ﱈﱉ”
+    56.6x33  span.qcm-word “ﱊ”
+    76.8x33  span.qcm-word “ﱋ”
+    47x33  span.qcm-word “ﱍ”
+    64.1x33  span.qcm-word “ﱎ”
+tiny text (15) ::
+    10.37px  span.reader-context-card__riwaya.inline-flex.items-center “حفص”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 6, plus petit 18.5px)
+
+## ar-dark / fullscreen @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (54) ::
+    39.3x37  span.qcm-word “ﱁ”
+    45.8x37  span.qcm-word “ﱃ”
+    98x37  span.qcm-word “ﱄ”
+    18x37  span.qcm-word “ﱅ”
+    44.9x37  span.qcm-word “ﱆﱇ”
+    35.4x37  span.qcm-word “ﱈﱉ”
+    63.4x37  span.qcm-word “ﱊ”
+    86.1x37  span.qcm-word “ﱋ”
+    52.8x37  span.qcm-word “ﱍ”
+    71.9x37  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 6, plus petit 20.8px)
+
+## ar-dark / fullscreen @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## ar-dark / fullscreen @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## ar-dark / fullscreen @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (54) ::
+    42.5x40  span.qcm-word “ﱁ”
+    49.6x40  span.qcm-word “ﱃ”
+    106x40  span.qcm-word “ﱄ”
+    19.5x40  span.qcm-word “ﱅ”
+    48.5x40  span.qcm-word “ﱆﱇ”
+    38.3x40  span.qcm-word “ﱈﱉ”
+    68.6x40  span.qcm-word “ﱊ”
+    93.1x40  span.qcm-word “ﱋ”
+    57x40  span.qcm-word “ﱍ”
+    77.7x40  span.qcm-word “ﱎ”
+(mots cliquables <44: 6, plus petit 22.5px)
+
+## ar-dark / search @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / search @ 320px  [app=reading theme=dark dir=rtl root=15px]
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / search @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+tiny text (25) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / search @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+tiny text (25) ::
+    10.24px  small. “2 · 286 آيات”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / search @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+tiny text (25) ::
+    10.27px  small. “2 · 286 آيات”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / search @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (14) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “نهاية السورة”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## ar-dark / search @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## ar-dark / search @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / search @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / search @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / library @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (6) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+    30x44  button.mp-header-menu__close
+    259.3x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “البحث”
+    128.5x30  button.mp-header-menu__item “المظهر”
+    128.5x30  button.mp-header-menu__item “الإعدادات”
+    259.3x30  button.mp-header-menu__item “الأدعية”
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / library @ 320px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (5) ::
+    30x44  button.mp-header-menu__close
+    266.5x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “البحث”
+    132.1x30  button.mp-header-menu__item “المظهر”
+    132.1x30  button.mp-header-menu__item “الإعدادات”
+    266.5x30  button.mp-header-menu__item “الأدعية”
+tiny text (24) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / library @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+targets<44 (5) ::
+    30x44  button.mp-header-menu__close
+    266.7x30  button.mp-header-menu__item.mp-header-menu__item--mobile-only “البحث”
+    132.2x30  button.mp-header-menu__item “المظهر”
+    132.2x30  button.mp-header-menu__item “الإعدادات”
+    266.7x30  button.mp-header-menu__item “الأدعية”
+tiny text (25) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / library @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+targets<44 (2) ::
+    30.1x44  button.mp-header-menu__close
+    257.1x38  button.mp-header-menu__item “الأدعية”
+tiny text (25) ::
+    10.24px  small. “2 · 286 آيات”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / library @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+targets<44 (2) ::
+    30.2x44  button.mp-header-menu__close
+    257.8x38  button.mp-header-menu__item “الأدعية”
+tiny text (25) ::
+    10.27px  small. “2 · 286 آيات”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / library @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (3) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+    31.4x44  button.mp-header-menu__close
+tiny text (14) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “نهاية السورة”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## ar-dark / library @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (5) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+    32.3x44.4  button.mp-header-menu__close
+    32.3x44.4  button.
+    32.3x44.4  button.
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## ar-dark / library @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (4) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+    33.1x45.6  button.mp-header-menu__close
+    33.1x45.6  button.
+    33.1x45.6  button.
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / library @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (4) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+    33.7x46.3  button.mp-header-menu__close
+    33.7x46.3  button.
+    33.7x46.3  button.
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / library @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (4) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+    34x46.8  button.mp-header-menu__close
+    34x46.8  button.
+    34x46.8  button.
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / settings @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+clipped-x (3) ::
+    -8px  button.settings-segmented__item “Français”
+    -5px  button.settings-segmented__item “English”
+    -2px  button.settings-segmented__item “العربية”
+tiny text (37) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / settings @ 320px  [app=reading theme=dark dir=rtl root=15px]
+tiny text (37) ::
+    10.05px  button.qc-list-card__reference “1”
+    10.05px  button.qc-list-card__reference “2”
+    10.05px  button.qc-list-card__reference “3”
+    10.05px  button.qc-list-card__reference “4”
+    10.05px  button.qc-list-card__reference “5”
+    10.05px  button.qc-list-card__reference “6”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / settings @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+tiny text (38) ::
+    10.06px  button.qc-list-card__reference “1”
+    10.06px  button.qc-list-card__reference “2”
+    10.06px  button.qc-list-card__reference “3”
+    10.06px  button.qc-list-card__reference “4”
+    10.06px  button.qc-list-card__reference “5”
+    10.06px  button.qc-list-card__reference “6”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / settings @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+tiny text (38) ::
+    10.24px  small. “2 · 286 آيات”
+    10.09px  button.qc-list-card__reference “1”
+    10.09px  button.qc-list-card__reference “2”
+    10.09px  button.qc-list-card__reference “3”
+    10.09px  button.qc-list-card__reference “4”
+    10.09px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / settings @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+tiny text (38) ::
+    10.27px  small. “2 · 286 آيات”
+    10.12px  button.qc-list-card__reference “1”
+    10.12px  button.qc-list-card__reference “2”
+    10.12px  button.qc-list-card__reference “3”
+    10.12px  button.qc-list-card__reference “4”
+    10.12px  button.qc-list-card__reference “5”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / settings @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (23) ::
+    10.37px  span.font-[var(--font-ui)].text-[0.65rem].font-bold “نهاية السورة”
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## ar-dark / settings @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## ar-dark / settings @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / settings @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (11) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / settings @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / sidebar @ 280px  [app=reading theme=dark dir=rtl root=15px]
+targets<44 (1) ::
+    27x44  button.mp-header__title-btn “002Al-BaqaraLa Vache002”
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.2px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.2px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “مدنية 286 آية”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / sidebar @ 320px  [app=reading theme=dark dir=rtl root=15px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.2px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.2px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “مدنية 286 آية”
+(mots cliquables <44: 52, plus petit 17.0px)
+
+## ar-dark / sidebar @ 360px  [app=reading theme=dark dir=rtl root=15.012px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.21px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.21px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “مدنية 286 آية”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / sidebar @ 390px  [app=reading theme=dark dir=rtl root=15.063px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.24px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.24px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “مدنية 286 آية”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / sidebar @ 414px  [app=reading theme=dark dir=rtl root=15.1038px]
+tiny text (40) ::
+    10px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.27px  div.flex.h-7.w-7 “1”
+    10px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.27px  div.flex.h-7.w-7 “2”
+    10px  span.flex.items-center.gap-1 “مدنية 286 آية”
+(mots cliquables <44: 45, plus petit 18.7px)
+
+## ar-dark / sidebar @ 768px  [app=reading theme=dark dir=rtl root=15.7056px]
+targets<44 (2) ::
+    40x44  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33x44  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (40) ::
+    10.37px  span.shrink-0.text-[0.6rem].font-bold “HAFS”
+    10.37px  span.flex.items-center.gap-1 “مكية 7 آية”
+    10.37px  span.inline-flex.items-center.text-[0.64rem] “مكية”
+    10.37px  span.flex.items-center.gap-1 “مدنية 286 آية”
+    10.37px  span.inline-flex.items-center.text-[0.64rem] “مدنية”
+    10.37px  span.flex.items-center.gap-1 “مدنية 200 آية”
+(mots cliquables <44: 36, plus petit 21.6px)
+
+## ar-dark / sidebar @ 1024px  [app=reading theme=dark dir=rtl root=16.1408px]
+targets<44 (2) ::
+    41.2x44.4  button.simple-player__icon-button.mp-player-play-btn.simple-player__play
+    33.9x44.4  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+(mots cliquables <44: 35, plus petit 23.4px)
+
+## ar-dark / sidebar @ 1280px  [app=reading theme=dark dir=rtl root=16.576px]
+targets<44 (1) ::
+    34.8x45.6  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / sidebar @ 1440px  [app=reading theme=dark dir=rtl root=16.848px]
+targets<44 (1) ::
+    35.4x46.3  button.simple-player__icon-button.simple-player__expand-btn
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / sidebar @ 1920px  [app=reading theme=dark dir=rtl root=17px]
+targets<44 (1) ::
+    35.7x46.8  button.simple-player__icon-button.simple-player__expand-btn
+(mots cliquables <44: 18, plus petit 29.8px)
+
+## ar-dark / duas @ 280px  [app=duas theme=dark dir=rtl root=15px]
+tiny text (11) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 320px  [app=duas theme=dark dir=rtl root=15px]
+tiny text (11) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 360px  [app=duas theme=dark dir=rtl root=15.012px]
+tiny text (12) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 390px  [app=duas theme=dark dir=rtl root=15.063px]
+tiny text (12) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 414px  [app=duas theme=dark dir=rtl root=15.1038px]
+tiny text (12) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 768px  [app=duas theme=dark dir=rtl root=15.7056px]
+tiny text (13) ::
+    10px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10px  span.mp-footer-v2__nav-label “الرئيسية”
+    10px  span.mp-footer-v2__nav-label “اقرأ”
+    10px  span.mp-footer-v2__nav-label “البحث”
+    10px  span.mp-footer-v2__nav-label “استمع”
+    10px  span. “MUSHAFPLUS”
+
+## ar-dark / duas @ 1024px  [app=duas theme=dark dir=rtl root=16.1408px]
+tiny text (8) ::
+    10.01px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.01px  span. “MUSHAFPLUS”
+    10.01px  span. “حول التطبيق”
+    10.01px  span. “الخصوصية”
+    10.01px  span. “إشعار قانوني”
+    10.01px  span. “المصادر”
+
+## ar-dark / duas @ 1280px  [app=duas theme=dark dir=rtl root=16.576px]
+tiny text (8) ::
+    10.28px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.28px  span. “MUSHAFPLUS”
+    10.28px  span. “حول التطبيق”
+    10.28px  span. “الخصوصية”
+    10.28px  span. “إشعار قانوني”
+    10.28px  span. “المصادر”
+
+## ar-dark / duas @ 1440px  [app=duas theme=dark dir=rtl root=16.848px]
+tiny text (8) ::
+    10.45px  span.mp-footer-v2__verse-ref “الذاريات · ٥١:٥٦”
+    10.45px  span. “MUSHAFPLUS”
+    10.45px  span. “حول التطبيق”
+    10.45px  span. “الخصوصية”
+    10.45px  span. “إشعار قانوني”
+    10.45px  span. “المصادر”
+
+## ar-dark / about @ 280px  [app=legal theme=dark dir=rtl root=15px]
+tiny text (10) ::
+    10px  p.legal-page__eyebrow “المكتبة والشفافية”
+    10px  span. “114 سورة”
+    10px  span. “بيانات محلية”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## ar-dark / about @ 320px  [app=legal theme=dark dir=rtl root=15px]
+tiny text (10) ::
+    10px  p.legal-page__eyebrow “المكتبة والشفافية”
+    10px  span. “114 سورة”
+    10px  span. “بيانات محلية”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## ar-dark / about @ 360px  [app=legal theme=dark dir=rtl root=15.012px]
+tiny text (10) ::
+    10px  p.legal-page__eyebrow “المكتبة والشفافية”
+    10px  span. “114 سورة”
+    10px  span. “بيانات محلية”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## ar-dark / about @ 390px  [app=legal theme=dark dir=rtl root=15.063px]
+tiny text (10) ::
+    10px  p.legal-page__eyebrow “المكتبة والشفافية”
+    10px  span. “114 سورة”
+    10px  span. “بيانات محلية”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## ar-dark / about @ 414px  [app=legal theme=dark dir=rtl root=15.1038px]
+tiny text (10) ::
+    10px  p.legal-page__eyebrow “المكتبة والشفافية”
+    10px  span. “114 سورة”
+    10px  span. “بيانات محلية”
+    10px  span. “v1.1.0”
+    10px  span.legal-page__card-index “01”
+    10px  span.legal-page__card-index “02”
+
+## ar-dark / about @ 768px  [app=legal theme=dark dir=rtl root=15.7056px]
+tiny text (7) ::
+    10.37px  span. “114 سورة”
+    10.37px  span. “بيانات محلية”
+    10.37px  span. “v1.1.0”
+    10.37px  span.legal-page__card-index “01”
+    10.37px  span.legal-page__card-index “02”
+    10.37px  span.legal-page__card-index “03”
+
+## ar-dark / about @ 1024px  [app=legal theme=dark dir=rtl root=16.1408px]
+targets<44 (1) ::
+    40.2x46.4  a.
+tiny text (1) ::
+    10.19px  span.mp-header__home-meta-clean “HAFS · 114 سورة · ٣٠ جزء”
+
+## ar-dark / about @ 1280px  [app=legal theme=dark dir=rtl root=16.576px]
+targets<44 (1) ::
+    42.8x47.6  a.
+
+## ar-dark / about @ 1440px  [app=legal theme=dark dir=rtl root=16.848px]
+targets<44 (1) ::
+    43.3x48.3  a.
+
+=== 260 mesures, 248 configurations avec constats, 6 erreurs de navigation ===
+ERREURS: [
+ {
+  "v": "read-page",
+  "p": "fr-light",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-reading') to be visible\u001b[22m\n"
+ },
+ {
+  "v": "read-juz",
+  "p": "fr-light",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-reading') to be visible\u001b[22m\n"
+ },
+ {
+  "v": "notfound",
+  "p": "fr-light",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-not-found') to be visible\u001b[22m\n"
+ },
+ {
+  "v": "read-page",
+  "p": "ar-dark",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-reading') to be visible\u001b[22m\n"
+ },
+ {
+  "v": "read-juz",
+  "p": "ar-dark",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-reading') to be visible\u001b[22m\n"
+ },
+ {
+  "v": "notfound",
+  "p": "ar-dark",
+  "w": 0,
+  "error": "page.waitForSelector: Timeout 25000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('.app-view-not-found') to be visible\u001b[22m\n"
+ }
+]

@@ -1,0 +1,76 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 86,
+  "number_of_ayahs": 17,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "wal-samāi wal-ṭāriqi"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wamā adrāka mā l-ṭāriqu"
+    },
+    {
+      "ayah_number": 3,
+      "text": "al-najmu l-thāqibu"
+    },
+    {
+      "ayah_number": 4,
+      "text": "in kullu nafsin lammā ʿalayhā ḥāfiẓun"
+    },
+    {
+      "ayah_number": 5,
+      "text": "falyanẓuri l-insānu mimma khuliqa"
+    },
+    {
+      "ayah_number": 6,
+      "text": "khuliqa min māin dāfiqin"
+    },
+    {
+      "ayah_number": 7,
+      "text": "yakhruju min bayni l-ṣul'bi wal-tarāibi"
+    },
+    {
+      "ayah_number": 8,
+      "text": "innahu ʿalā rajʿihi laqādirun"
+    },
+    {
+      "ayah_number": 9,
+      "text": "yawma tub'lā l-sarāiru"
+    },
+    {
+      "ayah_number": 10,
+      "text": "famā lahu min quwwatin walā nāṣirin"
+    },
+    {
+      "ayah_number": 11,
+      "text": "wal-samāi dhāti l-rajʿi"
+    },
+    {
+      "ayah_number": 12,
+      "text": "wal-arḍi dhāti l-ṣadʿi"
+    },
+    {
+      "ayah_number": 13,
+      "text": "innahu laqawlun faṣlun"
+    },
+    {
+      "ayah_number": 14,
+      "text": "wamā huwa bil-hazli"
+    },
+    {
+      "ayah_number": 15,
+      "text": "innahum yakīdūna kaydan"
+    },
+    {
+      "ayah_number": 16,
+      "text": "wa-akīdu kaydan"
+    },
+    {
+      "ayah_number": 17,
+      "text": "famahhili l-kāfirīna amhil'hum ruwaydan"
+    }
+  ]
+}

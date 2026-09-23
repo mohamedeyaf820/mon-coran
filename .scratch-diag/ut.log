@@ -1,0 +1,671 @@
+✔ Arabic typography clamps unsafe preferences (2.0367ms)
+✔ Arabic typography scales progressively with the connected device (Phone, Tablet, Desktop) (2.0112ms)
+✔ Arabic typography preserves user reductions and increases on every device (0.3619ms)
+✔ Mushaf typography stays responsive without exceeding layout safety caps (0.2374ms)
+✔ continuous Mushaf line height stays compact for every exposed Quran font (0.4994ms)
+✔ page routes keep the same compact leading as continuous Mushaf routes (0.2789ms)
+✔ every exposed Hafs text path removes internal dotted-circle anchors (1.8321ms)
+✔ Yusuf 12:11 keeps its Quranic sign in the form each reading face can draw (0.4867ms)
+✔ a silent letter keeps the QPC sukun in the Hafs face and the rounded zero elsewhere (0.4007ms)
+✔ Al-Mulk pause signs stay attached to the preceding Uthmani glyph (0.5938ms)
+✔ font-locked Hafs payloads stay out of generic word chains (0.5169ms)
+✔ all supported embedded ayah marker forms collapse to one generated marker (4.8385ms)
+✔ waqf signs remain Quran content while the standalone medallion stays canonical (0.5167ms)
+✔ mobile playback requests a playback audio session and advances without animation frames (17.4441ms)
+✔ a blocked native play is reported as paused, never as successful playback (4.3437ms)
+✔ flat equalizer preserves the native audio path (0.689ms)
+✔ OS pause and resume events update the controls without forcing playback (1.1312ms)
+✔ a verse that fails to load in the background retries on return to the foreground (5.4633ms)
+✔ an OS interruption is not mistaken for the user pausing (1.8911ms)
+✔ playback progress keeps reporting without requestAnimationFrame (613.9804ms)
+✔ audio navigation scopes identify surah, page and juz playlists (2.83ms)
+✔ a stale playlist end cannot navigate a newly selected reading scope (0.5365ms)
+✔ audio utils: formats playback time safely (1.8702ms)
+✔ audio utils: reciter cooldown grows within defined bounds (0.3958ms)
+✔ audio labels: core controls are available in every UI language (0.5598ms)
+✔ audio player exposes only compact and expanded positions (2.5687ms)
+✔ audio defaults stay in settings while advanced controls adapt inside the player (2.494ms)
+✔ retired audio maker and reciter comparator components are deleted (0.7516ms)
+✔ karaoke frame loop cancels all animation work while paused (2.3965ms)
+✔ each riwaya gets its own canonical basmala spelling (2.3418ms)
+✔ Hafs basmala uses alif-wasl, Warsh basmala uses the Warsh wasla marks (1.3194ms)
+✔ the Warsh basmala stays verbatim from the project Warsh source (4.9938ms)
+✔ mushaf page and continuous reader resolve basmala through the riwaya (2.4931ms)
+✔ crypto: authenticated device envelopes reject tampering (21.7795ms)
+✔ crypto: protected migrations can purge the persisted fallback device key (1.7445ms)
+✔ crypto: protected mode locks the key and validates the passphrase (702.432ms)
+✔ crypto: passphrases enforce a meaningful minimum and plaintext migrates (1.7234ms)
+✔ crypto: locked settings cannot be overwritten by defaults (467.3172ms)
+✔ direction intents: LTR arrow mapping (1.7679ms)
+✔ direction intents: Arabic swaps horizontal arrows only (0.3885ms)
+✔ direction intents: Home/End recognized, other keys ignored (0.3065ms)
+✔ direction targets: step and clamp match the original slider math (0.384ms)
+✔ AudioPlayer consumes the hook instead of inlining the RTL swap (1.6669ms)
+✔ editorial hub exposes the five published destinations and real actions (15.2098ms)
+✔ privacy and source copy match the implemented local-first behavior (2.6512ms)
+✔ English and Arabic editorial copy remains complete and cacheable (5.6665ms)
+✔ complete Quran downloads merge progress from concurrent workers (269.2666ms)
+✔ a Warsh surah is counted with the Warsh denominator (32.7773ms)
+✔ a lost connection parks the surah instead of failing every verse (1.0907ms)
+✔ every static t() key in src/ resolves in fr, en and ar (339 keys) (6.0232ms)
+✔ French, English and Arabic locale trees expose exactly the same keys (4.4194ms)
+✔ all translated leaf values are usable strings or plural maps (4.027ms)
+✔ new accessibility labels resolve without falling back to their keys (0.6672ms)
+✔ navigation: parses reading, duas and legal routes safely (5.5744ms)
+✔ navigation: rejects invalid route numbers (0.7602ms)
+✔ navigation: rejects partial route matches (0.4032ms)
+✔ storage: settings round-trip encrypted and sanitized (46.149ms)
+✔ storage: retired comparison pins are discarded (8.0903ms)
+✔ storage: preserves per-riwaya Quran font choices (4.2617ms)
+✔ storage: migrates removed local-only Warsh font aliases (4.2837ms)
+✔ fonts: exposes riwaya-safe native ayah markers (0.9914ms)
+✔ fonts: appends native ayah markers without duplicates (1.5102ms)
+✔ fonts: strips source markers before a separate ayah marker is rendered (0.9719ms)
+✔ fonts: selects Quran.com text compatible with the active Hafs font (1.1045ms)
+✔ network policy disables background work and audio warming with data saver (2.5696ms)
+✔ network policy scales audio warming to the connection (0.8387ms)
+✔ low performance detection combines device and viewport signals (0.6607ms)
+✔ performance metrics remain local and aggregate repeated samples (2.8928ms)
+✔ performance metrics reject unsafe names and non-finite values (1.7659ms)
+✔ removed progression tools are not mounted by the application (6.6224ms)
+✔ reader keeps only the resume position and records no progression metrics (1.8751ms)
+✔ service worker waits for user confirmation before activating an update (4.3361ms)
+✔ service worker accepts commands only from a same-origin scoped client (0.6426ms)
+✔ service worker keeps an installable entry shell when the shell manifest is unavailable (0.5001ms)
+✔ service worker bounds runtime caches and awaits cache writes (0.4982ms)
+✔ runtime cache does not persist opaque network responses (64.7828ms)
+✔ service worker does not precache optional PWA gallery screenshots (0.5703ms)
+✔ deployment headers allow same-origin device features for explicit opt-in (1.2728ms)
+✔ PWA manifest exposes stable identity, coherent colors and dedicated install assets (11.7863ms)
+✔ iOS startup images are declared and available for phone and tablet formats (5.5031ms)
+✔ online audio still streams when Cache Storage is unavailable (72.1141ms)
+✔ offline audio serves a usable body for bytes=0-999 (24.9275ms)
+✔ offline audio serves a usable body for bytes=-3 (4.8651ms)
+✔ offline audio serves a usable body for bytes=4- (4.75ms)
+✔ offline audio serves a usable body for bytes=20- (3.8088ms)
+✔ offline audio serves a usable body for bytes=invalid (2.3761ms)
+✔ offline audio serves a usable body for bytes=0-1,4-5 (2.3797ms)
+✔ boot recovery preserves cached data when network is unavailable (online hint: false) (5.9359ms)
+✔ boot recovery preserves cached data when network is unavailable (online hint: true) (3.7117ms)
+✔ worker uses the correct Vary policy for https://qa.test/assets/app.js (5.4095ms)
+✔ worker uses the correct Vary policy for https://api.alquran.cloud/v1/surah/1 (3.8936ms)
+✔ worker and downloader open the same offline audio cache (1.6693ms)
+✔ trim keeps the precached shell and evicts the oldest runtime entries (3.7314ms)
+✔ note: rejects a record whose key points to another verse (2.531ms)
+✔ bookmark: rejects a record whose key points to another verse (0.5881ms)
+✔ fetch timeout: an already cancelled navigation never sends a request (3.0407ms)
+✔ fetch timeout: caller cancellation retains AbortError (1.2302ms)
+✔ fetch timeout: finished requests release their cancellation listeners (79.8865ms)
+✔ fetch timeout: actual timeout is still reported (14.1024ms)
+✔ surah information is normalized before reaching the UI (81.2318ms)
+✔ an aborted reader does not cancel a shared Quran.com request (5.8032ms)
+✔ healthy reader sources stay out of the reading interface (4.4731ms)
+✔ reader typography controls remain explicit and mobile-accessible (2.0758ms)
+✔ the unified reader header remains available in mobile QCF4 Mushaf mode (2.5521ms)
+✔ dua cards keep a single compact reader action (3.6176ms)
+✔ surah information opens as an accessible responsive dossier (2.1272ms)
+✔ reciter cards keep technical providers in the detail view (1.197ms)
+✔ verse action modal renders a reduced, responsive action grid (1.9767ms)
+✔ Tajweed legend groups rules without compressing their labels (3.1456ms)
+✔ page atmospheres remain contextual, theme-aware and asset-free (2.5553ms)
+✔ mobile reader shell follows the Tajweed card and keeps an explicit home logo (3.6429ms)
+✔ verse reference and primary actions keep one production-safe row (2.1817ms)
+✔ home mobile hierarchy progressively discloses secondary content (1.6042ms)
+✔ Mushaf pages keep a compact, theme-aware reading hierarchy (1.3422ms)
+✔ reciter details expose a resumable complete Quran offline download (1.7351ms)
+✔ immersive Mushaf opens on the verse in view and leafs right to left like a printed book (3.3393ms)
+✔ immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page controls (1.3424ms)
+✔ immersive Mushaf is edge-to-edge and theme-aware through its own portal sheet (1.9147ms)
+✔ surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech (2.3418ms)
+✔ the active surah name keeps its meaning animated without harming accessibility (1.1373ms)
+✔ home quick suggestions stay compact and available responsively (0.9462ms)
+✔ home surah play controls expose and toggle the real playback state (2.0066ms)
+✔ retired word analysis CSS is absent from the application shell (3.6076ms)
+✔ continuous Mushaf text strips embedded markers before rendering its marker (0.7857ms)
+✔ Warsh page data and fullscreen share one renderer with one marker owner (2.4135ms)
+✔ continuous Mushaf markers leave a readable gap before the next ayah (1.6919ms)
+✔ ayah numbers keep one canonical glyph regardless of the reading font (0.6568ms)
+✖ Tajweed legend and Quran.com markup share the same eight rule families (6.8133ms)
+✖ every tajweed colour stays readable on its theme paper (3.691ms)
+✔ the visual system separates brand, gold, Warsh and transliteration roles (5.1343ms)
+✔ the application-wide design system owns themes, surfaces and responsive fallbacks (1.4834ms)
+✔ recitation performance: Warsh playlists are built locally without text fetches (5.855ms)
+✔ recitation performance: surah-stream radio keeps one item per surah (5.1195ms)
+✔ audio sync: a full-surah stream exposes and advances the active ayah (7.59ms)
+✔ audio sync: selecting an ayah seeks within a full-surah stream (8.7405ms)
+✔ audio performance: a rapid verse change supersedes the stale load cleanly (6.376ms)
+✔ audio performance: rapid reciter changes are serialized and latest wins (3.4257ms)
+✔ audio correctness: switching reciter never reuses the previous reciter timing URL (1.6011ms)
+✔ audio resilience: EveryAyah primary failure falls back to its mirror (1.0148ms)
+✔ audio lifecycle: play and pause subscribers drive pausable consumers (3.0369ms)
+✔ reciters: Hafs and Warsh catalogues are complete (5.5592ms)
+✔ reciters: removed voices no longer resolve (1.0472ms)
+✔ reciters: Hafs streams only from the Quran.com CDN, EveryAyah or approved MP3Quran surah feeds (2.1503ms)
+✔ reciters: only the approved voices stream whole surahs (1.7715ms)
+✔ reciters: ids are unique and metadata is compatible with the player (22.2972ms)
+✔ reciters: QuranPedia cdn values are numeric recitation ids (0.438ms)
+✔ reciters: every catalogue entry has a visual and localized biography (1.24ms)
+✔ reciters: curated portrait URLs replace every known text thumbnail (1.6393ms)
+✔ reciters: portrait attribution matches the actual image host (1.2618ms)
+✔ reciters: Al-Matrood and Al-Sudais have verified biography sources (0.5015ms)
+✔ reciters: requested voices are discoverable through common spellings (1.5285ms)
+✔ reciters: every biography exposes a reviewed HTTPS source (0.9401ms)
+✔ reciters: reciter profiles match the catalogue exactly (0.3972ms)
+✔ reciters: attributed portraits and biography sources are wired (1.7341ms)
+✔ reciters: Warsh additions are marked as verified Warsh (0.3259ms)
+✔ audio: per-ayah URLs are built for every CDN type (15.3394ms)
+✔ audio: fallback candidates stay within the approved sources (3.2634ms)
+✔ all 114 surah routes resolve without clamping or redirection (27.0978ms)
+✔ invalid reading routes return a real not-found state (0.782ms)
+✔ published transparency routes resolve explicitly (0.4917ms)
+✔ search preparation sanitizes input and resolves candidates without a worker (4.3393ms)
+✔ search preparation falls back when worker messaging is unavailable (1.3756ms)
+✔ a positional query is read as a jump target in every supported form (3.2093ms)
+✔ out-of-range and textual queries stay on the text search path (0.6978ms)
+✔ Arabic-Indic digits are folded to the digits the rest of the app uses (0.3593ms)
+✔ the shared fold collapses accents, tashkeel and letter variants (0.4391ms)
+✔ every surah search box resolves the same query to the same surahs (11.6877ms)
+✔ security: allows only whitelisted https hosts (2.2478ms)
+✔ security: runtime-sourced hrefs accept only link protocols (0.5891ms)
+✔ security: production CSP excludes dev-only and unused risky sources (0.9377ms)
+✔ fonts: the Hafs and Warsh faces are self-hosted as valid WOFF2 assets (4.4301ms)
+✔ security: the HTML meta CSP stays compatible with local WebKit previews (0.8912ms)
+✔ security: deployment CSP headers match the generated production policy (1.0885ms)
+✔ security: all deployable root headers match the centralized policy (5.4862ms)
+✔ security: deployment assets use CORP and unused browser capabilities are denied (1.3354ms)
+✔ security: reader failures do not expose raw provider errors to the UI (1.4251ms)
+✔ security: SVG sanitizer strips active content and external references (15.5895ms)
+✔ security: sanitizers reject encoded SVG URLs and dangerous HTML (3.9469ms)
+✔ security: source avoids raw HTML injection sinks (79.6127ms)
+✔ storage: rejects invalid localStorage key format (0.7086ms)
+✔ storage: validates a saved note and returns fallback on corruption (0.7397ms)
+✔ storage: keeps a valid offline download registry across reloads (0.945ms)
+✔ storage: accepts an explicitly cancelled offline download (0.4582ms)
+✔ storage quota reports usage, remaining capacity and persistence (4.0279ms)
+✔ storage quota blocks a download that would consume the reserve (0.8863ms)
+✔ audio estimates account for stream and verse downloads (0.4197ms)
+✔ tafsir: exposes stable keys for selector values (3.2286ms)
+✔ tafsir: accepts numeric resource ids and keeps selected source (2.218ms)
+✔ tafsir: falls back when the selected resource fails (0.939ms)
+✔ tajwid segments keep leading Arabic marks attached to their base glyph (3.9618ms)
+✔ tajwid segments retain the coloured base after moving a leading harakah (0.6506ms)
+✔ stand-in superscript alef is normalized without creating an isolated mark (0.4665ms)
+✔ QPC dotted-circle anchors never leak into the rendered Quran text (0.651ms)
+✔ QPC filled fallback dots are normalized to the canonical Quranic sign (0.4236ms)
+✔ Al-Mulk waqf marks cannot be isolated by a zero-width separator (0.7662ms)
+✔ interactive waqf signs preserve their canonical Quran code point on a safe anchor (0.4707ms)
+✖ Hafs and Warsh use the shared Quran.com Tajweed color semantics (2.3634ms)
+✔ every Quran.com tajweed rule class resolves to a coloured rule (0.941ms)
+✔ Quran.com markup and glyph classes stay uncoloured (0.6007ms)
+✔ the edition is served from 114 local surah files plus one index (11.1119ms)
+✔ every surah file covers its Hafs verses densely, in Hafs numbering (4.6278ms)
+✔ the mushaf adds up to 6236 Hafs verses (0.491ms)
+✔ the reading line is latin text only, free of markup and numbering (20.9453ms)
+✔ a verse is the space-joined stream of its word transliterations (4.8942ms)
+✔ the basmala belongs to Al-Fatiha's numbered verses, not to a surah opening (0.6004ms)
+✔ the recitation letters stay readable on the sampled verses (0.3507ms)
+✔ index.json pins the SHA-256 of the files actually shipped (71.4744ms)
+✔ the edition is registered in the legal attribution ledger (0.8069ms)
+✔ the loader reads a surah offline, in Hafs numbering, and parses it once (49.9466ms)
+✔ the synchronous read answers from memory only (5.2158ms)
+✔ a request schedules the load and notifies subscribers when the lines land (78.0779ms)
+✔ the attribution is read from the pinned index (1.0079ms)
+✔ an incomplete surah is refused instead of shown, even with a matching digest (17.3838ms)
+✔ a tampered file fails its pinned digest and is never served (39.4384ms)
+✔ out-of-range surahs are rejected (0.7922ms)
+✔ the reading cards take their line from the getter, not from the approximation (4.4708ms)
+✔ every populated surah notifies the readers, cache hit included (0.7681ms)
+✔ Warsh never receives a Hafs-derived transliteration (0.5667ms)
+✔ the loader keeps a single entry point and default export (0.1954ms)
+✔ shared modal.jsx close control follows the active language (3.729ms)
+✔ shared sheet.jsx close control follows the active language (0.8844ms)
+✔ compact mobile player uses the safe-area dock and a visible progress rail (4.8999ms)
+✔ reader and mobile settings keep a compact, labelled hierarchy (2.3215ms)
+✔ feature-level accessibility labels use the active locale (2.1583ms)
+✔ verse sharing: builds a stable MushafPlus deep link (2.4819ms)
+✔ verse sharing: creates clean localized content (1.8267ms)
+✔ verse sharing: provides valid destinations for every supported network (1.4048ms)
+✔ verse sharing: strips markup and normalizes whitespace (0.4006ms)
+✔ verse sharing: the product flow is image-first (2.5399ms)
+✔ voice recognition follows the selected search language (8.93ms)
+✔ voice recognition supports standard and prefixed browser APIs (0.4534ms)
+✔ search modal exposes an accessible voice control and live feedback (2.3187ms)
+✔ setup: the Warsh everyayah reciter really is a per-ayah CDN (3.0846ms)
+✔ surahs whose numbering is identical keep producing the old URLs (1.8816ms)
+✔ past a divergence point the requested file is the Hafs verse, not the displayed one (2.4828ms)
+✔ no Warsh item anywhere in the mushaf asks for a file outside its surah (72.7954ms)
+✔ Quran.com CDN URLs and their everyayah fallback keep the Hafs keys (2.6114ms)
+✔ QuranPedia URLs ask for the displayed Warsh verse, not the Hafs one (0.7403ms)
+✔ loadPlaylist builds Warsh tracks on the Hafs file and keeps the Warsh position (7.587ms)
+✔ the two global numbering spaces really differ for Warsh (0.6124ms)
+✔ Warsh playback anchors on the Warsh verse, not on the Hafs global (1.5549ms)
+✔ Hafs playback is unchanged and still falls back to the global number (0.9023ms)
+✔ a verse the provider does not serve never enters the playlist (0.9266ms)
+✔ declared audio gaps are catalogue verses, not invented numbers (0.9798ms)
+✔ segments are well-formed ranges without overlaps (5.5068ms)
+✔ per-surah segment coverage reconciles both ayah totals (0.8617ms)
+✔ Al-Fatiha: the ornamental basmala has no numbered Warsh ayah (1.7475ms)
+✔ Al-Baqarah: Alif-Lam-Mim merges with the following verse in Warsh (8.9621ms)
+✔ Ar-Rum: one Warsh ayah recites the first three Hafs verses (0.6648ms)
+✔ Al-Haqqah: the split of hafs 25 shows both pieces as that verse (0.3611ms)
+✔ Ar-Rahman refrain pairs stay mapped through the merge at the top (0.3587ms)
+✔ Al-Inshiqaq: the hafs 16 split keeps both Warsh pieces on hafs 16 (0.3547ms)
+✔ pure identity surahs map to themselves; offset surahs shift after the first divergence (0.9116ms)
+✔ invalid coordinates return null instead of guessing a verse (1.2364ms)
+✔ round-tripping a warsh ayah through hafs returns its own neighbourhood (44.3587ms)
+✔ warshRangeToHafsRange spans merged endpoints (0.5856ms)
+✔ every surah reports a reliable mapping (0.4794ms)
+✔ warsh coordinates: Hafs ayahs map to themselves (3.3826ms)
+✔ warsh coordinates: a mapped Warsh ayah resolves through hafsNumbers (0.4656ms)
+✔ warsh coordinates: an unplaced Warsh ayah yields null, never a neighbour (0.3233ms)
+✔ warsh coordinates: invalid or missing verse numbers yield null (11.9991ms)
+✔ warsh coordinates: every numbered Warsh ayah resolves to Hafs numbers (77.2052ms)
+✔ warsh coordinates: the documented divergence anchor stays exact (0.4811ms)
+✔ warsh coordinates: all action surfaces hand AyahActions the mapped number (2.8928ms)
+✔ warsh coordinates: useQuranDisplayData attaches the mapping on every path (1.1227ms)
+✔ legacy Warsh corpus: stripping the marker never removes a Quran letter (172.3546ms)
+✔ legacy Warsh corpus: markers attach in every whitespace form (29.2944ms)
+✔ presentation forms are content unless they are the proven ayah number (0.8146ms)
+✔ without ayah-number evidence no presentation form is stripped (0.8372ms)
+✔ digit and bracketed marker forms still collapse (0.5874ms)
+✔ waqf and recitation signs survive marker stripping (0.3799ms)
+✔ append then strip round-trips for Warsh ayahs (11.5136ms)
+✔ the new Unicode Warsh source carries no presentation forms to strip (8.1772ms)
+✔ Warsh ayahs next to a divergence point resolve to the Hafs verses they recite (5.2048ms)
+✔ unplaceable Warsh verses resolve to null instead of a neighbouring verse (0.4746ms)
+✔ the Hafs join keeps raw verse numbers untouched (4.2323ms)
+✔ mergeHafsSupport resolves its lookup key through the mapping (2.1319ms)
+✔ per-surah Warsh totals reconcile the 6214-ayah mushaf (9.6336ms)
+✔ the reading header quotes the verse total of the riwaya being read (0.6889ms)
+✔ home mushaf totals quote the active riwaya (5.7307ms)
+✔ buildSurahAudioPlaylist for Warsh Al-Baqara yields 285 verses, not 286 (1.1398ms)
+✔ the Hafs playlist shape is unchanged (2.3077ms)
+✔ the async playlist builders honour the riwaya without new I/O (1.7351ms)
+✔ displayed Warsh ayahs normalize onto hafs-keyed global numbers (0.8357ms)
+✔ both Warsh text sources are pinned to immutable commits (0.6286ms)
+✔ warshService requires the exact verse count and verifies the digest (1.0469ms)
+✔ Quran.com stripping keeps presentation-form ligatures as content (24.6862ms)
+✔ the Quran.com strip rule no longer covers presentation-form ranges (1.0648ms)
+✔ the edition is served from 114 local surah files plus one index (5.0385ms)
+✔ every surah file covers its Warsh verses densely, in Warsh numbering (6.5533ms)
+✔ Al-Baqara holds 285 Warsh verses and the whole mushaf 6214 (0.7687ms)
+✔ each verse carries the Hafs numbers the app's mapping assigns to it (11.4356ms)
+✔ every Hafs verse of a surah is recited by exactly one Warsh verse (4.4967ms)
+✔ Warsh 1:1 is the Fatiha verse the Madinah mushaf numbers first (0.8394ms)
+✔ a merged Warsh verse is the single-space join of its two Hafs sources (3.2115ms)
+✔ markup, note markers and verse numbering never reach the reading line (25.2474ms)
+✔ tags and translator notes are stripped out of the text, notes kept aside (1.4595ms)
+✔ a split Hafs verse repeats its text on each Warsh verse covering it (0.6499ms)
+✔ index.json pins the SHA-256 of the files actually shipped (49.8396ms)
+✔ the loader reads surahs offline and keeps them in Warsh numbering (16.6953ms)
+✔ the edition document is stamped warsh and keyed per surah (11.8905ms)
+✔ a payload whose digest no longer matches the pinned one is refused (2.5623ms)
+✔ only Warsh edition ids resolve through the local service (0.2368ms)
+✔ the translation chooser advertises the edition as a Warsh option (0.8067ms)
+✔ fetchTranslations routes the local edition and keeps remote ones remote (0.5117ms)
+✔ the selection survives a reload and every locale names the edition (0.527ms)
+✔ the attribution register declares the translation and its rights (0.3899ms)
+✔ the English edition is served from 114 local surah files plus one index (0.492ms)
+✔ every English surah recites exactly the Warsh verses the French edition recites (7.3001ms)
+✔ English reading lines stay free of markup, note markers and numbering (10.6349ms)
+✔ the English index.json pins the SHA-256 of the files actually shipped (36.185ms)
+✔ the English chooser, storage token, locale labels and attribution are wired (2.7431ms)
+✔ the loader serves the English edition offline under its own cache keys (13.4546ms)
+✔ Hafs word audio keeps its existing url and never warns (74.2817ms)
+✔ a warsh word tap still plays but discloses the hafs-only notice once (195.6463ms)
+✔ invalid coordinates stay no-ops even in warsh (94.67ms)
+✔ WCAG: action sheets expose dialog semantics and focus management (6.3378ms)
+✔ WCAG: forms, tabs and audio status keep programmatic names (5.2914ms)
+✔ WCAG: the unified library dialog isolates its interactions (0.9171ms)
+✔ WCAG: splash respects language, reduced motion and target size (0.9555ms)
+✔ WCAG: reinforced reading colors meet AA contrast on light surfaces (3.5846ms)
+✔ the captured field glues two words the list divides (4.2715ms)
+✔ a verse field that loses a word boundary is detected, not recited blind (2.3207ms)
+✔ the painted Hafs text regains the authoritative word division (2.3005ms)
+✔ restoring the division changes segmentation only, never a letter (0.5859ms)
+✔ a real wording difference is left alone (1.0191ms)
+✔ word data from another verse revokes per-word recitation (0.6659ms)
+✔ an absent word array or empty text has nothing to align against (2.9006ms)
+✔ ayah-end markers are never recitable words (0.7016ms)
+ℹ tests 329
+ℹ suites 0
+ℹ pass 326
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1844.6442
+
+✖ failing tests:
+
+test at tests\reader-ui-contract.test.mjs:460:1
+✖ Tajweed legend and Quran.com markup share the same eight rule families (6.8133ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /ghunnah: 'ghunna'/. Input:
+  
+  "import React, { useEffect, useLayoutEffect, useMemo, useRef } from 'react';\r\n" +
+    "import { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from '../../data/tajwidRules';\r\n" +
+    "import { useAppLocale } from '../../context/AppContext';\r\n" +
+    "import { t as i18nT } from '../../i18n';\r\n" +
+    "import { applyFontSigns, getReadableWaqfGlyph, normalizeQuranGlyphText } from '../../utils/quranUtils';\r\n" +
+    "import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';\r\n" +
+    'import {\r\n' +
+    '    applyTajweedHighlights,\r\n' +
+    '    clearTajweedHoverRange,\r\n' +
+    '    clearTajweedPlayingRange,\r\n' +
+    '    getTextRangeRects,\r\n' +
+    '    rectsContainPoint,\r\n' +
+    '    setTajweedHoverRange,\r\n' +
+    '    setTajweedPlayingRange,\r\n' +
+    '    supportsTajweedHighlights,\r\n' +
+    '    unionRects,\r\n' +
+    "} from '../../utils/tajweedHighlights';\r\n" +
+    "import useKaraokeWordIndex from '../../hooks/useKaraokeWordIndex';\r\n" +
+    "import { ruleFromClassName } from '../../utils/quranComTajweedClasses';\r\n" +
+    '\r\n' +
+    'const AYAH_MARKER_TOKEN_RE = /^[\\u06DD\\u06DE\\u06E9\\uFC00-\\uFD1C\\uFD3F\\uFD3E\\d\\u0660-\\u0669\\u06F0-\\u06F9]+$/u;\r\n' +
+    'function isMarkerToken(str) {\r\n' +
+    '    if (!str) return false;\r\n' +
+    "    const compact = String(str).replace(/\\s+/g, '');\r\n" +
+    '    return AYAH_MARKER_TOKEN_RE.test(compact);\r\n' +
+    '}\r\n' +
+    '\r\n' +
+    'function parseQuranComTajweedHtml(html) {\r\n' +
+    '    if (!html || !/<[a-z][\\s\\S]*>/i.test(html)) return null;\r\n' +
+    '\r\n' +
+    "    if (typeof DOMParser === 'undefined') {\r\n" +
+    '        return null;\r\n' +
+    '    }\r\n' +
+    '\r\n' +
+    "    const doc = new DOMParser().parseFromString(String(html), 'text/html');\r\n" +
+    '    const segments = [];\r\n' +
+    '\r\n' +
+    '    const isVerseEndNode = (node) => {\r\n' +
+    '        if (node.nodeType !== Node.ELEMENT_NODE) return false;\r\n' +
+    "        const className = String(node.getAttribute('class') || '').toLowerCase();\r\n" +
+    "        const dataName = String(node.getAttribute('data-type') || '').toLowerCase();\r\n" +
+    '        return (\r\n' +
+    "            className.includes('end') ||\r\n" +
+    "            className.includes('ayah') ||\r\n" +
+    "            className.includes('verse') ||\r\n" +
+    "            dataName.includes('end') ||\r\n" +
+    "            dataName.includes('ayah') ||\r\n" +
+    "            dataName.includes('verse')\r\n" +
+    '        );\r\n' +
+    '    };\r\n' +
+    '\r\n' +
+    '    const walk = (node, inheritedRule = null) => {\r\n' +
+    '        if (node.nodeType === Node.TEXT_NODE) {\r\n' +
+    "            const t = node.textContent?.replace(/[<>]/g, '');\r\n" +
+    '            if (t) segments.push({ text: t, ruleId: inheritedRule });\r\n' +
+    '            return;\r\n' +
+    '        }\r\n' +
+    '\r\n' +
+    '        if (node.nodeType !== Node.ELEMENT_NODE) return;\r\n' +
+    '        if (isVerseEndNode(node)) return;\r\n' +
+    '\r\n' +
+    "        const localRule = ruleFromClassName(node.getAttribute('class')) || inheritedRule;\r\n" +
+    '        node.childNodes.forEach((child) => walk(child, localRule));\r\n' +
+    '    };\r\n' +
+    '\r\n' +
+    '    doc.body.childNodes.forEach((node) => walk(node, null));\r\n' +
+    '    return stabilizeTajwidSegments(\r\n' +
+    '        segments.filter((segment) => segment.text)\r\n' +
+    '    );\r\n' +
+    '}\r\n' +
+    '\r\n' +
+    'const WAQF_RULES = {\r\n' +
+    "    '\\u06D6': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Sallā (صلى)",\r\n' +
+    '            en: "Sallā (صلى)",\r\n' +
+    '            ar: "صلى"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    `            fr: "L'arrêt est autorisé, mais la liaison est préférable.",\r\n` +
+    '            en: "Stopping is permissible, but continuing is preferred.",\r\n' +
+    '            ar: "الوصل أولى مع جواز الوقف."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06D7': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Qalā (قلى)",\r\n' +
+    '            en: "Qalā (قلى)",\r\n' +
+    '            ar: "قلى"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    `            fr: "L'arrêt est préférable, bien que la liaison soit autorisée.",\r\n` +
+    '            en: "Stopping is preferred, though continuing is allowed.",\r\n' +
+    '            ar: "الوقف أولى مع جواز الوصل."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06D8': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Mīm (مـ)",\r\n' +
+    '            en: "Mīm (مـ)",\r\n' +
+    '            ar: "مـ"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    '            fr: "Arrêt obligatoire pour préserver le sens du verset.",\r\n' +
+    '            en: "Mandatory stop to preserve the meaning.",\r\n' +
+    '            ar: "وقف لازم لتجنب تغيير المعنى."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06D9': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Lā (لا)",\r\n' +
+    '            en: "Lā (لا)",\r\n' +
+    '            ar: "لا"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    `            fr: "Interdiction de s'arrêter, sauf en cas de nécessité absolue.",\r\n` +
+    '            en: "Do not stop here unless you run out of breath.",\r\n' +
+    '            ar: "لا تقف هنا إلا عند الضرورة القصوى."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06DA': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Jīm (ج)",\r\n' +
+    '            en: "Jīm (ج)",\r\n' +
+    '            ar: "ج"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    `            fr: "Arrêt autorisé (optionnel). L'arrêt et la liaison sont équivalents.",\r\n` +
+    '            en: "Permissible stop. You may stop or continue.",\r\n' +
+    '            ar: "وقف جائز يستوي فيه الوقف والوصل."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06DB': {\r\n" +
+    '        name: {\r\n' +
+    `            fr: "Mu'ānaqah (ۛ ۛ)",\r\n` +
+    `            en: "Mu'ānaqah (ۛ ۛ)",\r\n` +
+    '            ar: "تعانق الوقف"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    `            fr: "Arrêt d'embrassement : on peut s'arrêter à l'un des deux marqueurs, mais pas aux deux.",\r\n` +
+    '            en: "Linked stop: you can stop at either of the two places, but not both.",\r\n' +
+    '            ar: "يجوز الوقف على أحد الموضعين وليس كلاهما."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '\\u06DC': {\r\n" +
+    '        name: {\r\n' +
+    '            fr: "Saktah (سكتة)",\r\n' +
+    '            en: "Saktah (سكتة)",\r\n' +
+    '            ar: "سكتة"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    '            fr: "Pause légère sans reprendre sa respiration.",\r\n' +
+    '            en: "Subtle pause. A brief pause without taking a breath.",\r\n' +
+    '            ar: "سكتة لطيفة دون تنفس."\r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    "    '۞': {\r\n" +
+    '        name: {\r\n' +
+    `            fr: "Rab' al-Hizb (۞)",\r\n` +
+    `            en: "Rab' al-Hizb (۞)",\r\n` +
+    '            ar: "ربع الحزب"\r\n' +
+    '        },\r\n' +
+    '        desc: {\r\n' +
+    '            fr: "Marque le quart de Hizb : une des 240 divisions du Coran.",\r\n' +
+    '            en: "Marks the quarter Hizb: one of 240 divisions of the Quran.",\r\n' +
+    '            ar: "يشير إلى بداية ربع الحزب من أجزاء القرآن الكريم."\r\n' +
+    '        }\r\n' +
+    '    }\r\n' +
+    '};\r\n' +
+    '\r\n' +
+    '\r\n' +
+    '\r\n' +
+    'function getVerseLabel(lang, ayahNumber) {\r\n' +
+    '    if (!ayahNumber) return undefined;\r\n' +
+    "    const word = i18nT('quran.verseLabel', lang);\r\n" +
+    '    return `${word} ${ayahNumber}`;\r\n' +
+    '}\r\n' +
+    '\r\n' +
+    'const WaqfSign = React.memo(function WaqfSign({ char, lang, riwaya }) {\r\n' +
+    '    const rule = WAQF_RULES[char];\r\n' +
+    '    const displayGlyph = getReadableWaqfGlyph(char);\r\n' +
+    '    const codePoint = char.codePointAt(0)?.toString(16).toUpperCase();\r\n' +
+    "    const className = riwaya === 'warsh' ? 'warsh-waqf-marker waqf-marker' : 'waqf-marker';\r\n" +
+    '    if (!rule) {\r\n' +
+    '        return (\r\n' +
+    '            <span className={className} data-waqf={codePoint} aria-label={char}>\r\n' +
+    '                {displayGlyph}\r\n' +
+    '            </span>\r\n' +
+    '        );\r\n' +
+    '    }\r\n' +
+    '\r\n' +
+    "    const activeLang = lang === 'ar' || lang === 'en' || lang === 'fr' ? lang : 'fr';\r\n" +
+    "    const name = rule.name[activeLang] || rule.name['en'] || rule.name['fr'];\r\n" +
+    "    const desc = rule.desc[activeLang] || rule.desc['en'] || rule.desc['fr'];\r\n" +
+    '\r\n' +
+    '    return (\r\n' +
+    '        <span\r\n' +
+    '            className={`${className} cursor-help`}\r\n' +
+    '            data-waqf={codePoint}\r\n' +
+    '            data-tajwid-name={name}\r\n' +
+    '            data-tajwid-desc={desc}\r\n' +
+    '            data-tajwid-color="#c5a04b"\r\n' +
+    '            role="help"\r\n' +
+    '            aria-label={`Règle de Waqf: ${name}`}\r\n' +
+    '        >\r\n' +
+    '            {displayGlyph}\r\n' +
+    '        </span>\r\n' +
+    '    );\r\n' +
+    '});\r\n' +
+    '\r\n' +
+    'const TAJWEED_RULES_DESC = {\r\n' +
+    '    ghunna: {\r\n' +
+    '        name: { fr: "Ghunnah (غنة)", en: "Ghunnah", ar: "غنة" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Nasalisation produite par la cavité nasale pendant 2 temps.", \r\n' +
+    '            en: "Nasalization produced from the nose, lasting for 2 beats.", \r\n' +
+    '            ar: "صوت يخرج من الخيشوم بمقدار حركتين." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    ikhfa: {\r\n' +
+    `        name: { fr: "Ikhfā' (إخفاء)", en: "Ikhfā'", ar: "إخفاء" },\r\n` +
+    '        desc: { \r\n' +
+    `            fr: "Dissimulation de la lettre Nūn ou Tanwīn devant les lettres de l'Ikhfā'.", \r\n` +
+    `            en: "Hiding the sound of Nūn or Tanwīn when followed by an Ikhfā' letter.", \r\n` +
+    '            ar: "نطق الحرف بصفة بين الإظهار والإدغام مع الغنة." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    idgham: {\r\n' +
+    '        name: { fr: "Idghām (إدغام)", en: "Idghām", ar: "إدغام" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Assimilation ou fusion de la lettre Nūn ou Tanwīn avec la lettre suivante.", \r\n' +
+    '            en: "Merging the sound of Nūn or Tanwīn into the following letter.", \r\n' +
+    '            ar: "إدخل حرف ساكن في حرف متحرك بحيث يصيران حرفاً واحداً مشدداً." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    iqlab: {\r\n' +
+    '        name: { fr: "Iqlāb (إقلاب)", en: "Iqlāb", ar: "إقلاب" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Conversion du Nūn ou Tanwīn en un Mīm léger avec Ghunnah.", \r\n' +
+    '            en: "Converting the sound of Nūn or Tanwīn into a light Mīm with Ghunnah.", \r\n' +
+    '            ar: "قلب النون الساكنة أو التنوين ميماً مخفاة مع الغنة." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    qalqala: {\r\n' +
+    '        name: { fr: "Qalqalah (قلقلة)", en: "Qalqalah", ar: "قلقلة" },\r\n' +
+    '        desc: { \r\n' +
+    `            fr: "Rebondissement ou écho de la consonne lorsqu'elle est calme (Sākīnah).", \r\n` +
+    '            en: "Echoing or bouncing sound of the consonant when silent (Sākīnah).", \r\n' +
+    '            ar: "اضطراب الحرف في مخرجه عند النطق به ساكناً." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    "madd-connected": {\r\n' +
+    '        name: { fr: "Madd Muttasil (مد متصل)", en: "Madd Muttasil", ar: "مد متصل" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Allongement obligatoire lié : la lettre de Madd et le Hamzah sont dans le même mot (4 à 5 temps).", \r\n' +
+    '            en: "Required connected elongation: madd letter and Hamzah are in the same word (4-5 beats).", \r\n' +
+    '            ar: "أن يأتي حرف المد والهمزة في كلمة واحدة بمقدار ٤-٥ حركات." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    "madd-separated": {\r\n' +
+    '        name: { fr: "Madd Munfasil (مد منفصل)", en: "Madd Munfasil", ar: "مد منفصل" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Allongement permis séparé : la lettre de Madd est à la fin du mot et le Hamzah au début du suivant (2 à 5 temps).", \r\n' +
+    '            en: "Permissible separated elongation: madd letter is at the end of the word and Hamzah at the start of the next (2-5 beats).", \r\n' +
+    '            ar: "أن يكون حرف المد في آخر كلمة والهمزة في أول الكلمة التالية." \r\n' +
+    '        }\r\n' +
+    '    },\r\n' +
+    '    madd: {\r\n' +
+    '        name: { fr: "Madd Lāzim (مد لازم)", en: "Madd Lāzim", ar: "مد لازم" },\r\n' +
+    '        desc: { \r\n' +
+    '            fr: "Allong'... 29792 more characters
+  
+      at TestContext.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/tests/reader-ui-contract.test.mjs:481:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'import React, { useEffect, useLayoutEffect, useMemo, useRef } from \'react\';\r\nimport { getRulesForRiwaya, parseTajwid, stabilizeTajwidSegments } from \'../../data/tajwidRules\';\r\nimport { useAppLocale } from \'../../context/AppContext\';\r\nimport { t as i18nT } from \'../../i18n\';\r\nimport { applyFontSigns, getReadableWaqfGlyph, normalizeQuranGlyphText } from \'../../utils/quranUtils\';\r\nimport { playWordAudio, getWordAudioUrl } from \'../../utils/wordAudio\';\r\nimport {\r\n    applyTajweedHighlights,\r\n    clearTajweedHoverRange,\r\n    clearTajweedPlayingRange,\r\n    getTextRangeRects,\r\n    rectsContainPoint,\r\n    setTajweedHoverRange,\r\n    setTajweedPlayingRange,\r\n    supportsTajweedHighlights,\r\n    unionRects,\r\n} from \'../../utils/tajweedHighlights\';\r\nimport useKaraokeWordIndex from \'../../hooks/useKaraokeWordIndex\';\r\nimport { ruleFromClassName } from \'../../utils/quranComTajweedClasses\';\r\n\r\nconst AYAH_MARKER_TOKEN_RE = /^[\\u06DD\\u06DE\\u06E9\\uFC00-\\uFD1C\\uFD3F\\uFD3E\\d\\u0660-\\u0669\\u06F0-\\u06F9]+$/u;\r\nfunction isMarkerToken(str) {\r\n    if (!str) return false;\r\n    const compact = String(str).replace(/\\s+/g, \'\');\r\n    return AYAH_MARKER_TOKEN_RE.test(compact);\r\n}\r\n\r\nfunction parseQuranComTajweedHtml(html) {\r\n    if (!html || !/<[a-z][\\s\\S]*>/i.test(html)) return null;\r\n\r\n    if (typeof DOMParser === \'undefined\') {\r\n        return null;\r\n    }\r\n\r\n    const doc = new DOMParser().parseFromString(String(html), \'text/html\');\r\n    const segments = [];\r\n\r\n    const isVerseEndNode = (node) => {\r\n        if (node.nodeType !== Node.ELEMENT_NODE) return false;\r\n        const className = String(node.getAttribute(\'class\') || \'\').toLowerCase();\r\n        const dataName = String(node.getAttribute(\'data-type\') || \'\').toLowerCase();\r\n        return (\r\n            className.includes(\'end\') ||\r\n            className.includes(\'ayah\') ||\r\n            className.includes(\'verse\') ||\r\n            dataName.includes(\'end\') ||\r\n            dataName.includes(\'ayah\') ||\r\n            dataName.includes(\'verse\')\r\n        );\r\n    };\r\n\r\n    const walk = (node, inheritedRule = null) => {\r\n        if (node.nodeType === Node.TEXT_NODE) {\r\n            const t = node.textContent?.replace(/[<>]/g, \'\');\r\n            if (t) segments.push({ text: t, ruleId: inheritedRule });\r\n            return;\r\n        }\r\n\r\n        if (node.nodeType !== Node.ELEMENT_NODE) return;\r\n        if (isVerseEndNode(node)) return;\r\n\r\n        const localRule = ruleFromClassName(node.getAttribute(\'class\')) || inheritedRule;\r\n        node.childNodes.forEach((child) => walk(child, localRule));\r\n    };\r\n\r\n    doc.body.childNodes.forEach((node) => walk(node, null));\r\n    return stabilizeTajwidSegments(\r\n        segments.filter((segment) => segment.text)\r\n    );\r\n}\r\n\r\nconst WAQF_RULES = {\r\n    \'\\u06D6\': {\r\n        name: {\r\n            fr: "Sallā (صلى)",\r\n            en: "Sallā (صلى)",\r\n            ar: "صلى"\r\n        },\r\n        desc: {\r\n            fr: "L\'arrêt est autorisé, mais la liaison est préférable.",\r\n            en: "Stopping is permissible, but continuing is preferred.",\r\n            ar: "الوصل أولى مع جواز الوقف."\r\n        }\r\n    },\r\n    \'\\u06D7\': {\r\n        name: {\r\n            fr: "Qalā (قلى)",\r\n            en: "Qalā (قلى)",\r\n            ar: "قلى"\r\n        },\r\n        desc: {\r\n            fr: "L\'arrêt est préférable, bien que la liaison soit autorisée.",\r\n            en: "Stopping is preferred, though continuing is allowed.",\r\n            ar: "الوقف أولى مع جواز الوصل."\r\n        }\r\n    },\r\n    \'\\u06D8\': {\r\n        name: {\r\n            fr: "Mīm (مـ)",\r\n            en: "Mīm (مـ)",\r\n            ar: "مـ"\r\n        },\r\n        desc: {\r\n            fr: "Arrêt obligatoire pour préserver le sens du verset.",\r\n            en: "Mandatory stop to preserve the meaning.",\r\n            ar: "وقف لازم لتجنب تغيير المعنى."\r\n        }\r\n    },\r\n    \'\\u06D9\': {\r\n        name: {\r\n            fr: "Lā (لا)",\r\n            en: "Lā (لا)",\r\n            ar: "لا"\r\n        },\r\n        desc: {\r\n            fr: "Interdiction de s\'arrêter, sauf en cas de nécessité absolue.",\r\n            en: "Do not stop here unless you run out of breath.",\r\n            ar: "لا تقف هنا إلا عند الضرورة القصوى."\r\n        }\r\n    },\r\n    \'\\u06DA\': {\r\n        name: {\r\n            fr: "Jīm (ج)",\r\n            en: "Jīm (ج)",\r\n            ar: "ج"\r\n        },\r\n        desc: {\r\n            fr: "Arrêt autorisé (optionnel). L\'arrêt et la liaison sont équivalents.",\r\n            en: "Permissible stop. You may stop or continue.",\r\n            ar: "وقف جائز يستوي فيه الوقف والوصل."\r\n        }\r\n    },\r\n    \'\\u06DB\': {\r\n        name: {\r\n            fr: "Mu\'ānaqah (ۛ ۛ)",\r\n            en: "Mu\'ānaqah (ۛ ۛ)",\r\n            ar: "تعانق الوقف"\r\n        },\r\n        desc: {\r\n            fr: "Arrêt d\'embrassement : on peut s\'arrêter à l\'un des deux marqueurs, mais pas aux deux.",\r\n            en: "Linked stop: you can stop at either of the two places, but not both.",\r\n            ar: "يجوز الوقف على أحد الموضعين وليس كلاهما."\r\n        }\r\n    },\r\n    \'\\u06DC\': {\r\n        name: {\r\n            fr: "Saktah (سكتة)",\r\n            en: "Saktah (سكتة)",\r\n            ar: "سكتة"\r\n        },\r\n        desc: {\r\n            fr: "Pause légère sans reprendre sa respiration.",\r\n            en: "Subtle pause. A brief pause without taking a breath.",\r\n            ar: "سكتة لطيفة دون تنفس."\r\n        }\r\n    },\r\n    \'۞\': {\r\n        name: {\r\n            fr: "Rab\' al-Hizb (۞)",\r\n            en: "Rab\' al-Hizb (۞)",\r\n            ar: "ربع الحزب"\r\n        },\r\n        desc: {\r\n            fr: "Marque le quart de Hizb : une des 240 divisions du Coran.",\r\n            en: "Marks the quarter Hizb: one of 240 divisions of the Quran.",\r\n            ar: "يشير إلى بداية ربع الحزب من أجزاء القرآن الكريم."\r\n        }\r\n    }\r\n};\r\n\r\n\r\n\r\nfunction getVerseLabel(lang, ayahNumber) {\r\n    if (!ayahNumber) return undefined;\r\n    const word = i18nT(\'quran.verseLabel\', lang);\r\n    return `${word} ${ayahNumber}`;\r\n}\r\n\r\nconst WaqfSign = React.memo(function WaqfSign({ char, lang, riwaya }) {\r\n    const rule = WAQF_RULES[char];\r\n    const displayGlyph = getReadableWaqfGlyph(char);\r\n    const codePoint = char.codePointAt(0)?.toString(16).toUpperCase();\r\n    const className = riwaya === \'warsh\' ? \'warsh-waqf-marker waqf-marker\' : \'waqf-marker\';\r\n    if (!rule) {\r\n        return (\r\n            <span className={className} data-waqf={codePoint} aria-label={char}>\r\n                {displayGlyph}\r\n            </span>\r\n        );\r\n    }\r\n\r\n    const activeLang = lang === \'ar\' || lang === \'en\' || lang === \'fr\' ? lang : \'fr\';\r\n    const name = rule.name[activeLang] || rule.name[\'en\'] || rule.name[\'fr\'];\r\n    const desc = rule.desc[activeLang] || rule.desc[\'en\'] || rule.desc[\'fr\'];\r\n\r\n    return (\r\n        <span\r\n            className={`${className} cursor-help`}\r\n            data-waqf={codePoint}\r\n            data-tajwid-name={name}\r\n            data-tajwid-desc={desc}\r\n            data-tajwid-color="#c5a04b"\r\n            role="help"\r\n            aria-label={`Règle de Waqf: ${name}`}\r\n        >\r\n            {displayGlyph}\r\n        </span>\r\n    );\r\n});\r\n\r\nconst TAJWEED_RULES_DESC = {\r\n    ghunna: {\r\n        name: { fr: "Ghunnah (غنة)", en: "Ghunnah", ar: "غنة" },\r\n        desc: { \r\n            fr: "Nasalisation produite par la cavité nasale pendant 2 temps.", \r\n            en: "Nasalization produced from the nose, lasting for 2 beats.", \r\n            ar: "صوت يخرج من الخيشوم بمقدار حركتين." \r\n        }\r\n    },\r\n    ikhfa: {\r\n        name: { fr: "Ikhfā\' (إخفاء)", en: "Ikhfā\'", ar: "إخفاء" },\r\n        desc: { \r\n            fr: "Dissimulation de la lettre Nūn ou Tanwīn devant les lettres de l\'Ikhfā\'.", \r\n            en: "Hiding the sound of Nūn or Tanwīn when followed by an Ikhfā\' letter.", \r\n            ar: "نطق الحرف بصفة بين الإظهار والإدغام مع الغنة." \r\n        }\r\n    },\r\n    idgham: {\r\n        name: { fr: "Idghām (إدغام)", en: "Idghām", ar: "إدغام" },\r\n        desc: { \r\n            fr: "Assimilation ou fusion de la lettre Nūn ou Tanwīn avec la lettre suivante.", \r\n            en: "Merging the sound of Nūn or Tanwīn into the following letter.", \r\n            ar: "إدخل حرف ساكن في حرف متحرك بحيث يصيران حرفاً واحداً مشدداً." \r\n        }\r\n    },\r\n    iqlab: {\r\n        name: { fr: "Iqlāb (إقلاب)", en: "Iqlāb", ar: "إقلاب" },\r\n        desc: { \r\n            fr: "Conversion du Nūn ou Tanwīn en un Mīm léger avec Ghunnah.", \r\n            en: "Converting the sound of Nūn or Tanwīn into a light Mīm with Ghunnah.", \r\n            ar: "قلب النون الساكنة أو التنوين ميماً مخفاة مع الغنة." \r\n        }\r\n    },\r\n    qalqala: {\r\n        name: { fr: "Qalqalah (قلقلة)", en: "Qalqalah", ar: "قلقلة" },\r\n        desc: { \r\n            fr: "Rebondissement ou écho de la consonne lorsqu\'elle est calme (Sākīnah).", \r\n            en: "Echoing or bouncing sound of the consonant when silent (Sākīnah).", \r\n            ar: "اضطراب الحرف في مخرجه عند النطق به ساكناً." \r\n        }\r\n    },\r\n    "madd-connected": {\r\n        name: { fr: "Madd Muttasil (مد متصل)", en: "Madd Muttasil", ar: "مد متصل" },\r\n        desc: { \r\n            fr: "Allongement obligatoire lié : la lettre de Madd et le Hamzah sont dans le même mot (4 à 5 temps).", \r\n            en: "Required connected elongation: madd letter and Hamzah are in the same word (4-5 beats).", \r\n            ar: "أن يأتي حرف المد والهمزة في كلمة واحدة بمقدار ٤-٥ حركات." \r\n        }\r\n    },\r\n    "madd-separated": {\r\n        name: { fr: "Madd Munfasil (مد منفصل)", en: "Madd Munfasil", ar: "مد منفصل" },\r\n        desc: { \r\n            fr: "Allongement permis séparé : la lettre de Madd est à la fin du mot et le Hamzah au début du suivant (2 à 5 temps).", \r\n            en: "Permissible separated elongation: madd letter is at the end of the word and Hamzah at the start of the next (2-5 beats).", \r\n            ar: "أن يكون حرف المد في آخر كلمة والهمزة في أول الكلمة التالية." \r\n        }\r\n    },\r\n    madd: {\r\n        name: { fr: "Madd Lāzim (مد لازم)", en: "Madd Lāzim", ar: "مد لازم" },\r\n        desc: { \r\n            fr: "Allong'... 29792 more characters,
+    expected: /ghunnah: 'ghunna'/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\reader-ui-contract.test.mjs:505:1
+✖ every tajweed colour stays readable on its theme paper (3.691ms)
+  AssertionError [ERR_ASSERTION]: --tajwid-silent #a5a5a5 is 2.66:1 on light #f8f8f8, below 3:1
+      at TestContext.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/tests/reader-ui-contract.test.mjs:533:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests\tajwid-segments.test.mjs:99:1
+✖ Hafs and Warsh use the shared Quran.com Tajweed color semantics (2.3634ms)
+  AssertionError [ERR_ASSERTION]: hafs:ghunna
+  + actual - expected
+  
+  + '#09b000'
+  - '#1e8e4e'
+  
+      at TestContext.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/tests/tajwid-segments.test.mjs:120:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '#09b000',
+    expected: '#1e8e4e',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,65 @@
+===saad_almoqren===
+{
+ "bio": {
+  "fr": "Saad Al-Meqren est un récitant et prédicateur saoudien, imam de la Grande Mosquée de La Mecque, apprécié pour sa lecture de Hafs posée et claire. Son mushaf complet est publié par MP3Quran en flux par sourate.",
+  "en": "Saad Al-Meqren is a Saudi reciter and preacher, imam of the Grand Mosque of Mecca, appreciated for his measured and clear Hafs reading. His complete mushaf is published by MP3Quran as surah-length streams.",
+  "ar": "سعد المقرن قارئ وداعية سعودي، إمام المسجد الحرام، يتميز بتلاوة حفص متأنية واضحة. مصحفه الكامل منشور على مكتبة القرآن الصوتية بتلاوة كل سورة كاملة."
+ },
+ "bioSource": {
+  "provider": "QuranPedia",
+  "url": "https://api.quranpedia.net/v1/reciters"
+ },
+ "reviewedAt": "2026-09-20"
+}
+===warsh_yassin===
+{
+ "bio": {
+  "fr": "Yassin Faqih, connu comme Yassin Al‑Jazaery, est né en 1969 à El Harrach, en Algérie. Diplômé en chimie, il enseigne aussi les fondements de la religion (ousoul ad‑din) à l’Université d’Alger. Il dirigea ses premières prières de tarāwīḥ à quinze ans et a enregistré un muṣḥaf complet selon Warsh ʿan Nāfiʿ par la voie d’Al‑Azraq.",
+  "en": "Yassin Faqih, known as Yassin Al‑Jazaery, was born in El Harrach, Algeria, in 1969. A chemistry graduate, he also teaches Usul al‑Din (principles of religion) at the University of Algiers. He first led tarāwīḥ at age fifteen and recorded a complete muṣḥaf in the Warsh ʿan Nāfiʿ riwaya through the Al‑Azraq transmission.",
+  "ar": "ياسين فقيه، المعروف باسم ياسين الجزائري، وُلد سنة 1969 بالحراش في الجزائر. يحمل شهادة في الكيمياء ويدرّس كذلك أصول الدين في جامعة الجزائر. أمّ التراويح أول مرة في سن الخامسة عشرة، وسجّل مصحفًا كاملاً برواية ورش عن نافع من طريق الأزرق."
+ },
+ "bioSource": {
+  "provider": "Almutadaber",
+  "url": "https://www.almutadaber.com/public/reciters/%D9%8A%D8%A7%D8%B3%D9%8A%D9%86%20%D8%A7%D9%84%D8%AC%D8%B2%D8%A7%D8%A6%D8%B1%D9%8A"
+ },
+ "reviewedAt": "2026-09-20"
+}
+===warsh_dagous===
+{
+ "bio": {
+  "fr": "ʿAbd al‑Karim ad‑Dāghūsh (عبد الكريم الدغوش) est un récitateur marocain qui lit le Coran selon Warsh ʿan Nāfiʿ. La QuranPedia diffuse sa récitation complète, verset par verset, sur les 114 sourates. Il ne faut pas le confondre avec le récitateur Youssef ad‑Dāghūsh (يوسف الدغوش), qui lit selon Hafs.",
+  "en": "ʿAbd al-Karim ad-Dāghūsh is a Moroccan reciter who reads the Quran according to Warsh ʿan Nafi. QuranPedia publishes his complete verse-by-verse recitation across all 114 surahs. He should not be confused with the Hafs reciter Yusuf ad-Dāghūsh (يوسف الدغوش).",
+  "ar": "عبد الكريم الدغوش قارئ مغربي يقرأ برواية ورش عن نافع. تنشر الموسوعة القرآنية تلاوته الكاملة آية بآية في السور الأربع عشرة والمائة. لا يُخلط بينه وبين القارئ يوسف الدغوش الحفصي."
+ },
+ "bioSource": {
+  "provider": "QuranPedia",
+  "url": "https://api.quranpedia.net/v1/reciters"
+ },
+ "reviewedAt": "2026-09-20"
+}
+===warsh_mohamed_abdulkarim===
+{
+ "bio": {
+  "fr": "Muhammad ʿAbd al‑Karim (Mohamed Abdelkarim), récitateur soudanais, lit le Coran selon Warsh ʿan Nafi par la voie d’Abu Bakr al‑Asbahani. La QuranPedia diffuse sa récitation complète, verset par verset, sur les 114 sourates.",
+  "en": "Muhammad Abd al-Karim is a Sudanese reciter who reads the Quran according to Warsh from Nafi via the route of Abu Bakr al-Asbahani. QuranPedia publishes his complete verse-by-verse recitation across all 114 surahs.",
+  "ar": "محمد عبد الكريم قارئ سوداني يقرأ برواية ورش عن نافع من طريق أبي بكر الأصبهاني. تنشر الموسوعة القرآنية تلاوته الكاملة آية بآية في السور الأربع عشرة والمائة."
+ },
+ "bioSource": {
+  "provider": "QuranPedia",
+  "url": "https://api.quranpedia.net/v1/reciters"
+ },
+ "reviewedAt": "2026-09-20"
+}
+===warsh_rachid_belalaya===
+{
+ "bio": {
+  "fr": "Rachid Belalya est un récitant algérien qui lit selon la lecture de Warsh ʿan Nafi par la voie d’Al‑Asbahani. Son muṣḥaf complet, diffusé verset par verset sur les 114 sourates, est publié par Assabile.",
+  "en": "Rachid Belalya is an Algerian reciter reading according to Warsh ʿan Nafi through the Al‑Asbahani transmission. His complete mushaf, published verse by verse across all 114 surahs, is listed on Assabile.",
+  "ar": "رشيد بلعالية قارئ جزائري يقرأ برواية ورش عن نافع من طريق الأصبهاني. مصحفه الكامل منشور آية بآية في السور الأربع عشرة والمائة على موقع أصابيله."
+ },
+ "bioSource": {
+  "provider": "Assabile",
+  "url": "https://www.assabile.com/rachid-belalia-219/rachid-belalia.htm"
+ },
+ "reviewedAt": "2026-09-20"
+}

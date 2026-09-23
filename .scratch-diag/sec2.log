@@ -1,0 +1,733 @@
+
+> mushafplus@1.1.0 test:security
+> node --test tests/*.test.mjs
+
+✔ Arabic typography clamps unsafe preferences (1.8789ms)
+✔ Arabic typography scales progressively with the connected device (Phone, Tablet, Desktop) (1.3469ms)
+✔ Arabic typography preserves user reductions and increases on every device (0.3071ms)
+✔ Mushaf typography stays responsive without exceeding layout safety caps (0.248ms)
+✔ continuous Mushaf line height stays compact for every exposed Quran font (0.4101ms)
+✔ page routes keep the same compact leading as continuous Mushaf routes (0.268ms)
+✔ every exposed Hafs text path removes internal dotted-circle anchors (1.3217ms)
+✔ Yusuf 12:11 keeps its Quranic sign in the form each reading face can draw (0.3184ms)
+✔ a silent letter keeps the QPC sukun in the Hafs face and the rounded zero elsewhere (0.3296ms)
+✔ Al-Mulk pause signs stay attached to the preceding Uthmani glyph (0.3875ms)
+✔ font-locked Hafs payloads stay out of generic word chains (0.3208ms)
+✔ all supported embedded ayah marker forms collapse to one generated marker (9.3432ms)
+✔ waqf signs remain Quran content while the standalone medallion stays canonical (0.3267ms)
+✔ mobile playback requests a playback audio session and advances without animation frames (10.448ms)
+✔ a blocked native play is reported as paused, never as successful playback (0.9628ms)
+✔ flat equalizer preserves the native audio path (0.3146ms)
+✔ OS pause and resume events update the controls without forcing playback (0.5256ms)
+✔ a verse that fails to load in the background retries on return to the foreground (2.1982ms)
+✔ an OS interruption is not mistaken for the user pausing (1.0851ms)
+✔ playback progress keeps reporting without requestAnimationFrame (627.0618ms)
+✔ audio navigation scopes identify surah, page and juz playlists (1.2779ms)
+✔ a stale playlist end cannot navigate a newly selected reading scope (0.289ms)
+✔ audio utils: formats playback time safely (1.0857ms)
+✔ audio utils: reciter cooldown grows within defined bounds (0.2582ms)
+✔ audio labels: core controls are available in every UI language (0.4054ms)
+✔ audio player exposes only compact and expanded positions (1.2077ms)
+✔ audio defaults stay in settings while advanced controls adapt inside the player (1.0448ms)
+✔ retired audio maker and reciter comparator components are deleted (0.5088ms)
+✔ karaoke frame loop cancels all animation work while paused (1.1289ms)
+✔ each riwaya gets its own canonical basmala spelling (1.3419ms)
+✔ Hafs basmala uses alif-wasl, Warsh basmala uses the Warsh wasla marks (0.4694ms)
+✔ the Warsh basmala stays verbatim from the project Warsh source (1.8784ms)
+✔ mushaf page and continuous reader resolve basmala through the riwaya (1.4001ms)
+✔ crypto: authenticated device envelopes reject tampering (53.0828ms)
+✔ crypto: protected migrations can purge the persisted fallback device key (0.3243ms)
+✔ crypto: protected mode locks the key and validates the passphrase (449.9021ms)
+✔ crypto: passphrases enforce a meaningful minimum and plaintext migrates (0.9026ms)
+✔ crypto: locked settings cannot be overwritten by defaults (262.9056ms)
+✔ direction intents: LTR arrow mapping (4.0149ms)
+✔ direction intents: Arabic swaps horizontal arrows only (0.3107ms)
+✔ direction intents: Home/End recognized, other keys ignored (0.2862ms)
+✔ direction targets: step and clamp match the original slider math (0.3125ms)
+✔ AudioPlayer consumes the hook instead of inlining the RTL swap (1.1598ms)
+✔ editorial hub exposes the five published destinations and real actions (8.991ms)
+✔ privacy and source copy match the implemented local-first behavior (1.7787ms)
+✔ English and Arabic editorial copy remains complete and cacheable (2.8186ms)
+✔ complete Quran downloads merge progress from concurrent workers (198.4673ms)
+✔ a Warsh surah is counted with the Warsh denominator (23.8499ms)
+✔ a lost connection parks the surah instead of failing every verse (1.7785ms)
+✔ every static t() key in src/ resolves in fr, en and ar (338 keys) (2.9072ms)
+✔ French, English and Arabic locale trees expose exactly the same keys (3.2612ms)
+✔ all translated leaf values are usable strings or plural maps (1.9327ms)
+✔ new accessibility labels resolve without falling back to their keys (0.5555ms)
+✔ navigation: parses reading, duas and legal routes safely (3.525ms)
+✔ navigation: rejects invalid route numbers (0.3839ms)
+✔ navigation: rejects partial route matches (0.231ms)
+✔ storage: settings round-trip encrypted and sanitized (36.9053ms)
+✔ storage: retired comparison pins are discarded (4.7563ms)
+✔ storage: preserves per-riwaya Quran font choices (3.1871ms)
+✔ storage: migrates removed local-only Warsh font aliases (2.2549ms)
+✔ fonts: exposes riwaya-safe native ayah markers (0.4437ms)
+✔ fonts: appends native ayah markers without duplicates (0.68ms)
+✔ fonts: strips source markers before a separate ayah marker is rendered (0.5747ms)
+✔ fonts: selects Quran.com text compatible with the active Hafs font (1.7679ms)
+✔ network policy disables background work and audio warming with data saver (1.4508ms)
+✔ network policy scales audio warming to the connection (0.4091ms)
+✔ low performance detection combines device and viewport signals (0.3529ms)
+✔ performance metrics remain local and aggregate repeated samples (1.9296ms)
+✔ performance metrics reject unsafe names and non-finite values (1.0203ms)
+✔ removed progression tools are not mounted by the application (3.782ms)
+✔ reader keeps only the resume position and records no progression metrics (1.212ms)
+✔ service worker waits for user confirmation before activating an update (3.387ms)
+✔ service worker accepts commands only from a same-origin scoped client (0.383ms)
+✔ service worker keeps an installable entry shell when the shell manifest is unavailable (0.2648ms)
+✔ service worker bounds runtime caches and awaits cache writes (0.2823ms)
+✔ runtime cache does not persist opaque network responses (64.0616ms)
+✔ service worker does not precache optional PWA gallery screenshots (0.3133ms)
+✔ deployment headers allow same-origin device features for explicit opt-in (0.6512ms)
+✔ PWA manifest exposes stable identity, coherent colors and dedicated install assets (0.789ms)
+✔ iOS startup images are declared and available for phone and tablet formats (27.2217ms)
+✔ online audio still streams when Cache Storage is unavailable (79.6897ms)
+✔ offline audio serves a usable body for bytes=0-999 (62.2502ms)
+✔ offline audio serves a usable body for bytes=-3 (4.0265ms)
+✔ offline audio serves a usable body for bytes=4- (2.5252ms)
+✔ offline audio serves a usable body for bytes=20- (12.0466ms)
+✔ offline audio serves a usable body for bytes=invalid (1.3027ms)
+✔ offline audio serves a usable body for bytes=0-1,4-5 (1.525ms)
+✔ boot recovery preserves cached data when network is unavailable (online hint: false) (3.147ms)
+✔ boot recovery preserves cached data when network is unavailable (online hint: true) (1.6909ms)
+✔ worker uses the correct Vary policy for https://qa.test/assets/app.js (3.0145ms)
+✔ worker uses the correct Vary policy for https://api.alquran.cloud/v1/surah/1 (1.8953ms)
+✔ worker and downloader open the same offline audio cache (0.5931ms)
+✔ trim keeps the precached shell and evicts the oldest runtime entries (1.4195ms)
+✔ note: rejects a record whose key points to another verse (1.567ms)
+✔ bookmark: rejects a record whose key points to another verse (0.3631ms)
+✔ fetch timeout: an already cancelled navigation never sends a request (1.617ms)
+✔ fetch timeout: caller cancellation retains AbortError (0.7389ms)
+✔ fetch timeout: finished requests release their cancellation listeners (41.6957ms)
+✔ fetch timeout: actual timeout is still reported (25.7708ms)
+✔ surah information is normalized before reaching the UI (45.7518ms)
+✔ an aborted reader does not cancel a shared Quran.com request (13.7204ms)
+✔ healthy reader sources stay out of the reading interface (2.292ms)
+✔ reader typography controls remain explicit and mobile-accessible (1.046ms)
+✔ the unified reader header remains available in mobile QCF4 Mushaf mode (1.2986ms)
+✔ dua cards keep a single compact reader action (1.8006ms)
+✔ surah information opens as an accessible responsive dossier (1.2647ms)
+✔ reciter cards keep technical providers in the detail view (0.7162ms)
+✔ verse action modal renders a reduced, responsive action grid (1.0745ms)
+✔ Tajweed legend groups rules without compressing their labels (0.9096ms)
+✔ page atmospheres remain contextual, theme-aware and asset-free (1.5134ms)
+✔ mobile reader shell follows the Tajweed card and keeps an explicit home logo (1.5563ms)
+✔ verse reference and primary actions keep one production-safe row (1.0929ms)
+✔ home mobile hierarchy progressively discloses secondary content (1.3725ms)
+✔ Mushaf pages keep a compact, theme-aware reading hierarchy (1.1162ms)
+✔ reciter details expose a resumable complete Quran offline download (1.2882ms)
+✔ immersive Mushaf opens on the verse in view and leafs right to left like a printed book (3.3754ms)
+✔ immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page controls (1.0385ms)
+✔ immersive Mushaf is edge-to-edge and theme-aware through its own portal sheet (2.2393ms)
+✔ surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech (2.0366ms)
+✔ the active surah name keeps its meaning animated without harming accessibility (1.1154ms)
+✔ home quick suggestions stay compact and available responsively (0.822ms)
+✔ home surah play controls expose and toggle the real playback state (1.741ms)
+✔ retired word analysis CSS is absent from the application shell (2.4664ms)
+✔ continuous Mushaf text strips embedded markers before rendering its marker (0.4602ms)
+✔ Warsh page data and fullscreen share one renderer with one marker owner (1.3111ms)
+✔ continuous Mushaf markers leave a readable gap before the next ayah (0.8522ms)
+✔ ayah numbers keep one canonical glyph regardless of the reading font (0.3499ms)
+✖ Tajweed legend and Quran.com markup share the same eight rule families (3.4958ms)
+✔ the visual system separates brand, gold, Warsh and transliteration roles (2.1002ms)
+✔ the application-wide design system owns themes, surfaces and responsive fallbacks (1.2603ms)
+✔ recitation performance: Warsh playlists are built locally without text fetches (2.5224ms)
+✔ recitation performance: surah-stream radio keeps one item per surah (3.5976ms)
+✔ audio sync: a full-surah stream exposes and advances the active ayah (3.7469ms)
+✔ audio sync: selecting an ayah seeks within a full-surah stream (37.7522ms)
+✔ audio performance: a rapid verse change supersedes the stale load cleanly (1.6661ms)
+✔ audio performance: rapid reciter changes are serialized and latest wins (1.6484ms)
+✔ audio correctness: switching reciter never reuses the previous reciter timing URL (1.2056ms)
+✔ audio resilience: EveryAyah primary failure falls back to its mirror (0.7208ms)
+✔ audio lifecycle: play and pause subscribers drive pausable consumers (2.1968ms)
+✔ reciters: Hafs and Warsh catalogues are complete (1.4891ms)
+✔ reciters: removed voices no longer resolve (0.3462ms)
+✔ reciters: Hafs streams only from the Quran.com CDN, EveryAyah or approved MP3Quran surah feeds (1.5976ms)
+✔ reciters: only the approved voices stream whole surahs (0.2998ms)
+✔ reciters: ids are unique and metadata is compatible with the player (3.4646ms)
+✔ reciters: QuranPedia cdn values are numeric recitation ids (0.2177ms)
+✔ reciters: every catalogue entry has a visual and localized biography (0.5807ms)
+✔ reciters: curated portrait URLs replace every known text thumbnail (0.7667ms)
+✔ reciters: portrait attribution matches the actual image host (0.6212ms)
+✔ reciters: Al-Matrood and Al-Sudais have verified biography sources (0.2528ms)
+✔ reciters: requested voices are discoverable through common spellings (0.2494ms)
+✔ reciters: every biography exposes a reviewed HTTPS source (0.4263ms)
+✔ reciters: reciter profiles match the catalogue exactly (0.1679ms)
+✔ reciters: attributed portraits and biography sources are wired (1.0092ms)
+✔ reciters: Warsh additions are marked as verified Warsh (0.1777ms)
+✔ audio: per-ayah URLs are built for every CDN type (37.4919ms)
+✔ audio: fallback candidates stay within the approved sources (8.3542ms)
+✔ all 114 surah routes resolve without clamping or redirection (46.8127ms)
+✔ invalid reading routes return a real not-found state (0.5562ms)
+✔ published transparency routes resolve explicitly (0.2939ms)
+✔ search preparation sanitizes input and resolves candidates without a worker (3.9033ms)
+✔ search preparation falls back when worker messaging is unavailable (1.6385ms)
+✔ a positional query is read as a jump target in every supported form (4.2136ms)
+✔ out-of-range and textual queries stay on the text search path (1.2813ms)
+✔ Arabic-Indic digits are folded to the digits the rest of the app uses (0.6248ms)
+✔ the shared fold collapses accents, tashkeel and letter variants (0.3688ms)
+✔ every surah search box resolves the same query to the same surahs (19.1323ms)
+✔ security: allows only whitelisted https hosts (10.9557ms)
+✔ security: production CSP excludes dev-only and unused risky sources (0.631ms)
+✔ fonts: the Hafs and Warsh faces are self-hosted as valid WOFF2 assets (1.1092ms)
+✔ security: the HTML meta CSP stays compatible with local WebKit previews (0.4707ms)
+✔ security: deployment CSP headers match the generated production policy (0.8443ms)
+✔ security: all deployable root headers match the centralized policy (2.4634ms)
+✔ security: deployment assets use CORP and unused browser capabilities are denied (0.5364ms)
+✔ security: reader failures do not expose raw provider errors to the UI (0.6239ms)
+✔ security: SVG sanitizer strips active content and external references (5.544ms)
+✔ security: sanitizers reject encoded SVG URLs and dangerous HTML (2.1837ms)
+✔ security: source avoids raw HTML injection sinks (47.4857ms)
+✔ storage: rejects invalid localStorage key format (0.5441ms)
+✔ storage: validates a saved note and returns fallback on corruption (0.5957ms)
+✔ storage: keeps a valid offline download registry across reloads (0.9489ms)
+✔ storage: accepts an explicitly cancelled offline download (0.3254ms)
+✔ storage quota reports usage, remaining capacity and persistence (3.0471ms)
+✔ storage quota blocks a download that would consume the reserve (0.6146ms)
+✔ audio estimates account for stream and verse downloads (0.243ms)
+✔ tafsir: exposes stable keys for selector values (1.4819ms)
+✔ tafsir: accepts numeric resource ids and keeps selected source (1.3207ms)
+✔ tafsir: falls back when the selected resource fails (0.5049ms)
+✔ tajwid segments keep leading Arabic marks attached to their base glyph (2.7242ms)
+✔ tajwid segments retain the coloured base after moving a leading harakah (0.4029ms)
+✔ stand-in superscript alef is normalized without creating an isolated mark (0.2841ms)
+✔ QPC dotted-circle anchors never leak into the rendered Quran text (0.3523ms)
+✔ QPC filled fallback dots are normalized to the canonical Quranic sign (0.3292ms)
+✔ Al-Mulk waqf marks cannot be isolated by a zero-width separator (0.3358ms)
+✔ interactive waqf signs preserve their canonical Quran code point on a safe anchor (0.2888ms)
+✖ Hafs and Warsh use the shared Quran.com Tajweed color semantics (2.0504ms)
+✔ the edition is served from 114 local surah files plus one index (2.6093ms)
+✔ every surah file covers its Hafs verses densely, in Hafs numbering (2.8584ms)
+✔ the mushaf adds up to 6236 Hafs verses (0.2872ms)
+✔ the reading line is latin text only, free of markup and numbering (16.5383ms)
+✔ a verse is the space-joined stream of its word transliterations (3.2666ms)
+✔ the basmala belongs to Al-Fatiha's numbered verses, not to a surah opening (0.3876ms)
+✔ the recitation letters stay readable on the sampled verses (0.2255ms)
+✔ index.json pins the SHA-256 of the files actually shipped (27.6655ms)
+✔ the edition is registered in the legal attribution ledger (0.5781ms)
+✔ the loader reads a surah offline, in Hafs numbering, and parses it once (70.8717ms)
+✔ the synchronous read answers from memory only (1.8938ms)
+✔ a request schedules the load and notifies subscribers when the lines land (79.3636ms)
+✔ the attribution is read from the pinned index (0.4922ms)
+✔ an incomplete surah is refused instead of shown, even with a matching digest (35.2871ms)
+✔ a tampered file fails its pinned digest and is never served (16.9334ms)
+✔ out-of-range surahs are rejected (0.4408ms)
+✔ the reading cards take their line from the getter, not from the approximation (1.639ms)
+✔ every populated surah notifies the readers, cache hit included (0.512ms)
+✔ Warsh never receives a Hafs-derived transliteration (0.7857ms)
+✔ the loader keeps a single entry point and default export (0.1404ms)
+✔ shared modal.jsx close control follows the active language (4.3972ms)
+✔ shared sheet.jsx close control follows the active language (0.7583ms)
+✔ compact mobile player uses the safe-area dock and a visible progress rail (1.8777ms)
+✔ reader and mobile settings keep a compact, labelled hierarchy (0.8509ms)
+✔ feature-level accessibility labels use the active locale (0.9512ms)
+✔ verse sharing: builds a stable MushafPlus deep link (1.0586ms)
+✔ verse sharing: creates clean localized content (4.7396ms)
+✔ verse sharing: provides valid destinations for every supported network (9.5439ms)
+✔ verse sharing: strips markup and normalizes whitespace (16.1685ms)
+✔ verse sharing: the product flow is image-first (4.1672ms)
+✔ voice recognition follows the selected search language (1.3089ms)
+✔ voice recognition supports standard and prefixed browser APIs (0.3133ms)
+✔ search modal exposes an accessible voice control and live feedback (1.0643ms)
+✔ setup: the Warsh everyayah reciter really is a per-ayah CDN (1.249ms)
+✔ surahs whose numbering is identical keep producing the old URLs (13.3608ms)
+✔ past a divergence point the requested file is the Hafs verse, not the displayed one (28.6077ms)
+✔ no Warsh item anywhere in the mushaf asks for a file outside its surah (13.9383ms)
+✔ Quran.com CDN URLs and their everyayah fallback keep the Hafs keys (1.5351ms)
+✔ QuranPedia URLs ask for the displayed Warsh verse, not the Hafs one (0.5677ms)
+✔ loadPlaylist builds Warsh tracks on the Hafs file and keeps the Warsh position (3.4826ms)
+✔ the two global numbering spaces really differ for Warsh (0.3379ms)
+✔ Warsh playback anchors on the Warsh verse, not on the Hafs global (0.7118ms)
+✔ Hafs playback is unchanged and still falls back to the global number (0.4931ms)
+✔ a verse the provider does not serve never enters the playlist (0.521ms)
+✔ declared audio gaps are catalogue verses, not invented numbers (0.4833ms)
+✔ segments are well-formed ranges without overlaps (3.462ms)
+✔ per-surah segment coverage reconciles both ayah totals (0.5338ms)
+✔ Al-Fatiha: the ornamental basmala has no numbered Warsh ayah (1.0101ms)
+✔ Al-Baqarah: Alif-Lam-Mim merges with the following verse in Warsh (0.2599ms)
+✔ Ar-Rum: one Warsh ayah recites the first three Hafs verses (0.1753ms)
+✔ Al-Haqqah: the split of hafs 25 shows both pieces as that verse (0.1267ms)
+✔ Ar-Rahman refrain pairs stay mapped through the merge at the top (0.1334ms)
+✔ Al-Inshiqaq: the hafs 16 split keeps both Warsh pieces on hafs 16 (0.1756ms)
+✔ pure identity surahs map to themselves; offset surahs shift after the first divergence (0.1955ms)
+✔ invalid coordinates return null instead of guessing a verse (0.221ms)
+✔ round-tripping a warsh ayah through hafs returns its own neighbourhood (7.078ms)
+✔ warshRangeToHafsRange spans merged endpoints (0.2796ms)
+✔ every surah reports a reliable mapping (0.2138ms)
+✔ warsh coordinates: Hafs ayahs map to themselves (2.1782ms)
+✔ warsh coordinates: a mapped Warsh ayah resolves through hafsNumbers (0.288ms)
+✔ warsh coordinates: an unplaced Warsh ayah yields null, never a neighbour (0.2097ms)
+✔ warsh coordinates: invalid or missing verse numbers yield null (0.2231ms)
+✔ warsh coordinates: every numbered Warsh ayah resolves to Hafs numbers (9.2565ms)
+✔ warsh coordinates: the documented divergence anchor stays exact (0.3666ms)
+✔ warsh coordinates: all action surfaces hand AyahActions the mapped number (1.1305ms)
+✔ warsh coordinates: useQuranDisplayData attaches the mapping on every path (0.6523ms)
+✔ legacy Warsh corpus: stripping the marker never removes a Quran letter (100.4761ms)
+✔ legacy Warsh corpus: markers attach in every whitespace form (14.8863ms)
+✔ presentation forms are content unless they are the proven ayah number (0.3361ms)
+✔ without ayah-number evidence no presentation form is stripped (0.3076ms)
+✔ digit and bracketed marker forms still collapse (0.2135ms)
+✔ waqf and recitation signs survive marker stripping (0.1407ms)
+✔ append then strip round-trips for Warsh ayahs (4.8703ms)
+✔ the new Unicode Warsh source carries no presentation forms to strip (5.9027ms)
+✔ Warsh ayahs next to a divergence point resolve to the Hafs verses they recite (2.183ms)
+✔ unplaceable Warsh verses resolve to null instead of a neighbouring verse (0.2645ms)
+✔ the Hafs join keeps raw verse numbers untouched (2.2377ms)
+✔ mergeHafsSupport resolves its lookup key through the mapping (1.1525ms)
+✔ per-surah Warsh totals reconcile the 6214-ayah mushaf (4.6845ms)
+✔ the reading header quotes the verse total of the riwaya being read (0.393ms)
+✔ home mushaf totals quote the active riwaya (3.5532ms)
+✔ buildSurahAudioPlaylist for Warsh Al-Baqara yields 285 verses, not 286 (0.6829ms)
+✔ the Hafs playlist shape is unchanged (1.7464ms)
+✔ the async playlist builders honour the riwaya without new I/O (1.0435ms)
+✔ displayed Warsh ayahs normalize onto hafs-keyed global numbers (0.4886ms)
+✔ both Warsh text sources are pinned to immutable commits (20.4843ms)
+✔ warshService requires the exact verse count and verifies the digest (3.7265ms)
+✔ Quran.com stripping keeps presentation-form ligatures as content (36.517ms)
+✔ the Quran.com strip rule no longer covers presentation-form ranges (0.6459ms)
+✔ the edition is served from 114 local surah files plus one index (2.1706ms)
+✔ every surah file covers its Warsh verses densely, in Warsh numbering (4.1428ms)
+✔ Al-Baqara holds 285 Warsh verses and the whole mushaf 6214 (0.4133ms)
+✔ each verse carries the Hafs numbers the app's mapping assigns to it (9.1315ms)
+✔ every Hafs verse of a surah is recited by exactly one Warsh verse (6.2198ms)
+✔ Warsh 1:1 is the Fatiha verse the Madinah mushaf numbers first (0.4085ms)
+✔ a merged Warsh verse is the single-space join of its two Hafs sources (1.7411ms)
+✔ markup, note markers and verse numbering never reach the reading line (12.9723ms)
+✔ tags and translator notes are stripped out of the text, notes kept aside (0.6504ms)
+✔ a split Hafs verse repeats its text on each Warsh verse covering it (0.4392ms)
+✔ index.json pins the SHA-256 of the files actually shipped (28.9411ms)
+✔ the loader reads surahs offline and keeps them in Warsh numbering (13.1535ms)
+✔ the edition document is stamped warsh and keyed per surah (8.3609ms)
+✔ a payload whose digest no longer matches the pinned one is refused (2.5665ms)
+✔ only Warsh edition ids resolve through the local service (0.2263ms)
+✔ the translation chooser advertises the edition as a Warsh option (0.7413ms)
+✔ fetchTranslations routes the local edition and keeps remote ones remote (0.4995ms)
+✔ the selection survives a reload and every locale names the edition (0.4927ms)
+✔ the attribution register declares the translation and its rights (0.3569ms)
+✔ the English edition is served from 114 local surah files plus one index (0.3668ms)
+✔ every English surah recites exactly the Warsh verses the French edition recites (5.315ms)
+✔ English reading lines stay free of markup, note markers and numbering (5.8181ms)
+✔ the English index.json pins the SHA-256 of the files actually shipped (23.6829ms)
+✔ the English chooser, storage token, locale labels and attribution are wired (0.944ms)
+✔ the loader serves the English edition offline under its own cache keys (4.6343ms)
+✔ Hafs word audio keeps its existing url and never warns (71.558ms)
+✔ a warsh word tap still plays but discloses the hafs-only notice once (151.5347ms)
+✔ invalid coordinates stay no-ops even in warsh (94.5058ms)
+✔ WCAG: action sheets expose dialog semantics and focus management (2.6542ms)
+✔ WCAG: forms, tabs and audio status keep programmatic names (1.3173ms)
+✔ WCAG: the unified library dialog isolates its interactions (0.4438ms)
+✔ WCAG: splash respects language, reduced motion and target size (0.489ms)
+✔ WCAG: reinforced reading colors meet AA contrast on light surfaces (1.4334ms)
+✔ the captured field glues two words the list divides (2.1125ms)
+✔ a verse field that loses a word boundary is detected, not recited blind (1.0493ms)
+✔ the painted Hafs text regains the authoritative word division (1.5382ms)
+✔ restoring the division changes segmentation only, never a letter (0.4094ms)
+✔ a real wording difference is left alone (0.5745ms)
+✔ word data from another verse revokes per-word recitation (0.3935ms)
+✔ an absent word array or empty text has nothing to align against (0.5456ms)
+✔ ayah-end markers are never recitable words (0.312ms)
+ℹ tests 325
+ℹ suites 0
+ℹ pass 323
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1436.9591
+
+✖ failing tests:
+
+test at tests\reader-ui-contract.test.mjs:460:1
+✖ Tajweed legend and Quran.com markup share the same eight rule families (3.4958ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /--tajwid-silent: #9e9e9e;/. Input:
+  
+  '\n' +
+    '\n' +
+    ':root[data-theme="light"],\n' +
+    '[data-theme="light"] {\n' +
+    '    --brand-bg: #f6f8f4;\n' +
+    '    --brand-ink: #19251f;\n' +
+    '    --brand-accent: #0f6a43;\n' +
+    '    --brand-accent-rgb: 15, 106, 67;\n' +
+    '    --brand-gold: #b48732;\n' +
+    '    --theme-arabic-base: #121914;\n' +
+    '    --theme-scene-a: radial-gradient(\n' +
+    '        circle at 12% -14%,\n' +
+    '        rgba(15, 106, 67, 0.1),\n' +
+    '        transparent 38%\n' +
+    '    );\n' +
+    '    --theme-scene-b: radial-gradient(\n' +
+    '        circle at 88% -12%,\n' +
+    '        rgba(180, 135, 50, 0.07),\n' +
+    '        transparent 34%\n' +
+    '    );\n' +
+    '    --theme-pattern:\n' +
+    '        linear-gradient(90deg, rgba(31, 40, 50, 0.02) 1px, transparent 1px) 0\n' +
+    '            0 / 92px 92px,\n' +
+    '        linear-gradient(rgba(47, 158, 167, 0.022) 1px, transparent 1px) 0 0 /\n' +
+    '            92px 92px,\n' +
+    '        radial-gradient(\n' +
+    '                circle at 46px 46px,\n' +
+    '                rgba(47, 158, 167, 0.055) 0 1.1px,\n' +
+    '                transparent 1.35px\n' +
+    '            )\n' +
+    '            0 0 / 92px 92px;\n' +
+    '    --theme-veil: linear-gradient(\n' +
+    '        180deg,\n' +
+    '        rgba(255, 255, 255, 0.45),\n' +
+    '        transparent 22%,\n' +
+    '        transparent 78%,\n' +
+    '        rgba(246, 250, 251, 0.34)\n' +
+    '    );\n' +
+    '    --theme-ornament:\n' +
+    '        linear-gradient(\n' +
+    '            125deg,\n' +
+    '            rgba(255, 255, 255, 0.18),\n' +
+    '            transparent 32%,\n' +
+    '            transparent 68%,\n' +
+    '            rgba(47, 158, 167, 0.065)\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 16% 20%,\n' +
+    '            rgba(47, 158, 167, 0.085),\n' +
+    '            transparent 20%\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 84% 16%,\n' +
+    '            rgba(110, 127, 145, 0.065),\n' +
+    '            transparent 17%\n' +
+    '        );\n' +
+    '    --theme-hero-wash:\n' +
+    '        linear-gradient(140deg, rgba(255, 255, 255, 0.22), transparent 54%),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 86% 12%,\n' +
+    '            rgba(47, 158, 167, 0.11),\n' +
+    '            transparent 30%\n' +
+    '        );\n' +
+    '\n' +
+    '\n' +
+    '    --tajwid-silent: #6f6f6f;\n' +
+    '    --tajwid-lam-shamsiyya: #6f6f6f;\n' +
+    '    --tajwid-ghunna: #1e8e4e;\n' +
+    '    --tajwid-idgham: #1e8e4e;\n' +
+    '    --tajwid-ikhfa: #1e8e4e;\n' +
+    '    --tajwid-iqlab: #1e8e4e;\n' +
+    '    --tajwid-qalqala: #0369a1;\n' +
+    '    --tajwid-tafkhim: #2e86de;\n' +
+    '    --tajwid-madd-normal: #8e44ad;\n' +
+    '    --tajwid-madd: #e53935;\n' +
+    '    --tajwid-madd-separated: #c75b00;\n' +
+    '    --tajwid-madd-connected: #e91e63;\n' +
+    '    --tajwid-madd-necessary: #e53935;\n' +
+    '    --tajwid-madd-badal: #8e44ad;\n' +
+    '    --tajwid-naql: #c75b00;\n' +
+    '    --tajwid-tashil: #1e8e4e;\n' +
+    '    --tajwid-ibdal: #c75b00;\n' +
+    '    --tajwid-sila-kubra: #e91e63;\n' +
+    '    --tajwid-tarqiq-ra: #1e8e4e;\n' +
+    '    --tajwid-idgham-warsh: #6f6f6f;\n' +
+    '}\n' +
+    '\n' +
+    ':root[data-theme="sepia"],\n' +
+    '[data-theme="sepia"] {\n' +
+    '    --brand-bg: #f3ead8;\n' +
+    '    --brand-ink: #2b2117;\n' +
+    '    --brand-accent: #77552c;\n' +
+    '    --brand-accent-rgb: 119, 85, 44;\n' +
+    '    --brand-gold: #a9782f;\n' +
+    '    --theme-arabic-base: #21170e;\n' +
+    '\n' +
+    '\n' +
+    '    --emerald: #7c4a17;\n' +
+    '    --emerald-lit: #9a6425;\n' +
+    '    --emerald-pale: #ead9b8;\n' +
+    '\n' +
+    '    --theme-scene-a: radial-gradient(\n' +
+    '        circle at 12% -10%,\n' +
+    '        rgba(139, 107, 62, 0.22),\n' +
+    '        transparent 38%\n' +
+    '    );\n' +
+    '    --theme-scene-b: radial-gradient(\n' +
+    '        circle at 88% -16%,\n' +
+    '        rgba(168, 132, 82, 0.16),\n' +
+    '        transparent 36%\n' +
+    '    );\n' +
+    '    --theme-pattern:\n' +
+    '        linear-gradient(90deg, rgba(72, 55, 35, 0.025) 1px, transparent 1px) 0\n' +
+    '            0 / 92px 92px,\n' +
+    '        linear-gradient(rgba(139, 107, 62, 0.025) 1px, transparent 1px) 0 0 /\n' +
+    '            92px 92px,\n' +
+    '        radial-gradient(\n' +
+    '                circle at 24px 24px,\n' +
+    '                rgba(168, 132, 82, 0.08) 0 1.1px,\n' +
+    '                transparent 1.35px\n' +
+    '            )\n' +
+    '            0 0 / 92px 92px;\n' +
+    '    --theme-veil: linear-gradient(\n' +
+    '        180deg,\n' +
+    '        rgba(255, 250, 242, 0.5),\n' +
+    '        transparent 24%,\n' +
+    '        transparent 76%,\n' +
+    '        rgba(120, 89, 52, 0.2)\n' +
+    '    );\n' +
+    '    --theme-ornament:\n' +
+    '        linear-gradient(\n' +
+    '            125deg,\n' +
+    '            rgba(255, 248, 238, 0.2),\n' +
+    '            transparent 30%,\n' +
+    '            transparent 70%,\n' +
+    '            rgba(139, 107, 62, 0.12)\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 14% 18%,\n' +
+    '            rgba(168, 132, 82, 0.15),\n' +
+    '            transparent 18%\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 84% 18%,\n' +
+    '            rgba(72, 55, 35, 0.1),\n' +
+    '            transparent 18%\n' +
+    '        );\n' +
+    '    --theme-hero-wash:\n' +
+    '        linear-gradient(145deg, rgba(255, 252, 244, 0.2), transparent 56%),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 84% 14%,\n' +
+    '            rgba(139, 107, 62, 0.16),\n' +
+    '            transparent 28%\n' +
+    '        );\n' +
+    '\n' +
+    '\n' +
+    '    --tajwid-silent: #475569;\n' +
+    '    --tajwid-lam-shamsiyya: #475569;\n' +
+    '    --tajwid-ghunna: #169777;\n' +
+    '    --tajwid-idgham: #169777;\n' +
+    '    --tajwid-ikhfa: #169777;\n' +
+    '    --tajwid-iqlab: #169777;\n' +
+    '    --tajwid-qalqala: #0369a1;\n' +
+    '    --tajwid-tafkhim: #2563eb;\n' +
+    '    --tajwid-madd-normal: #b45309;\n' +
+    '    --tajwid-madd: #d13b83;\n' +
+    '    --tajwid-madd-separated: #d13b83;\n' +
+    '    --tajwid-madd-connected: #d13b83;\n' +
+    '    --tajwid-madd-necessary: #d13b83;\n' +
+    '    --tajwid-madd-badal: #b45309;\n' +
+    '    --tajwid-naql: #b45309;\n' +
+    '    --tajwid-tashil: #169777;\n' +
+    '    --tajwid-ibdal: #b45309;\n' +
+    '    --tajwid-sila-kubra: #d13b83;\n' +
+    '    --tajwid-tarqiq-ra: #169777;\n' +
+    '    --tajwid-idgham-warsh: #475569;\n' +
+    '}\n' +
+    '\n' +
+    ':root[data-theme="dark"],\n' +
+    '[data-theme="dark"] {\n' +
+    '    --brand-bg: #0c1511;\n' +
+    '    --brand-ink: #f0eee6;\n' +
+    '    --brand-accent: #38a675;\n' +
+    '    --brand-accent-rgb: 56, 166, 117;\n' +
+    '    --brand-gold: #d0ad62;\n' +
+    '    --theme-arabic-base: #f5f0e5;\n' +
+    '    --theme-scene-a: radial-gradient(\n' +
+    '        circle at 12% -14%,\n' +
+    '        rgba(47, 159, 107, 0.11),\n' +
+    '        transparent 36%\n' +
+    '    );\n' +
+    '    --theme-scene-b: radial-gradient(\n' +
+    '        circle at 86% -16%,\n' +
+    '        rgba(214, 180, 92, 0.07),\n' +
+    '        transparent 32%\n' +
+    '    );\n' +
+    '    --theme-pattern:\n' +
+    '        linear-gradient(90deg, rgba(238, 235, 225, 0.024) 1px, transparent 1px) 0\n' +
+    '            0 / 92px 92px,\n' +
+    '        linear-gradient(rgba(47, 159, 107, 0.025) 1px, transparent 1px) 0 0 /\n' +
+    '            92px 92px,\n' +
+    '        radial-gradient(\n' +
+    '                circle at 46px 46px,\n' +
+    '                rgba(47, 159, 107, 0.1) 0 1.05px,\n' +
+    '                transparent 1.3px\n' +
+    '            )\n' +
+    '            0 0 / 92px 92px;\n' +
+    '    --theme-veil: linear-gradient(\n' +
+    '        180deg,\n' +
+    '        rgba(7, 16, 12, 0.16),\n' +
+    '        transparent 20%,\n' +
+    '        transparent 78%,\n' +
+    '        rgba(5, 9, 7, 0.36)\n' +
+    '    );\n' +
+    '    --theme-ornament:\n' +
+    '        linear-gradient(\n' +
+    '            125deg,\n' +
+    '            rgba(255, 255, 255, 0.04),\n' +
+    '            transparent 34%,\n' +
+    '            transparent 66%,\n' +
+    '            rgba(47, 159, 107, 0.08)\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 14% 20%,\n' +
+    '            rgba(47, 159, 107, 0.11),\n' +
+    '            transparent 18%\n' +
+    '        ),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 84% 16%,\n' +
+    '            rgba(214, 180, 92, 0.07),\n' +
+    '            transparent 17%\n' +
+    '        );\n' +
+    '    --theme-hero-wash:\n' +
+    '        linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 54%),\n' +
+    '        radial-gradient(\n' +
+    '            circle at 84% 14%,\n' +
+    '            rgba(47, 159, 107, 0.13),\n' +
+    '            transparent 28%\n' +
+    '        );\n' +
+    '\n' +
+    '\n' +
+    '    --tajwid-silent: #94a3b8;\n' +
+    '    --tajwid-lam-shamsiyya: #94a3b8;\n' +
+    '    --tajwid-ghunna: #169777;\n' +
+    '    --tajwid-idgham: #169777;\n' +
+    '    --tajwid-ikhfa: #169777;\n' +
+    '    --tajwid-iqlab: #169777;\n' +
+    '    --tajwid-qalqala: #22d3ee;\n' +
+    '    --tajwid-tafkhim: #60a5fa;\n' +
+    '    --tajwid-madd-normal: #e67e22;\n' +
+    '    --tajwid-madd: #f472b6;\n' +
+    '    --tajwid-madd-separated: #f472b6;\n' +
+    '    --tajwid-madd-connected: #f472b6;\n' +
+    '    --tajwid-madd-necessary: #f472b6;\n' +
+    '    --tajwid-madd-badal: #e67e22;\n' +
+    '    --tajwid-naql: #e67e22;\n' +
+    '    --tajwid-tashil: #169777;\n' +
+    '    --tajwid-ibdal: #e67e22;\n' +
+    '    --tajwid-sila-kubra: #f472b6;\n' +
+    '    --tajwid-tarqiq-ra: #169777;\n' +
+    '    --tajwid-idgham-warsh: #94a3b8;\n' +
+    '}\n' +
+    '\n' +
+    ':root[data-theme="quran-night"],\n' +
+    ':root[data-theme],\n' +
+    '[data-theme] {\n' +
+    '    --theme-bg: var(--brand-bg);\n' +
+    '    --theme-bg-alt: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-bg) 95%,\n' +
+    '        var(--brand-ink) 5%\n' +
+    '    );\n' +
+    '    --theme-surface: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-bg) 93%,\n' +
+    '        var(--brand-ink) 7%\n' +
+    '    );\n' +
+    '    --theme-surface-soft: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-bg) 89%,\n' +
+    '        var(--brand-ink) 11%\n' +
+    '    );\n' +
+    '    --theme-surface-glass: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--theme-surface) 84%,\n' +
+    '        transparent 16%\n' +
+    '    );\n' +
+    '    --theme-text: var(--brand-ink);\n' +
+    '    --theme-text-soft: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-ink) 78%,\n' +
+    '        var(--brand-bg) 22%\n' +
+    '    );\n' +
+    '    --theme-text-muted: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-ink) 64%,\n' +
+    '        var(--brand-bg) 36%\n' +
+    '    );\n' +
+    '    --theme-text-inverse: color-mix(in srgb, #ffffff 88%, var(--brand-bg) 12%);\n' +
+    '    --theme-primary: var(--brand-accent);\n' +
+    '    --theme-primary-rgb: var(--brand-accent-rgb);\n' +
+    '    --theme-accent: var(--brand-accent);\n' +
+    '    --theme-accent-bright: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-accent) 80%,\n' +
+    '        #ffffff 20%\n' +
+    '    );\n' +
+    '    --theme-border: color-mix(in srgb, var(--brand-ink) 20%, transparent 80%);\n' +
+    '    --theme-border-strong: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-ink) 36%,\n' +
+    '        var(--brand-accent) 64%\n' +
+    '    );\n' +
+    '    --theme-arabic: var(\n' +
+    '        --theme-arabic-base,\n' +
+    '        color-mix(in srgb, var(--brand-accent) 68%, var(--brand-ink) 32%)\n' +
+    '    );\n' +
+    '    --theme-glow-a: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--brand-accent) 24%,\n' +
+    '        transparent 76%\n' +
+    '    );\n' +
+    '    --theme-glow-b: color-mix(in srgb, var(--brand-ink) 10%, transparent 90%);\n' +
+    '    --theme-shadow-panel:\n' +
+    '        0 18px 42px rgba(2, 8, 23, 0.18),\n' +
+    '        0 1px 0 rgba(255, 255, 255, 0.09) inset;\n' +
+    '    --theme-shadow-soft:\n' +
+    '        0 10px 24px rgba(2, 8, 23, 0.12),\n' +
+    '        0 1px 0 rgba(255, 255, 255, 0.08) inset;\n' +
+    '    --theme-app-bg:\n' +
+    '        var(--theme-pattern), var(--theme-scene-a), var(--theme-scene-b),\n' +
+    '        linear-gradient(\n' +
+    '            180deg,\n' +
+    '            var(--brand-bg) 0%,\n' +
+    '            color-mix(in srgb, var(--brand-bg) 90%, var(--brand-ink) 10%) 52%,\n' +
+    '            var(--brand-bg) 100%\n' +
+    '        );\n' +
+    '\n' +
+    '\n' +
+    '    --bg: var(--theme-bg);\n' +
+    '    --bg-primary: var(--theme-bg);\n' +
+    '    --bg-secondary: var(--theme-bg-alt);\n' +
+    '    --bg-tertiary: color-mix(\n' +
+    '        in srgb,\n' +
+    '        var(--theme-bg-alt) 76%,\n' +
+    '        var(--theme-surface) 24%\n' +
+    '    );\n' +
+    '    --bg-card: var(--theme-surface);\n' +
+    '    --surface: var(--theme-surface);\n' +
+    '    --glass-bg: var(--theme-surface-glass);\n' +
+    '    --header-bg: var(--'... 36940 more characters
+  
+      at TestContext.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/tests/reader-ui-contract.test.mjs:501:12)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '\n\n:root[data-theme="light"],\n[data-theme="light"] {\n    --brand-bg: #f6f8f4;\n    --brand-ink: #19251f;\n    --brand-accent: #0f6a43;\n    --brand-accent-rgb: 15, 106, 67;\n    --brand-gold: #b48732;\n    --theme-arabic-base: #121914;\n    --theme-scene-a: radial-gradient(\n        circle at 12% -14%,\n        rgba(15, 106, 67, 0.1),\n        transparent 38%\n    );\n    --theme-scene-b: radial-gradient(\n        circle at 88% -12%,\n        rgba(180, 135, 50, 0.07),\n        transparent 34%\n    );\n    --theme-pattern:\n        linear-gradient(90deg, rgba(31, 40, 50, 0.02) 1px, transparent 1px) 0\n            0 / 92px 92px,\n        linear-gradient(rgba(47, 158, 167, 0.022) 1px, transparent 1px) 0 0 /\n            92px 92px,\n        radial-gradient(\n                circle at 46px 46px,\n                rgba(47, 158, 167, 0.055) 0 1.1px,\n                transparent 1.35px\n            )\n            0 0 / 92px 92px;\n    --theme-veil: linear-gradient(\n        180deg,\n        rgba(255, 255, 255, 0.45),\n        transparent 22%,\n        transparent 78%,\n        rgba(246, 250, 251, 0.34)\n    );\n    --theme-ornament:\n        linear-gradient(\n            125deg,\n            rgba(255, 255, 255, 0.18),\n            transparent 32%,\n            transparent 68%,\n            rgba(47, 158, 167, 0.065)\n        ),\n        radial-gradient(\n            circle at 16% 20%,\n            rgba(47, 158, 167, 0.085),\n            transparent 20%\n        ),\n        radial-gradient(\n            circle at 84% 16%,\n            rgba(110, 127, 145, 0.065),\n            transparent 17%\n        );\n    --theme-hero-wash:\n        linear-gradient(140deg, rgba(255, 255, 255, 0.22), transparent 54%),\n        radial-gradient(\n            circle at 86% 12%,\n            rgba(47, 158, 167, 0.11),\n            transparent 30%\n        );\n\n\n    --tajwid-silent: #6f6f6f;\n    --tajwid-lam-shamsiyya: #6f6f6f;\n    --tajwid-ghunna: #1e8e4e;\n    --tajwid-idgham: #1e8e4e;\n    --tajwid-ikhfa: #1e8e4e;\n    --tajwid-iqlab: #1e8e4e;\n    --tajwid-qalqala: #0369a1;\n    --tajwid-tafkhim: #2e86de;\n    --tajwid-madd-normal: #8e44ad;\n    --tajwid-madd: #e53935;\n    --tajwid-madd-separated: #c75b00;\n    --tajwid-madd-connected: #e91e63;\n    --tajwid-madd-necessary: #e53935;\n    --tajwid-madd-badal: #8e44ad;\n    --tajwid-naql: #c75b00;\n    --tajwid-tashil: #1e8e4e;\n    --tajwid-ibdal: #c75b00;\n    --tajwid-sila-kubra: #e91e63;\n    --tajwid-tarqiq-ra: #1e8e4e;\n    --tajwid-idgham-warsh: #6f6f6f;\n}\n\n:root[data-theme="sepia"],\n[data-theme="sepia"] {\n    --brand-bg: #f3ead8;\n    --brand-ink: #2b2117;\n    --brand-accent: #77552c;\n    --brand-accent-rgb: 119, 85, 44;\n    --brand-gold: #a9782f;\n    --theme-arabic-base: #21170e;\n\n\n    --emerald: #7c4a17;\n    --emerald-lit: #9a6425;\n    --emerald-pale: #ead9b8;\n\n    --theme-scene-a: radial-gradient(\n        circle at 12% -10%,\n        rgba(139, 107, 62, 0.22),\n        transparent 38%\n    );\n    --theme-scene-b: radial-gradient(\n        circle at 88% -16%,\n        rgba(168, 132, 82, 0.16),\n        transparent 36%\n    );\n    --theme-pattern:\n        linear-gradient(90deg, rgba(72, 55, 35, 0.025) 1px, transparent 1px) 0\n            0 / 92px 92px,\n        linear-gradient(rgba(139, 107, 62, 0.025) 1px, transparent 1px) 0 0 /\n            92px 92px,\n        radial-gradient(\n                circle at 24px 24px,\n                rgba(168, 132, 82, 0.08) 0 1.1px,\n                transparent 1.35px\n            )\n            0 0 / 92px 92px;\n    --theme-veil: linear-gradient(\n        180deg,\n        rgba(255, 250, 242, 0.5),\n        transparent 24%,\n        transparent 76%,\n        rgba(120, 89, 52, 0.2)\n    );\n    --theme-ornament:\n        linear-gradient(\n            125deg,\n            rgba(255, 248, 238, 0.2),\n            transparent 30%,\n            transparent 70%,\n            rgba(139, 107, 62, 0.12)\n        ),\n        radial-gradient(\n            circle at 14% 18%,\n            rgba(168, 132, 82, 0.15),\n            transparent 18%\n        ),\n        radial-gradient(\n            circle at 84% 18%,\n            rgba(72, 55, 35, 0.1),\n            transparent 18%\n        );\n    --theme-hero-wash:\n        linear-gradient(145deg, rgba(255, 252, 244, 0.2), transparent 56%),\n        radial-gradient(\n            circle at 84% 14%,\n            rgba(139, 107, 62, 0.16),\n            transparent 28%\n        );\n\n\n    --tajwid-silent: #475569;\n    --tajwid-lam-shamsiyya: #475569;\n    --tajwid-ghunna: #169777;\n    --tajwid-idgham: #169777;\n    --tajwid-ikhfa: #169777;\n    --tajwid-iqlab: #169777;\n    --tajwid-qalqala: #0369a1;\n    --tajwid-tafkhim: #2563eb;\n    --tajwid-madd-normal: #b45309;\n    --tajwid-madd: #d13b83;\n    --tajwid-madd-separated: #d13b83;\n    --tajwid-madd-connected: #d13b83;\n    --tajwid-madd-necessary: #d13b83;\n    --tajwid-madd-badal: #b45309;\n    --tajwid-naql: #b45309;\n    --tajwid-tashil: #169777;\n    --tajwid-ibdal: #b45309;\n    --tajwid-sila-kubra: #d13b83;\n    --tajwid-tarqiq-ra: #169777;\n    --tajwid-idgham-warsh: #475569;\n}\n\n:root[data-theme="dark"],\n[data-theme="dark"] {\n    --brand-bg: #0c1511;\n    --brand-ink: #f0eee6;\n    --brand-accent: #38a675;\n    --brand-accent-rgb: 56, 166, 117;\n    --brand-gold: #d0ad62;\n    --theme-arabic-base: #f5f0e5;\n    --theme-scene-a: radial-gradient(\n        circle at 12% -14%,\n        rgba(47, 159, 107, 0.11),\n        transparent 36%\n    );\n    --theme-scene-b: radial-gradient(\n        circle at 86% -16%,\n        rgba(214, 180, 92, 0.07),\n        transparent 32%\n    );\n    --theme-pattern:\n        linear-gradient(90deg, rgba(238, 235, 225, 0.024) 1px, transparent 1px) 0\n            0 / 92px 92px,\n        linear-gradient(rgba(47, 159, 107, 0.025) 1px, transparent 1px) 0 0 /\n            92px 92px,\n        radial-gradient(\n                circle at 46px 46px,\n                rgba(47, 159, 107, 0.1) 0 1.05px,\n                transparent 1.3px\n            )\n            0 0 / 92px 92px;\n    --theme-veil: linear-gradient(\n        180deg,\n        rgba(7, 16, 12, 0.16),\n        transparent 20%,\n        transparent 78%,\n        rgba(5, 9, 7, 0.36)\n    );\n    --theme-ornament:\n        linear-gradient(\n            125deg,\n            rgba(255, 255, 255, 0.04),\n            transparent 34%,\n            transparent 66%,\n            rgba(47, 159, 107, 0.08)\n        ),\n        radial-gradient(\n            circle at 14% 20%,\n            rgba(47, 159, 107, 0.11),\n            transparent 18%\n        ),\n        radial-gradient(\n            circle at 84% 16%,\n            rgba(214, 180, 92, 0.07),\n            transparent 17%\n        );\n    --theme-hero-wash:\n        linear-gradient(145deg, rgba(255, 255, 255, 0.04), transparent 54%),\n        radial-gradient(\n            circle at 84% 14%,\n            rgba(47, 159, 107, 0.13),\n            transparent 28%\n        );\n\n\n    --tajwid-silent: #94a3b8;\n    --tajwid-lam-shamsiyya: #94a3b8;\n    --tajwid-ghunna: #169777;\n    --tajwid-idgham: #169777;\n    --tajwid-ikhfa: #169777;\n    --tajwid-iqlab: #169777;\n    --tajwid-qalqala: #22d3ee;\n    --tajwid-tafkhim: #60a5fa;\n    --tajwid-madd-normal: #e67e22;\n    --tajwid-madd: #f472b6;\n    --tajwid-madd-separated: #f472b6;\n    --tajwid-madd-connected: #f472b6;\n    --tajwid-madd-necessary: #f472b6;\n    --tajwid-madd-badal: #e67e22;\n    --tajwid-naql: #e67e22;\n    --tajwid-tashil: #169777;\n    --tajwid-ibdal: #e67e22;\n    --tajwid-sila-kubra: #f472b6;\n    --tajwid-tarqiq-ra: #169777;\n    --tajwid-idgham-warsh: #94a3b8;\n}\n\n:root[data-theme="quran-night"],\n:root[data-theme],\n[data-theme] {\n    --theme-bg: var(--brand-bg);\n    --theme-bg-alt: color-mix(\n        in srgb,\n        var(--brand-bg) 95%,\n        var(--brand-ink) 5%\n    );\n    --theme-surface: color-mix(\n        in srgb,\n        var(--brand-bg) 93%,\n        var(--brand-ink) 7%\n    );\n    --theme-surface-soft: color-mix(\n        in srgb,\n        var(--brand-bg) 89%,\n        var(--brand-ink) 11%\n    );\n    --theme-surface-glass: color-mix(\n        in srgb,\n        var(--theme-surface) 84%,\n        transparent 16%\n    );\n    --theme-text: var(--brand-ink);\n    --theme-text-soft: color-mix(\n        in srgb,\n        var(--brand-ink) 78%,\n        var(--brand-bg) 22%\n    );\n    --theme-text-muted: color-mix(\n        in srgb,\n        var(--brand-ink) 64%,\n        var(--brand-bg) 36%\n    );\n    --theme-text-inverse: color-mix(in srgb, #ffffff 88%, var(--brand-bg) 12%);\n    --theme-primary: var(--brand-accent);\n    --theme-primary-rgb: var(--brand-accent-rgb);\n    --theme-accent: var(--brand-accent);\n    --theme-accent-bright: color-mix(\n        in srgb,\n        var(--brand-accent) 80%,\n        #ffffff 20%\n    );\n    --theme-border: color-mix(in srgb, var(--brand-ink) 20%, transparent 80%);\n    --theme-border-strong: color-mix(\n        in srgb,\n        var(--brand-ink) 36%,\n        var(--brand-accent) 64%\n    );\n    --theme-arabic: var(\n        --theme-arabic-base,\n        color-mix(in srgb, var(--brand-accent) 68%, var(--brand-ink) 32%)\n    );\n    --theme-glow-a: color-mix(\n        in srgb,\n        var(--brand-accent) 24%,\n        transparent 76%\n    );\n    --theme-glow-b: color-mix(in srgb, var(--brand-ink) 10%, transparent 90%);\n    --theme-shadow-panel:\n        0 18px 42px rgba(2, 8, 23, 0.18),\n        0 1px 0 rgba(255, 255, 255, 0.09) inset;\n    --theme-shadow-soft:\n        0 10px 24px rgba(2, 8, 23, 0.12),\n        0 1px 0 rgba(255, 255, 255, 0.08) inset;\n    --theme-app-bg:\n        var(--theme-pattern), var(--theme-scene-a), var(--theme-scene-b),\n        linear-gradient(\n            180deg,\n            var(--brand-bg) 0%,\n            color-mix(in srgb, var(--brand-bg) 90%, var(--brand-ink) 10%) 52%,\n            var(--brand-bg) 100%\n        );\n\n\n    --bg: var(--theme-bg);\n    --bg-primary: var(--theme-bg);\n    --bg-secondary: var(--theme-bg-alt);\n    --bg-tertiary: color-mix(\n        in srgb,\n        var(--theme-bg-alt) 76%,\n        var(--theme-surface) 24%\n    );\n    --bg-card: var(--theme-surface);\n    --surface: var(--theme-surface);\n    --glass-bg: var(--theme-surface-glass);\n    --header-bg: var(--'... 36940 more characters,
+    expected: /--tajwid-silent: #9e9e9e;/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests\tajwid-segments.test.mjs:98:1
+✖ Hafs and Warsh use the shared Quran.com Tajweed color semantics (2.0504ms)
+  AssertionError [ERR_ASSERTION]: hafs:ghunna
+  + actual - expected
+  
+  + '#1e8e4e'
+  - '#27ae60'
+  
+      at TestContext.<anonymous> (file:///C:/Users/amirou/Documents/Quran%20App/tests/tajwid-segments.test.mjs:119:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1382:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:960:18)
+      at Test.postRun (node:internal/test_runner/test:1522:19)
+      at Test.run (node:internal/test_runner/test:1447:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:960:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: '#1e8e4e',
+    expected: '#27ae60',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

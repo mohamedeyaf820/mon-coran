@@ -1,0 +1,16 @@
+
+> mushafplus@1.1.0 test:e2e:smoke
+> playwright test tests/e2e/audio-fallback.spec.mjs tests/e2e/a11y-smoke.spec.mjs
+
+
+Running 7 tests using 2 workers
+
+  ok 2 [chromium] › tests\e2e\a11y-smoke.spec.mjs:13:1 › A11y: le lien d'évitement ne décale pas l'accueil mobile (3.0s)
+  ok 1 [chromium] › tests\e2e\audio-fallback.spec.mjs:39:1 › E2E: bouton play explicite démarre la lecture, clic mot joue l'audio du mot (3.0s)
+  ok 3 [chromium] › tests\e2e\a11y-smoke.spec.mjs:36:1 › A11y: les notifications utilisent la langue de l'interface (2.1s)
+  ok 4 [chromium] › tests\e2e\audio-fallback.spec.mjs:65:1 › E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah (4.3s)
+  ok 5 [chromium] › tests\e2e\a11y-smoke.spec.mjs:64:1 › A11y smoke: landmarks, focus clavier et modal recherche (6.7s)
+  ok 6 [chromium] › tests\e2e\a11y-smoke.spec.mjs:94:1 › A11y: la sidebar est inerte fermée et piège le focus ouverte (6.6s)
+  ok 7 [chromium] › tests\e2e\a11y-smoke.spec.mjs:143:1 › A11y: la recherche du lecteur garde un contraste lisible en thème sombre (2.8s)
+
+  7 passed (27.4s)

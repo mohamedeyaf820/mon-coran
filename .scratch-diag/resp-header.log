@@ -1,0 +1,6 @@
+
+Running 1 test using 1 worker
+
+  ok 1 [chromium] › tests\e2e\responsive-density.spec.mjs:329:1 › reader header stays stable and visually centered across breakpoints (8.9s)
+
+  1 passed (9.8s)

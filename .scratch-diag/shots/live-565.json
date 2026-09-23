@@ -1,0 +1,114 @@
+{
+ "style": {
+  "zoom": "1",
+  "linesFont": "26.2097px",
+  "folioW": "21.4531px",
+  "folioH": "21.4531px",
+  "folioFs": "9.19692px",
+  "markerFs": "26.2097px",
+  "markerMl": "2.62097px",
+  "markerMr": "18.3468px"
+ },
+ "rects": {
+  "book": {
+   "x": 41,
+   "y": 73,
+   "w": 463,
+   "h": 769
+  },
+  "folio": {
+   "x": 262,
+   "y": 789,
+   "w": 21,
+   "h": 21
+  },
+  "header": {
+   "x": 0,
+   "y": 0,
+   "w": 546,
+   "h": 67
+  },
+  "footer": {
+   "x": 0,
+   "y": 835,
+   "w": 546,
+   "h": 65
+  },
+  "surahTitle": null,
+  "firstLine": {
+   "x": 54,
+   "y": 133,
+   "w": 438,
+   "h": 42
+  }
+ },
+ "counts": {
+  "lines": 15,
+  "words": 151,
+  "markers": 27
+ },
+ "titleText": null,
+ "markerLineKids": [
+  {
+   "cls": "qcm-word",
+   "x": 472,
+   "w": 20
+  },
+  {
+   "cls": "qcm-word",
+   "x": 430,
+   "w": 42
+  },
+  {
+   "cls": "qcm-word",
+   "x": 410,
+   "w": 20
+  },
+  {
+   "cls": "qcm-word",
+   "x": 381,
+   "w": 29
+  },
+  {
+   "cls": "qcm-word",
+   "x": 337,
+   "w": 44
+  },
+  {
+   "cls": "qcm-word",
+   "x": 300,
+   "w": 37
+  },
+  {
+   "cls": "qcm-word",
+   "x": 286,
+   "w": 14
+  },
+  {
+   "cls": "qcm-word",
+   "x": 237,
+   "w": 49
+  },
+  {
+   "cls": "qcm-word",
+   "x": 184,
+   "w": 53
+  },
+  {
+   "cls": "qcm-word",
+   "x": 121,
+   "w": 63
+  },
+  {
+   "cls": "ayah-marker-wrap ayat-mark",
+   "x": 98,
+   "w": 20
+  },
+  {
+   "cls": "qcm-word",
+   "x": 54,
+   "w": 26
+  }
+ ],
+ "viewportH": 900
+}

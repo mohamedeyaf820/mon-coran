@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/static.xml</loc>
+    <lastmod>2026-09-22T03:15:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/reads.xml</loc>
+    <lastmod>2026-09-22T03:15:01+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/videos.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/video-playlists.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/tadabor.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/apps.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/live.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+  <sitemap>
+    <loc>https://www.mp3quran.net/sitemaps/tafsirs.xml</loc>
+    <lastmod>2026-09-22T03:15:02+00:00</lastmod>
+  </sitemap>
+</sitemapindex>

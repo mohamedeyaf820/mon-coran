@@ -1,0 +1,17 @@
+/ar/about
+/ar/alkahf-surah
+/ar/api
+/ar/apps
+/ar/contact-us
+/ar/favorites
+/ar/live
+/ar/login
+/ar/mushaf
+/ar/privacy
+/ar/quran-download
+/ar/recitation-mistakes
+/ar/special_rewayat
+/ar/tadabor
+/ar/tafsirs
+/ar/timing-api
+/ar/videos

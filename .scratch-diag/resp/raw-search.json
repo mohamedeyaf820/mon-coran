@@ -1,0 +1,3087 @@
+[
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 280,
+  "h": 780,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 22.7,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ذَٰلِكَ”",
+    "w": 40.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 17.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِيهِ ۛ”",
+    "w": 34.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِمَّا”",
+    "w": 41,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 27.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 38.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَيْكَ”",
+    "w": 42.7,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 29.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 38.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 29,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 21.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “سَوَآءٌ”",
+    "w": 42.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 17,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 17.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 17.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “خَتَمَ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 29,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰٓ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَلَهُمْ”",
+    "w": 39.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِنَ”",
+    "w": 37,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ءَامَنَّا”",
+    "w": 42.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِٱللَّهِ”",
+    "w": 39.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 23,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 18.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَلَهُمْ”",
+    "w": 39.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 32.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 25.4,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “كَانُواْ”",
+    "w": 37.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__title-transliteration “Al-Baqara”",
+    "fs": 9.9
+   },
+   {
+    "el": "span.mp-header__title-meaning “La Vache”",
+    "fs": 9.9
+   },
+   {
+    "el": "button.qc-list-card__reference “1”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “2”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “3”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “4”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “5”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “6”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “7”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “8”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “9”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “10”",
+    "fs": 10.05
+   },
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10
+   },
+   {
+    "el": "span. “286 versets”",
+    "fs": 10
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10
+   },
+   {
+    "el": "span.simple-player__compact-reciter “Mishary Rashid Alafasy”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 320,
+  "h": 780,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 22.7,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ذَٰلِكَ”",
+    "w": 40.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 17.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِيهِ ۛ”",
+    "w": 34.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِمَّا”",
+    "w": 41,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 27.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 38.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَيْكَ”",
+    "w": 42.7,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 29.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 38.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 29,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 21.2,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “سَوَآءٌ”",
+    "w": 42.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 17,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 17.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 17.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “خَتَمَ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 29,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰٓ”",
+    "w": 37.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَلَهُمْ”",
+    "w": 39.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِنَ”",
+    "w": 37,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 27.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ءَامَنَّا”",
+    "w": 42.6,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِٱللَّهِ”",
+    "w": 39.3,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 25.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 23,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 27.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 18.1,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 30.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَلَهُمْ”",
+    "w": 39.5,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 32.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 25.4,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “كَانُواْ”",
+    "w": 37.9,
+    "h": 51,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 19.9,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__title-transliteration “Al-Baqara”",
+    "fs": 9.9
+   },
+   {
+    "el": "span.mp-header__title-meaning “La Vache”",
+    "fs": 9.9
+   },
+   {
+    "el": "button.qc-list-card__reference “1”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “2”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “3”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “4”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “5”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “6”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “7”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “8”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “9”",
+    "fs": 10.05
+   },
+   {
+    "el": "button.qc-list-card__reference “10”",
+    "fs": 10.05
+   },
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10
+   },
+   {
+    "el": "span. “286 versets”",
+    "fs": 10
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10
+   },
+   {
+    "el": "span.simple-player__compact-reciter “Mishary Rashid Alafasy”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 360,
+  "h": 780,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.012,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 25.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِيهِ ۛ”",
+    "w": 38.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 29.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 32.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 23.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 18.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 19.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “خَتَمَ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰٓ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِنَ”",
+    "w": 40.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِٱللَّهِ”",
+    "w": 43.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 25.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 20,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 36.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 28,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “كَانُواْ”",
+    "w": 41.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-header__title-transliteration “Al-Baqara”",
+    "fs": 9.91
+   },
+   {
+    "el": "span.mp-header__title-meaning “La Vache”",
+    "fs": 9.91
+   },
+   {
+    "el": "button.qc-list-card__reference “1”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “2”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “3”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “4”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “5”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “6”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “7”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “8”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “9”",
+    "fs": 10.06
+   },
+   {
+    "el": "button.qc-list-card__reference “10”",
+    "fs": 10.06
+   },
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10
+   },
+   {
+    "el": "span. “286 versets”",
+    "fs": 10
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10
+   },
+   {
+    "el": "span.simple-player__compact-reciter “Mishary Rashid Alafasy”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 390,
+  "h": 780,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.063,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 25.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِيهِ ۛ”",
+    "w": 38.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 29.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 32.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 23.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 18.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 19.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “خَتَمَ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰٓ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِنَ”",
+    "w": 40.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِٱللَّهِ”",
+    "w": 43.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 25.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 20,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 36.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 28,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “كَانُواْ”",
+    "w": 41.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "small. “2 · 286 versets”",
+    "fs": 10.24
+   },
+   {
+    "el": "button.qc-list-card__reference “1”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “2”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “3”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “4”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “5”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “6”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “7”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “8”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “9”",
+    "fs": 10.09
+   },
+   {
+    "el": "button.qc-list-card__reference “10”",
+    "fs": 10.09
+   },
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10
+   },
+   {
+    "el": "span. “286 versets”",
+    "fs": 10
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 414,
+  "h": 780,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.1038,
+  "scrollH": 780,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 25.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِيهِ ۛ”",
+    "w": 38.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 29.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 32.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أُنزِلَ”",
+    "w": 42.2,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 23.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 18.7,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 19.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 19.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “خَتَمَ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 31.9,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَعَلَىٰٓ”",
+    "w": 41.5,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمِنَ”",
+    "w": 40.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 30.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِٱللَّهِ”",
+    "w": 43.4,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 28.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 25.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 30.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 20,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 34.1,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 36.3,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 28,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “كَانُواْ”",
+    "w": 41.8,
+    "h": 57,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 21.9,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "small. “2 · 286 versets”",
+    "fs": 10.27
+   },
+   {
+    "el": "button.qc-list-card__reference “1”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “2”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “3”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “4”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “5”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “6”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “7”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “8”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “9”",
+    "fs": 10.12
+   },
+   {
+    "el": "button.qc-list-card__reference “10”",
+    "fs": 10.12
+   },
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10
+   },
+   {
+    "el": "span. “286 versets”",
+    "fs": 10
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 768,
+  "h": 1000,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 15.7056,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 29,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 22.1,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 34.6,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 37.8,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 34.8,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 32.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 36.9,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 34.8,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 32.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 27.1,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 21.6,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 22.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 22.1,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 39.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 36.9,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 34.8,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 35.6,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 32.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 39.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 35.6,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 29.3,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 35.6,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 23.1,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 39.5,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَلِيمُۢ”",
+    "w": 42,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 32.4,
+    "h": 65,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 25.4,
+    "h": 44,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.font-[var(--font-ui)].text-[0.65rem].font-bold “FIN DE LA SOURATE”",
+    "fs": 10.37
+   },
+   {
+    "el": "p.mp-footer-v2__verse-translation “Je n’ai créé les djinns et les hommes qu”",
+    "fs": 10.37
+   },
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Accueil”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Lire”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Rechercher”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__nav-label “Écouter”",
+    "fs": 10
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10
+   },
+   {
+    "el": "span.mp-footer-v2__brand “MushafPlus”",
+    "fs": 10.37
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 1024,
+  "h": 1000,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.1408,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 31.3,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 23.9,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَآ”",
+    "w": 37.4,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَآ”",
+    "w": 40.8,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِن”",
+    "w": 37.6,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمْ”",
+    "w": 35.1,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 39.9,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مِّن”",
+    "w": 37.6,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُمُ”",
+    "w": 35.1,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 29.3,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 23.4,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 24.3,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 23.9,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 42.7,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “عَلَىٰ”",
+    "w": 39.9,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “مَن”",
+    "w": 37.6,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 38.5,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “هُم”",
+    "w": 35.1,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهَ”",
+    "w": 42.7,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 38.5,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 31.7,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “وَمَا”",
+    "w": 38.5,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 25,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “ٱللَّهُ”",
+    "w": 42.7,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “بِمَا”",
+    "w": 35,
+    "h": 70,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 27.4,
+    "h": 44.4,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.01
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.01
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.01
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 1280,
+  "h": 1000,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.576,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 40,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 37.3,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 29.8,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 31,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 40.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 31.9,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 35,
+    "h": 45.6,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.28
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.28
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.28
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.28
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.28
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.28
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.28
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.28
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 1440,
+  "h": 1000,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 16.848,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 40,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 37.3,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 29.8,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 31,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 40.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 31.9,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 35,
+    "h": 46.3,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [
+   {
+    "el": "span.mp-footer-v2__verse-ref “Adh-Dhariyat · 51:56”",
+    "fs": 10.45
+   },
+   {
+    "el": "span. “MUSHAFPLUS”",
+    "fs": 10.45
+   },
+   {
+    "el": "span. “À propos”",
+    "fs": 10.45
+   },
+   {
+    "el": "span. “Confidentialité”",
+    "fs": 10.45
+   },
+   {
+    "el": "span. “Mentions légales”",
+    "fs": 10.45
+   },
+   {
+    "el": "span. “Sources”",
+    "fs": 10.45
+   },
+   {
+    "el": "span.mp-footer-v2__credit “Lis, écoute, comprends”",
+    "fs": 10.45
+   },
+   {
+    "el": "span.mp-footer-v2__privacy “Lecture privée, sans compte”",
+    "fs": 10.45
+   }
+  ],
+  "outside": [],
+  "tallFixed": []
+ },
+ {
+  "profile": "fr-light",
+  "view": "search",
+  "w": 1920,
+  "h": 1000,
+  "seed": null,
+  "appView": "reading",
+  "theme": "light",
+  "dir": "ltr",
+  "rootFs": 17,
+  "scrollH": 1000,
+  "overflowX": 0,
+  "overflowers": [],
+  "small": [
+   {
+    "el": "span.quran-word-item.cursor-pointer “الٓمٓ”",
+    "w": 40,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٢”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٣”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٤”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٥”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِنَّ”",
+    "w": 37.3,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “أَمْ”",
+    "w": 29.8,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَمْ”",
+    "w": 31,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “لَا”",
+    "w": 30.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٦”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٧”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٨”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “إِلَّآ”",
+    "w": 40.4,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “٩”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   },
+   {
+    "el": "span.quran-word-item.cursor-pointer “فِى”",
+    "w": 31.9,
+    "h": 90,
+    "kind": "word"
+   },
+   {
+    "el": "span.native-ayah-marker “١٠”",
+    "w": 35,
+    "h": 46.8,
+    "kind": "word"
+   }
+  ],
+  "clipped": [],
+  "tinyText": [],
+  "outside": [],
+  "tallFixed": []
+ }
+]
