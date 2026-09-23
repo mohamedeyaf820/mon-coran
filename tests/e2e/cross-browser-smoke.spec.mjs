@@ -220,19 +220,15 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
 
   // A Tajwid rule must never split a word into several text runs: WebKit
   // shapes each run separately (letters lose their joined forms) and every
-  // engine loses the cursive kashida under a dagger alif. With the Highlight
-  // API the coloured ranges live on a single text node per word.
+  // engine loses the cursive kashida under a dagger alif. The rule colours are
+  // therefore gradient bands clipped to a single text node per word.
   const readContract = () => tajwid.evaluate((root) => {
     const zwj = String.fromCharCode(0x200d);
     // The component owns this choice: WebKit exposes CSS.highlights but paints
     // them by re-shaping sub-runs, so it deliberately keeps word-level colour.
     const supported = root.getAttribute("data-tajwid-render") === "highlight";
     const firstWord = root.querySelector("[data-tajwid-word='0'], .quran-word-item");
-    const colourRanges = () =>
-      [...CSS.highlights.entries()]
-        .filter(([name]) => name.startsWith("tajwid-") && name !== "tajwid-hover")
-        .flatMap(([, highlight]) => [...highlight])
-        .filter((range) => root.contains(range.startContainer));
+    const paintedWords = () => [...root.querySelectorAll(".is-tajweed-painted")];
     return {
       supported,
       render: root.getAttribute("data-tajwid-render"),
@@ -242,28 +238,30 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
       firstWordUserSelect: firstWord
         ? getComputedStyle(firstWord).webkitUserSelect || getComputedStyle(firstWord).userSelect
         : null,
-      colouredRanges: supported ? colourRanges().length : null,
+      painted: supported ? paintedWords().length : 0,
+      banded: supported
+        ? paintedWords().filter((word) =>
+            (word.style.getPropertyValue("--tajweed-paint").match(/%/g) || []).length >= 4,
+          ).length
+        : 0,
       // A calligraphic Arabic glyph overlaps the advance boxes of its
-      // neighbours: a range that stops inside a word slices the ink of the
-      // surrounding letters, which reads as a cut letter.
-      partialRanges: supported
-        ? colourRanges().filter((range) => {
-            const node = range.startContainer;
-            return (
-              node.nodeType === Node.TEXT_NODE
-              && (range.startOffset !== 0 || range.endOffset !== node.data.length)
-            );
-          }).length
-        : null,
+      // neighbours: a highlight range that stops inside a word slices the ink
+      // of the surrounding letters, which reads as a cut letter.
+      colourHighlights: supported
+        ? [...CSS.highlights.entries()]
+            .filter(([name]) =>
+              name.startsWith("tajwid-") && name !== "tajwid-hover" && name !== "tajwid-playing")
+            .reduce((sum, [, highlight]) => sum + highlight.size, 0)
+        : 0,
     };
   });
 
-  // The ranges are registered once the words are mounted; under a loaded
+  // The bands are measured once the words are mounted; under a loaded
   // machine that can land after the text is visible.
   await expect
     .poll(async () => {
       const state = await readContract();
-      return state.supported ? state.colouredRanges : 1;
+      return state.supported ? state.painted : 1;
     }, { timeout: 15_000 })
     .toBeGreaterThan(0);
   const contract = await readContract();
@@ -273,8 +271,8 @@ test("le Tajwid colore le verset sans découper les mots arabes", async ({ page 
     expect(contract.segments).toBe(0);
     expect(contract.joiners).toBe(0);
     expect(contract.firstWordChildren).toBe(1);
-    expect(contract.colouredRanges).toBeGreaterThan(0);
-    expect(contract.partialRanges).toBe(0);
+    expect(contract.banded).toBe(contract.painted);
+    expect(contract.colourHighlights).toBe(0);
     // WebKit does not paint custom highlights inside user-select: none.
     expect(contract.firstWordUserSelect).not.toBe("none");
   } else {

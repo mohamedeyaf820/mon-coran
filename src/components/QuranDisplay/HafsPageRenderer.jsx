@@ -237,12 +237,14 @@ export default function HafsPageRenderer({
         role="button"
         tabIndex={0}
         onClick={() => {
-          playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+          if (riwaya === "warsh") onToggleActive?.(word.globalAyah);
+          else playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
+            if (riwaya === "warsh") onToggleActive?.(word.globalAyah);
+            else playWordAudio(word.audioUrl || { surah: word.surah, ayah: word.ayah, position: word.position });
           }
         }}
         style={{

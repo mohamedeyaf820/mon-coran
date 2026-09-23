@@ -197,7 +197,20 @@ const QCVerseCard = memo(function QCVerseCard({
           dir="rtl"
           lang="ar"
           className="qc-ayah-text-ar text-right font-[var(--qd-font-family,var(--font-quran,'Amiri Quran'))] text-[var(--text-quran,var(--text-primary))] [-webkit-font-smoothing:antialiased] [text-rendering:optimizeLegibility]"
-          style={{ fontSize: "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))" }}
+          style={{
+            fontSize: "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
+            cursor: riwaya === "warsh" ? "pointer" : undefined,
+          }}
+          role={riwaya === "warsh" ? "button" : undefined}
+          tabIndex={riwaya === "warsh" ? 0 : undefined}
+          aria-expanded={riwaya === "warsh" ? isActive : undefined}
+          onClick={riwaya === "warsh" ? handleClick : undefined}
+          onKeyDown={riwaya === "warsh" ? (event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              handleClick();
+            }
+          } : undefined}
           aria-label={`${
             lang === "fr"
               ? "Texte arabe du verset"

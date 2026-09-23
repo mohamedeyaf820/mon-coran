@@ -5,7 +5,6 @@ import { t as i18nT } from '../../i18n';
 import { applyFontSigns, getReadableWaqfGlyph, normalizeQuranGlyphText } from '../../utils/quranUtils';
 import { playWordAudio, getWordAudioUrl } from '../../utils/wordAudio';
 import {
-    applyTajweedHighlights,
     clearTajweedHoverRange,
     clearTajweedPlayingRange,
     getTextRangeRects,
@@ -15,6 +14,7 @@ import {
     supportsTajweedHighlights,
     unionRects,
 } from '../../utils/tajweedHighlights';
+import { clearTajweedWordPaint, paintTajweedWord } from '../../utils/tajweedWordPaint';
 import useKaraokeWordIndex from '../../hooks/useKaraokeWordIndex';
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06DD\u06DE\u06E9\uFC00-\uFD1C\uFD3F\uFD3E\d\u0660-\u0669\u06F0-\u06F9]+$/u;
@@ -371,15 +371,18 @@ function resolveRuleColor(ruleId, tajweedColors) {
 const WAQF_SPLIT_RE = /([\u06D6-\u06DC\u06DE])/;
 
 /* ────────────────────────────────────────────────────────────────────────
- * Highlight path (default): one text node per word, colours applied with the
- * CSS Custom Highlight API. Splitting a word into one <span> per rule breaks
- * Arabic shaping: WebKit shapes each inline run separately (letters lose
- * their joined forms) and every engine loses the cursive attachment of the
- * kashida carrying a dagger alif, which shows up as coloured bars floating
- * under the word. See src/utils/tajweedHighlights.js.
+ * Highlight path (default): one text node per word, rule colours painted as a
+ * gradient clipped to that word's own text. See src/utils/tajweedWordPaint.js.
  *
- * The text node stays whole while the highlight ranges colour only the
- * characters identified by the Quran.com markup or the riwaya rules.
+ * Splitting a word into one <span> per rule breaks Arabic shaping: WebKit
+ * shapes each inline run separately (letters lose their joined forms) and every
+ * engine loses the cursive attachment of the kashida carrying a dagger alif.
+ * Sub-word ::highlight() ranges break it too — Chromium re-shapes the painted
+ * sub-run, which prints the alif of لَا as a detached stroke. The word is
+ * therefore shaped once and coloured afterwards, band by band.
+ *
+ * The precise ranges stay in `rules`: they drive the tooltip hit-testing and
+ * anchor, which never touch the ink.
  * ──────────────────────────────────────────────────────────────────────── */
 
 const TAJWEED_HIGHLIGHTS_SUPPORTED = supportsTajweedHighlights();
@@ -388,7 +391,7 @@ function finishHighlightWord(text, rules) {
     return {
         text,
         isMarker: isMarkerToken(text),
-        parts: [{ type: 'text', text, rules, paintRules: rules }],
+        parts: [{ type: 'text', text, rules }],
     };
 }
 
@@ -437,7 +440,7 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                 const audioUrl = !word.isMarker && surahNum && ayahNumber
                     ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
                     : null;
-                const play = !word.isMarker
+                const play = riwaya === 'hafs' && !word.isMarker
                     ? (event) => {
                         event.stopPropagation();
                         playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordIndex + 1 });
@@ -447,7 +450,7 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                 return (
                     <React.Fragment key={wordIndex}>
                         <span
-                            className={word.isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                            className={word.isMarker ? "native-ayah-marker" : play ? "quran-word-item cursor-pointer" : "quran-word-item"}
                             data-tajwid-word={wordIndex}
                             data-tajwid={firstRule?.ruleId}
                             data-tajwid-name={ruleLabel?.name}
@@ -460,8 +463,8 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                                     play(event);
                                 }
                             } : undefined}
-                            role={play || word.isMarker ? "button" : undefined}
-                            tabIndex={play || word.isMarker ? 0 : undefined}
+                            role={play ? "button" : undefined}
+                            tabIndex={play ? 0 : undefined}
                             aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                         >
                             {word.text}
@@ -552,7 +555,7 @@ function TajweedHighlightWords({
         const root = rootRef.current;
         if (!root) return undefined;
 
-        const cleanups = [];
+        const painted = [];
         const entries = new Map();
 
         root.querySelectorAll('[data-tajwid-word]').forEach((wordEl) => {
@@ -571,7 +574,8 @@ function TajweedHighlightWords({
                 const nodeText = normalizeQuranGlyphText(node.data);
                 const partText = normalizeQuranGlyphText(part.text);
                 if (nodeText !== partText) continue;
-                cleanups.push(applyTajweedHighlights(node, part.paintRules));
+                painted.push([wordEl, part.rules]);
+                paintTajweedWord(wordEl, part.rules);
                 const list = entries.get(wordIndex) || [];
                 for (const rule of part.rules) list.push({ node, ...rule });
                 entries.set(wordIndex, list);
@@ -580,8 +584,19 @@ function TajweedHighlightWords({
 
         hitEntriesRef.current = entries;
 
+        // The bands are percentages of the word's own box, so they survive a
+        // font-size change, but not a change of face: a word measured while the
+        // fallback font is still on screen keeps the wrong bands after the
+        // Quran face swaps in. Repaint once the faces are loaded.
+        let cancelled = false;
+        document.fonts?.ready.then(() => {
+            if (cancelled) return;
+            for (const [wordEl, rules] of painted) paintTajweedWord(wordEl, rules);
+        });
+
         return () => {
-            cleanups.forEach((cleanup) => cleanup());
+            cancelled = true;
+            for (const [wordEl] of painted) clearTajweedWordPaint(wordEl);
             hitEntriesRef.current = null;
             if (hoveredRef.current) {
                 hoveredRef.current = null;
@@ -670,7 +685,8 @@ function TajweedHighlightWords({
                 verse's own button (its parent opens the verse actions). */}
             <span data-tajwid-words="true">
                 {words.map((word, wordIndex) => {
-                    const audioUrl = !word.isMarker && surahNum && ayahNumber
+                    const canPlayWord = riwaya === 'hafs' && !word.isMarker;
+                    const audioUrl = canPlayWord && surahNum && ayahNumber
                         ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
                         : null;
                     const nextWord = words[wordIndex + 1];
@@ -683,16 +699,16 @@ function TajweedHighlightWords({
                     return (
                         <React.Fragment key={wordIndex}>
                             <span
-                                className={word.isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
+                                className={word.isMarker ? "native-ayah-marker" : canPlayWord ? "quran-word-item cursor-pointer" : "quran-word-item"}
                                 data-tajwid-word={wordIndex}
                                 data-tajwid-name={firstRuleLabel?.name}
                                 data-tajwid-desc={firstRuleLabel?.desc}
                                 data-tajwid-color={firstRule ? resolveRuleColor(firstRule.ruleId, tajweedColors) : undefined}
                                 title={getWaqfHelp(word.text, lang)}
-                                onClick={!word.isMarker
+                                onClick={canPlayWord
                                     ? (event) => handleWordClick(event, wordIndex, audioUrl)
                                     : undefined}
-                                onKeyDown={!word.isMarker
+                                onKeyDown={canPlayWord
                                     ? (event) => {
                                         if (event.key === "Enter" || event.key === " ") {
                                             event.preventDefault();
@@ -700,8 +716,8 @@ function TajweedHighlightWords({
                                         }
                                     }
                                     : undefined}
-                                role="button"
-                                tabIndex={0}
+                                role={canPlayWord ? "button" : undefined}
+                                tabIndex={canPlayWord ? 0 : undefined}
                                 aria-label={word.isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >
@@ -882,12 +898,13 @@ function _TajweedSegmentWords({
                     const wordPos = wordIndex + 1;
                     const firstText = wordSegments[0]?.text || '';
                     const isMarker = isMarkerToken(firstText);
-                    const audioUrl = !isMarker && surahNum && ayahNumber
+                    const canPlayWord = riwaya === 'hafs' && !isMarker;
+                    const audioUrl = canPlayWord && surahNum && ayahNumber
                         ? getWordAudioUrl(surahNum, ayahNumber, wordPos)
                         : null;
 
                     const handleClick = (e) => {
-                        if (!isMarker) {
+                        if (canPlayWord) {
                             e.stopPropagation();
                             playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPos });
                         }
@@ -899,10 +916,10 @@ function _TajweedSegmentWords({
                     return (
                         <React.Fragment key={wordIndex}>
                             <span
-                                className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
-                                onClick={!isMarker ? handleClick : undefined}
-                                role="button"
-                                tabIndex={0}
+                                className={isMarker ? "native-ayah-marker" : canPlayWord ? "quran-word-item cursor-pointer" : "quran-word-item"}
+                                onClick={canPlayWord ? handleClick : undefined}
+                                role={canPlayWord ? "button" : undefined}
+                                tabIndex={canPlayWord ? 0 : undefined}
                                 aria-label={isMarker ? getVerseLabel(lang, ayahNumber) : undefined}
                                 style={{ display: "inline" }}
                             >

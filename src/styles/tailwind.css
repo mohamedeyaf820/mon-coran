@@ -16717,89 +16717,37 @@ body {
     }
 }
 
-/* Tajweed colouring through the CSS Custom Highlight API (TajweedText).
-   A verse word stays a single text node, so Arabic shaping is never broken by
-   inline element boundaries; each rule colours a character range instead. */
-::highlight(tajwid-ghunna) {
-    color: var(--tajwid-ghunna);
+/* Tajweed rule colours (see src/utils/tajweedWordPaint.js). A word is painted
+   with a gradient clipped to its own text, so the shaping engine always sees
+   one run. Sub-word ::highlight() ranges re-shape their sub-runs on the Mushaf
+   faces and print detached strokes, which is why the rule colours no longer
+   live in highlight rules. */
+.is-tajweed-painted {
+    background-image: var(--tajweed-paint);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
-::highlight(tajwid-ikhfa) {
-    color: var(--tajwid-ikhfa);
+/* A word state is carried by `color`, which a transparent fill would swallow:
+   while a word is hovered, active, focused or reciting, the state ink wins over
+   the rule bands. The ring on :focus-visible is geometry and stays regardless.
+   One selector per line: the CSS purge trims an `:is()` list it cannot match
+   against the built JS, which silently dropped the `:hover` branch here. */
+.is-tajweed-painted:hover,
+.is-tajweed-painted:focus-visible,
+.is-tajweed-painted.qcm-word--active,
+.is-tajweed-painted.qcm-word--playing {
+    -webkit-text-fill-color: currentColor;
+    background-image: none;
 }
 
-::highlight(tajwid-qalqala) {
-    color: var(--tajwid-qalqala);
+/* Selected Quran text must stay readable: the fill is otherwise transparent. */
+.is-tajweed-painted::selection {
+    -webkit-text-fill-color: currentColor;
 }
 
-::highlight(tajwid-idgham) {
-    color: var(--tajwid-idgham);
-}
-
-::highlight(tajwid-iqlab) {
-    color: var(--tajwid-iqlab);
-}
-
-::highlight(tajwid-madd-normal) {
-    color: var(--tajwid-madd-normal);
-}
-
-::highlight(tajwid-madd-separated) {
-    color: var(--tajwid-madd-separated);
-}
-
-::highlight(tajwid-madd-connected) {
-    color: var(--tajwid-madd-connected);
-}
-
-::highlight(tajwid-madd) {
-    color: var(--tajwid-madd);
-}
-
-::highlight(tajwid-madd-necessary) {
-    color: var(--tajwid-madd-necessary);
-}
-
-::highlight(tajwid-madd-badal) {
-    color: var(--tajwid-madd-badal);
-}
-
-::highlight(tajwid-lam-shamsiyya) {
-    color: var(--tajwid-lam-shamsiyya);
-}
-
-::highlight(tajwid-silent) {
-    color: var(--tajwid-silent);
-}
-
-::highlight(tajwid-tafkhim) {
-    color: var(--tajwid-tafkhim);
-}
-
-::highlight(tajwid-naql) {
-    color: var(--tajwid-naql);
-}
-
-::highlight(tajwid-tashil) {
-    color: var(--tajwid-tashil);
-}
-
-::highlight(tajwid-ibdal) {
-    color: var(--tajwid-ibdal);
-}
-
-::highlight(tajwid-sila-kubra) {
-    color: var(--tajwid-sila-kubra);
-}
-
-::highlight(tajwid-tarqiq-ra) {
-    color: var(--tajwid-tarqiq-ra);
-}
-
-::highlight(tajwid-idgham-warsh) {
-    color: var(--tajwid-idgham-warsh);
-}
-
+/* The pointer and recitation guides are tints, not ink: they never re-shape. */
 ::highlight(tajwid-hover) {
     background-color: rgba(var(--primary-rgb), 0.14);
 }

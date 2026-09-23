@@ -1,18 +1,16 @@
 /**
- * Tajweed colouring through the CSS Custom Highlight API.
+ * Transient Tajweed guides painted with the CSS Custom Highlight API: the rule
+ * the pointer is over, and the word being recited. Both are background tints,
+ * which never change the ink of a glyph and therefore never re-shape it.
  *
- * Wrapping every Tajweed rule in its own <span> splits a word into several
- * text runs. WebKit shapes each run on its own, so the letters next to a span
- * boundary lose their joined forms, and every engine loses the cursive
- * attachment of the kashida that carries a dagger alif (the coloured bars
- * floating under the word). Highlights colour character ranges of a single
- * text node instead, so the shaping engine always sees the whole word.
+ * The rule colours themselves are NOT highlights — colouring a sub-word range
+ * makes Chromium re-shape that range and print detached Arabic strokes. They
+ * are gradient bands clipped to the whole word; see src/utils/tajweedWordPaint.js.
  *
- * Highlight names are `tajwid-<ruleId>`; their colours live in CSS
- * (`::highlight(tajwid-<ruleId>) { color: var(--tajwid-<ruleId>) }`).
+ * Highlight names live in CSS (`::highlight(tajwid-hover)`,
+ * `::highlight(tajwid-playing)`).
  */
 
-const HIGHLIGHT_PREFIX = "tajwid-";
 export const TAJWEED_HOVER_HIGHLIGHT = "tajwid-hover";
 
 export function supportsTajweedHighlights() {
@@ -74,34 +72,6 @@ function clampRange(node, start, end) {
   const safeStart = Math.max(0, Math.min(start, max));
   const safeEnd = Math.max(safeStart, Math.min(end, max));
   return [safeStart, safeEnd];
-}
-
-/**
- * Colours the given rule ranges of a text node.
- * @param {Text} node
- * @param {Array<{start:number,end:number,ruleId:string}>} rules UTF-16 offsets
- * @returns {() => void} cleanup removing the ranges again
- */
-export function applyTajweedHighlights(node, rules) {
-  const added = [];
-  for (const rule of rules) {
-    if (!rule?.ruleId) continue;
-    const [start, end] = clampRange(node, rule.start, rule.end);
-    if (end <= start) continue;
-    try {
-      const range = createRange(node, start, end);
-      const highlight = getHighlight(HIGHLIGHT_PREFIX + rule.ruleId);
-      highlight.add(range);
-      added.push([highlight, range]);
-    } catch {
-      // Range creation can fail on detached nodes; skip this rule.
-    }
-  }
-  return () => {
-    for (const [highlight, range] of added) {
-      try { highlight.delete(range); } catch {}
-    }
-  };
 }
 
 let hoverRange = null;

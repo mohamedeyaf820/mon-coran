@@ -699,12 +699,22 @@ test("the application-wide design system owns themes, surfaces and responsive fa
   assert.match(system, /@media \(prefers-reduced-motion: reduce\)/);
 });
 
-test("tajweed paints rule ranges without colouring complete words", () => {
+test("tajweed colours words through a text-clipped gradient, never a sub-word range", () => {
   const flowSheet = source("src/components/QuranDisplay/MushafFlowPage.jsx");
   const listText = source("src/components/Quran/TajweedText.jsx");
+  const paint = source("src/utils/tajweedWordPaint.js");
+  const styles = source("src/styles/tailwind.css");
 
-  assert.match(flowSheet, /applyTajweedHighlights\(node, token\.tajweedRanges\)/);
-  assert.doesNotMatch(flowSheet, /--qcm-word-tajwid/);
-  assert.match(listText, /parts: \[\{ type: 'text', text, rules, paintRules: rules \}\]/);
-  assert.doesNotMatch(listText, /start: 0, end: buffer\.length/);
+  // A ::highlight() range or a per-rule <span> re-shapes its sub-run on the
+  // Mushaf faces and prints detached strokes: no surface may colour one.
+  assert.doesNotMatch(flowSheet + listText, /applyTajweedHighlights/);
+  assert.match(paint, /linear-gradient\(to right/);
+  assert.match(paint, /--tajweed-paint/);
+  assert.match(styles, /\.is-tajweed-painted\s*\{[^}]*background-clip: text/);
+  assert.doesNotMatch(styles, /::highlight\(tajwid-(?!hover|playing)/);
+  // The state ink has to survive the transparent fill of the paint, and the
+  // states are listed one selector per line: an `:is()` list loses its
+  // pseudo-class branches to the CSS purge.
+  assert.match(styles, /\.is-tajweed-painted:hover,\s*\.is-tajweed-painted:focus-visible/);
+  assert.match(styles, /\.is-tajweed-painted\.qcm-word--playing\s*\{[^}]*-webkit-text-fill-color: currentColor/);
 });

@@ -84,6 +84,30 @@
     line-height: 1 !important;
 }
 
+/* The surah ligature belongs to the reader controls. Quran text-size changes
+   must never change its size or push neighbouring controls out of view. */
+.app-root[data-view="reading"] .srh-arabic {
+    font-size: 42px !important;
+}
+
+@media (min-width: 641px) and (max-width: 1024px) {
+    .app-root[data-view="reading"] .srh-arabic {
+        font-size: 32px !important;
+    }
+}
+
+@media (max-width: 640px) {
+    .app-root[data-view="reading"] .srh-mobile-bar__name {
+        font-size: 28px !important;
+    }
+}
+
+@media (max-width: 360px) {
+    .app-root[data-view="reading"] .srh-mobile-bar__name {
+        font-size: 24px !important;
+    }
+}
+
 .srh-meta {
     min-width: 0;
 }

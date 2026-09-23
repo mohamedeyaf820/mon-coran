@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { getPerWordTajweedRanges } from "../../data/tajwidRules";
-import { applyTajweedHighlights, supportsTajweedHighlights } from "../../utils/tajweedHighlights";
+import { paintTajweedWord, clearTajweedWordPaint } from "../../utils/tajweedWordPaint";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
 import { normalizeArabicText, getVerseKey } from "./mushafPageComposition";
@@ -133,26 +133,38 @@ export default function MushafFlowPage({
   const fitKeyRef = useRef("");
 
   useLayoutEffect(() => {
-    if (!showTajwid || !supportsTajweedHighlights()) return undefined;
+    if (!showTajwid || !fontReady) return undefined;
     const root = linesRef.current;
     if (!root) return undefined;
-    const cleanups = [];
     const words = new Map(Array.from(root.querySelectorAll("[data-tajweed-key]"),
       (element) => [element.getAttribute("data-tajweed-key"), element]));
+    const painted = [];
     for (const segment of segments) {
       if (segment.kind !== "flow") continue;
       for (const token of segment.tokens) {
         if (token.charType !== "word" || !token.tajweedRanges.length) continue;
         const key = `${token.globalAyah}:${token.position}`;
         const word = words.get(key);
-        const node = word?.firstChild;
-        if (node?.nodeType === Node.TEXT_NODE && node.data === token.text) {
-          cleanups.push(applyTajweedHighlights(node, token.tajweedRanges));
-        }
+        if (word?.firstChild?.data === token.text) painted.push([word, token.tajweedRanges]);
       }
     }
-    return () => cleanups.forEach((cleanup) => cleanup());
-  }, [segments, showTajwid]);
+    let frame = 0;
+    const repaint = () => painted.forEach(([word, ranges]) => paintTajweedWord(word, ranges));
+    const schedule = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(repaint);
+    };
+    repaint();
+    const observer = new ResizeObserver(schedule);
+    root.querySelectorAll(".qcm-flow").forEach((flow) => observer.observe(flow));
+    window.addEventListener("resize", schedule);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", schedule);
+      cancelAnimationFrame(frame);
+      painted.forEach(([word]) => clearTajweedWordPaint(word));
+    };
+  }, [segments, showTajwid, fontReady]);
 
   useLayoutEffect(() => {
     if (!linesRef.current) return undefined;
@@ -300,12 +312,14 @@ export default function MushafFlowPage({
         role="button"
         tabIndex={0}
         onClick={() => {
-          playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
+          if (riwaya === "warsh") onToggleActive?.(token.globalAyah);
+          else playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
+            if (riwaya === "warsh") onToggleActive?.(token.globalAyah);
+            else playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
           }
         }}
         style={FLOW_WORD_STYLE}

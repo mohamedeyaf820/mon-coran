@@ -1,0 +1,54 @@
+/* Keep the next reading legible while the home overview still has two cards. */
+@media (min-width: 821px) and (max-width: 1100px) {
+  .app-root[data-view="home"] .home-resume-panel__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-block: 1rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel h1 {
+    max-width: 16ch;
+    font-size: clamp(2rem, 3vw, 2.5rem);
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target {
+    align-self: stretch;
+    min-height: 4.5rem;
+    align-items: flex-start;
+    margin-top: 0.85rem;
+    padding: 0.8rem 0 0;
+    border-inline-start: 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: start;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target-line {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 700px) {
+  .app-root[data-view="home"] .home-resume-panel {
+    min-height: 23rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__body {
+    flex: 0 1 auto;
+    padding-block: 1rem 0.8rem;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__library {
+    margin-top: clamp(1rem, 4vw, 1.5rem);
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__actions {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 390px) {
+  .app-root[data-view="home"] .home-resume-panel h1 {
+    font-size: clamp(1.4rem, 6vw, 1.8rem);
+  }
+}

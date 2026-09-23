@@ -13,10 +13,13 @@ export default function SurahInfoPanel({ surahNum, lang: langProp }) {
   const s = getSurah(surahNum);
   const detailsId = `surah-dossier-${surahNum}`;
   const [editorialInfo, setEditorialInfo] = useState(null);
-  const [expanded, setExpanded] = useState(false);
+  // Opening "Infos" opens the dossier itself, including its full editorial
+  // text once loaded. The reader should not need a second discovery click.
+  const [expanded, setExpanded] = useState(true);
 
   useEffect(() => {
     const controller = new AbortController();
+    setExpanded(true);
     setEditorialInfo(null);
     fetchQuranComSurahInfo(surahNum, controller.signal)
       .then(setEditorialInfo)
@@ -55,12 +58,18 @@ export default function SurahInfoPanel({ surahNum, lang: langProp }) {
 
         {expanded && editorialInfo && (
           <div className="sip-dossier" id={detailsId}>
+            <dl className="sip-dossier__facts">
+              {editorialInfo.revelationPlace && <div><dt>{lbl(lang, "Lieu de révélation", "Revelation place", "مكان النزول")}</dt><dd>{editorialInfo.revelationPlace === "makkah" ? lbl(lang, "La Mecque", "Makkah", "مكة") : editorialInfo.revelationPlace === "madinah" ? lbl(lang, "Médine", "Madinah", "المدينة") : editorialInfo.revelationPlace}</dd></div>}
+              {editorialInfo.revelationOrder && <div><dt>{lbl(lang, "Ordre de révélation", "Revelation order", "ترتيب النزول")}</dt><dd>{editorialInfo.revelationOrder}</dd></div>}
+              {editorialInfo.pages.length > 0 && <div><dt>{lbl(lang, "Pages du mushaf", "Mushaf pages", "صفحات المصحف")}</dt><dd>{editorialInfo.pages.join("–")}</dd></div>}
+            </dl>
             <div className="sip-dossier__copy">
               {dossierBlocks.map((block, index) =>
                 block.length < 72 && !/[.!?]$/.test(block)
                   ? <h4 key={`h${index}:${block}`}>{block}</h4>
                   : <p key={`p${index}:${block}`}>{block}</p>
               )}
+              {!dossierBlocks.length && editorialInfo.shortText && <p>{editorialInfo.shortText}</p>}
             </div>
           </div>
         )}

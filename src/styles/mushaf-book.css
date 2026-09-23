@@ -161,6 +161,11 @@
   font-weight: 700;
   font-variant-numeric: tabular-nums;
 }
+
+@media (min-width: 700px) {
+  .mfp-header__copy h2 { font-size: 0.95rem; }
+  .mfp-audio-track small { font-size: 0.75rem; }
+}
 .mfp-header__copy h2 .mfp-header__context {
   color: color-mix(in srgb, var(--mushaf-gold-deep) 42%, var(--mfp-btn-text));
 }
@@ -795,6 +800,7 @@
    measure, closed by a diamond at each end. */
 #root ~ .mfp-portal-root .qcm-page-shell[data-page-kind="opening"] .qcm-surah-title {
   width: min(100%, 13.5em);
+  height: 1.8em;
   border-width: 1.5px;
   border-radius: 1.1em;
 }
@@ -891,9 +897,15 @@
    printed row height (--mfp-line-pitch). */
 #root ~ .mfp-portal-root .mfp-book .qcm-surah-title__name {
   font-family: var(--font-surah-display, var(--font-quran, "Amiri Quran"), serif);
-  font-size: 1.3em;
+  font-size: 1.45em;
   line-height: 1.15;
   color: var(--mushaf-gold-deep);
+}
+
+/* Deep bronze is useful for the frame but illegible as a heading on dark paper. */
+#root ~ .mfp-portal-root:is([data-theme="dark"], [data-theme="night-blue"], [data-theme="oled"])
+  .mfp-book .qcm-surah-title__name {
+  color: color-mix(in srgb, var(--mushaf-gold-mid) 74%, var(--reader-page-ink));
 }
 
 /* The calligraphic surah-name face has a short em box (0.82/0.18), so its line

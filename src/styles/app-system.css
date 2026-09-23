@@ -1360,7 +1360,12 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
   }
 }
 
-@media (max-width: 900px) {
+/* The two overview panels keep their row down to 820 px: measured at 830 px the
+   pair is 428 + 365 px and the resume title still breaks at a word boundary.
+   Below it the title's own column is too narrow and "comprendre" splits
+   mid-word, so the panels stack instead. The old 900 px threshold gave up the
+   row early, over space the layout had already paid for. */
+@media (max-width: 820px) {
   .app-root[data-view="home"] .home-overview {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -1550,20 +1555,27 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
     white-space: nowrap;
   }
 
-  .app-root[data-view="home"] .home-resume-panel__secondary span,
+  /* Both calls to action stay on one row with their words. The old rule kept
+     the row by deleting the "Invocations" label, which left an unlabelled key
+     glyph next to the primary CTA — a control that says what it opens only in
+     its tooltip. Dropping the two decorative icons (the book and the arrow are
+     aria-hidden, the button carries the text) frees the 40 px the label needs. */
   .app-root[data-view="home"] .home-today-suggestion__copy small {
     display: none;
   }
 
-  .app-root[data-view="home"] .home-resume-panel__secondary {
-    width: 2.7rem !important;
-    min-width: 2.7rem !important;
-    padding-inline: 0 !important;
+  .app-root[data-view="home"] .home-resume-panel__actions {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.4rem;
   }
 
-  .app-root[data-view="home"] .home-resume-panel__secondary svg {
-    width: 0.9rem;
-    height: 0.9rem;
+  .app-root[data-view="home"] :is(.home-resume-panel__primary, .home-resume-panel__secondary) {
+    font-size: 0.82rem;
+    padding-inline: 0.6rem;
+  }
+
+  .app-root[data-view="home"] :is(.home-resume-panel__primary, .home-resume-panel__secondary) svg {
+    display: none;
   }
 
   .app-root[data-view="home"] .home-resume-panel__brand > span {

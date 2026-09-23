@@ -26,34 +26,17 @@ function CanonicalQuranText({
   const { lang } = useAppLocale();
   const verseLabel = getVerseLabel(lang, ayahNumber);
   if (riwaya === "warsh") {
+    // Keep the canonical word and ayah-marker layout, but let a tap reach
+    // the verse action. The available word audio clips are Hafs recordings.
     const parts = String(text).split(/\s+/).filter(Boolean);
-    let wordRunningIndex = 0;
     return (
       <span className="quran-canonical-text" dir="rtl" lang="ar">
         {parts.map((word, index) => {
           const isMarker = isAyahMarkerToken(word);
-          if (!isMarker) wordRunningIndex += 1;
-          const wordPosition = wordRunningIndex;
-          const audioUrl = !isMarker && surahNum && ayahNumber
-            ? getWordAudioUrl(surahNum, ayahNumber, wordPosition)
-            : null;
-          const handleClick = (event) => {
-            event.stopPropagation();
-            playWordAudio(audioUrl || { surah: surahNum, ayah: ayahNumber, position: wordPosition });
-          };
           return (
             <React.Fragment key={index}>
               <span
-                className={isMarker ? "native-ayah-marker" : "quran-word-item cursor-pointer"}
-                onClick={!isMarker ? handleClick : undefined}
-                onKeyDown={!isMarker ? (event) => {
-                  if (event.key === "Enter" || event.key === " ") {
-                    event.preventDefault();
-                    handleClick(event);
-                  }
-                } : undefined}
-                role={!isMarker ? "button" : undefined}
-                tabIndex={!isMarker ? 0 : undefined}
+                className={isMarker ? "native-ayah-marker" : "quran-word-item"}
                 aria-label={isMarker ? verseLabel : undefined}
                 title={getWaqfHelp(word, lang)}
                 style={{ display: "inline" }}
@@ -247,7 +230,7 @@ function AyahTextRendererComponent({
 
   if (!text) return null;
 
-  if (isPlaying && !(showTajwid && tajweedText)) {
+  if (riwaya === "hafs" && isPlaying && !(showTajwid && tajweedText)) {
     return (
       <HafsKaraokeText
         text={text}

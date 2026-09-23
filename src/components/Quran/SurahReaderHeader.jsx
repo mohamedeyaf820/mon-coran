@@ -351,7 +351,7 @@ export default function SurahReaderHeader({
         open={showInfo}
         onClose={closeInfo}
         title={t("reader.infoTitle", lang)}
-        size="lg"
+        size="xl"
         portal
         className="surah-info-modal"
         overlayClassName="surah-info-modal__overlay"

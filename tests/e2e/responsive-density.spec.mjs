@@ -585,6 +585,8 @@ test("surah information dossier stays accessible and contained on mobile", async
   await expect(dialog.getByText("Repères essentiels")).toHaveCount(0);
   await expect(dialog.getByText("Editorial overview for surah 3.")).toBeVisible();
   await expect(dialog.getByText("#3")).toHaveCount(0);
+  await expect(dialog.getByText("Complete historical context for testing.")).toBeVisible();
+  await dialog.getByRole("button", { name: /Réduire/ }).click();
   await dialog.getByRole("button", { name: /Dossier complet/ }).click();
   await expect(dialog.getByText("Complete historical context for testing.")).toBeVisible();
   await expect(dialog.getByText(/89e dans l’ordre de révélation/)).toHaveCount(0);
@@ -893,6 +895,7 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
 
   const header = await box(page, ".mp-header__bar");
   const homeLogo = await box(page, "[data-testid=mobile-home-logo]");
+  const surahArrows = await page.locator(".mp-header__nav-arrow").all();
   const verseReference = await box(page, ".qc-list-card__reference");
   const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
   const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
@@ -901,8 +904,13 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
   const versePlayIcon = await box(page, ".qc-list-card__start .ayah-action--play svg");
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
-  expect(homeLogo?.width || 0).toBeGreaterThanOrEqual(37.9);
-  expect(homeLogo?.height || 0).toBeGreaterThanOrEqual(37.9);
+  expect(homeLogo).toBeNull();
+  expect(surahArrows).toHaveLength(2);
+  for (const arrow of surahArrows) {
+    const arrowBox = await arrow.boundingBox();
+    expect(arrowBox?.width || 0).toBeGreaterThanOrEqual(44);
+    expect(arrowBox?.height || 0).toBeGreaterThanOrEqual(44);
+  }
   expect(verseReference?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(verseReference?.width || 0).toBeLessThanOrEqual(44.1);
   expect(versePlay?.width || 0).toBeGreaterThanOrEqual(43.9);
