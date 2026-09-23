@@ -7,8 +7,12 @@ dist/
 
 # Test artifacts
 test-results/
+test-results-*/
 playwright-report/
 coverage/
+.scratch-diag/
+.design-shots/
+tmp-verification-warsh/
 
 # Local dev artifacts
 .claude/settings.local.json
@@ -19,9 +23,16 @@ vite-preview*.log
 vite-preview*.err.log
 vite.config.js.timestamp-*.mjs
 debug.log
+*.log
+*.bak
+*.old
+*.tmp
+*.tsbuildinfo
 currentAyah_matches*.txt
 template_currentAyah*.txt
 scratch/
+/tmp-*.png
+/tmp-*.mjs
 
 # Downloaded originals for scripts/build-reciter-images.mjs — never shipped.
 .cache/
@@ -41,6 +52,8 @@ Thumbs.db
 # Env
 .env
 .env.local
+.env.*
+!.env.example
 design-audit/
 design-audit-2/
 .vercel

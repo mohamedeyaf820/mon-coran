@@ -1,4 +1,0 @@
-
-> mushafplus@1.1.0 lint
-> eslint . --quiet --cache --cache-location node_modules/.cache/eslint
-

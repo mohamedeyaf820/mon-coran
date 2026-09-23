@@ -3,7 +3,6 @@ import fs from "node:fs";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
-const shotDir = ".scratch-diag/shots";
 
 async function openPhone(page, pageNum, { live = false } = {}) {
   await page.setViewportSize({ width: 546, height: 900 });
@@ -74,20 +73,20 @@ const diag = () => {
 };
 
 for (const pageNum of [559, 565, 566, 1]) {
-  test(`capture overlay page ${pageNum}`, async ({ page }) => {
+  test(`capture overlay page ${pageNum}`, async ({ page }, testInfo) => {
     await openPhone(page, pageNum);
     const out = await page.evaluate(diag);
-    fs.writeFileSync(`${shotDir}/e2e-${pageNum}.json`, JSON.stringify(out, null, 1));
-    await page.screenshot({ path: `${shotDir}/e2e-${pageNum}.png` });
+    fs.writeFileSync(testInfo.outputPath(`e2e-${pageNum}.json`), JSON.stringify(out, null, 1));
+    await page.screenshot({ path: testInfo.outputPath(`e2e-${pageNum}.png`) });
   });
 }
 
 for (const pageNum of [565, 566, 1]) {
-  test(`live capture overlay page ${pageNum}`, async ({ page }) => {
+  test(`live capture overlay page ${pageNum}`, async ({ page }, testInfo) => {
     test.setTimeout(120_000);
     await openPhone(page, pageNum, { live: true });
     const out = await page.evaluate(diag);
-    fs.writeFileSync(`${shotDir}/live-${pageNum}.json`, JSON.stringify(out, null, 1));
-    await page.screenshot({ path: `${shotDir}/live-${pageNum}.png` });
+    fs.writeFileSync(testInfo.outputPath(`live-${pageNum}.json`), JSON.stringify(out, null, 1));
+    await page.screenshot({ path: testInfo.outputPath(`live-${pageNum}.png`) });
   });
 }

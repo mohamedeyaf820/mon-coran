@@ -139,7 +139,6 @@ src/
 public/
 ├── manifest.json         # PWA manifest
 ├── icons/*.png           # PWA icons
-└── screenshots/          # Images docs
 tests/
 └── e2e/                  # Scénarios Playwright
 docs/                     # ARCHITECTURE.md, ROADMAP.md, QUICK_START.md

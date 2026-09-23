@@ -1,1 +1,0 @@
-var e=`mushafplus:confirm`;function t(t={}){return typeof window>`u`?Promise.resolve(!1):new Promise(n=>{window.dispatchEvent(new CustomEvent(e,{detail:{title:t.title||``,message:t.message||``,confirmLabel:t.confirmLabel||``,cancelLabel:t.cancelLabel||``,tone:t.tone===`danger`?`danger`:`default`,resolve:n}}))})}export{t as n,e as t};

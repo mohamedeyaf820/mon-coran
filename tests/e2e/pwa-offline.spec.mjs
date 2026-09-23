@@ -109,6 +109,8 @@ test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page
       mushafLayout: "mushaf",
       lang: "fr",
       riwaya: "hafs",
+      fontFamily: "qcf-v2",
+      fontFamilyByRiwaya: { hafs: "qcf-v2", warsh: "qpc-warsh" },
       showTajwid: false,
       currentSurah: 2,
       currentPage: 3,

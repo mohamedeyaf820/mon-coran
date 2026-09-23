@@ -1,8 +1,0 @@
-file:///C:/Users/amirou/Documents/Quran%20App/.scratch-diag/shots/capture.mjs:36
-  throw new Error(`overlay never opened for page ${pageNum}: ${JSON.stringify(t)}`);
-        ^
-
-Error: overlay never opened for page 559: {"text":"Aller au contenu principal\nالطلاق\nAt-Talaq\nHafs\nPage 559\nHAFS\nSourates\nJuz\nPage\n1\nL'Ouverture\nMecquoise\n·\n7 versets\nالفاتحة\n2\nLa Vache\nMédinoise\n·\n286 versets\nالبقرة\n3\nLa Famille d'Imran\nMédinoise\n·\n2","portal":false,"zen":false}
-    at file:///C:/Users/amirou/Documents/Quran%20App/.scratch-diag/shots/capture.mjs:36:9
-
-Node.js v24.19.0

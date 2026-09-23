@@ -1,7 +1,0 @@
-fix(reader): donne un fond et une bordure aux états erreur et vide
-
-border-border, bg-bg-card et bg-primary ne sont pas générés par Tailwind (aucun
-@theme) : la carte d'erreur de chargement et celle « aucune donnée » restaient
-sans fond, avec un liseré blanc ou noir, et le bouton « Réessayer » n'avait
-aucune couleur en thème sombre. L'encre passe par --theme-text pour éviter que
-la règle [class*="text-primary"] du thème clair ne la peigne en vert.

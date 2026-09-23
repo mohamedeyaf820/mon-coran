@@ -1,1 +1,0 @@
-https://ar.wikipedia.org/w/api.php?action=query&format=json&prop=extracts&exintro=1&explaintext=1&redirects=1&titles=%D8%B9%D8%A7%D8%AF%D9%84_%D8%A7%D9%84%D9%83%D9%84%D8%A8%D8%A7%D9%86%D9%8A

@@ -1,1 +1,0 @@
-var e={brandName:`MushafPlus`,siteUrl:`https://mushafplus.netlify.app`,defaultLocale:`fr`,supportedLocales:[`fr`,`en`,`ar`],seoLastModified:`2026-08-02`,repositoryUrl:`https://github.com/mohamedeyaf820/mon-coran`,projectOwner:`Mohamed Eyaf`,contactUrl:`https://github.com/mohamedeyaf820/mon-coran/issues`,version:`1.1.0`,lastUpdated:`2026-08-20`};export{e as t};

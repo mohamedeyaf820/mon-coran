@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://mushafplus.netlify.app/sitemap.xml
