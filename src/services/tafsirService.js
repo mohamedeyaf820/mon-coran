@@ -24,7 +24,10 @@ export const TAFSIR_SOURCES = Object.entries(TAFSIR_RESOURCES).reduce(
 );
 
 const DEFAULT_TAFSIR_KEY = {
-  fr: "fr-mukhtasar",
+  // Quran.com publishes no French tafsir, so a French reader opens the English
+  // Ibn Kathir (with the French translation of the verse alongside) rather than
+  // a French source that does not exist.
+  fr: "en-kathir",
   en: "en-kathir",
   ar: "ar-muyassar",
   wo: "en-kathir",

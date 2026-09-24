@@ -48,18 +48,21 @@ export const TAFSIR_RESOURCES = {
     name: "Tafsir Al-Tabari",
     nameFr: "Tafsir Al-Tabari",
     lang: "ar",
+    qiraat: true,
   },
   "ar-qurtubi": {
     id: 90,
     name: "Tafsir Al-Qurtubi",
     nameFr: "Tafsir Al-Qurtubi",
     lang: "ar",
+    qiraat: true,
   },
   "ar-baghawi": {
     id: 94,
     name: "Tafsir Al-Baghawi",
     nameFr: "Tafsir Al-Baghawi",
     lang: "ar",
+    qiraat: true,
   },
   "ar-saadi": {
     id: 91,
@@ -67,12 +70,13 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
-  "fr-mukhtasar": {
-    id: 816,
-    name: "Al-Mukhtasar (French)",
-    nameFr: "Al-Mukhtasar (français)",
-    lang: "fr",
-  },
+  // There is no French tafsir to declare here. Quran.com's resource index has
+  // no French entry at all (20 tafsirs: 7 Arabic, 3 English, Bengali, Urdu,
+  // Russian, Kurdish), and the id 816 this app used to advertise as
+  // "Al-Mukhtasar (French)" answers HTTP 503 on every verse and is absent from
+  // /resources/tafsirs. A French reader therefore gets the source's own
+  // language plus the French translation of the verse, and the note below says
+  // so instead of a dead request pretending otherwise.
 };
 
 function normalizeText(text) {
@@ -222,7 +226,7 @@ export function getAvailableTafsirs() {
 const FALLBACK_TAFSIRS_BY_LANG = {
   ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
   en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
-  fr: ["fr-mukhtasar", "en-kathir", "en-maarif", "ar-muyassar"],
+  fr: ["en-kathir", "en-maarif", "ar-muyassar"],
   wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
 };
 

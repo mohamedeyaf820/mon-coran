@@ -100,4 +100,12 @@ export default [
       globals: globals.serviceworker,
     },
   },
+  {
+    files: ["mushafplus-motion/animation.js", "mushafplus-motion/render.js"],
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "script",
+      globals: globals.browser,
+    },
+  },
 ];
