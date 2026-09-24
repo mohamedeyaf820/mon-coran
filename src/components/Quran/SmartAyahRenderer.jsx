@@ -103,6 +103,7 @@ function SmartAyahRendererComponent({
           tajweedColors={null}
           fallbackText={cleanFallbackText}
           ayahNumber={ayah.numberInSurah}
+          fontFamily={fontFamily}
           appendNativeMarker={appendNativeMarker}
         />
       );

@@ -59,6 +59,7 @@ export default function KaraokeWarshText({
   tajweedColors,
   fallbackText,
   ayahNumber,
+  fontFamily,
   appendNativeMarker = true,
 }) {
   const lastIdxRef = useRef(0);
@@ -119,7 +120,9 @@ export default function KaraokeWarshText({
       {appendNativeMarker ? (
         <span className="native-ayah-marker" style={{ display: "inline" }}>
           {"\u202F"}
-          {getNativeAyahMarker(ayahNumber, "kfgqpc-warsh", "warsh")}
+          {/* Faces that need the U+06DD prefix lose the medallion if the playing
+              ayah falls back to the default Warsh id. */}
+          {getNativeAyahMarker(ayahNumber, fontFamily, "warsh")}
         </span>
       ) : null}
     </>

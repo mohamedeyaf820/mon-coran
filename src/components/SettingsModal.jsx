@@ -22,9 +22,9 @@ import { THEMES as UI_THEMES } from "../data/themes";
 import ThemePreview from "./settings/ThemePreview";
 import {
   getFontOptionsForRiwaya,
+  getAyahMarkerFontFamily,
   getNativeAyahMarker,
   normalizeFontId,
-  resolveFontFamily,
 } from "../data/fonts";
 import { ensureFontLoaded } from "../services/fontLoader";
 import { downloadExport, importFromFile } from "../services/exportService";
@@ -212,7 +212,10 @@ export default function SettingsModal() {
     selectedFontFamily,
     activeRiwaya,
   );
-  const selectedMarkerFontFamily = resolveFontFamily(
+  // Shape the preview with the family that will actually draw it: Amiri Quran
+  // and Noto Naskh have no composing rosette, so their digits are drawn by
+  // QPC Hafs in the reader too. Matches ArabicFontControls in the toolbar.
+  const selectedMarkerFontFamily = getAyahMarkerFontFamily(
     selectedFontFamily,
     activeRiwaya,
   );
