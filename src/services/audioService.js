@@ -11,6 +11,7 @@ import {
 } from "../utils/surahStreamSync.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
+import { createBasmalaPreroll } from "./basmalaPreroll.js";
 import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
 import {
   observeNativePlayback,
@@ -75,6 +76,9 @@ class AudioService {
     this._reciterLatencyByKey = Object.create(null);
     this._latencyListeners = [];
     this._oneShotMode = false;
+    // Basmala pre-rolled ahead of a surah's first verse. Not a verse: it must
+    // not move the pointer, the highlight, the seek bar or the progress.
+    this._basmala = createBasmalaPreroll(this);
     // What the user asked for, independent of what the element is actually
     // doing: an OS suspension or a background load failure flips `isPlaying`,
     // and recovery must not mistake that for an intentional pause.
@@ -110,6 +114,7 @@ class AudioService {
     this.onTimeUpdate = null;
     this.onError = null;
     this.onNetworkState = null;
+    this.onBasmala = null;
 
     // Extra listeners used by the player UI and verse synchronization.
     this._playListeners = [];
@@ -497,6 +502,7 @@ class AudioService {
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
     this._backgroundRecoveryIndex = null;
+    this._basmala.cancel();
     this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
@@ -602,6 +608,9 @@ class AudioService {
   async playSingle(url, meta = {}) {
     try {
       this.onNetworkState?.("loading");
+      this._basmala.cancel();
+      const verse = { surah: meta.surah, ayah: meta.ayah };
+      if (!(await this._basmala.before(verse))) return false;
       await this._loadUrlWithRetry(url);
       if (this.audio.paused) {
         this.isPlaying = false;
@@ -643,12 +652,14 @@ class AudioService {
   /* ── Seek ──────────────────────────────────── */
 
   seek(time) {
+    if (this._basmala.active) return;
     if (this.audio.duration) {
       this.audio.currentTime = time;
     }
   }
 
   seekPercent(pct) {
+    if (this._basmala.active) return;
     if (this.audio.duration) {
       this.audio.currentTime = this.audio.duration * pct;
     }
@@ -683,6 +694,9 @@ class AudioService {
   }
 
   _emitTimeUpdate() {
+    // The basmala's clock is not the verse's: reporting it would drive the
+    // word highlight and the progress bar with the wrong timings.
+    if (this._basmala.active) return;
     this._syncSurahStreamAyah(this.audio.currentTime, this.audio.duration);
     this.onTimeUpdate?.(this.audio.currentTime, this.audio.duration);
     this._captureLatencySample(this.audio.currentTime);
@@ -978,6 +992,7 @@ class AudioService {
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
 
+    this._basmala.cancel();
     this.playlistIndex = index;
     this._oneShotMode = false; // playlist playback is never one-shot
     const item = this.playlist[index];
@@ -996,6 +1011,7 @@ class AudioService {
 
     try {
       this.onNetworkState?.("loading");
+      if (!(await this._basmala.before(item))) return;
       const candidateUrls = Array.isArray(item.urls) && item.urls.length > 0 ? item.urls : [item.url];
       let loadedUrl = null;
       let lastErr = null;
@@ -1077,6 +1093,8 @@ class AudioService {
   }
 
   _handleEnded() {
+    // The basmala is not a verse: finishing it must not advance the playlist.
+    if (this._basmala.ended()) return;
     // One-shots often play without a playlist: clearing the flag here would
     // truncate the next playlist.
     if (this._oneShotMode) {

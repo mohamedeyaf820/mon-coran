@@ -90,6 +90,7 @@ export default function AudioPlayer() {
   const [audioError, setAudioError] = useState(null);
   const [audioFailed, setAudioFailed] = useState(false);
   const [networkState, setNetworkState] = useState("idle");
+  const [basmalaActive, setBasmalaActive] = useState(false);
   const networkStateTimerRef = useRef(null);
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
@@ -407,6 +408,9 @@ export default function AudioPlayer() {
       }
       setNetworkState(next);
     };
+    // The pre-roll is not a verse, so the reader must keep showing the verse
+    // that is coming — only the track label changes for those few seconds.
+    audioService.onBasmala = (active) => setBasmalaActive(Boolean(active));
     return () => {
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);
@@ -419,6 +423,7 @@ export default function AudioPlayer() {
       audioService.onTimeUpdate = null;
       audioService.onError = null;
       audioService.onNetworkState = null;
+      audioService.onBasmala = null;
       clearTimeout(networkStateTimerRef.current);
     };
   }, [
@@ -852,7 +857,9 @@ export default function AudioPlayer() {
         ? reciterObj?.nameFr
         : reciterObj?.nameEn;
 
-  const titleLabel = hasAyahContext
+  const titleLabel = basmalaActive
+    ? t("audio.basmala", lang)
+    : hasAyahContext
     ? `${t("quran.surah", lang)} ${currentPlayingAyah.surah}:${currentPlayingAyah.ayah}`
     : currentPlayingAyah?.surah
       ? lang === "ar"
@@ -864,7 +871,9 @@ export default function AudioPlayer() {
         ? currentArabicName
         : currentSurahName;
 
-  const mediaSessionTitle = hasAyahContext
+  const mediaSessionTitle = basmalaActive
+    ? t("audio.basmala", lang)
+    : hasAyahContext
     ? `${currentSurahName || titleLabel} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
     : titleLabel || currentSurahName;
 

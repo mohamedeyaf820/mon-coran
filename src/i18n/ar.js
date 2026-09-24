@@ -278,6 +278,7 @@ export default {
   },
   audio: {
     listenPage: 'استماع الصفحة', listenJuz: 'استماع الجزء',
+    basmala: 'البسملة',
     playbackBlocked: 'أوقف المتصفح التشغيل. اضغط على تشغيل للاستئناف.',
     play: 'تشغيل', pause: 'إيقاف', next: 'الآية التالية', prev: 'الآية السابقة',
     repeat: 'تكرار', playSurah: 'تشغيل السورة كاملة', close: 'إغلاق',

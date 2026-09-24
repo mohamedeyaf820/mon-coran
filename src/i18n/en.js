@@ -279,6 +279,7 @@ export default {
   },
   audio: {
     listenPage: 'Listen page', listenJuz: 'Listen juz',
+    basmala: 'Basmala',
     playbackBlocked: 'The browser interrupted playback. Press Play to resume.',
     play: 'Play', pause: 'Pause', next: 'Next Ayah', prev: 'Previous Ayah',
     repeat: 'Repeat', playSurah: 'Play Entire Surah', close: 'Close',

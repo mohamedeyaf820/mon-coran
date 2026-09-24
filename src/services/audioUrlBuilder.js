@@ -57,6 +57,23 @@ export function buildUrl(reciterCdn, ayah, cdnType = "everyayah") {
   return `https://everyayah.com/data/${reciterCdn}/${file}`;
 }
 
+/**
+ * The basmala is Al-Fatiha's first verse in both riwayas, so every per-ayah
+ * CDN publishes it as 001001.mp3 — the same file naming the player already
+ * uses. Whole-surah streams carry their own opening, Al-Fatiha already begins
+ * with the basmala, and At-Tawba has none.
+ */
+export function hasBasmalaPreroll(cdnType, surah) {
+  const number = Number(surah);
+  if (isSurahStreamCdn(cdnType)) return false;
+  return Number.isInteger(number) && number > 1 && number !== 9;
+}
+
+export function basmalaPrerollUrl(reciterCdn, cdnType, surah) {
+  if (!reciterCdn || !hasBasmalaPreroll(cdnType, surah)) return null;
+  return buildUrl(reciterCdn, { surah: 1, ayah: 1, hafsNumber: 1 }, cdnType);
+}
+
 export function buildUrlCandidates(reciterCdn, ayah, cdnType = "everyayah") {
   const primary = buildUrl(reciterCdn, ayah, cdnType);
   if (cdnType === "everyayah") {

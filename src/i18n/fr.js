@@ -278,6 +278,7 @@ export default {
   },
   audio: {
     listenPage: 'Écouter la page', listenJuz: 'Écouter le juz',
+    basmala: 'Basmala',
     playbackBlocked: 'Le navigateur a interrompu la lecture. Appuyez sur Lecture pour reprendre.',
     play: 'Lecture', pause: 'Pause', next: 'Verset suivant', prev: 'Verset précédent',
     repeat: 'Répéter', playSurah: 'Lire la sourate entière', close: 'Fermer',
