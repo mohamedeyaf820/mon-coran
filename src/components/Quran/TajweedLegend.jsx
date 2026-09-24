@@ -16,17 +16,20 @@ const LEGEND_COPY = {
   fr: {
     eyebrow: "Guide Tajwid",
     helper: "Survolez un passage coloré pour comprendre la règle",
-    warshHelper: "Repères calculés pour Warsh ; certaines règles ne sont pas marquées.",
+    warshHelper:
+      "Couleurs du mushaf Warsh coloré, huit catégories ; repères calculés, certaines règles ne sont pas marquées.",
   },
   en: {
     eyebrow: "Tajweed guide",
     helper: "Hover over a coloured passage to understand the rule",
-    warshHelper: "Warsh rule hints are calculated; some rules are not marked.",
+    warshHelper:
+      "Colours taken from the printed Warsh tajweed mushaf, eight categories; markers are calculated, some rules are not marked.",
   },
   ar: {
     eyebrow: "دليل التجويد",
     helper: "مرّر المؤشر فوق النص الملوّن لمعرفة القاعدة",
-    warshHelper: "علامات ورش محسوبة؛ بعض الأحكام غير ملوّنة.",
+    warshHelper:
+      "ألوان مصحف ورش الملون بثماني فئات؛ العلامات محسوبة وبعض الأحكام غير ملوّنة.",
   },
 };
 

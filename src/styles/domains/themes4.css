@@ -88,6 +88,17 @@
     --tajwid-sila-kubra: #f40000;
     --tajwid-tarqiq-ra: #8c8c8c;
     --tajwid-idgham-warsh: #8c8c8c;
+
+    /* The eight printed categories of the coloured Warsh mushaf, measured from
+       its own legend. Only the gold moves off the book to hold 3:1 on paper. */
+    --tajwid-warsh-lazim: #8e2b5b;
+    --tajwid-warsh-mushba: #d42c78;
+    --tajwid-warsh-jawaz: #d76225;
+    --tajwid-warsh-harakatan: #bc831e;
+    --tajwid-warsh-khafa: #0f883d;
+    --tajwid-warsh-idgham: #7d797a;
+    --tajwid-warsh-tafkhim: #324c5b;
+    --tajwid-warsh-qalqala: #0c8fb8;
 }
 
 :root[data-theme="sepia"],
@@ -180,6 +191,16 @@
     --tajwid-sila-kubra: #ff0000;
     --tajwid-tarqiq-ra: #8c8c8c;
     --tajwid-idgham-warsh: #8c8c8c;
+
+    /* Sepia paper is warmer and darker than white, so the gold drops further. */
+    --tajwid-warsh-lazim: #8e2b5b;
+    --tajwid-warsh-mushba: #d42c78;
+    --tajwid-warsh-jawaz: #d76225;
+    --tajwid-warsh-harakatan: #b27c1b;
+    --tajwid-warsh-khafa: #0f883d;
+    --tajwid-warsh-idgham: #7d797a;
+    --tajwid-warsh-tafkhim: #324c5b;
+    --tajwid-warsh-qalqala: #0c8fb8;
 }
 
 :root[data-theme="dark"],
@@ -269,6 +290,54 @@
     --tajwid-sila-kubra: #ff5e8e;
     --tajwid-tarqiq-ra: #9d9999;
     --tajwid-idgham-warsh: #9d9999;
+
+    /* On the night surface the book's wine and slate go under the ink, so those
+       two lighten; the gold returns to the printed value it carries on paper. */
+    --tajwid-warsh-lazim: #ab326d;
+    --tajwid-warsh-mushba: #d42c78;
+    --tajwid-warsh-jawaz: #d76225;
+    --tajwid-warsh-harakatan: #d59625;
+    --tajwid-warsh-khafa: #0f883d;
+    --tajwid-warsh-idgham: #7d797a;
+    --tajwid-warsh-tafkhim: #42667b;
+    --tajwid-warsh-qalqala: #0c8fb8;
+}
+
+/* Warsh drops the Hafs palette and takes the eight categories the coloured
+   Warsh mushaf prints. The engine computes more keys than the book has colours,
+   so each extra key folds into the category it sounds like: the nasalised family
+   (ghunna, ikhfa, iqlab) and the hamza positions (tashil, ibdal) into the
+   concealment green; the assimilated and unpronounced (idgham, lam shamsiyya,
+   tarqiq) into its grey; the permitted lengths (munfasil, sila kabira, naql)
+   into the amber; the two-count substitutions (badl) into the light-madd gold;
+   muttasil into the saturated six. Hues stay the book's — only lightness moves,
+   and only where the theme's surface needs it for the 3:1 floor this file
+   already holds the Hafs set to. */
+/* The second selector is the fullscreen book: its portal root carries the theme
+   and the riwaya on the same element, so it needs to outrank the theme block
+   rather than merely inherit past it. */
+[data-theme] [data-riwaya="warsh"],
+[data-theme][data-riwaya="warsh"] {
+    --tajwid-silent: var(--tajwid-warsh-idgham);
+    --tajwid-lam-shamsiyya: var(--tajwid-warsh-idgham);
+    --tajwid-ghunna: var(--tajwid-warsh-khafa);
+    --tajwid-idgham: var(--tajwid-warsh-idgham);
+    --tajwid-ikhfa: var(--tajwid-warsh-khafa);
+    --tajwid-iqlab: var(--tajwid-warsh-khafa);
+    --tajwid-qalqala: var(--tajwid-warsh-qalqala);
+    --tajwid-tafkhim: var(--tajwid-warsh-tafkhim);
+    --tajwid-madd-normal: var(--tajwid-warsh-harakatan);
+    --tajwid-madd: var(--tajwid-warsh-lazim);
+    --tajwid-madd-separated: var(--tajwid-warsh-jawaz);
+    --tajwid-madd-connected: var(--tajwid-warsh-mushba);
+    --tajwid-madd-necessary: var(--tajwid-warsh-lazim);
+    --tajwid-madd-badal: var(--tajwid-warsh-harakatan);
+    --tajwid-naql: var(--tajwid-warsh-jawaz);
+    --tajwid-tashil: var(--tajwid-warsh-khafa);
+    --tajwid-ibdal: var(--tajwid-warsh-khafa);
+    --tajwid-sila-kubra: var(--tajwid-warsh-jawaz);
+    --tajwid-tarqiq-ra: var(--tajwid-warsh-idgham);
+    --tajwid-idgham-warsh: var(--tajwid-warsh-idgham);
 }
 
 :root[data-theme="quran-night"],
