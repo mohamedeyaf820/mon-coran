@@ -459,6 +459,21 @@ test("surah headings keep an accessible Arabic title while calligraphic selector
   assert.doesNotMatch(inlineHeader, /mp-surah-prefix/);
   assert.match(appHeader, /getSurahLigature\(activeSurahNum\)/);
   assert.match(appHeader, /className="font-surah-names"[\s\S]*?aria-hidden="true"/);
+  // The phone swap to the compact lockup must not drop the masthead face.
+  assert.match(
+    appHeader,
+    /mp-header__title-compact-ar[\s\S]*?className="font-surah-names"/,
+  );
+  assert.match(
+    source("src/components/Sidebar.jsx"),
+    /sb-summary-calli[\s\S]*?className="font-surah-names"/,
+  );
+  // The next-reading lockup keeps its rule on every width: the phone adapts the
+  // desktop block, it does not flatten it into a caption.
+  assert.doesNotMatch(
+    source("src/styles/app-system.css"),
+    /\.home-resume-panel__target\s*\{[^}]*border-inline-start:\s*0/,
+  );
   assert.match(hero, /getSurahLigature\(surahLabel\?\.n\)/);
   assert.match(hero, /home-resume-panel__target[\s\S]*?font-surah-names/);
   assert.match(surahCards, /getSurahLigature\(surah\.n\)/);

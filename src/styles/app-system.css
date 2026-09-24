@@ -1404,10 +1404,11 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
     font-size: clamp(1.9rem, 7vw, 2.5rem);
   }
 
+  /* The phone loses the desktop's second column, not the lockup: the rule that
+     separated the next reading from the headline becomes its margin instead. */
   .app-root[data-view="home"] .home-resume-panel__target {
     margin-top: 0.8rem;
-    padding-inline-start: 0;
-    border-inline-start: 0;
+    padding-inline-start: clamp(0.7rem, 3vw, 1.1rem);
   }
 
   .app-root[data-view="home"] .home-resume-panel__library {
@@ -1512,8 +1513,7 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
     align-self: stretch;
     gap: 0.2rem;
     margin-top: 0.5rem;
-    padding: 0;
-    border-inline-start: 0;
+    padding: 0 0 0 clamp(0.7rem, 3.5vw, 1.1rem);
     text-align: start;
   }
 
@@ -1523,14 +1523,6 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
 
   .app-root[data-view="home"] .home-resume-panel__target-label {
     display: block;
-  }
-
-  .app-root[data-view="home"] .home-resume-panel__target-line > strong {
-    font-size: 0.84rem;
-  }
-
-  .app-root[data-view="home"] .home-resume-panel__target-arabic {
-    font-size: 1.48rem;
   }
 
   /* The verse reference sits in an `auto` track, so on a phone it claims half

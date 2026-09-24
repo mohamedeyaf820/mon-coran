@@ -207,6 +207,14 @@
   white-space: nowrap;
 }
 
+/* The masthead face draws a whole surah name as one connected glyph. At the
+   naskh size of the compact lockup it collapses to a smudge, so it keeps a
+   floor of its own; the 56px bar still absorbs the line. */
+.mp-header__title-compact-ar > .font-surah-names {
+  font-size: 1.5rem;
+  line-height: 1.05;
+}
+
 .mp-header__title-compact-la {
   max-width: 100%;
   overflow: hidden;

@@ -63,7 +63,27 @@ export default function Sidebar() {
       ? currentSurahMeta
         ? lang === "ar"
           ? currentSurahMeta.ar
-          : `${localizedSurahName(currentSurahMeta, lang)} · ${currentSurahMeta.ar}`
+          : // The Arabic half belongs to the masthead face, not the UI font, so
+            // it is its own element rather than a character in the label.
+            (
+              <>
+                {`${localizedSurahName(currentSurahMeta, lang)} · `}
+                <span
+                  className="sb-summary-calli"
+                  role="img"
+                  aria-label={currentSurahMeta.ar}
+                >
+                  <span
+                    className="font-surah-names"
+                    dir="ltr"
+                    lang="en"
+                    aria-hidden="true"
+                  >
+                    {getSurahLigature(currentSurahMeta.n)}
+                  </span>
+                </span>
+              </>
+            )
         : null
       : displayMode === "juz"
         ? lang === "ar"

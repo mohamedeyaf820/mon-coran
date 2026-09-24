@@ -279,6 +279,23 @@ html body .app-root .sb-wrapper .sidebar-close-button svg {
   opacity: 1 !important;
 }
 
+/* The current-position summary carries the same masthead face for the Arabic
+   name, but at the size of its own caption line rather than a row's. */
+#sidebar .sb-summary-calli,
+.sb-wrapper .sb-summary-calli {
+  display: inline-block;
+  max-width: 45%;
+  vertical-align: -0.3em;
+}
+
+#sidebar .sb-summary-calli .font-surah-names,
+.sb-wrapper .sb-summary-calli .font-surah-names {
+  font-size: 1.15rem !important;
+  line-height: 1.1 !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   /* Only animate the first 10 items — avoids triggering 114 animations at once on open */

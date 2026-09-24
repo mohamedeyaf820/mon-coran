@@ -620,7 +620,18 @@ export default function Header({ immersiveHidden = false }) {
                                 dir="rtl"
                                 lang="ar"
                               >
-                                {surahMeta.ar}
+                                {centerSurahLigature ? (
+                                  <span
+                                    className="font-surah-names"
+                                    dir="ltr"
+                                    lang="en"
+                                    aria-hidden="true"
+                                  >
+                                    {centerSurahLigature}
+                                  </span>
+                                ) : (
+                                  surahMeta.ar
+                                )}
                               </span>
                             ) : null}
                             <span className="mp-header__title-compact-la">
