@@ -22,9 +22,9 @@ test("verse actions open as a compact, usable mobile sheet", async ({ page }) =>
   }, SETTINGS_KEY);
 
   await page.goto("/surah/8");
-  const firstVerse = page.getByRole("button", { name: "Verset 1" }).first();
-  await expect(firstVerse).toBeVisible({ timeout: 20_000 });
-  await firstVerse.click();
+  const firstMarker = page.locator(".cpv-verse .native-ayah-marker").first();
+  await expect(firstMarker).toBeVisible({ timeout: 20_000 });
+  await firstMarker.click();
 
   const dialog = page.locator(".ayah-actions-modal[role='dialog']");
   const panel = dialog.locator(".ayah-actions-modal__panel");
@@ -98,7 +98,9 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
   }, SETTINGS_KEY);
 
   await page.goto("/surah/8");
-  await page.getByRole("button", { name: "Verset 1" }).first().click();
+  const firstMarker = page.locator(".cpv-verse .native-ayah-marker").first();
+  await expect(firstMarker).toBeVisible({ timeout: 20_000 });
+  await firstMarker.click();
 
   const actionsDialog = page.locator(".ayah-actions-modal[role='dialog']");
   await actionsDialog.getByRole("button", { name: /Plus d.actions/ }).click();

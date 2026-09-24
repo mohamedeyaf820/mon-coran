@@ -153,11 +153,18 @@ export function initPerformanceMetrics() {
     { durationThreshold: 40 },
   );
 
-  window.addEventListener(
-    "load",
-    () => window.setTimeout(captureNavigationMetrics, 0),
-    { once: true },
-  );
+  // This module is loaded after first paint. On a warm load the load event
+  // can fire before the import resolves, so record navigation immediately in
+  // that case instead of silently losing the sample.
+  if (document.readyState === "complete") {
+    window.setTimeout(captureNavigationMetrics, 0);
+  } else {
+    window.addEventListener(
+      "load",
+      () => window.setTimeout(captureNavigationMetrics, 0),
+      { once: true },
+    );
+  }
   window.addEventListener("pagehide", flushVitals);
   document.addEventListener("visibilitychange", () => {
     if (document.visibilityState === "hidden") flushVitals();

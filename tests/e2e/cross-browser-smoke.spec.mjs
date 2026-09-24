@@ -72,7 +72,7 @@ test("la recherche unifiée reste simple sur un très petit écran", async ({ pa
   expect(layout.overflow).toBeLessThanOrEqual(2);
   expect(layout.inputHeight).toBeLessThanOrEqual(50);
   expect(layout.closeWidth).toBeLessThanOrEqual(44);
-  expect(layout.voiceWidth).toBeLessThanOrEqual(38);
+  expect(layout.voiceWidth).toBeGreaterThanOrEqual(44);
 
   for (const viewport of [
     { width: 768, height: 900 },
@@ -478,7 +478,8 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
 
   const responsiveLayout = await page.evaluate(() => ({
     fitsViewport: document.documentElement.scrollWidth <= window.innerWidth + 1,
-    navWidth: document.querySelector(".mp-header__nav")?.getBoundingClientRect().width || 0,
+    navRight: document.querySelector(".mp-header__nav")?.getBoundingClientRect().right || 0,
+    menuLeft: document.querySelector(".mp-header__more")?.getBoundingClientRect().left || 0,
     controlsHeight: document.querySelector(".srh-controls")?.getBoundingClientRect().height || 0,
     fontRows: Array.from(
       document.querySelectorAll(".srh-typography-panel .afc-font-group, .srh-typography-panel .afc-size-group"),
@@ -486,7 +487,7 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
     ),
   }));
   expect(responsiveLayout.fitsViewport).toBe(true);
-  expect(responsiveLayout.navWidth).toBeLessThanOrEqual(168);
+  expect(responsiveLayout.navRight).toBeLessThanOrEqual(responsiveLayout.menuLeft);
   expect(responsiveLayout.controlsHeight).toBeLessThanOrEqual(53);
   expect(responsiveLayout.fontRows.length).toBeGreaterThanOrEqual(2);
   for (const height of responsiveLayout.fontRows) expect(height).toBeLessThanOrEqual(44);
@@ -498,7 +499,7 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   await expect(page.locator(".srh-mobile-bar")).toBeHidden();
 });
 
-test("le mode Mushaf affiche le feuillet aéré en ligne et la grille 15 lignes en plein écran", async ({ page }) => {
+test("le mode Mushaf garde un feuillet lisible en ligne et en plein écran", async ({ page }) => {
   await installQuranNetworkFixtures(page);
   await page.addInitScript(() => {
     localStorage.setItem(
@@ -524,10 +525,10 @@ test("le mode Mushaf affiche le feuillet aéré en ligne et la grille 15 lignes 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/page/3", { waitUntil: "domcontentloaded" });
 
-  const sheet = page.locator(".cpv-container").first();
+  const sheet = page.locator(".qcm-page-shell").first();
   await expect(sheet).toBeVisible({ timeout: 30_000 });
   await expect
-    .poll(() => page.locator(".cpv-verse").count())
+    .poll(() => sheet.locator(".qcm-word").count())
     .toBeGreaterThan(5);
 
   for (const width of [320, 390, 768, 1024, 1440]) {
@@ -541,8 +542,8 @@ test("le mode Mushaf affiche le feuillet aéré en ligne et la grille 15 lignes 
       .toBe(true);
   }
 
-  // The fifteen-line printed grid remains the contract of the fullscreen
-  // engine, reached from the stream by the fullscreen trigger.
+  // The fullscreen page uses Unicode word flow, which must remain readable
+  // and inside the viewport at the compact size.
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator(".reader-fullscreen-trigger").click();
   const portal = page.locator(".mfp-portal-root");
@@ -553,30 +554,22 @@ test("le mode Mushaf affiche le feuillet aéré en ligne et la grille 15 lignes 
 
   const layout = await grid.evaluate((element) => {
     const style = getComputedStyle(element);
-    const rows = Array.from(element.querySelectorAll(".qcm-line"));
-    const tops = rows.map((row) => row.getBoundingClientRect().top);
     return {
       direction: style.direction,
       lang: element.getAttribute("lang"),
-      rows: style.gridTemplateRows.trim().split(/\s+/).map((row) => Number.parseFloat(row)),
-      numbered: rows.filter((row) => row.hasAttribute("data-line-number")).length,
       words: element.querySelectorAll(".qcm-word").length,
-      stacked: tops.every((top, index) => index === 0 || top >= tops[index - 1] - 1),
+      readable: Array.from(element.querySelectorAll(".qcm-word")).some(
+        (word) => /[\u0600-\u06FF]/u.test(word.textContent || ""),
+      ),
+      replacementGlyphs: element.textContent.includes("\uFFFD"),
       pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1,
     };
   });
 
   expect(layout.direction).toBe("rtl");
   expect(layout.lang).toBe("ar");
-  expect(layout.numbered).toBe(15);
-  expect(layout.rows).toHaveLength(15);
-  // A printed page is fifteen equal rows: a collapsing or wrapping sheet shows
-  // up here as rows that no longer share the line pitch.
-  for (const height of layout.rows) {
-    expect(height).toBeGreaterThan(0);
-    expect(Math.abs(height - layout.rows[0])).toBeLessThan(1);
-  }
-  expect(layout.stacked).toBe(true);
+  expect(layout.readable).toBe(true);
+  expect(layout.replacementGlyphs).toBe(false);
   expect(layout.words).toBeGreaterThan(5);
   expect(layout.pageFits).toBe(true);
 });

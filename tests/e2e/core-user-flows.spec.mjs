@@ -169,7 +169,7 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.locator(".home-today-panel")).toHaveCount(1);
   await expect(page.locator(".home-session-card, .home-daily-verse-card")).toHaveCount(0);
   await expect(page.locator(".home-today-suggestion")).toHaveCount(5);
-  await expect(page.getByLabel("Rechercher dans le Saint Coran…")).toBeVisible();
+  await expect(page.getByLabel("Rechercher une sourate…")).toBeVisible();
   await expect(page.getByLabel("Trier les sourates")).toBeVisible();
   await expect(page.getByRole("button", { name: "Grille" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Liste", exact: true })).toBeVisible();

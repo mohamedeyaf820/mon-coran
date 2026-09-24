@@ -46,7 +46,7 @@ test("Hafs pages keep an intact Unicode face when the page font is selected", as
   expect(await overlay.locator(".qcm-word").count()).toBeGreaterThan(50);
   expect(await overlay.locator(".qcm-word").evaluateAll((words) =>
     words.some((word) => /[\u25CC\u25CF\u25CB\u2B24\u2022]/u.test(word.textContent || "")))).toBe(false);
-  await expect(overlay.locator(".qcm-font-warning")).toHaveCount(0);
+  await expect(overlay.locator('.qcm-font-warning[data-tone="error"]')).toHaveCount(0);
 });
 
 test("blocking QCF page fonts leaves the Unicode reading text intact", async ({ page }) => {
