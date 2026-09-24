@@ -27,7 +27,7 @@ export function supportsTajweedHighlights() {
   );
 }
 
-function isWebkitEngine() {
+export function isWebkitEngine() {
   if (typeof navigator === "undefined") return false;
   const ua = navigator.userAgent || "";
   // Every browser on iOS is WebKit, whatever brand the UA carries.

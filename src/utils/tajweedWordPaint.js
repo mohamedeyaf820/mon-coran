@@ -18,12 +18,19 @@
  * focus, playing) can override the paint instead of losing it.
  */
 
+import { isWebkitEngine } from "./tajweedHighlights.js";
+
 const BASE_INK = "var(--reader-page-ink, currentColor)";
 const RULE_ID_RE = /^[a-z-]+$/;
 // A class, not a data attribute: PurgeCSS only keeps a selector whose name
 // survives as a token in the built JS, and dataset keys do not carry it.
 export const PAINTED_CLASS = "is-tajweed-painted";
 const PERCENT = (value) => `${Math.round(value * 1000) / 10}%`;
+
+// WebKit makes the fill transparent but clips the gradient to a few glyph
+// fragments (verified on WebKit: painted words render near-invisible), so on
+// that engine words are coloured whole instead of band by band.
+export const CLIP_PAINT_SUPPORTED = !isWebkitEngine();
 
 export function paintTajweedWord(word, ranges) {
   const node = word?.firstChild;

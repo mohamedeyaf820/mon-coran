@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { getPerWordTajweedRanges } from "../../data/tajwidRules";
-import { paintTajweedWord, clearTajweedWordPaint } from "../../utils/tajweedWordPaint";
+import { CLIP_PAINT_SUPPORTED, paintTajweedWord, clearTajweedWordPaint } from "../../utils/tajweedWordPaint";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
 import { normalizeArabicText, getVerseKey } from "./mushafPageComposition";
@@ -145,11 +145,20 @@ export default function MushafFlowPage({
         if (token.charType !== "word" || !token.tajweedRanges.length) continue;
         const key = `${token.globalAyah}:${token.position}`;
         const word = words.get(key);
-        if (word?.firstChild?.data === token.text) painted.push([word, token.tajweedRanges]);
+        if (word?.firstChild?.data === token.text) {
+          painted.push([word, token.tajweedRanges, token.tajweedRanges[0]?.ruleId]);
+        }
       }
     }
     let frame = 0;
-    const repaint = () => painted.forEach(([word, ranges]) => paintTajweedWord(word, ranges));
+    // WebKit clips a text gradient to a few glyph fragments and leaves the
+    // fill transparent, so there the flow words take their first rule's
+    // colour whole instead of band by band.
+    const repaint = () =>
+      painted.forEach(([word, ranges, ruleId]) => {
+        if (CLIP_PAINT_SUPPORTED) paintTajweedWord(word, ranges);
+        else if (/^[a-z-]+$/.test(ruleId || "")) word.style.color = `var(--tajwid-${ruleId})`;
+      });
     const schedule = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(repaint);
@@ -162,7 +171,10 @@ export default function MushafFlowPage({
       observer.disconnect();
       window.removeEventListener("resize", schedule);
       cancelAnimationFrame(frame);
-      painted.forEach(([word]) => clearTajweedWordPaint(word));
+      painted.forEach(([word]) => {
+        clearTajweedWordPaint(word);
+        word.style.removeProperty("color");
+      });
     };
   }, [segments, showTajwid, fontReady]);
 

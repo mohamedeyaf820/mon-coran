@@ -810,3 +810,26 @@ test("tafsir sources are grouped by language with the reading-aware ones first",
   }
   assert.match(sidebar, /riwaya === ["']warsh["'][\s\S]*?tafsir\.warshHint/);
 });
+
+test("WebKit keeps tajweed rule colours by whole-word ink, not the clipped gradient", () => {
+  const paint = source("src/utils/tajweedWordPaint.js");
+  const fallback = source("src/components/Quran/TajweedText.jsx");
+  const flow = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+
+  // The engine gate lives with the paint so every consumer shares one verdict.
+  assert.match(paint, /export const CLIP_PAINT_SUPPORTED = !isWebkitEngine\(\);/);
+
+  // The word fallback must colour each word when the clip paint is unusable,
+  // otherwise WebKit shows tajweed with no colour at all (the reported bug).
+  assert.match(
+    fallback,
+    /style=\{!CLIP_PAINT_SUPPORTED && ruleColor && !word\.isMarker[\s\S]{0,60}color: ruleColor/,
+  );
+  // ...and must not paint the gradient there (it renders near-invisible).
+  assert.match(fallback, /if \(!CLIP_PAINT_SUPPORTED\) return undefined;/);
+
+  // The flow page branches on the same gate and clears both representations.
+  assert.match(flow, /if \(CLIP_PAINT_SUPPORTED\) paintTajweedWord\(word, ranges\);/);
+  assert.match(flow, /word\.style\.color = `var\(--tajwid-\$\{ruleId\}\)`/);
+  assert.match(flow, /clearTajweedWordPaint\(word\);[\s\S]{0,40}word\.style\.removeProperty\("color"\);/);
+});

@@ -14,7 +14,7 @@ import {
     supportsTajweedHighlights,
     unionRects,
 } from '../../utils/tajweedHighlights';
-import { clearTajweedWordPaint, paintTajweedWord } from '../../utils/tajweedWordPaint';
+import { CLIP_PAINT_SUPPORTED, clearTajweedWordPaint, paintTajweedWord } from '../../utils/tajweedWordPaint';
 import useKaraokeWordIndex from '../../hooks/useKaraokeWordIndex';
 
 const AYAH_MARKER_TOKEN_RE = /^[\u06DD\u06DE\u06E9\uFC00-\uFD1C\uFD3F\uFD3E\d\u0660-\u0669\u06F0-\u06F9]+$/u;
@@ -366,6 +366,20 @@ function resolveRuleColor(ruleId, tajweedColors) {
     return (tajweedColors && tajweedColors[ruleId]) || `var(--tajwid-${ruleId})`;
 }
 
+// User colour overrides: the rule bands and the word colours resolve var()
+// against the originating element, so scoping the variables on the tajweed
+// root is enough for every path.
+function useTajweedColorVars(tajweedColors) {
+    return useMemo(() => {
+        if (!tajweedColors) return undefined;
+        const style = {};
+        for (const [ruleId, color] of Object.entries(tajweedColors)) {
+            if (color) style[`--tajwid-${ruleId}`] = color;
+        }
+        return style;
+    }, [tajweedColors]);
+}
+
 // Waqf signs inside a word are combining marks. Keep them in the same text
 // node as their base letter; wrapping one in WaqfSign detaches its glyph.
 const WAQF_SPLIT_RE = /([\u06D6-\u06DC\u06DE])/;
@@ -430,13 +444,56 @@ function buildHighlightWords(segments) {
 }
 
 function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajweedColors, ruleMetadata }) {
+    const rootRef = useRef(null);
+    const colorVars = useTajweedColorVars(tajweedColors);
+
+    // Engines that clip a gradient to text reliably paint the rule bands here
+    // too. WebKit makes the fill transparent but clips the gradient to a few
+    // glyph fragments, so on that engine each word keeps one shaped text node
+    // and simply takes the colour of its first rule.
+    useLayoutEffect(() => {
+        if (!CLIP_PAINT_SUPPORTED) return undefined;
+        const root = rootRef.current;
+        if (!root) return undefined;
+
+        const painted = [];
+        root.querySelectorAll('[data-tajwid-word]').forEach((wordEl) => {
+            const word = words[Number(wordEl.getAttribute('data-tajwid-word'))];
+            const rules = word?.parts?.flatMap((part) => part.rules || []);
+            if (!rules?.length) return;
+            painted.push([wordEl, rules]);
+            paintTajweedWord(wordEl, rules);
+        });
+
+        let cancelled = false;
+        document.fonts?.ready.then(() => {
+            if (cancelled) return;
+            for (const [wordEl, rules] of painted) paintTajweedWord(wordEl, rules);
+        });
+
+        return () => {
+            cancelled = true;
+            for (const [wordEl] of painted) clearTajweedWordPaint(wordEl);
+        };
+    }, [words]);
+
     return (
-        <span className="quran-tajwid-text" dir="rtl" lang="ar" data-tajwid-render="word-fallback">
+        <span
+            className="quran-tajwid-text"
+            dir="rtl"
+            lang="ar"
+            data-tajwid-render="word-fallback"
+            ref={rootRef}
+            style={colorVars}
+        >
             {words.map((word, wordIndex) => {
                 const firstRule = word.parts.flatMap((part) => part.rules || [])[0];
                 const ruleLabel = firstRule
                     ? getRuleLabel(firstRule.ruleId, lang, ruleMetadata.get(firstRule.ruleId))
                     : null;
+                const ruleColor = firstRule
+                    ? resolveRuleColor(firstRule.ruleId, tajweedColors)
+                    : undefined;
                 const audioUrl = !word.isMarker && surahNum && ayahNumber
                     ? getWordAudioUrl(surahNum, ayahNumber, wordIndex + 1)
                     : null;
@@ -455,7 +512,11 @@ function TajweedWordFallback({ words, lang, riwaya, surahNum, ayahNumber, tajwee
                             data-tajwid={firstRule?.ruleId}
                             data-tajwid-name={ruleLabel?.name}
                             data-tajwid-desc={ruleLabel?.desc}
+                            data-tajwid-color={ruleColor}
                             title={getWaqfHelp(word.text, lang)}
+                            style={!CLIP_PAINT_SUPPORTED && ruleColor && !word.isMarker
+                                ? { color: ruleColor }
+                                : undefined}
                             onClick={play}
                             onKeyDown={play ? (event) => {
                                 if (event.key === "Enter" || event.key === " ") {
@@ -542,14 +603,7 @@ function TajweedHighlightWords({
 
     // User colour overrides: ::highlight() resolves var() against the
     // originating element, so scoping the variables here is enough.
-    const colorVars = useMemo(() => {
-        if (!tajweedColors) return undefined;
-        const style = {};
-        for (const [ruleId, color] of Object.entries(tajweedColors)) {
-            if (color) style[`--tajwid-${ruleId}`] = color;
-        }
-        return style;
-    }, [tajweedColors]);
+    const colorVars = useTajweedColorVars(tajweedColors);
 
     useLayoutEffect(() => {
         const root = rootRef.current;
