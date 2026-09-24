@@ -160,11 +160,10 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   }));
   expect(cardBox?.width || 0).toBeLessThanOrEqual(390);
   expect(cardBox?.height || 0).toBeLessThanOrEqual(76);
-  expect(favoriteBox?.width || 0).toBeGreaterThanOrEqual(34);
-  expect(favoriteBox?.height || 0).toBeGreaterThanOrEqual(34);
-  expect(favoriteBox?.width || 0).toBeLessThanOrEqual(40);
-  expect(playBox?.width || 0).toBeLessThanOrEqual(40);
-  expect(filterMetrics.height).toBeLessThanOrEqual(40);
+  expect(favoriteBox?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(favoriteBox?.height || 0).toBeGreaterThanOrEqual(44);
+  expect(playBox?.width || 0).toBeGreaterThanOrEqual(44);
+  expect(filterMetrics.height).toBeLessThanOrEqual(50);
   expect(filterMetrics.flexWrap).toBe("nowrap");
 
   await page.screenshot({

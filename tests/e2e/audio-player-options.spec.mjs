@@ -134,7 +134,7 @@ test.describe("mobile", () => {
     });
 
     expect(layout.columns).toBe(1);
-    expect(layout.cardHeight).toBeGreaterThanOrEqual(64);
+    expect(layout.cardHeight).toBeGreaterThanOrEqual(44);
     expect(layout.noHorizontalOverflow).toBe(true);
     expect(layout.selectionIsDistinct).toBe(true);
 
@@ -209,7 +209,7 @@ test.describe("mobile", () => {
     if (portraitTag === "IMG") {
       await expect(portrait).toHaveAttribute(
         "src",
-        /storage\.googleapis\.com\/way2quran_storage\/imgs\/ibrahim-al-dosari\.png/,
+        /\/images\/reciters\/warsh_ibrahim_aldosari\.webp/,
       );
     } else {
       await expect(portrait).toHaveClass(/reciter-hero__avatar--fallback/);

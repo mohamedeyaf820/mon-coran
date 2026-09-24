@@ -27,7 +27,7 @@ test("footer and surah directory remain usable on a phone", async ({ page }) => 
   await expect(footer.locator(".mp-footer-v2__nav-btn")).toHaveCount(4);
   await expect(footer.locator(".mp-footer-v2__verse-translation")).toBeVisible();
   await expect(footer.locator(".mp-footer-v2__legal a")).toHaveCount(4);
-  await expect(footer.locator(".mp-footer-v2__brand")).toHaveText("MushafPlus");
+  await expect(footer.locator(".mp-footer-v2__brand")).toHaveText(/^v\d+\.\d+\.\d+$/u);
   expect(await footer.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
 });
 
@@ -37,12 +37,14 @@ test("home hero separates the promise from the next reading without crowding sma
   await expect(page.locator(".home-resume-panel__primary")).toBeVisible();
   await expect(page.getByRole("button", { name: "Invocations" })).toBeVisible();
 
-  const desktopishLayout = await page.evaluate(() => {
+  // At this width the card deliberately stacks the next reading below the
+  // promise; only wide screens use adjacent columns.
+  const layout = await page.evaluate(() => {
     const title = document.querySelector(".home-resume-panel h1").getBoundingClientRect();
     const target = document.querySelector(".home-resume-panel__target").getBoundingClientRect();
-    return { titleRight: title.right, targetLeft: target.left };
+    return { titleBottom: title.bottom, targetTop: target.top };
   });
-  expect(desktopishLayout.targetLeft).toBeGreaterThanOrEqual(desktopishLayout.titleRight - 1);
+  expect(layout.targetTop).toBeGreaterThanOrEqual(layout.titleBottom - 1);
 
   await page.setViewportSize({ width: 320, height: 698 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth)).toBeLessThanOrEqual(2);

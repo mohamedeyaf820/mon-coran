@@ -98,7 +98,7 @@ test("PWA: a visited surah keeps its Quran text offline", async ({ page, context
   await expect(firstAyah).toContainText(onlineText);
 });
 
-test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page, context }) => {
+test("PWA: a visited Mushaf page keeps its Unicode reading font offline", async ({ page, context }) => {
   await page.addInitScript(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({
       skipSplashAnimation: true,
@@ -109,8 +109,8 @@ test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page
       mushafLayout: "mushaf",
       lang: "fr",
       riwaya: "hafs",
-      fontFamily: "qcf-v2",
-      fontFamilyByRiwaya: { hafs: "qcf-v2", warsh: "qpc-warsh" },
+      fontFamily: "qpc-hafs",
+      fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
       showTajwid: false,
       currentSurah: 2,
       currentPage: 3,
@@ -135,25 +135,24 @@ test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page
   await trigger.click();
   await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
 
-  // The worker controls this fetch and writes the response to the font cache
-  // after handing the bytes to the page, so the cache is polled rather than
-  // assumed to be populated.
+  // The local Unicode font is precached with the app shell. Check the actual
+  // asset and readable text before going offline, not just the CSS font name.
   const firstWord = page.locator(".mfp-portal-root .qcm-word").first();
   await expect
     .poll(() => firstWord.evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
-    .toContain("qcf-v2-p3");
+    .toContain("QPC Hafs");
+  await expect(firstWord).toContainText(/[\u0600-\u06FF]/u);
   await expect
     .poll(
       async () =>
         page.evaluate(async () => {
-          const cache = await caches.open("mushaf-plus-qcf-fonts-v1");
-          return Boolean(
-            await cache.match(
-              "https://verses.quran.foundation/fonts/quran/hafs/v2/woff2/p3.woff2",
-            ),
-          );
+          const names = await caches.keys();
+          const shellName = names.find((name) => /^mushaf-plus-v\d+$/u.test(name));
+          if (!shellName) return false;
+          const cache = await caches.open(shellName);
+          return Boolean(await cache.match("/fonts/uthmanic-hafs-v18.woff2"));
         }),
-      { message: "the worker writes the page font to its cache" },
+      { message: "the worker precaches the local Unicode reading font" },
     )
     .toBe(true);
 
@@ -169,7 +168,9 @@ test("PWA: a visited Mushaf page keeps its QCF page font offline", async ({ page
   await expect
     .poll(() => page.locator(".mfp-portal-root .qcm-word").first()
       .evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
-    .toContain("qcf-v2-p3");
+    .toContain("QPC Hafs");
+  await expect(page.locator(".mfp-portal-root .qcm-word").first()).toContainText(/[\u0600-\u06FF]/u);
+  await expect.poll(() => page.evaluate(() => document.fonts.check('24px "QPC Hafs"', "بِسْمِ"))).toBe(true);
 });
 
 test("PWA: an explicitly downloaded recitation is served while offline", async ({
