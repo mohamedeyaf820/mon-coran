@@ -57,6 +57,7 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           value={selectedFont}
           onChange={(event) => setArabicFontFamily(event.target.value)}
           aria-label={labelFor(lang, "Police arabe", "Arabic font", "الخط العربي")}
+          title={availableFonts.find((font) => font.id === selectedFont)?.label}
         >
           {availableFonts.map((font) => (
             <option key={font.id} value={font.id}>

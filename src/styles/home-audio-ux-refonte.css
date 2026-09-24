@@ -2898,10 +2898,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root > .mp-header :is(.mp-header__riwaya-mobile, .mp-header__action:not(.mp-header__search), .mp-header__more, .mp-header__icon-btn) {
     border-radius: var(--r-md);
   }
-
-  html body .app-root .qc-reader-toolbar .afc-size-value {
-    display: none !important;
-  }
 }
 
 .ayah-actions-modal--quiet {
