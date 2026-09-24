@@ -594,6 +594,12 @@
         min-height: 44px;
     }
 
+    /* The stacked panel owns the full row: drop the inline-footer clamp so the
+       chosen face reads in full instead of ellipsing after a few characters. */
+    .srh-footer .arabic-font-controls--compact .afc-select {
+        max-width: none;
+    }
+
     .srh-typography-panel {
         display: none;
         grid-column: 1 / -1;

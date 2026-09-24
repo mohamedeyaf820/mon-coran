@@ -1278,13 +1278,14 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 }
 
 .afc-select {
-    max-width: 9.7rem;
+    max-width: 10.6rem;
     border: 0;
     background: transparent;
     color: var(--text-primary);
     font-size: 0.74rem;
     font-weight: 700;
     outline: none;
+    text-overflow: ellipsis;
 }
 
 .afc-size-btn {
@@ -1293,8 +1294,9 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
     height: 1.75rem;
     align-items: center;
     justify-content: center;
-    border: 0;
+    border: 1px solid color-mix(in srgb, var(--border) 85%, transparent);
     border-radius: 9px;
+    background: color-mix(in srgb, var(--bg-card) 65%, transparent);
     color: var(--primary);
     font-weight: 700;
 }
@@ -1324,6 +1326,21 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 .afc-size-reset:hover {
     background: var(--bg-card);
     color: var(--primary);
+}
+
+/* Text glyphs instead of icon SVGs: inside the collapsible 0fr→1fr reader
+   tools Chromium can leave an SVG's intrinsic width at 0 until an unrelated
+   recalc, which rendered the steppers as empty boxes. */
+.afc-size-glyph {
+    font-family: var(--font-ui, system-ui, sans-serif);
+    font-size: 1.06rem;
+    font-weight: 800;
+    line-height: 1;
+    pointer-events: none;
+}
+
+.afc-size-glyph--reset {
+    font-size: 0.92rem;
 }
 
 @media (pointer: coarse) {
@@ -1393,6 +1410,15 @@ html body .app-root .quran-display--platform .mushaf-text-block .verse-end-marke
 
     .afc-select {
         max-width: 7.2rem;
+    }
+
+    /* Stacked panels own the full row: let the chosen face read in full
+       instead of ellipsing after a few characters. */
+    .srh-typography-panel .afc-select,
+    .reader-typography-panel .afc-select {
+        max-width: none;
+        min-width: 0;
+        flex: 1 1 auto;
     }
 
     .afc-range {

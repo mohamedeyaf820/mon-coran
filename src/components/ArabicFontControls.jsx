@@ -1,5 +1,5 @@
 import React from "react";
-import { Minus, Plus, RotateCcw, Type } from "lucide-react";
+import { Type } from "lucide-react";
 import useArabicFontPreferences, {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
@@ -74,7 +74,12 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           disabled={currentSize <= ARABIC_FONT_SIZE_MIN}
           aria-label={labelFor(lang, "Réduire la taille arabe", "Decrease Arabic size", "تصغير الخط العربي")}
         >
-          <Minus size={13} />
+          {/* Text glyphs, not icon SVGs: inside the collapsible 0fr→1fr reader
+              tools Chromium can leave an SVG's intrinsic width at 0 until an
+              unrelated recalc, which rendered the steppers as empty boxes. */}
+          <span className="afc-size-glyph" aria-hidden="true">
+            −
+          </span>
         </button>
         <input
           className="afc-range"
@@ -96,7 +101,9 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           disabled={currentSize >= ARABIC_FONT_SIZE_MAX}
           aria-label={labelFor(lang, "Augmenter la taille arabe", "Increase Arabic size", "تكبير الخط العربي")}
         >
-          <Plus size={13} />
+          <span className="afc-size-glyph" aria-hidden="true">
+            +
+          </span>
         </button>
         {currentSize !== DEFAULT_ARABIC_FONT_SIZE && (
           <button
@@ -106,7 +113,9 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
             aria-label={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
             title={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
           >
-            <RotateCcw size={13} />
+            <span className="afc-size-glyph afc-size-glyph--reset" aria-hidden="true">
+              ↺
+            </span>
           </button>
         )}
       </div>
