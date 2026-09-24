@@ -155,3 +155,74 @@ test('playback progress keeps reporting without requestAnimationFrame', async ()
   document.hidden = false;
   service.destroy();
 });
+
+test('a native error during a hidden verse retries the same reciter and position', async () => {
+  const service = new AudioService();
+  const url = 'https://audio.qurancdn.com/Alafasy/mp3/001001.mp3';
+  service.playlist = [{ surah: 1, ayah: 1, url }];
+  await service.loadAndPlay(0);
+  service.audio.currentTime = 12;
+  document.visibilityState = 'hidden';
+  document.hidden = true;
+  let reported = 0;
+  service.onError = () => { reported++; };
+  service.audio.dispatchEvent(new Event('error'));
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(service.audio.src, url);
+  assert.equal(service.audio.currentTime, 12);
+  assert.equal(service.isPlaying, true);
+  assert.equal(reported, 0, 'a transient hidden error must not switch reciters');
+  document.visibilityState = 'visible';
+  document.hidden = false;
+  service.destroy();
+});
+
+test('lock-screen play retries the pending verse rather than an ended file', async () => {
+  const service = new AudioService();
+  const urls = [1, 2].map((n) => `https://audio.qurancdn.com/Alafasy/mp3/00100${n}.mp3`);
+  service.playlist = urls.map((url, i) => ({ surah: 1, ayah: i + 1, url }));
+  await service.loadAndPlay(0);
+  service._pendingBackgroundIndex = 1;
+  service.audio.pause();
+  await service.resume();
+  assert.equal(service.audio.src, urls[1]);
+  assert.equal(service.isPlaying, true);
+  service.destroy();
+});
+
+test('a load error is handled by its retry path only', async () => {
+  const service = new AudioService();
+  const url = 'https://audio.qurancdn.com/Alafasy/mp3/001001.mp3';
+  service.playlist = [{ surah: 1, ayah: 1, url }];
+  let reported = 0;
+  service.onError = () => { reported++; };
+  const loading = service.loadAndPlay(0);
+  service.audio.dispatchEvent(new Event('error'));
+  await loading;
+  assert.equal(reported, 0);
+  service.destroy();
+});
+
+test('a hidden Warsh interruption retries its pending verse when network returns', async () => {
+  const service = new AudioService();
+  const url = 'https://files.quranpedia.net/recitations/267/001001.mp3';
+  service.playlist = [{ surah: 1, ayah: 1, url }];
+  await service.loadAndPlay(0);
+  document.visibilityState = 'hidden';
+  document.hidden = true;
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  let reported = 0;
+  service.onError = () => { reported++; };
+  service.audio.dispatchEvent(new Event('error'));
+  assert.equal(service._pendingBackgroundIndex, 0);
+  assert.equal(reported, 0);
+  delete navigator.onLine;
+  service._boundOnline();
+  await new Promise((resolve) => setImmediate(resolve));
+  assert.equal(service.audio.src, url);
+  assert.equal(service.isPlaying, true);
+  assert.equal(service._pendingBackgroundIndex, null);
+  document.visibilityState = 'visible';
+  document.hidden = false;
+  service.destroy();
+});

@@ -126,6 +126,10 @@ test("a downloaded surah keeps playing verse by verse with no network", async ({
   await context.setOffline(true);
   await page.locator(".srh-play-btn").first().click();
 
+  await expect
+    .poll(async () => (await playerState(page))?.file)
+    .toBe("001001.mp3");
+
   const first = await playerState(page);
   expect(first, "the player opened an audio element").not.toBeNull();
   expect(first.file).toBe("001001.mp3");
@@ -155,8 +159,11 @@ test("playback keeps running when the reader loses the foreground", async ({
   });
   await page.locator(".srh-play-btn").first().click();
   await expect
-    .poll(async () => (await playerState(page))?.paused)
-    .toBe(false);
+    .poll(async () => {
+      const state = await playerState(page);
+      return Boolean(state?.file && !state.paused);
+    })
+    .toBe(true);
 
   const started = await playerState(page);
   // What a phone does when the user leaves the app: another document takes
@@ -176,9 +183,10 @@ test("playback keeps running when the reader loses the foreground", async ({
   await page.waitForTimeout(2500);
   const during = await playerState(page);
   expect(during.paused, "playback survived the loss of foreground").toBe(false);
-  expect(during.time, "the verse position kept moving").toBeGreaterThan(
-    started.time,
-  );
+  expect(
+    during.file !== started.file || during.time > started.time,
+    "the verse position moved or the next verse began",
+  ).toBe(true);
   await expect
     .poll(async () => (await playerState(page)).file, { timeout: 20_000 })
     .not.toBe(started.file);
