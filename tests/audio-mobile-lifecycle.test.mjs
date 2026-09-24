@@ -120,6 +120,42 @@ test('a verse that fails to load in the background retries on return to the fore
   service.destroy();
 });
 
+test('an online hidden advance retries on its own without the foreground', async () => {
+  const service = new AudioService();
+  const urls = [1, 2].map((n) => `https://audio.qurancdn.com/Alafasy/mp3/00100${n}.mp3`);
+  service.playlist = urls.map((url, i) => ({ surah: 1, ayah: i + 1, number: i + 1, url }));
+  await service.loadAndPlay(0);
+
+  // Background the app while online and let the next verse's play fail.
+  document.visibilityState = 'hidden';
+  document.hidden = true;
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: true });
+  const workingPlay = service.audio.play.bind(service.audio);
+  service.audio.play = () => {
+    service.audio.paused = true;
+    return Promise.reject(new DOMException('Background suspension', 'NotSupportedError'));
+  };
+  await service.loadAndPlay(1);
+  assert.equal(service.isPlaying, false, 'the failed hidden advance is parked');
+  assert.equal(service._pendingBackgroundIndex, 1);
+  assert.notEqual(service._backgroundRetryTimer, null, 'a timer retry is scheduled while still hidden');
+
+  // Restore the capability; the scheduled timer must recover the queue on its
+  // own — waiting for the foreground is what stalled Android recitation.
+  service.audio.play = workingPlay;
+  await new Promise((resolve) => setTimeout(resolve, 1400));
+  assert.equal(document.hidden, true, 'recovered without returning to the foreground');
+  assert.equal(service.audio.src, urls[1]);
+  assert.equal(service.isPlaying, true);
+  assert.equal(service._pendingBackgroundIndex, null);
+  assert.equal(service._backgroundRetryTimer, null);
+
+  document.visibilityState = 'visible';
+  document.hidden = false;
+  delete navigator.onLine;
+  service.destroy();
+});
+
 test('an OS interruption is not mistaken for the user pausing', async () => {
   const service = new AudioService();
   service.playlist = [{ surah: 1, ayah: 1, url: 'https://audio.qurancdn.com/Alafasy/mp3/001001.mp3' }];

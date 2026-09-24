@@ -85,6 +85,10 @@ class AudioService {
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
     this._backgroundRecoveryIndex = null;
+    // A backgrounded advance can fail transiently while the page is hidden;
+    // this timer retries it without waiting for the user to reopen the app.
+    this._backgroundRetryTimer = null;
+    this._backgroundRetryAttempts = 0;
 
     // Surah/playlist repeat
     // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
@@ -453,6 +457,7 @@ class AudioService {
   pause() {
     this._playbackIntent = "paused";
     this._pendingBackgroundIndex = null;
+    this._clearBackgroundRetry();
     this.audio.pause();
     this.isPlaying = false;
     this._notifyPause(this.currentAyah);
@@ -502,6 +507,7 @@ class AudioService {
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
     this._backgroundRecoveryIndex = null;
+    this._clearBackgroundRetry();
     this._basmala.cancel();
     this._cancelPendingLoad?.();
     this._loadRequestId++;
@@ -1060,6 +1066,7 @@ class AudioService {
       this.isPlaying = true;
       this._playbackIntent = "playing";
       this._pendingBackgroundIndex = null;
+      this._clearBackgroundRetry();
       if (this._backgroundRecoveryIndex !== index) this._backgroundRecoveryIndex = null;
       this.onNetworkState?.("playing");
       this._notifyPlay(activeItem);
@@ -1073,11 +1080,12 @@ class AudioService {
         typeof document !== "undefined" && document.visibilityState === "hidden";
       if (hidden && this._playbackIntent === "playing") {
         // Backgrounded loads get suspended by the browser all the time. Keep
-        // the intent and retry when the page is visible again instead of
-        // reporting an error nobody can see.
+        // the intent and retry on a timer (and again on visibility/online)
+        // instead of reporting an error nobody can see.
         this._pendingBackgroundIndex = index;
         this.isPlaying = false;
         this._notifyPause(this.currentAyah);
+        this._scheduleBackgroundRetry(index);
         return;
       }
       devLog("error", "Audio play error:", err);
@@ -1090,6 +1098,34 @@ class AudioService {
         throw err;
       }
     }
+  }
+
+  /**
+   * Android keeps a MediaSession tab eligible to run while its audio is active,
+   * but a backgrounded next-verse load can still fail transiently. Retry it on
+   * a bounded, backing-off timer instead of parking it until the page becomes
+   * visible again — that wait is what stopped recitation after a few verses.
+   */
+  _scheduleBackgroundRetry(index) {
+    if (this._backgroundRetryTimer != null) return;
+    // Offline: the `online` listener retries, and a timer would only fail again.
+    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+    if (this._backgroundRetryAttempts >= 6) return; // visibility/online still recover
+    this._backgroundRetryAttempts += 1;
+    const delay = Math.min(1000 * 2 ** (this._backgroundRetryAttempts - 1), 15000);
+    this._backgroundRetryTimer = setTimeout(() => {
+      this._backgroundRetryTimer = null;
+      if (this._playbackIntent !== "playing" || this._pendingBackgroundIndex == null) return;
+      retryPendingBackgroundAudio(this);
+    }, delay);
+  }
+
+  _clearBackgroundRetry() {
+    if (this._backgroundRetryTimer != null) {
+      clearTimeout(this._backgroundRetryTimer);
+      this._backgroundRetryTimer = null;
+    }
+    this._backgroundRetryAttempts = 0;
   }
 
   _handleEnded() {
