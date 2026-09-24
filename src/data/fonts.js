@@ -96,38 +96,37 @@ export const QURAN_FONT_OPTIONS = [
   },
 ];
 
+// One family name per woff2: the long KFGQPC names were aliases of the same
+// file, so a stack listing both registered two FontFaces for it.
+// Scheherazade New + Noto Naskh Arabic (self-hosted, full Warsh coverage) keep
+// the page readable if the Warsh woff2 fails on WebKit. Geeza Pro used to sit
+// here: an Apple-only system font, so the same failure rendered a different
+// typeface on iPhone and Android.
+const WARSH_UTHMANIC_STACK =
+  "'KFGQPC Warsh','Scheherazade New','Noto Naskh Arabic',serif";
+
 export const FONT_MAP = {
-  "qpc-hafs":
-    "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
+  "qpc-hafs": "'QPC Hafs',serif",
   // Same Uthmanic face and the same print text; this id only differs in that
   // the Mushaf page keeps the fifteen-line Madani cut instead of flowing.
-  "qpc-madani-page":
-    "'QPC Hafs','KFGQPC Uthmanic Script HAFS','UthmanicHafs',serif",
+  "qpc-madani-page": "'QPC Hafs',serif",
   // IndoPak lacks U+0660-U+0669 (standard Arabic-Indic digits); QPC Hafs provides the rosette fallback.
-  "qpc-indopak":
-    "'IndoPak','QPC IndoPak','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
+  "qpc-indopak": "'IndoPak','QPC Hafs',serif",
   // QPC Hafs added as fallback so its rosette ligatures render Arabic-Indic verse markers
   // for fonts that do not have those digits or lack the OpenType rosette feature.
   "scheherazade-new":
-    "'Scheherazade New','Scheherazade','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
-  "amiri-quran":
-    "'Amiri Quran','Amiri','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
+    "'Scheherazade New','Scheherazade','QPC Hafs',serif",
+  "amiri-quran": "'Amiri Quran','Amiri','QPC Hafs',serif",
   "noto-naskh-arabic":
-    "'Noto Naskh Arabic','Noto Naskh','Amiri Quran','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
-  "qcf-v2":
-    "'QCF V2','QCF_V2','QPC Hafs','KFGQPC Uthmanic Script HAFS',serif",
+    "'Noto Naskh Arabic','Noto Naskh','Amiri Quran','QPC Hafs',serif",
+  "qcf-v2": "'QCF V2','QCF_V2','QPC Hafs',serif",
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
-  // Scheherazade New (self-hosted) + Noto Naskh Arabic (self-hosted, full Warsh
-  // coverage) keep the page readable when the QPC Warsh woff2 fails to load on
-  // WebKit. Geeza Pro used to sit here: an Apple-only system font, so the same
-  // failure rendered a different typeface on iPhone and Android.
-  "qpc-warsh":
-    "'QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Noto Naskh Arabic',serif",
-  "kfgqpc-warsh":
-    "'KFGQPC Warsh','warsh10','QPC Warsh','KFGQPC Uthmanic Script WARSH','Scheherazade New','Noto Naskh Arabic',serif",
+  // "qpc-warsh" and "kfgqpc-warsh" are stored ids for one face, so they share it.
+  "qpc-warsh": WARSH_UTHMANIC_STACK,
+  "kfgqpc-warsh": WARSH_UTHMANIC_STACK,
   "scheherazade-new-warsh":
-    "'Scheherazade New','Scheherazade','QPC Warsh',serif",
+    "'Scheherazade New','Scheherazade','KFGQPC Warsh',serif",
 };
 
 export const DEFAULT_FONT_ID = "qpc-hafs";

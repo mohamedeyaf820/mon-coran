@@ -67,17 +67,6 @@ const cachedPagePayloads = new Map();
 const cachedJuzPayloads = new Map();
 const cachedSurahPayloads = new Map();
 
-// Font logic is removed since we use standard Unicode
-export function isFontPageLoaded() { return true; }
-export function areFontsLoading() { return false; }
-export function onFontLoadChange() { return () => {}; }
-export function loadWarshFont() { return Promise.resolve(); }
-export function loadFontsForVerses() { return Promise.resolve(); }
-export function isFontLoaded() { return true; }
-export function getFontFamily() {
-  return '"QPC Warsh", "KFGQPC Uthmanic Script WARSH", serif';
-}
-
 function normalizeWhitespace(text) {
   if (!text) return '';
   
@@ -842,13 +831,6 @@ export default {
   loadWarshSurah,
   loadWarshData,
   isWarshDataLoaded,
-  loadWarshFont,
-  loadFontsForVerses,
-  isFontLoaded,
-  isFontPageLoaded,
-  areFontsLoading,
-  onFontLoadChange,
-  getFontFamily,
   getWarshSurahVerses,
   getWarshVerse,
   getWarshSurahFormatted,

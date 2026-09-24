@@ -129,8 +129,8 @@ const CARD_ARABIC_FONT_TOKENS = {
 };
 
 const CARD_ARABIC_FONT_FALLBACK = {
-  hafs: "'KFGQPC Uthmanic Script HAFS','Amiri Quran','Amiri',serif",
-  warsh: "'KFGQPC Warsh','QPC Warsh','Scheherazade New','Amiri Quran',serif",
+  hafs: "'QPC Hafs','Amiri Quran','Amiri',serif",
+  warsh: "'KFGQPC Warsh','Scheherazade New','Amiri Quran',serif",
 };
 
 function resolveCardArabicFontFamily(riwaya) {

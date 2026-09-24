@@ -350,12 +350,12 @@
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
-    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif !important;
+    font-family: 'QPC Hafs', 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif !important;
     font-size: 0.82em !important;
 }
 /* Same override for the fullscreen portal (outside .app-root) and non-mushaf reading modes. */
 html body #root .app-root .native-ayah-marker > span[aria-hidden="true"] {
-    font-family: 'QPC Hafs', 'KFGQPC Uthmanic Script HAFS', 'UthmanicHafs', 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif !important;
+    font-family: 'QPC Hafs', 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif !important;
     font-size: 0.82em !important;
 }
 

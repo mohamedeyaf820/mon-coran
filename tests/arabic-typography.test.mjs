@@ -299,3 +299,38 @@ test("waqf signs remain Quran content while the standalone medallion stays canon
   assert.equal(getUiAyahMarker(128), "١٢٨");
   assert.equal(getUiAyahMarker(1).includes("۝"), false);
 });
+
+test("every Quran font file is declared once and every exposed stack names a declared face", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { QURAN_FONT_OPTIONS, FONT_MAP } = await import("../src/data/fonts.js");
+  const sources = [
+    "src/styles/tailwind.css",
+    "src/styles/riwaya-fonts.css",
+    "index.html",
+  ].map((path) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8"));
+
+  const faces = [];
+  for (const css of sources) {
+    for (const [, body] of css.matchAll(/@font-face\s*\{([^}]*)\}/g)) {
+      const family = /font-family:\s*["']([^"']+)["']/.exec(body)?.[1];
+      const url = /url\(["']?([^"')]+)["']?\)/.exec(body)?.[1];
+      if (family && url) faces.push({ family, url });
+    }
+  }
+
+  // A second family name for the same woff2 registers a second FontFace, so a
+  // stack listing both fetches the identical file twice.
+  const byUrl = new Map();
+  for (const face of faces) {
+    const seen = byUrl.get(face.url);
+    if (seen) assert.fail(`${face.url} is declared as "${seen}" and "${face.family}"`);
+    byUrl.set(face.url, face.family);
+  }
+
+  const declared = new Set(faces.map((face) => face.family));
+  for (const option of QURAN_FONT_OPTIONS) {
+    const first = String(FONT_MAP[option.id] || "").split(",")[0].replace(/["']/g, "").trim();
+    assert.ok(first, `${option.id} has no font stack`);
+    assert.ok(declared.has(first), `${option.id} starts with the undeclared family "${first}"`);
+  }
+});

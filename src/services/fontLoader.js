@@ -2,6 +2,20 @@ const loadedFontIds = new Set();
 const failedFontIds = new Set();
 const inFlightLoads = new Map();
 
+// The runtime FontFace names must match the @font-face blocks in tailwind.css:
+// one name per woff2. A second name for the same file made the browser register
+// two FontFaces, and a stack listing both loaded the file twice.
+const WARSH_FACE = {
+  family: "KFGQPC Warsh",
+  url: "/fonts/kfgqpc-warsh-21.woff2",
+  format: "woff2",
+};
+const SCHEHERAZADE_FACE = {
+  family: "Scheherazade New",
+  url: "/fonts/scheherazade-new-400.woff2",
+  format: "woff2",
+};
+
 const FONT_SOURCES = {
   "qpc-hafs": {
     family: "QPC Hafs",
@@ -14,17 +28,9 @@ const FONT_SOURCES = {
     format: "woff2",
   },
   // Scheherazade New: served from local woff2 (preloaded in index.html)
-  "scheherazade-new": {
-    family: "Scheherazade New",
-    url: "/fonts/scheherazade-new-400.woff2",
-    format: "woff2",
-  },
+  "scheherazade-new": SCHEHERAZADE_FACE,
   // Same font file, used for Warsh riwaya rendering
-  "scheherazade-new-warsh": {
-    family: "Scheherazade New",
-    url: "/fonts/scheherazade-new-400.woff2",
-    format: "woff2",
-  },
+  "scheherazade-new-warsh": SCHEHERAZADE_FACE,
   // Amiri Quran / Noto Naskh Arabic are declared as local @font-face in index.html
   "amiri-quran": {
     family: "Amiri Quran",
@@ -34,16 +40,8 @@ const FONT_SOURCES = {
     family: "Noto Naskh Arabic",
     selfHosted: true,
   },
-  "qpc-warsh": {
-    family: "QPC Warsh",
-    url: "/fonts/kfgqpc-warsh-21.woff2",
-    format: "woff2",
-  },
-  "kfgqpc-warsh": {
-    family: "KFGQPC Warsh",
-    url: "/fonts/kfgqpc-warsh-21.woff2",
-    format: "woff2",
-  },
+  "qpc-warsh": WARSH_FACE,
+  "kfgqpc-warsh": WARSH_FACE,
 };
 
 const QCF_FONT_VERSIONS = new Set(["v1", "v2", "v4"]);

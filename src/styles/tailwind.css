@@ -306,22 +306,6 @@ body {
 }
 
 @font-face {
-    font-family: "KFGQPC Uthmanic Script HAFS";
-    src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: block;
-}
-
-@font-face {
-    font-family: "QPC Warsh";
-    src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: block;
-}
-
-@font-face {
     font-family: "IndoPak";
     src: url("https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2") format("woff2");
     font-weight: 400;
@@ -339,14 +323,6 @@ body {
 
 @font-face {
     font-family: "KFGQPC Warsh";
-    src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: block;
-}
-
-@font-face {
-    font-family: "KFGQPC Uthmanic Script WARSH";
     src: url("/fonts/kfgqpc-warsh-21.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
@@ -409,9 +385,9 @@ body {
         sans-serif;
     --font-quran-tajweed: var(--font-quran);
     --font-surah-hafs:
-        "QPC Hafs", "KFGQPC Uthmanic Script HAFS", "UthmanicHafs", serif;
+        "QPC Hafs", serif;
     --font-surah-warsh:
-        "QPC Warsh", "KFGQPC Warsh", "KFGQPC Uthmanic Script WARSH", serif;
+        "KFGQPC Warsh", serif;
     --font-surah: var(--font-surah-hafs);
 
     --line-height-quran: 2.2;
@@ -8432,7 +8408,7 @@ button:focus:not(:focus-visible) {
 .ayah-text-ar,
 .word-ar {
     font-family:
-        "KFGQPC Uthmanic Script HAFS", "ME Quran", "Scheherazade New",
+        "QPC Hafs", "ME Quran", "Scheherazade New",
         "Amiri Quran", "Amiri", "Noto Naskh Arabic", serif !important;
 }
 
@@ -10027,7 +10003,7 @@ button:focus:not(:focus-visible) {
     --font-arabic-ui: "Noto Naskh Arabic", "Scheherazade New", "Amiri", serif;
     --font-arabic-script: var(
         --font-quran,
-        "KFGQPC Uthmanic Script HAFS",
+        "QPC Hafs",
         "ME Quran",
         "Scheherazade New",
         "Noto Naskh Arabic",
@@ -10493,7 +10469,7 @@ html {
     --ux-font-ar: "Noto Naskh Arabic", "Scheherazade New", serif;
     --font-surah-name: var(
         --font-surah,
-        "KFGQPC Uthmanic Script HAFS",
+        "QPC Hafs",
         "Amiri Quran",
         "Scheherazade New",
         serif
@@ -15588,7 +15564,7 @@ body {
         --font-surah-name,
         var(
             --font-surah,
-            "KFGQPC Uthmanic Script HAFS",
+            "QPC Hafs",
             "Amiri Quran",
             "Scheherazade New",
             serif
@@ -15605,7 +15581,7 @@ body {
     ) {
     font-family: var(
         --font-surah-display,
-        "KFGQPC Uthmanic Script HAFS",
+        "QPC Hafs",
         "Amiri Quran",
         "Scheherazade New",
         serif
