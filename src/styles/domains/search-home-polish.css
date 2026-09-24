@@ -1616,14 +1616,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     color: color-mix(in srgb, var(--reader-flow-ink-dark) 86%, #d4a820 14%) !important;
 }
 
-
-.app-root .quran-display--platform .cpv-flow .ayah-marker-wrap,
-.app-root .quran-display--platform .cpv-flow .mp-ayah-marker {
-    --verse-stop-size: 1.28em;
-    margin-inline: 0.26em;
-    transform: translateY(0.1em);
-}
-
 .app-root .quran-display--platform .cpv-basmala,
 .app-root .quran-display--platform .mp-basmala {
     color: var(--reader-flow-ink-dark) !important;
@@ -1763,13 +1755,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     .app-root .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(1.34rem, 7vw, 1.9rem) !important;
         line-height: 1.85 !important;
-    }
-
-
-    .app-root .quran-display--platform .cpv-flow .ayah-marker-wrap,
-    .app-root .quran-display--platform .cpv-flow .mp-ayah-marker {
-        --verse-stop-size: 1.14em;
-        margin-inline: 0.18em;
     }
 }
 

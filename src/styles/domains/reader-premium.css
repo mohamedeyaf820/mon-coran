@@ -295,16 +295,12 @@
 
 /* ─── Verse marker size fix for the fullscreen portal ───────────
    .mfp-portal-root is created via createPortal() directly on <body>,
-   OUTSIDE .app-root. The global rule ".ayat-marker { width:1em; height:1em;
-   display:inline-flex }" applies unchallenged. The corrective override
-   "html body .app-root .native-ayah-marker { width:auto }" requires an
-   .app-root ancestor and never matches inside the portal.
-   For fonts that emit U+06DD + multiple digit chars (Scheherazade New,
-   Amiri Quran, QCF V2/V4, IndoPak), this clips all characters into a
-   1em×1em box, producing the "..." artefact the user sees in fullscreen.
-   QPC Hafs / QPC Warsh are unaffected because their OpenType ligatures
-   collapse the full digit sequence into one monolithic rosette glyph.
-   Fix: mirror the .app-root override for .mfp-portal-root. */
+   OUTSIDE .app-root, so none of the ".app-root ... .native-ayah-marker"
+   inline resets reach the fullscreen book. This mirrors them here: any
+   fixed 1em×1em box clips the U+06DD + digit sequence emitted by
+   Scheherazade New, Amiri Quran, QCF V2/V4 and IndoPak down to "...".
+   QPC Hafs / QPC Warsh collapse the digits into one rosette glyph, so
+   they have nothing to clip. */
 .mfp-portal-root .native-ayah-marker {
     display: inline-block !important;
     width: auto !important;
@@ -347,8 +343,6 @@
    the verse-end marker glyph must always come from QPC Hafs.
    Specificity (C=6, D=3) beats the highest competing rule
    ".mushaf-text-block .verse-text span" at (C=4, D=3). */
-html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .ayat-marker > span[aria-hidden="true"],
-html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .verse-end-marker > span[aria-hidden="true"],
 html body #root .app-root[data-view="reading"] .quran-display--platform .mushaf-text-block .verse-text .native-ayah-marker > span[aria-hidden="true"] {
     font-family: 'QPC Hafs', 'Amiri Quran', 'Scheherazade New', 'Noto Naskh Arabic', serif !important;
     font-size: 0.82em !important;
@@ -518,14 +512,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
 html body #root .app-root[data-view="reading"] .quran-display--platform
   .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse {
     margin-inline: 0 !important;
-    padding-inline: 0 !important;
-  }
-
-html body #root .app-root[data-view="reading"] .quran-display--platform
-  .quran-mode-pane--mushaf .mushaf-text-block
-  :is(.cpv-ayah-marker, .ayah-marker, .ayat-marker) {
-    margin-inline-start: 0.12em !important;
-    margin-inline-end: 0.7em !important;
     padding-inline: 0 !important;
   }
 

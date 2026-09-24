@@ -1233,7 +1233,7 @@
   background: rgba(var(--primary-rgb), 0.1);
 }
 
-#root ~ .mfp-portal-root .mfp-book :is(.qcm-ayah-marker, .qcm-line .ayah-marker, .qcm-line .ayat-marker) {
+#root ~ .mfp-portal-root .mfp-book :is(.qcm-ayah-marker, .qcm-line .qcm-ayah-marker) {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;

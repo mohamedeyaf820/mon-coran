@@ -141,9 +141,9 @@ async function purgeCSS() {
         /\.mushaf-container\s+\.mushaf-verse[^{}]*\{[^{}]*display:\s*inline\s*!important/i,
     },
     {
-      label: "continuous Mushaf marker spacing",
+      label: "native ayah marker stays inline in the reader flow",
       pattern:
-        /\.cpv-ayah-marker[^{}]*\{[^{}]*margin-inline:\s*[^;}]+/i,
+        /\.native-ayah-marker[^{}]*\{[^{}]*display:\s*inline\s*!important/i,
     },
     // The reciter sheet's action row. These classes are written as
     // `btn${cond ? " is-x" : ""}`, which the minifier emits with backticks; the

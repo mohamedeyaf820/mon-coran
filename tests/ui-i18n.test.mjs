@@ -51,7 +51,6 @@ test("feature-level accessibility labels use the active locale", () => {
   const expectations = [
     ["DuasPage.jsx", /t\(["']duas\.categoriesLabel["'],\s*lang\)/],
     ["Footer.jsx", /aria-label=\{verseReference\}/],
-    ["Quran/AyahMarker.jsx", /t\(["']quran\.sajda["'],\s*lang\)/],
   ];
 
   for (const [component, translationCall] of expectations) {

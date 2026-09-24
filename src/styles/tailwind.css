@@ -18008,42 +18008,6 @@ body {
     box-shadow: 0 0 0 1px rgba(184, 134, 11, 0.18);
 }
 
-.mp-ayah-marker {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    vertical-align: middle;
-    margin: 0 0.2em;
-    width: 1em;
-    height: 1em;
-    font-size: 1em;
-    line-height: 1;
-    user-select: none;
-    cursor: default;
-    white-space: nowrap;
-    filter: drop-shadow(0 0 1.2px rgba(184, 134, 11, 0.2));
-}
-
-.mp-ayah-marker-glyph {
-    display: inline-block;
-    font-size: 1em;
-    line-height: 1;
-    color: var(--mp-gold);
-    opacity: 0.72;
-}
-
-.quran-mode-pane--page .mp-ayah-marker {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    margin: 0 0.22em;
-    vertical-align: baseline;
-    font-size: 0.58em;
-    transform: translateY(-0.04em);
-}
-
 .quran-mode-pane--page .mp-ayah-num {
     font-size: 0.36em;
     font-weight: 700;
@@ -18064,8 +18028,6 @@ body {
     pointer-events: none;
     text-shadow: 0 0 4px rgba(184, 134, 11, 0.25);
 }
-
-[data-theme="dark"] .mp-ayah-marker-glyph,
 
 .mp-translations {
     margin-top: 0.75rem;

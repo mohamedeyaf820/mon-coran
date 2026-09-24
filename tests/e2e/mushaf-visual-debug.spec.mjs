@@ -36,7 +36,7 @@ const diag = () => {
   const root = document.querySelector(".mfp-portal-root");
   const book = root.querySelector(".mfp-book--exact");
   const folio = root.querySelector(".qcm-page-folio");
-  const marker = root.querySelector(".qcm-line .ayat-marker, .qcm-line .ayah-marker, .qcm-ayah-marker");
+  const marker = root.querySelector(".qcm-ayah-marker");
   const lines = root.querySelector(".qcm-lines");
   const title = root.querySelector(".qcm-surah-title");
   const cs = (el) => el && getComputedStyle(el);
@@ -64,7 +64,7 @@ const diag = () => {
     counts: {
       lines: root.querySelectorAll(".qcm-line").length,
       words: root.querySelectorAll(".qcm-word").length,
-      markers: root.querySelectorAll(".qcm-ayah-marker, .ayat-marker").length,
+      markers: root.querySelectorAll(".qcm-ayah-marker").length,
     },
     titleText: title ? title.textContent : null,
     markerLineKids: firstMarkerLine ? [...firstMarkerLine.children].map((k) => ({ cls: k.className.toString().slice(0, 26), x: Math.round(k.getBoundingClientRect().x), w: Math.round(k.getBoundingClientRect().width) })) : null,

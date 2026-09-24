@@ -357,11 +357,6 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
   transition: background-color 120ms ease, box-shadow 120ms ease !important;
 }
 
-/* Verse-end markers: accent color instead of dark ink so they never appear as a black dot */
-.app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-ayah-marker {
-  color: color-mix(in srgb, var(--mushaf-accent) 72%, var(--mushaf-ink)) !important;
-}
-
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-text-block .cpv-verse:hover {
   background: color-mix(in srgb, var(--mushaf-accent) 6%, transparent) !important;
   box-shadow: none !important;
@@ -1249,8 +1244,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
    !important under .app-root; out-specify it inside the page stream so the
    medallion hugs the last word of its own ayah (start) and leaves a clear
    gap before the next ayah (end). */
-html body .app-root .quran-mode-pane--mushaf .qcm-line
-  :is(.qcm-ayah-marker, .ayah-marker, .ayat-marker) {
+html body .app-root .quran-mode-pane--mushaf .qcm-line .qcm-ayah-marker {
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;

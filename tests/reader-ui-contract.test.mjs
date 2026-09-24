@@ -569,17 +569,28 @@ test("continuous Mushaf markers leave a readable gap before the next ayah", () =
   assert.match(fonts, /return `\$\{cleanedValue\}\\u202F\$\{marker\}`/);
   assert.match(cleanPage, /appendNativeMarker=\{true\}/);
   assert.match(cleanPage, /elements\.push\(" "\)/);
-  assert.match(purgeConfig, /\/cpv-ayah-marker\//);
-  assert.match(purgeScript, /continuous Mushaf marker spacing/);
+  // The gap only reads as print does while the verse flow stays inline, so both
+  // the flow selectors and the native marker rule must survive the CSS purge.
+  assert.match(purgeConfig, /\/quran-verse-inline\//);
+  assert.match(purgeConfig, /\/mushaf-verse\//);
+  assert.match(purgeScript, /native ayah marker stays inline in the reader flow/);
 });
 
 test("ayah numbers keep one canonical glyph regardless of the reading font", () => {
-  const marker = source("src/components/Quran/AyahMarker.jsx");
+  const fonts = source("src/data/fonts.js");
+  const riwayaFonts = source("src/styles/riwaya-fonts.css");
 
-  assert.match(marker, /getUiAyahMarker\(markerNumber/);
-  assert.match(marker, /resolveFontFamily\(fontFamily/);
-  assert.match(marker, /data-marker-font=\{UI_AYAH_MARKER_FONT_ID\}/);
-  assert.doesNotMatch(marker, /ayat-marker__medallion/);
+  // Amiri Quran and Noto Naskh carry no composing rosette, so their digits-only
+  // marker is shaped by the QPC Hafs face — in JS and in the stylesheet.
+  assert.match(
+    fonts,
+    /QPC_SHAPED_MARKER_FONT_IDS = new Set\(\["amiri-quran", "noto-naskh-arabic"\]\)/,
+  );
+  assert.match(fonts, /if \(riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS\.has\(normalizedId\)\)/);
+  assert.match(
+    riwayaFonts,
+    /\[data-quran-font="amiri-quran"\],[\s\S]*?\[data-quran-font="noto-naskh-arabic"\][\s\S]*?\.native-ayah-marker \{\s*font-family: "QPC Hafs", serif !important;/,
+  );
 });
 
 test("Tajweed legend and Quran.com markup share the same eight rule families", () => {
