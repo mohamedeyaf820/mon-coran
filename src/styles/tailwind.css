@@ -380,9 +380,7 @@ body {
     --glass-dark-backdrop: blur(20px) saturate(180%) brightness(0.9);
 
 
-    --font-ui:
-        "Figtree", "Inter", "Outfit", "Cairo", system-ui, -apple-system,
-        sans-serif;
+    --font-ui: var(--ux-font-ui);
     --font-quran-tajweed: var(--font-quran);
     --font-surah-hafs:
         "QPC Hafs", serif;
@@ -10464,8 +10462,11 @@ html {
 
 :root,
 [data-theme] {
-    --ux-font-ui: "Manrope", "Figtree", "Segoe UI", sans-serif;
-    --ux-font-display: "Fraunces", "Manrope", serif;
+    /* No webfont is shipped for the UI: the system stack keeps the boot
+       payload free and the app feeling native on each platform. Names like
+       Manrope/Figtree were never declared, so they silently fell through. */
+    --ux-font-ui: system-ui, -apple-system, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, sans-serif;
     --ux-font-ar: "Noto Naskh Arabic", "Scheherazade New", serif;
     --font-surah-name: var(
         --font-surah,
@@ -10645,7 +10646,6 @@ body {
 }
 
 .app-root .hdr-v7__brand-name {
-    font-family: var(--ux-font-display);
     font-weight: 700;
     letter-spacing: 0;
 }

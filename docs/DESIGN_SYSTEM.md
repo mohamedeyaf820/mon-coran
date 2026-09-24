@@ -30,6 +30,15 @@ Status: living internal guide.
 - Use `clamp()` for Arabic sizes and keep refresh-stable persisted values.
 - Latin UI labels should be short on mobile. Prefer icon-only buttons only when the `aria-label` is explicit and localized.
 - French labels must keep accents. If a file is ASCII-only, use Unicode escapes inside JavaScript strings rather than mojibake.
+- The Latin UI face is the platform system stack (`--ux-font-ui`): no UI webfont
+  is shipped, so the boot payload stays free and each platform reads native.
+  Decided 2026-09-24 — names such as Manrope, Figtree, Inter, Outfit, Cairo and
+  Fraunces were never declared by any `@font-face` and silently fell through to
+  the system font; every verified render already used the system stack. Any
+  future brand webfont must be self-hosted, subset, budgeted, and declared in
+  `index.html` or `tailwind.css` before its name enters a stack.
+- Verse-number digits inside drawn ornaments (`.qcm-rosette__num`) use the
+  declared Arabic faces (`--ux-font-ar`), never the UI stack.
 
 ## States
 
