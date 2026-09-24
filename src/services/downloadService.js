@@ -12,6 +12,7 @@ import {
 } from "../utils/audioPlaylist.js";
 import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
 import { filterAyahAudioGaps } from "../data/audioAvailability.js";
+import { hasBasmalaPreroll } from "./audioUrlBuilder.js";
 import {
   downloadProgressMapSchema,
   readLocalStorageWithSchema,
@@ -86,7 +87,8 @@ function expectedItemCountForSurah(surahMeta, isSurahStream, riwaya = "hafs", cd
   if (!FILE_COUNT_CACHE.has(key)) {
     FILE_COUNT_CACHE.set(
       key,
-      expandAyahsToAudioFiles(buildSurahAudioPlaylist(number, riwaya), cdnType).length,
+      expandAyahsToAudioFiles(buildSurahAudioPlaylist(number, riwaya), cdnType).length +
+        Number(hasBasmalaPreroll(cdnType, number)),
     );
   }
   return FILE_COUNT_CACHE.get(key);
@@ -163,7 +165,16 @@ async function buildDownloadAudioItems(normalized) {
   // more verses than files, and expanding is what keeps the offline copy from
   // fetching one verse twice and another never.
   const normalizedItems = expandAyahsToAudioFiles(items, normalized.cdnType);
-  return filterAyahAudioGaps(normalizedItems, normalized.cdnType, normalized.reciterCdn);
+  const files = filterAyahAudioGaps(
+    normalizedItems,
+    normalized.cdnType,
+    normalized.reciterCdn,
+  );
+  // The player pre-rolls the basmala ahead of verse 1, so the offline copy has
+  // to carry it or the first verse of every downloaded surah loses its opening.
+  return hasBasmalaPreroll(normalized.cdnType, normalized.surahNum)
+    ? [{ surah: 1, ayah: 1, hafsNumber: 1 }, ...files]
+    : files;
 }
 
 function getAudioUrlCandidates({ item, normalized }) {
@@ -175,6 +186,91 @@ function getAudioUrlCandidates({ item, normalized }) {
     ),
     item.quranComAudioTiming,
   );
+}
+
+let cacheInventoryPromise = null;
+function getCachedAudioUrls() {
+  if (!cacheInventoryPromise) {
+    cacheInventoryPromise = (async () => {
+      if (typeof caches === "undefined") return null;
+      try {
+        const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
+        return new Set((await cache.keys()).map((request) => request.url));
+      } catch {
+        return null;
+      }
+    })();
+    const pending = cacheInventoryPromise;
+    pending.finally(() => {
+      if (cacheInventoryPromise === pending) cacheInventoryPromise = null;
+    });
+  }
+  return cacheInventoryPromise;
+}
+
+async function verifySurahWithInventory(normalized, cachedUrls, { persist = true } = {}) {
+  const entry = getSurahDownloadEntry(
+    normalized.surahNum,
+    normalized.reciterId,
+    normalized.riwaya,
+  );
+  if (entry?.status !== "done" || !cachedUrls) return entry;
+
+  const items = await buildDownloadAudioItems(normalized);
+  const present = items.reduce((count, item) => {
+    const candidates = getAudioUrlCandidates({ item, normalized });
+    return count + Number(candidates.some((url) => cachedUrls.has(url)));
+  }, 0);
+  if (present === items.length) return entry;
+
+  // The browser can remove cached media independently of our progress record.
+  // Only replace a completed entry; an active download owns its own progress.
+  const latest = getSurahDownloadEntry(
+    normalized.surahNum,
+    normalized.reciterId,
+    normalized.riwaya,
+  );
+  if (latest?.status !== "done") return latest;
+  const repaired = {
+    ...latest,
+    status: "partial",
+    total: items.length,
+    downloaded: present,
+    failedCount: items.length - present,
+    updatedAt: Date.now(),
+  };
+  if (persist) saveProgressEntry(normalized.key, repaired);
+  return repaired;
+}
+
+export async function verifySurahDownloadForReciter({ surahMeta, reciter, riwaya = "hafs" }) {
+  const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  const cachedUrls = await getCachedAudioUrls();
+  const entry = await verifySurahWithInventory(normalized, cachedUrls);
+  return entry ? { ...entry, verified: Boolean(cachedUrls) } : null;
+}
+
+export async function verifyFullQuranDownloadForReciter({ reciter, riwaya = "hafs" }) {
+  if (!reciter?.id) return getFullQuranDownloadSummary(reciter, riwaya);
+  const cachedUrls = await getCachedAudioUrls();
+  if (!cachedUrls) return { ...getFullQuranDownloadSummary(reciter, riwaya), verified: false };
+  const repairs = [];
+  for (const surahMeta of SURAHS) {
+    const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+    const checked = await verifySurahWithInventory(normalized, cachedUrls, { persist: false });
+    if (checked?.status === "partial") repairs.push([normalized.key, checked]);
+  }
+  if (repairs.length > 0) {
+    const progress = loadProgress();
+    let changed = false;
+    for (const [key, checked] of repairs) {
+      if (progress[key]?.status !== "done") continue;
+      progress[key] = checked;
+      changed = true;
+    }
+    if (changed) saveProgress(progress);
+  }
+  return { ...getFullQuranDownloadSummary(reciter, riwaya), verified: true };
 }
 
 export function getDownloadedSurahs(reciterId = null, riwaya = null) {
@@ -519,7 +615,9 @@ export async function downloadFullQuranForReciter(
   const fullKey = buildFullQuranKey(reciter.id, riwaya);
   if (activeFullQuranDownloads.has(fullKey)) return "partial";
 
-  const initialSummary = getFullQuranDownloadSummary(reciter, riwaya);
+  const verifiedSummary = await verifyFullQuranDownloadForReciter({ reciter, riwaya });
+  if (!verifiedSummary.verified) return "error";
+  const initialSummary = verifiedSummary;
   if (initialSummary.status === "done") return "done";
 
   await requestPersistentStorage();
@@ -708,11 +806,19 @@ export async function removeSurahCacheForReciter({
 }) {
   if (!("caches" in window)) return;
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  const keepSharedBasmala = Object.values(loadProgress()).some(
+    (entry) => entry?.reciterId === normalized.reciterId &&
+      entry?.riwaya === normalized.riwaya &&
+      Number(entry?.surahNum) !== normalized.surahNum &&
+      Number(entry?.downloaded) > 0 &&
+      hasBasmalaPreroll(normalized.cdnType, Number(entry?.surahNum)),
+  );
 
   try {
     const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
     const audioItems = await buildDownloadAudioItems(normalized);
     for (const item of audioItems) {
+      if (keepSharedBasmala && Number(item.surah) === 1 && Number(item.ayah) === 1) continue;
       const urlCandidates = getAudioUrlCandidates({ item, normalized });
       for (const url of urlCandidates) {
         await cache.delete(url);

@@ -34,6 +34,7 @@ globalThis.location = { href: "https://mushafplus.test/" };
 globalThis.caches = {
   open: async () => ({
     match: async (key) => cachedResponses.get(String(key)),
+    keys: async () => [...cachedResponses.keys()].map((url) => ({ url })),
     put: async (key, response) => cachedResponses.set(String(key), response),
     delete: async (key) => cachedResponses.delete(String(key)),
   }),
@@ -64,6 +65,9 @@ const {
   downloadFullQuranForReciter,
   downloadSurahForReciter,
   getFullQuranDownloadSummary,
+  removeSurahCacheForReciter,
+  verifyFullQuranDownloadForReciter,
+  verifySurahDownloadForReciter,
 } = await import("../src/services/downloadService.js");
 const { default: SURAHS } = await import("../src/data/surahs.js");
 const { getReciter } = await import("../src/data/reciters.js");
@@ -99,6 +103,38 @@ test("complete Quran downloads merge progress from concurrent workers", async ()
   assert.equal(cachedResponses.size, 114);
 });
 
+test("a missing audio file revokes offline status and can be repaired", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = SURAH_STREAM_RECITER;
+  const surahMeta = SURAHS[0];
+  assert.equal(await downloadSurahForReciter({ surahMeta, reciter }), "done");
+  const [missingUrl] = cachedResponses.keys();
+  cachedResponses.delete(missingUrl);
+
+  const checked = await verifySurahDownloadForReciter({ surahMeta, reciter });
+  assert.equal(checked.status, "partial");
+  assert.equal(checked.downloaded, 0);
+  assert.equal(await downloadSurahForReciter({ surahMeta, reciter }), "done");
+  assert.equal((await verifySurahDownloadForReciter({ surahMeta, reciter })).status, "done");
+});
+
+test("a complete download resumes if one stored surah disappears", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = SURAH_STREAM_RECITER;
+  assert.equal(await downloadFullQuranForReciter({ reciter }), "done");
+  const missingUrl = [...cachedResponses.keys()].find((url) => url.endsWith("/002.mp3"));
+  assert.ok(missingUrl);
+  cachedResponses.delete(missingUrl);
+
+  const checked = await verifyFullQuranDownloadForReciter({ reciter });
+  assert.equal(checked.status, "partial");
+  assert.equal(checked.completedSurahs, 113);
+  assert.equal(await downloadFullQuranForReciter({ reciter }), "done");
+  assert.equal(cachedResponses.size, 114);
+});
+
 test("a Warsh download caches exactly the files the Warsh player asks for", async () => {
   const { AudioService } = await import("../src/services/audioService.js");
   const { buildSurahAudioPlaylist, expandAyahsToAudioFiles } = await import("../src/utils/audioPlaylist.js");
@@ -120,10 +156,15 @@ test("a Warsh download caches exactly the files the Warsh player asks for", asyn
 
     assert.equal(status, "done", `surah ${surahNumber}`);
     // Al-Ma'ida shows 122 Warsh verses over 120 files; Al-Baqara shows 285 over
-    // 286. The denominator is what the downloader actually fetches.
+    // 286. The denominator is what the downloader actually fetches — which
+    // includes the basmala the player pre-rolls ahead of verse 1.
+    const { basmalaPrerollUrl } = await import(
+      "../src/services/audioUrlBuilder.js"
+    );
     const playerUrls = new Set(
       expandAyahsToAudioFiles(buildSurahAudioPlaylist(surahNumber, "warsh"), "everyayah").map((item) => AudioService.buildUrl(reciter.cdn, item, "everyayah")),
     );
+    playerUrls.add(basmalaPrerollUrl(reciter.cdn, "everyayah", surahNumber));
     assert.equal(entry.total, playerUrls.size, `surah ${surahNumber} file count`);
     assert.equal(entry.downloaded, entry.total, "the bar reaches 100 %");
     for (const url of playerUrls) {
@@ -137,6 +178,21 @@ test("a Warsh download caches exactly the files the Warsh player asks for", asyn
     );
   }
   assert.ok(getSurahVerseCountByRiwaya(5, "warsh") > 120, "Al-Ma'ida still shows 122 verses");
+});
+
+test("removing one surah keeps a shared basmala needed by another", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = getReciter("warsh_yassin", "warsh");
+  const first = SURAHS.find((surah) => surah.n === 103);
+  const second = SURAHS.find((surah) => surah.n === 112);
+  assert.equal(await downloadSurahForReciter({ surahMeta: first, reciter, riwaya: "warsh" }), "done");
+  assert.equal(await downloadSurahForReciter({ surahMeta: second, reciter, riwaya: "warsh" }), "done");
+  await removeSurahCacheForReciter({ surahMeta: first, reciter, riwaya: "warsh" });
+  assert.equal(
+    (await verifySurahDownloadForReciter({ surahMeta: second, reciter, riwaya: "warsh" })).status,
+    "done",
+  );
 });
 
 test("a lost connection parks the surah instead of failing every verse", async () => {

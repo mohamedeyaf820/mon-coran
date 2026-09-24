@@ -19,6 +19,7 @@ import {
   getFullQuranDownloadSummary,
   isFullQuranDownloadActive,
   removeFullQuranCacheForReciter,
+  verifyFullQuranDownloadForReciter,
 } from "../../services/downloadService";
 
 function labelsFor(lang) {
@@ -28,6 +29,7 @@ function labelsFor(lang) {
       title: "تنزيل القرآن كاملًا",
       idle: "نزّل السور الـ 114 بصوت هذا القارئ.",
       ready: "السور الـ 114 متاحة دون اتصال على هذا الجهاز.",
+      checking: "جارٍ التحقق من الملفات المحفوظة…",
       progress: "{done} من 114 سورة متاحة",
       estimate: "الحجم التقديري: {size}",
       download: "تنزيل الكل",
@@ -56,6 +58,7 @@ function labelsFor(lang) {
       title: "Télécharger le Coran complet",
       idle: "Enregistrez les 114 sourates de ce récitateur.",
       ready: "Les 114 sourates sont disponibles hors connexion sur cet appareil.",
+      checking: "Vérification des fichiers enregistrés…",
       progress: "{done} sur 114 sourates disponibles",
       estimate: "Taille estimée : {size}",
       download: "Tout télécharger",
@@ -83,6 +86,7 @@ function labelsFor(lang) {
     title: "Download the complete Quran",
     idle: "Save all 114 surahs from this reciter.",
     ready: "All 114 surahs are available offline on this device.",
+    checking: "Checking saved audio files…",
     progress: "{done} of 114 surahs available",
     estimate: "Estimated size: {size}",
     download: "Download all",
@@ -118,20 +122,57 @@ function formatBytes(bytes, lang) {
 export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
   const labels = useMemo(() => labelsFor(lang), [lang]);
   const mountedRef = useRef(true);
+  const verifiedCompletedRef = useRef(null);
   const readState = useCallback(() => ({
     summary: getFullQuranDownloadSummary(reciter, riwaya),
     active: isFullQuranDownloadActive(reciter?.id, riwaya),
   }), [reciter, riwaya]);
   const [downloadState, setDownloadState] = useState(readState);
+  const [verifiedReady, setVerifiedReady] = useState(false);
   const [confirmation, setConfirmation] = useState(null);
   const [isRemoving, setIsRemoving] = useState(false);
 
   useEffect(() => {
     mountedRef.current = true;
-    setDownloadState(readState());
-    const refresh = () => setDownloadState(readState());
+    let active = true;
+    let generation = 0;
+    const refresh = (force = false) => {
+      const currentGeneration = ++generation;
+      const next = readState();
+      setDownloadState(next);
+      if (next.active || next.summary.completedSurahs === 0) {
+        verifiedCompletedRef.current = null;
+        setVerifiedReady(false);
+        return;
+      }
+      if (force !== true && verifiedCompletedRef.current === next.summary.completedSurahs) return;
+      setVerifiedReady(false);
+      verifyFullQuranDownloadForReciter({ reciter, riwaya })
+        .then((checked) => {
+          if (!active || currentGeneration !== generation) return;
+          setDownloadState({
+            summary: checked.verified ? checked : { ...checked, status: "partial" },
+            active: isFullQuranDownloadActive(reciter?.id, riwaya),
+          });
+          verifiedCompletedRef.current = checked.verified ? checked.completedSurahs : null;
+          setVerifiedReady(checked.verified && checked.status === "done");
+        })
+        .catch(() => {
+          if (!active || currentGeneration !== generation) return;
+          setDownloadState({
+            summary: { ...next.summary, status: "partial" },
+            active: false,
+          });
+          setVerifiedReady(false);
+        });
+    };
+    refresh();
     const handleFullProgress = (event) => {
       if (event.detail?.reciterId !== reciter?.id || event.detail?.riwaya !== riwaya) return;
+      if (event.detail.status === "done") {
+        refresh();
+        return;
+      }
       setDownloadState({
         summary: { ...getFullQuranDownloadSummary(reciter, riwaya), ...event.detail },
         active: event.detail.status === "downloading",
@@ -139,16 +180,26 @@ export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
     };
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     window.addEventListener(OFFLINE_FULL_QURAN_PROGRESS_EVENT, handleFullProgress);
+    const refreshOnPageShow = () => refresh(true);
+    window.addEventListener("pageshow", refreshOnPageShow);
+    const refreshWhenVisible = () => {
+      if (!document.hidden) refresh(true);
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
+      active = false;
       mountedRef.current = false;
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
       window.removeEventListener(OFFLINE_FULL_QURAN_PROGRESS_EVENT, handleFullProgress);
+      window.removeEventListener("pageshow", refreshOnPageShow);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [readState, reciter, riwaya]);
 
   const summary = downloadState.summary;
   const isRunning = downloadState.active;
-  const isReady = summary.status === "done" && !isRunning;
+  const isReady = summary.status === "done" && verifiedReady && !isRunning;
+  const isChecking = summary.status === "done" && !verifiedReady && !isRunning;
   const hasDownload = summary.downloadedItems > 0;
   const canDownload = Boolean(
     reciter?.id &&
@@ -176,8 +227,20 @@ export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
       },
     );
     if (!mountedRef.current) return;
-    setDownloadState(readState());
-    if (result === "done") toast(labels.readyToast, "success");
+    let checked = null;
+    if (result === "done") {
+      try {
+        checked = await verifyFullQuranDownloadForReciter({ reciter, riwaya });
+      } catch {
+        checked = { ...getFullQuranDownloadSummary(reciter, riwaya), verified: false };
+      }
+    }
+    setDownloadState(checked
+      ? { summary: checked.verified ? checked : { ...checked, status: "partial" }, active: false }
+      : readState());
+    setVerifiedReady(Boolean(checked?.verified && checked.status === "done"));
+    if (result === "done" && checked?.verified && checked.status === "done") toast(labels.readyToast, "success");
+    else if (result === "done") toast(labels.partialToast, "warning");
     else if (result === "storage-full") toast(labels.storageToast, "warning");
     else if (result === "partial" || result === "cancelled") toast(labels.partialToast, "warning");
     else toast(labels.errorToast, "error");
@@ -204,6 +267,8 @@ export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
 
   const statusMessage = isReady
     ? labels.ready
+    : isChecking
+      ? labels.checking
     : hasDownload || isRunning
       ? progressText
       : labels.idle;
@@ -235,7 +300,8 @@ export default function FullQuranDownloadCard({ reciter, riwaya, lang }) {
           type="button"
           className={`full-quran-download__primary${isRunning ? " is-cancel" : ""}`}
           onClick={handlePrimaryAction}
-          disabled={!canDownload || isReady || isRemoving}
+          disabled={!canDownload || isReady || isChecking || isRemoving}
+          aria-busy={isChecking || undefined}
           title={!canDownload ? labels.unavailable : undefined}
         >
           {isRunning ? <X size={15} aria-hidden="true" /> : hasDownload ? <RotateCcw size={15} aria-hidden="true" /> : <Download size={15} aria-hidden="true" />}

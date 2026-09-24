@@ -146,6 +146,25 @@ test("a downloaded surah keeps playing verse by verse with no network", async ({
   expect(next.paused, "the following verse kept playing").toBe(false);
 });
 
+test("a missing cached verse is no longer advertised as offline on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seedPlayer(page);
+  await openControlledShell(page);
+  await downloadFatiha(page);
+
+  await page.evaluate(async (cacheName) => {
+    const cache = await caches.open(cacheName);
+    await cache.delete("https://everyayah.com/data/Muhammad_Ayyoub_128kbps/001001.mp3");
+    window.dispatchEvent(new Event("pageshow"));
+  }, AUDIO_CACHE);
+
+  await expect(
+    page.getByRole("button", { name: /Télécharger pour l’écoute hors connexion.*L'Ouverture \(1\)/ }),
+  ).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
 test("playback keeps running when the reader loses the foreground", async ({
   page,
 }) => {
@@ -175,18 +194,16 @@ test("playback keeps running when the reader loses the foreground", async ({
       get: () => "hidden",
     });
     document.dispatchEvent(new Event("visibilitychange"));
-    window.requestAnimationFrame = () => {
-      throw new Error("requestAnimationFrame is suspended in the background");
-    };
+    // Browsers stop delivering animation frames in the background; they do
+    // not throw from requestAnimationFrame itself.
+    window.requestAnimationFrame = () => 0;
   });
 
-  await page.waitForTimeout(2500);
-  const during = await playerState(page);
-  expect(during.paused, "playback survived the loss of foreground").toBe(false);
-  expect(
-    during.file !== started.file || during.time > started.time,
-    "the verse position moved or the next verse began",
-  ).toBe(true);
+  await expect.poll(async () => {
+    const during = await playerState(page);
+    return Boolean(during && !during.paused &&
+      (during.file !== started.file || during.time > started.time));
+  }, { timeout: 20_000, message: "the verse position or file advances while hidden" }).toBe(true);
   await expect
     .poll(async () => (await playerState(page)).file, { timeout: 20_000 })
     .not.toBe(started.file);

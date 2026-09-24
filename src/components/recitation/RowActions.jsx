@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Check, Download, LoaderCircle, Play, Share2, X } from "lucide-react";
 import { toast } from "../../lib/utils";
 import {
@@ -6,6 +6,7 @@ import {
   cancelOfflineDownload,
   downloadSurahForReciter,
   getSurahDownloadEntry,
+  verifySurahDownloadForReciter,
 } from "../../services/downloadService";
 
 function labelsFor(lang) {
@@ -19,6 +20,7 @@ function labelsFor(lang) {
       downloading: "جارٍ التنزيل",
       cancel: "إلغاء التنزيل",
       offline: "متاح دون اتصال",
+      checking: "جارٍ التحقق من التنزيل",
       unavailable: "التنزيل غير متاح",
       readyToast: "أصبحت السورة متاحة دون اتصال.",
       partialToast: "اكتمل جزء من التنزيل. يمكنك إعادة المحاولة.",
@@ -36,6 +38,7 @@ function labelsFor(lang) {
       downloading: "Téléchargement en cours",
       cancel: "Annuler le téléchargement",
       offline: "Disponible hors connexion",
+      checking: "Vérification du téléchargement",
       unavailable: "Téléchargement indisponible",
       readyToast: "La sourate est maintenant disponible hors connexion.",
       partialToast: "Téléchargement partiel. Vous pouvez le reprendre.",
@@ -52,6 +55,7 @@ function labelsFor(lang) {
     downloading: "Downloading",
     cancel: "Cancel download",
     offline: "Available offline",
+    checking: "Checking download",
     unavailable: "Download unavailable",
     readyToast: "This surah is now available offline.",
     partialToast: "Part of the download completed. You can retry it.",
@@ -88,30 +92,69 @@ export default function RowActions({
     [canDownload, reciter?.id, riwaya, surah?.n],
   );
   const [entry, setEntry] = useState(readEntry);
+  const [verifiedOffline, setVerifiedOffline] = useState(false);
+  const verifiedSignatureRef = useRef(null);
   const [isDownloading, setIsDownloading] = useState(false);
   const [liveProgress, setLiveProgress] = useState(() => getProgress(readEntry()));
 
   useEffect(() => {
-    const refresh = () => {
+    let mounted = true;
+    let generation = 0;
+    const refresh = (force = false) => {
+      const currentGeneration = ++generation;
       const nextEntry = readEntry();
       setEntry(nextEntry);
       if (!isDownloading) setLiveProgress(getProgress(nextEntry));
+      const signature = nextEntry?.status === "done"
+        ? `${nextEntry.key}:${nextEntry.updatedAt}:${nextEntry.total}`
+        : null;
+      if (force !== true && signature && verifiedSignatureRef.current === signature) return;
+      verifiedSignatureRef.current = null;
+      setVerifiedOffline(false);
+      if (nextEntry?.status === "done") {
+        verifySurahDownloadForReciter({ surahMeta: surah, reciter, riwaya })
+          .then((checked) => {
+            if (!mounted || currentGeneration !== generation) return;
+            setEntry(checked?.verified ? checked : { ...checked, status: "partial" });
+            verifiedSignatureRef.current = checked?.verified && checked.status === "done"
+              ? signature
+              : null;
+            setVerifiedOffline(checked?.verified && checked.status === "done");
+          })
+          .catch(() => {
+            if (!mounted || currentGeneration !== generation) return;
+            setEntry({ ...nextEntry, status: "partial" });
+            setVerifiedOffline(false);
+          });
+      }
     };
     refresh();
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
-    return () =>
+    const refreshOnPageShow = () => refresh(true);
+    window.addEventListener("pageshow", refreshOnPageShow);
+    const refreshWhenVisible = () => {
+      if (!document.hidden) refresh(true);
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      mounted = false;
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
-  }, [isDownloading, readEntry]);
+      window.removeEventListener("pageshow", refreshOnPageShow);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, [isDownloading, readEntry, reciter, riwaya, surah]);
 
-  const isOffline = entry?.status === "done";
+  const isOffline = entry?.status === "done" && verifiedOffline;
+  const isCheckingOffline = entry?.status === "done" && !verifiedOffline;
   const downloadLabel = useMemo(() => {
     if (!canDownload) return labels.unavailable;
     if (isOffline) return labels.offline;
+    if (isCheckingOffline) return labels.checking;
     if (isDownloading) {
       return `${labels.downloading} ${liveProgress}% — ${labels.cancel}`;
     }
     return labels.download;
-  }, [canDownload, isDownloading, isOffline, labels, liveProgress]);
+  }, [canDownload, isDownloading, isOffline, isCheckingOffline, labels, liveProgress]);
 
   const handleShare = useCallback(async () => {
     const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
@@ -127,7 +170,7 @@ export default function RowActions({
   }, [reciter?.id, surah?.n, labels, contextualLabel]);
 
   const handleDownload = async () => {
-    if (!canDownload || isOffline) return;
+    if (!canDownload || isOffline || isCheckingOffline) return;
     if (isDownloading) {
       if (entry?.key) cancelOfflineDownload(entry.key);
       return;
@@ -141,12 +184,21 @@ export default function RowActions({
         setLiveProgress(total > 0 ? Math.round((done / total) * 100) : 0);
       },
     );
+    let nextEntry = readEntry();
+    if (result === "done") {
+      try {
+        nextEntry = await verifySurahDownloadForReciter({ surahMeta: surah, reciter, riwaya });
+      } catch {
+        nextEntry = { ...nextEntry, status: "partial", verified: false };
+      }
+    }
     setIsDownloading(false);
-    const nextEntry = readEntry();
-    setEntry(nextEntry);
+    setEntry(nextEntry?.verified === false ? { ...nextEntry, status: "partial" } : nextEntry);
+    setVerifiedOffline(nextEntry?.verified && nextEntry.status === "done");
     setLiveProgress(getProgress(nextEntry));
 
-    if (result === "done") toast(labels.readyToast, "success");
+    if (result === "done" && nextEntry?.verified && nextEntry.status === "done") toast(labels.readyToast, "success");
+    else if (result === "done") toast(labels.partialToast, "warning");
     else if (result === "partial") toast(labels.partialToast, "warning");
     else if (result === "storage-full") toast(labels.storageToast, "warning");
     else if (result !== "cancelled") toast(labels.errorToast, "error");
@@ -189,7 +241,8 @@ export default function RowActions({
         className={`recitation-action-btn recitation-action-btn--download${isOffline ? " is-offline" : ""}${isDownloading ? " is-downloading" : ""}`}
         type="button"
         onClick={handleDownload}
-        disabled={!canDownload}
+        disabled={!canDownload || isCheckingOffline}
+        aria-busy={isCheckingOffline || undefined}
         aria-disabled={isOffline || undefined}
         title={contextualLabel(downloadLabel)}
         aria-label={contextualLabel(downloadLabel)}
@@ -198,6 +251,8 @@ export default function RowActions({
           <Check className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
         ) : isDownloading ? (
           <X className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
+        ) : isCheckingOffline ? (
+          <LoaderCircle className="recitation-download-spinner" size={15} aria-hidden="true" />
         ) : (
           <Download className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
         )}
@@ -211,7 +266,7 @@ export default function RowActions({
         ) : null}
         {!isDownloading && (
           <span className="recitation-action-btn__label">
-            {isOffline ? labels.offline : labels.download}
+            {isOffline ? labels.offline : isCheckingOffline ? labels.checking : labels.download}
           </span>
         )}
       </button>
