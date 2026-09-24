@@ -32,7 +32,6 @@ export const HAFS_FONT_IDS = [
 
 export const WARSH_FONT_IDS = [
   "qpc-warsh",
-  "kfgqpc-warsh",
   "scheherazade-new-warsh",
 ];
 
@@ -83,12 +82,6 @@ export const QURAN_FONT_OPTIONS = [
     riwaya: "warsh",
   },
   {
-    id: "kfgqpc-warsh",
-    label: "KFGQPC Warsh 10",
-    hintKey: "settings.kfgqpcWarshHint",
-    riwaya: "warsh",
-  },
-  {
     id: "scheherazade-new-warsh",
     label: "Scheherazade New (Warsh)",
     hintKey: "settings.scheherazadeWarshHint",
@@ -122,9 +115,7 @@ export const FONT_MAP = {
   "qcf-v2": "'QCF V2','QCF_V2','QPC Hafs',serif",
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
-  // "qpc-warsh" and "kfgqpc-warsh" are stored ids for one face, so they share it.
   "qpc-warsh": WARSH_UTHMANIC_STACK,
-  "kfgqpc-warsh": WARSH_UTHMANIC_STACK,
   "scheherazade-new-warsh":
     "'Scheherazade New','Scheherazade','KFGQPC Warsh',serif",
 };
@@ -173,8 +164,6 @@ const AYAH_MARKER_BY_FONT = {
   "noto-naskh-arabic": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // The locally hosted Warsh 10 face shapes the digit sequence as a rosette.
   "qpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
-  // Warsh 10 also turns the digit sequence itself into the complete rosette.
-  "kfgqpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // Scheherazade Warsh: same U+06DD prefix as its Hafs variant.
   "scheherazade-new-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
   // QCF page fonts: QCF v4 Tajweed uses U+06DD as the base character for verse-end markers.
@@ -227,8 +216,11 @@ const LEGACY_FONT_ALIASES = {
   "qpc-nastaleeq": "qpc-indopak",
   "mushaf-tajweed": "qcf-v4-tajweed",
   "mushaf-warsh": "qpc-warsh",
-  "aal-maghribi-warsh": "kfgqpc-warsh",
-  "maghribi-warsh": "kfgqpc-warsh",
+  // "kfgqpc-warsh" was a second menu entry for the very same Warsh 10 woff2;
+  // preferences saved before the merge still resolve to that file.
+  "kfgqpc-warsh": "qpc-warsh",
+  "aal-maghribi-warsh": "qpc-warsh",
+  "maghribi-warsh": "qpc-warsh",
   "digital-khatt-v1": "qcf-v2",
   "uthmanic-digital": "qcf-v2",
   "uthmanic-bold": "qcf-v2",

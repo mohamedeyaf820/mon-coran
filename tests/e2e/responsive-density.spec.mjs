@@ -551,7 +551,6 @@ for (const [fontFamily, riwaya] of [
   ["amiri-quran", "hafs"],
   ["noto-naskh-arabic", "hafs"],
   ["qpc-warsh", "warsh"],
-  ["kfgqpc-warsh", "warsh"],
   ["scheherazade-new-warsh", "warsh"],
 ]) {
   test(`${fontFamily} keeps exactly one canonical ayah medallion`, async ({ page }) => {

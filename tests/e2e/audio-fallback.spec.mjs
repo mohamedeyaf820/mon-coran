@@ -80,10 +80,10 @@ test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", asy
         lang: "fr",
         riwaya: "warsh",
         reciter: "warsh_yassin",
-        fontFamily: "kfgqpc-warsh",
+        fontFamily: "qpc-warsh",
         fontFamilyByRiwaya: {
           hafs: "qpc-hafs",
-          warsh: "kfgqpc-warsh",
+          warsh: "qpc-warsh",
         },
         showTranslation: false,
         showWordByWord: false,

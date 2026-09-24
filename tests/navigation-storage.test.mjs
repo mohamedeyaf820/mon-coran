@@ -157,18 +157,18 @@ test("storage: preserves per-riwaya Quran font choices", () => {
 
   saveSettings({
     riwaya: "warsh",
-    fontFamily: "kfgqpc-warsh",
+    fontFamily: "qpc-warsh",
     fontFamilyByRiwaya: {
       hafs: "qpc-indopak",
-      warsh: "kfgqpc-warsh",
+      warsh: "qpc-warsh",
     },
   });
 
   const settings = getSettings();
-  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.equal(settings.fontFamily, "qpc-warsh");
   assert.deepEqual(settings.fontFamilyByRiwaya, {
     hafs: "qpc-indopak",
-    warsh: "kfgqpc-warsh",
+    warsh: "qpc-warsh",
   });
 });
 
@@ -185,11 +185,17 @@ test("storage: migrates removed local-only Warsh font aliases", () => {
   });
 
   const settings = getSettings();
-  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.equal(settings.fontFamily, "qpc-warsh");
   assert.deepEqual(settings.fontFamilyByRiwaya, {
     hafs: "qpc-indopak",
-    warsh: "kfgqpc-warsh",
+    warsh: "qpc-warsh",
   });
+
+  // "kfgqpc-warsh" was a second menu entry for the same Warsh 10 woff2, so a
+  // preference saved before the merge must land on the surviving id.
+  globalThis.localStorage = createMockStorage();
+  saveSettings({ riwaya: "warsh", fontFamily: "kfgqpc-warsh" });
+  assert.equal(getSettings().fontFamily, "qpc-warsh");
 });
 
 test("fonts: exposes riwaya-safe native ayah markers", () => {
@@ -206,7 +212,7 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   );
   assert.deepEqual(
     getFontOptionsForRiwaya("warsh").map((font) => font.id),
-    ["qpc-warsh", "kfgqpc-warsh", "scheherazade-new-warsh"],
+    ["qpc-warsh", "scheherazade-new-warsh"],
   );
 
   assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
@@ -214,13 +220,15 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   assert.equal(getNativeAyahMarker(100, "qpc-hafs", "hafs"), "\u0661\u0660\u0660");
   assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u06dd\u06f1");
   assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u0661");
-  assert.equal(getNativeAyahMarker(1, "kfgqpc-warsh", "warsh"), "\u0661");
-  assert.equal(getNativeAyahMarker(10, "kfgqpc-warsh", "warsh"), "\u0661\u0660");
-  assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
+  assert.equal(getNativeAyahMarker(10, "qpc-warsh", "warsh"), "\u0661\u0660");
+  assert.equal(getNativeAyahMarker(100, "qpc-warsh", "warsh"), "\u0661\u0660\u0660");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u06dd\u0661");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u06dd\u0661");
   assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
   assert.equal(normalizeFontId("amiri-quran", "warsh"), "qpc-warsh");
+  // The merged Warsh entry keeps answering to the id older preferences stored.
+  assert.equal(normalizeFontId("kfgqpc-warsh", "warsh"), "qpc-warsh");
+  assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
 });
 
 test("fonts: appends native ayah markers without duplicates", () => {

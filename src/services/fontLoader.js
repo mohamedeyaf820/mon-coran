@@ -41,6 +41,8 @@ const FONT_SOURCES = {
     selfHosted: true,
   },
   "qpc-warsh": WARSH_FACE,
+  // Callers pass the stored preference straight in, and "kfgqpc-warsh" is a
+  // merged id that older settings still carry: same woff2, so it maps here.
   "kfgqpc-warsh": WARSH_FACE,
 };
 

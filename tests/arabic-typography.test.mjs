@@ -95,7 +95,6 @@ test("continuous Mushaf line height stays compact for every exposed Quran font",
     ["amiri-quran", "hafs"],
     ["noto-naskh-arabic", "hafs"],
     ["qpc-warsh", "warsh"],
-    ["kfgqpc-warsh", "warsh"],
     ["scheherazade-new-warsh", "warsh"],
   ];
 
@@ -262,7 +261,6 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     ["amiri-quran", "hafs", "١"],
     ["noto-naskh-arabic", "hafs", "١"],
     ["qpc-warsh", "warsh", "١"],
-    ["kfgqpc-warsh", "warsh", "١"],
     ["scheherazade-new-warsh", "warsh", "۝١"],
   ];
 

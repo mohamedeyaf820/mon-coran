@@ -44,12 +44,12 @@ export function comparableArabicText(value) {
 // and nothing for U+06EB.
 const FONT_SIGN_VARIANTS = {
     'qpc-hafs': [[/\u06EB/g, '\u06EC'], [/\u06DF/g, '\u0652']],
-    'kfgqpc-warsh': [[/\u06EB/g, '\u06DF']],
+    'qpc-warsh': [[/\u06EB/g, '\u06DF']],
 };
 
 export function getFontSignVariant(fontId) {
     if (fontId === 'qpc-hafs' || fontId === 'qpc-madani-page') return 'qpc-hafs';
-    if (fontId === 'qpc-warsh' || fontId === 'kfgqpc-warsh') return 'kfgqpc-warsh';
+    if (fontId === 'qpc-warsh') return 'qpc-warsh';
     return null;
 }
 

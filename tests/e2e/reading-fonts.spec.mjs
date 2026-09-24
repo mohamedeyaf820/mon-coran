@@ -171,8 +171,7 @@ const FONT_MATRIX = {
     ["noto-naskh-arabic", "Noto Naskh Arabic"],
   ],
   warsh: [
-    ["qpc-warsh", "QPC Warsh"],
-    ["kfgqpc-warsh", "KFGQPC Warsh"],
+    ["qpc-warsh", "KFGQPC Warsh"],
     ["scheherazade-new-warsh", "Scheherazade New"],
   ],
 };
