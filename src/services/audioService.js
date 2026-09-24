@@ -12,7 +12,12 @@ import {
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
 import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
-import { observeNativePlayback, preparePlaybackSession } from "./audioSession.js";
+import {
+  observeNativePlayback,
+  preparePlaybackSession,
+  recoverBackgroundAudio,
+  retryPendingBackgroundAudio,
+} from "./audioSession.js";
 import {
   buildLatencyKey,
   buildPlaylistSignature,
@@ -75,6 +80,7 @@ class AudioService {
     // and recovery must not mistake that for an intentional pause.
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
+    this._backgroundRecoveryIndex = null;
 
     // Surah/playlist repeat
     // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
@@ -138,6 +144,10 @@ class AudioService {
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
+      // A load already owns its retry/error path. Reporting this native event
+      // as well can switch reciters before the retry has even finished.
+      if (this._cancelPendingLoad) return;
+      if (recoverBackgroundAudio(this)) return;
       devLog("error", "Audio error:", e);
       this.onError?.(e);
     };
@@ -163,18 +173,19 @@ class AudioService {
         this._audioCtx.resume().catch(() => {});
       }
       if (this._pendingBackgroundIndex != null) {
-        const index = this._pendingBackgroundIndex;
-        this._pendingBackgroundIndex = null;
-        if (index !== this.playlistIndex || this.audio.paused) {
-          this._loadAndPlay(index);
-          return;
-        }
+        retryPendingBackgroundAudio(this);
+        return;
       }
       if (this.audio?.paused && this.audio.src) this.resume();
+    };
+    this._boundOnline = () => {
+      if (this._playbackIntent !== "playing" || this._pendingBackgroundIndex == null) return;
+      retryPendingBackgroundAudio(this);
     };
     if (typeof document !== "undefined") {
       document.addEventListener("visibilitychange", this._boundVisibilityChange);
     }
+    if (typeof window !== "undefined") window.addEventListener?.("online", this._boundOnline);
   }
 
   /* ── Playlist Management ───────────────────── */
@@ -444,6 +455,10 @@ class AudioService {
 
   resume() {
     preparePlaybackSession(this._audioCtx);
+    if (this._pendingBackgroundIndex != null) {
+      this._playbackIntent = "playing";
+      return retryPendingBackgroundAudio(this);
+    }
     if (this.audio.src && this.audio.src !== window.location.href) {
       this.audio.play()
         .then(() => {
@@ -481,6 +496,7 @@ class AudioService {
     const wasPlaying = this.isPlaying;
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
+    this._backgroundRecoveryIndex = null;
     this._cancelPendingLoad?.();
     this._loadRequestId++;
     this._clearLoadTimeout();
@@ -908,9 +924,10 @@ class AudioService {
     if (!url) return;
     if (!isTrustedAudioUrl(url)) return;
     if (this._preloadPool.some((p) => p.url === url)) return;
-    // A media load started while hidden gets suspended by iOS and competes
-    // with the active stream; foreground resumes preloading on the next track.
-    if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+    // Keep the next Android verse warm while the PWA is locked. iOS suspends
+    // hidden media loads, so avoid competing with the active stream there.
+    if (typeof document !== "undefined" && document.visibilityState === "hidden" &&
+        !/Android/i.test(typeof navigator !== "undefined" ? navigator.userAgent : "")) {
       return;
     }
 
@@ -1027,6 +1044,7 @@ class AudioService {
       this.isPlaying = true;
       this._playbackIntent = "playing";
       this._pendingBackgroundIndex = null;
+      if (this._backgroundRecoveryIndex !== index) this._backgroundRecoveryIndex = null;
       this.onNetworkState?.("playing");
       this._notifyPlay(activeItem);
       this._emitAyahChange(activeItem);
@@ -1332,6 +1350,7 @@ class AudioService {
     if (typeof document !== "undefined") {
       document.removeEventListener("visibilitychange", this._boundVisibilityChange);
     }
+    if (typeof window !== "undefined") window.removeEventListener?.("online", this._boundOnline);
   }
 }
 

@@ -31,3 +31,35 @@ export function observeNativePlayback(service) {
     audio.removeEventListener('playing', playing);
   };
 }
+
+/** A dropped background stream is retried without silently changing voice. */
+export function recoverBackgroundAudio(service) {
+  if (typeof document === 'undefined' || !document.hidden ||
+      service._playbackIntent !== 'playing' || service.playlistIndex < 0) return false;
+
+  const index = service.playlistIndex;
+  service._pendingBackgroundIndex = index;
+  if (service._backgroundRecoveryIndex !== index && navigator.onLine !== false) {
+    service._backgroundRecoveryIndex = index;
+    const position = service.audio.currentTime;
+    service._loadAndPlay(index).then(() => {
+      if (service.isPlaying && Number.isFinite(position) && position > 0 &&
+          Number.isFinite(service.audio.duration) && position < service.audio.duration - 0.5) {
+        service.audio.currentTime = position;
+      }
+    });
+  } else {
+    service.isPlaying = false;
+    service._notifyPause(service.currentAyah);
+  }
+  return true;
+}
+
+/** Retry the queued verse from online, visibility or lock-screen Play. */
+export function retryPendingBackgroundAudio(service) {
+  const index = service._pendingBackgroundIndex;
+  if (index == null) return null;
+  service._pendingBackgroundIndex = null;
+  service._backgroundRecoveryIndex = null;
+  return service._loadAndPlay(index);
+}
