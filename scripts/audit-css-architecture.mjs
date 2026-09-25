@@ -26,7 +26,9 @@ const LIMITS = {
   // 2026-09-21: raised to 1782 kB — the Quran.com tajweed palette migration added
   // explanatory header comments to the three themes4.css blocks (source only; the
   // hex swaps are length-neutral and the removed Hafs saturate filter cut retained).
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1782),
+  // 2026-09-24: raised to 1788 kB — the share-format picker badges/hint and the
+  // prayer-modal next-prayer hero added ~5 kB of rules (1782.2 kB measured).
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1788),
   // 2026-09-20: retained raised after the purge safelist fix brought back the
   // [dir=]/[lang=] RTL rules that PurgeCSS v8 had been silently dropping.
   // 2026-09-21: +1 kB for the retained portal rules of the same cartouche,

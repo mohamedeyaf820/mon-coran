@@ -110,9 +110,20 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
   await expect(studio).toBeVisible();
   await expect(studio.locator(".share-studio__preview-frame img")).toBeVisible();
   await expect(studio.locator(".share-format-picker button")).toHaveCount(3);
-  await expect(studio.locator(".share-theme-picker button")).toHaveCount(3);
+  await expect(studio.locator(".share-theme-picker button")).toHaveCount(8);
   await expect(studio.locator(".share-studio__quick-setting")).toBeVisible();
+  await expect(studio.locator(".share-studio__quick-setting .share-toggle")).toHaveCount(3);
   await expect(studio.locator("textarea, .share-editor")).toHaveCount(0);
+
+  // Personalisation: frame, motif and Arabic-text scale are independent of the
+  // palette, and the card facts stay visible under the preview.
+  const choicePickers = studio.locator(".share-choice-picker");
+  await expect(choicePickers).toHaveCount(3);
+  await expect(choicePickers.nth(0).getByRole("button")).toHaveCount(4);
+  await expect(choicePickers.nth(1).getByRole("button")).toHaveCount(3);
+  await expect(choicePickers.nth(2).getByRole("button")).toHaveCount(3);
+  await expect(studio.locator(".share-studio__meta > span")).toHaveCount(2);
+  await expect(studio.locator(".share-studio__meta > span").nth(1)).toHaveText(/kB|PNG/);
   await page.screenshot({
     path: "test-results/verse-share-studio-mobile.png",
     fullPage: false,

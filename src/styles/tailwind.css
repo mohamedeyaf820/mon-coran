@@ -7928,6 +7928,29 @@ input:focus-visible {
     object-fit: contain;
 }
 
+/* Format facts under the card: the reader knows what the PNG will weigh
+   before sharing it. */
+.share-studio__meta {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+    margin-top: 0.7rem;
+}
+
+.share-studio__meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.24rem 0.52rem;
+    border: 1px solid color-mix(in srgb, var(--border) 84%, var(--primary) 16%);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%);
+    color: var(--text-muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+}
+
 .share-studio__controls {
     min-width: 0;
     overflow-y: auto;
@@ -7963,13 +7986,14 @@ input:focus-visible {
 
 .share-format-picker button {
     min-width: 0;
-    min-height: 3.1rem;
+    min-height: 3.4rem;
     display: grid;
     grid-template-columns: 1.15rem minmax(0, 1fr);
-    grid-template-rows: auto;
+    grid-template-rows: auto auto auto;
     align-content: center;
     column-gap: 0.42rem;
-    padding: 0.48rem;
+    row-gap: 0.12rem;
+    padding: 0.42rem 0.48rem;
     border: 1px solid var(--border);
     border-radius: 0.72rem;
     background: var(--bg-secondary);
@@ -7985,12 +8009,58 @@ input:focus-visible {
     box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.12);
 }
 
+.share-format-picker__head {
+    grid-column: 2;
+    grid-row: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3rem;
+    min-width: 0;
+}
+
 .share-format-picker strong {
     font-size: 0.72rem;
 }
 
+/* The ratio badge is the fastest difference to scan across the three tiles. */
+.share-format-ratio {
+    flex-shrink: 0;
+    padding: 0 0.26rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.56rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.55;
+}
+
+.share-format-picker button.is-active .share-format-ratio {
+    color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.share-format-picker em {
+    grid-column: 2;
+    grid-row: 2;
+    color: var(--text-muted);
+    font-size: 0.6rem;
+    font-style: normal;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.share-format-platforms {
+    grid-column: 2;
+    grid-row: 3;
+    color: var(--text-muted);
+    font-size: 0.57rem;
+    font-weight: 600;
+    line-height: 1.35;
+}
+
 .share-format-icon {
-    grid-row: 1;
+    grid-row: 1 / span 3;
     align-self: center;
     justify-self: center;
     width: 0.8rem;
@@ -8003,6 +8073,19 @@ input:focus-visible {
 .share-format-icon--portrait { aspect-ratio: 4 / 5; }
 .share-format-icon--story { aspect-ratio: 9 / 16; }
 
+/* Contextual description of the selected format: what it is for, where it lands. */
+.share-format-hint {
+    margin: 0.55rem 0 0;
+    padding: 0.5rem 0.6rem;
+    border: 1px dashed color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+    border-radius: 0.7rem;
+    background: color-mix(in srgb, var(--primary) 6%, transparent);
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
 .share-theme-picker {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -8011,17 +8094,17 @@ input:focus-visible {
 
 .share-theme-picker button {
     position: relative;
-    min-height: 4rem;
+    min-height: 5.4rem;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.28rem;
-    padding: 0.42rem 0.32rem;
+    gap: 0.34rem;
+    padding: 0.4rem 0.34rem 0.46rem;
     border: 1px solid var(--border);
     border-radius: 0.7rem;
     background: var(--bg-secondary);
     color: var(--text-secondary);
-    font-size: 0.74rem;
+    font-size: 0.7rem;
     font-weight: 700;
     text-align: center;
     cursor: pointer;
@@ -8029,21 +8112,112 @@ input:focus-visible {
 
 .share-theme-picker button > svg {
     position: absolute;
-    top: 0.38rem;
-    right: 0.4rem;
+    top: 0.3rem;
+    right: 0.32rem;
+    padding: 0.1rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--bg-card) 76%, var(--primary) 24%);
+    color: var(--primary);
 }
 
 .share-theme-picker button.is-active {
     border-color: color-mix(in srgb, var(--primary) 56%, var(--border) 44%);
     color: var(--text-primary);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.16);
 }
 
-.share-theme-swatch {
-    width: 1.55rem;
-    height: 1.55rem;
+/* Each theme tile is a miniature of the exported card: paper gradient, frame,
+   Arabic block and translation block, drawn in the palette's own colours. */
+.share-theme-card {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: 0.18rem;
     overflow: hidden;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--share-swatch-bg) 0 48%, var(--share-swatch-ink) 49% 75%, var(--share-swatch-gold) 76%);
+    border-radius: 0.45rem;
+    background:
+        radial-gradient(circle at 50% 16%, color-mix(in srgb, var(--share-card-accent) 26%, transparent), transparent 58%),
+        linear-gradient(152deg, var(--share-card-bg) 0 58%, color-mix(in srgb, var(--share-card-bg) 74%, var(--share-card-text) 26%) 100%);
+}
+
+.share-theme-card__frame {
+    position: absolute;
+    inset: 11%;
+    border: 1px solid var(--share-card-accent);
+    border-radius: 0.24rem;
+    opacity: 0.8;
+}
+
+.share-theme-card__line {
+    position: relative;
+    width: 46%;
+    height: 0.22rem;
+    border-radius: 999px;
+    background: var(--share-card-text);
+    opacity: 0.85;
+}
+
+.share-theme-card__line--short {
+    width: 30%;
+    height: 0.16rem;
+    background: var(--share-card-muted);
+    opacity: 0.8;
+}
+
+.share-theme-card__name {
+    display: block;
+    line-height: 1.2;
+}
+
+/* Frame, motif and Arabic-text scale: labelled segmented choices that keep the
+   studio readable instead of stacking more switches. */
+.share-choice-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(4.4rem, 1fr));
+    gap: 0.4rem;
+}
+
+.share-choice-picker button {
+    min-width: 0;
+    min-height: 3.1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.22rem;
+    padding: 0.4rem 0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 0.68rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-size: 0.66rem;
+    font-weight: 750;
+    text-align: center;
+    cursor: pointer;
+}
+
+.share-choice-picker button.is-active {
+    border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.12);
+}
+
+.share-scale-glyph {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.share-choice-glyph {
+    display: block;
+}
+
+.share-choice-picker button.is-active .share-choice-glyph {
+    color: var(--primary);
 }
 
 .share-studio__quick-setting {
@@ -8068,17 +8242,28 @@ input:focus-visible {
     font-weight: 750;
 }
 
+/* The content switches become a chip row under their own legend. */
+.share-studio__quick-setting--group {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+}
+
 .share-toggle {
     flex: 0 0 auto;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.55rem;
+    min-height: 2.75rem;
+    padding: 0.3rem 0.72rem;
     border: 1px solid var(--border);
     border-radius: 999px;
     background: var(--bg-secondary);
     color: var(--text-muted);
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     font-weight: 700;
     cursor: pointer;
 }
@@ -8207,7 +8392,7 @@ input:focus-visible {
 
     .share-studio__preview-stage {
         min-height: 0;
-        height: clamp(13.5rem, 38dvh, 18rem);
+        height: clamp(11.5rem, 33dvh, 16.5rem);
     }
 
     .share-studio__preview-frame {
@@ -8254,6 +8439,19 @@ input:focus-visible {
         min-height: 3.55rem;
         grid-template-columns: 0.85rem minmax(0, 1fr);
         padding: 0.4rem;
+    }
+
+    .share-theme-picker button {
+        min-height: 4.9rem;
+        font-size: 0.62rem;
+    }
+
+    .share-choice-picker {
+        grid-template-columns: repeat(auto-fit, minmax(3.9rem, 1fr));
+    }
+
+    .share-choice-picker button {
+        font-size: 0.6rem;
     }
 
     .share-studio__heading p {

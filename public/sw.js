@@ -392,6 +392,62 @@ self.addEventListener("message", (event) => {
   }
 });
 
+// ─── Notifications push ───────────────────────────────────────────────────────
+// MushafPlus n'a pas encore de serveur d'envoi (VAPID) : ces handlers ne
+// reçoivent donc rien aujourd'hui. Ils rendent le worker prêt pour un backend
+// push futur et pour tout `registration.showNotification` déclenché par la
+// page (rappels de prière, verset du jour), en centralisant le clic.
+
+self.addEventListener("push", (event) => {
+  let payload;
+  try {
+    payload = event.data ? event.data.json() : null;
+  } catch {
+    payload = { body: event.data ? event.data.text() : "" };
+  }
+  if (!payload || typeof payload !== "object") payload = {};
+  const title = payload.title || "MushafPlus";
+  const safeUrl = typeof payload.url === "string" && payload.url.startsWith("/")
+    ? payload.url
+    : "/";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof payload.body === "string" ? payload.body.slice(0, 300) : "",
+      tag: typeof payload.tag === "string" ? payload.tag.slice(0, 64) : undefined,
+      icon: "/logo-ui.webp",
+      badge: "/favicon.png",
+      data: { url: safeUrl },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const targetUrl = new URL(event.notification?.data?.url || "/", self.location.origin);
+  if (targetUrl.origin !== self.location.origin) return;
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      for (const client of clientList) {
+        if ("focus" in client) {
+          if (client.url !== targetUrl.href && "navigate" in client) {
+            try {
+              await client.navigate(targetUrl);
+            } catch {
+              // A navigation refused by the browser still focuses the client.
+            }
+          }
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(targetUrl);
+    })(),
+  );
+});
+
 // ─── Stratégies de cache ──────────────────────────────────────────────────────
 
 /**

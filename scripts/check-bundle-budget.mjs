@@ -12,12 +12,28 @@ const LIMITS = {
   css: Number(process.env.BUDGET_CSS_KB || 1060),
   // Legal, PWA, audio and reader features remain route-split while the shared
   // design tokens load with the initial shell to prevent a theme flash.
-  js: Number(process.env.BUDGET_JS_KB || 1275),
+  // 2026-09-24: +25 kB for the prayer-times feature (aladhan client, geolocation,
+  // home strip, detail modal, notification routines) and the extended share-card
+  // studio (3 new presets, occasion badge, dua sharing) — 1297.8 kB measured.
+  // 2026-09-24: +7 kB for the share-studio personalisation pass — two palettes,
+  // frame / motif / Arabic-scale pickers, card-weight preview and the trilingual
+  // label maps. The panel is a lazy chunk, but the aggregate counts every emitted
+  // asset; picker glyphs are drawn inline instead of importing more icons and the
+  // measured cost is 1306.7 kB.
+  // 2026-09-24: +2 kB; the share format picker now states ratio, platform list
+  // and a localized hint per format, and the prayer modal gains its next-prayer
+  // hero — 1310.6 kB measured.
+  js: Number(process.env.BUDGET_JS_KB || 1312),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
   // furniture, Warsh rule-based tajweed colouring, size wiring).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2285),
+  // 2026-09-24: +20 kB, prayer-times and share-card features (2302.1 kB measured).
+  // 2026-09-24: +15 kB, the share-studio personalisation pass above plus its
+  // stylesheet rules (2314.2 kB measured).
+  // 2026-09-24: +4 kB, share-format hints, prayer-hero markup and their styles
+  // (2321.4 kB measured).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2324),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 225),
   initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
@@ -25,11 +41,18 @@ const LIMITS = {
   // measured 422.3 kB of initial JS against the old 422 cap.
   // 2026-09-23: +1 kB; the tafsir selector now ships language group labels and
   // a Warsh reading note in all three dictionaries (424.3 kB measured).
-  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 425),
+  // 2026-09-24: +10 kB; trilingual prayer/notification dictionaries and the
+  // settings/state wiring load with the shell (434.0 kB measured). The timings
+  // API client itself stays out of the boot graph via lazy chunks.
+  // 2026-09-24: +2 kB; the trilingual share-format hint strings ship with the
+  // dictionaries (435.5 kB measured).
+  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 437),
   initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),
-  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 58),
+  // 2026-09-24: +2 kB; the home prayer strip and its modal styles landed in the
+  // home sheet (57.1 kB measured against the old 58 cap).
+  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 60),
   readerCss: Number(process.env.BUDGET_READER_CSS_KB || 252),
 };
 

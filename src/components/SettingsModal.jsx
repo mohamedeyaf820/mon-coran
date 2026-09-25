@@ -46,6 +46,10 @@ import {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
 } from "../utils/arabicTypography";
+import {
+  ensureNotificationPermission,
+  getNotificationPermission,
+} from "../services/notificationService";
 const TABS = [
   { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
@@ -184,7 +188,24 @@ export default function SettingsModal() {
     theme,
     translationLangs = ["fr"],
     volume = 1,
+    dailyVerseNotification,
   } = state;
+
+  const [notificationPermission, setNotificationPermission] = useState(
+    getNotificationPermission,
+  );
+  const [notificationAsked, setNotificationAsked] = useState(false);
+
+  const toggleDailyVerseNotification = async (checked) => {
+    if (!checked) {
+      set({ dailyVerseNotification: false });
+      return;
+    }
+    const result = await ensureNotificationPermission();
+    setNotificationPermission(result);
+    setNotificationAsked(true);
+    set({ dailyVerseNotification: result === "granted" });
+  };
 
   const [cacheBusy, setCacheBusy] = useState(false);
   const [activeTab, setActiveTab] = useState("general");
@@ -531,6 +552,33 @@ export default function SettingsModal() {
             </div>
           </div>
         ) : null}
+      </Section>
+
+      <Section title={t("settings.notifications", lang)}>
+        {notificationPermission === "unsupported" ? (
+          <p className="settings-notification-note">
+            {t("settings.notificationsUnsupported", lang)}
+          </p>
+        ) : (
+          <>
+            <SwitchRow
+              id="settings-daily-verse-notification"
+              checked={dailyVerseNotification}
+              onChange={toggleDailyVerseNotification}
+              label={t("settings.dailyVerseNotification", lang)}
+              description={t("settings.dailyVerseNotificationHint", lang)}
+            />
+            {notificationPermission === "denied" ||
+            (notificationAsked && notificationPermission !== "granted") ? (
+              <p className="settings-notification-note is-warning" role="alert">
+                {t("settings.notificationsBlocked", lang)}
+              </p>
+            ) : null}
+            <p className="settings-notification-note">
+              {t("settings.prayerSettingsHint", lang)}
+            </p>
+          </>
+        )}
       </Section>
 
     </div>

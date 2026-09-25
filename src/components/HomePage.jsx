@@ -123,6 +123,10 @@ import {
 } from "./Home/homeConstants";
 import HeroSection from "./Home/HeroSection";
 import ContentSection from "./Home/ContentSection";
+import PrayerTimesCard from "./Home/PrayerTimesCard";
+import { usePrayerTimes } from "../hooks/usePrayerTimes";
+
+const PrayerTimesModal = lazy(() => import("./PrayerTimesModal"));
 
 export default function HomePage({ lowPerfMode = false }) {
   const { dispatch, set } = useAppActions();
@@ -142,6 +146,11 @@ export default function HomePage({ lowPerfMode = false }) {
       isPlaying: current.isPlaying,
       currentPlayingAyah: current.currentPlayingAyah,
       homeSection: current.homeSection,
+      prayerModalOpen: current.prayerModalOpen,
+      prayerTimesEnabled: current.prayerTimesEnabled,
+      prayerMethod: current.prayerMethod,
+      prayerLocation: current.prayerLocation,
+      prayerReminders: current.prayerReminders,
     }),
     shallowEqual,
   );
@@ -166,6 +175,15 @@ export default function HomePage({ lowPerfMode = false }) {
   const [resumeState, setResumeLocalState] = useState(() => getResumeState());
   const [listeningHistory, setListeningHistory] = useState(() => getListeningHistory());
   const [now, setNow] = useState(() => new Date());
+
+  const prayer = usePrayerTimes({
+    enabled: state.prayerTimesEnabled,
+    location: state.prayerLocation,
+    method: state.prayerMethod,
+    now,
+  });
+  const openPrayerModal = useCallback(() => set({ prayerModalOpen: true }), [set]);
+  const closePrayerModal = useCallback(() => set({ prayerModalOpen: false }), [set]);
 
   const homeInitialSurahCount = lowPerfMode
     ? HOME_INITIAL_SURAHS_LOW
@@ -913,6 +931,9 @@ export default function HomePage({ lowPerfMode = false }) {
         dailyVerse={dailyVerse}
         vodSurahNum={vodSurahNum}
         vodAyahNum={vodAyahNum}
+        prayerStatus={prayer.status}
+        prayerNext={prayer.next}
+        onOpenPrayer={openPrayerModal}
       />
 
       {/* ── Layout principal (stats + grille) ─────────────────────────── */}
@@ -999,6 +1020,23 @@ export default function HomePage({ lowPerfMode = false }) {
             document.body,
           )
         : null}
+
+      {/* ── Modal horaires de prière ───────────────────────────────────── */}
+      {state.prayerModalOpen ? (
+        <Suspense fallback={null}>
+          <PrayerTimesModal
+            lang={lang}
+            now={now}
+            prayer={prayer}
+            enabled={state.prayerTimesEnabled}
+            method={state.prayerMethod}
+            location={state.prayerLocation}
+            reminders={state.prayerReminders}
+            set={set}
+            onClose={closePrayerModal}
+          />
+        </Suspense>
+      ) : null}
 
       {/* ── Pied de page ──────────────────────────────────────────────── */}
       <div className="relative z-10">

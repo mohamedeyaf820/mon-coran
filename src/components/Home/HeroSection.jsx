@@ -14,6 +14,7 @@ import {
 import SURAHS, { getSurahLigature } from "../../data/surahs";
 import { t } from "../../i18n";
 import PlatformLogo from "../PlatformLogo";
+import PrayerTimesCard from "./PrayerTimesCard";
 
 function TodaySuggestion({ isRtl, lang, onClick, onIntent, surah }) {
   const data = SURAHS[surah.n - 1] || surah;
@@ -74,6 +75,9 @@ export default function HeroSection({
   dailyVerse,
   vodSurahNum,
   vodAyahNum,
+  prayerStatus,
+  prayerNext,
+  onOpenPrayer,
 }) {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const greetingLabel = greeting[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"];
@@ -191,6 +195,14 @@ export default function HeroSection({
             {suggestionSet.period?.[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"]}
           </small>
         </header>
+
+        <PrayerTimesCard
+          lang={lang}
+          isRtl={isRtl}
+          status={prayerStatus}
+          next={prayerNext}
+          onOpen={onOpenPrayer}
+        />
 
         <button
           type="button"

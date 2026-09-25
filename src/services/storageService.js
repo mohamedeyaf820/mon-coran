@@ -29,6 +29,30 @@ import {
 } from "../data/themes.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
+// Mirrors PRAYER_METHODS in prayerTimesService (kept out of the boot graph:
+// storageService loads at startup, the timings API client must not).
+const VALID_PRAYER_METHOD_IDS = [1, 2, 3, 4, 5, 12];
+
+function normalizePrayerMethodSetting(value, lang) {
+  const parsed = Number(value);
+  if (VALID_PRAYER_METHOD_IDS.includes(parsed)) return parsed;
+  // French-speaking readers overwhelmingly follow the UOIF 12°/12° convention.
+  return lang === "fr" ? 12 : 3;
+}
+
+function sanitizePrayerLocation(value) {
+  if (!value || typeof value !== "object") return null;
+  const latitude = Number(value.latitude);
+  const longitude = Number(value.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null;
+  return {
+    latitude: Math.round(latitude * 10000) / 10000,
+    longitude: Math.round(longitude * 10000) / 10000,
+    label: typeof value.label === "string" ? value.label.slice(0, 80) : "",
+  };
+}
+
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);
   return result.success ? result.data : null;
@@ -349,6 +373,11 @@ const DEFAULT_SETTINGS = {
   nightTheme: "dark",
   dayTheme: "light",
   surahRepeatCount: 1,
+  prayerTimesEnabled: false,
+  prayerMethod: 12,
+  prayerLocation: null,
+  prayerReminders: false,
+  dailyVerseNotification: false,
   showHome: true,
   showDuas: false,
   focusReading: false,
@@ -431,6 +460,11 @@ export function getSettings() {
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
           : DEFAULT_SETTINGS.surahRepeatCount,
+      prayerTimesEnabled: Boolean(parsed?.prayerTimesEnabled),
+      prayerMethod: normalizePrayerMethodSetting(parsed?.prayerMethod, parsed?.lang),
+      prayerLocation: sanitizePrayerLocation(parsed?.prayerLocation),
+      prayerReminders: Boolean(parsed?.prayerReminders),
+      dailyVerseNotification: Boolean(parsed?.dailyVerseNotification),
     };
 
     if (needsMigration) {
@@ -567,6 +601,11 @@ function sanitizeSettings(settings) {
       safeInput.karaokeFollow !== undefined
         ? Boolean(safeInput.karaokeFollow)
         : true,
+    prayerTimesEnabled: Boolean(safeInput.prayerTimesEnabled),
+    prayerMethod: normalizePrayerMethodSetting(safeInput.prayerMethod, safeInput.lang),
+    prayerLocation: sanitizePrayerLocation(safeInput.prayerLocation),
+    prayerReminders: Boolean(safeInput.prayerReminders),
+    dailyVerseNotification: Boolean(safeInput.dailyVerseNotification),
     lastPosition: {
       surah: lastSurah,
       ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah, normalizedRiwaya),

@@ -6,7 +6,7 @@ import QURAN_DUAS from "../data/duas";
 import SURAHS from "../data/surahs";
 import { foldSearchText } from "../utils/searchIntelligence";
 import Footer from "./Footer";
-import { Home, Search, BookOpen, Copy, ExternalLink, ArrowRight } from "lucide-react";
+import { Home, Search, BookOpen, Copy, ExternalLink, ArrowRight, Share2 } from "lucide-react";
 
 const CATEGORIES = [
   { id: "all", fr: "Toutes", en: "All", ar: "الكل" },
@@ -87,6 +87,23 @@ export default function DuasPage() {
     if (!surah) return;
     set({ showDuas: false, showHome: false, displayMode: "surah" });
     dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
+  };
+
+  // Reuses the verse share studio: same SVG→canvas card, with the category as
+  // the "occasion" badge and the source as reference for non-Quranic adhkar.
+  const shareDua = (dua, categoryLabel) => {
+    set({
+      shareImageOpen: true,
+      shareVerseDraft: {
+        kind: "dua",
+        surah: dua.surah || 0,
+        ayah: dua.ayah || 0,
+        arabicText: dua.arabic || "",
+        translationText: lang === "fr" ? dua.fr : dua.en,
+        occasion: categoryLabel,
+        source: dua.source || "Hisn al-Muslim",
+      },
+    });
   };
 
   const activeCategoryMeta = CATEGORY_MAP[activeCategory] || CATEGORY_MAP.all;
@@ -218,6 +235,15 @@ export default function DuasPage() {
                       <span className="dua-cat-pill">{categoryLabel}</span>
                     </div>
                     <div className="dua-head-actions">
+                      <button
+                        className="dua-open-btn-v5"
+                        onClick={() => shareDua(dua, categoryLabel)}
+                        title={t("duas.shareTitle", lang)}
+                        aria-label={t("duas.shareAria", lang)}
+                        type="button"
+                      >
+                        <Share2 size={14} aria-hidden="true" />
+                      </button>
                       <button
                         className="dua-open-btn-v5"
                         onClick={() =>

@@ -21,6 +21,7 @@ import { isLowPerformanceDevice } from "./utils/networkPolicy";
 import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
 import { useKeyboardNavigation } from "./hooks/useKeyboardNavigation";
+import { useNotificationRoutines } from "./hooks/useNotificationRoutines";
 import {
   ensureReciterForRiwaya,
   getReciter,
@@ -218,6 +219,12 @@ export default function App() {
       settingsOpen: current.settingsOpen,
       libraryOpen: current.libraryOpen,
       shareImageOpen: current.shareImageOpen,
+      prayerModalOpen: current.prayerModalOpen,
+      prayerTimesEnabled: current.prayerTimesEnabled,
+      prayerReminders: current.prayerReminders,
+      prayerLocation: current.prayerLocation,
+      prayerMethod: current.prayerMethod,
+      dailyVerseNotification: current.dailyVerseNotification,
       tafsirSidebarOpen: current.tafsirSidebarOpen,
     }),
     shallowEqual,
@@ -299,6 +306,15 @@ export default function App() {
   ]);
 
   const lowPerfMode = useMemo(() => isLowPerformanceDevice(), []);
+
+  useNotificationRoutines({
+    lang,
+    prayerTimesEnabled: state.prayerTimesEnabled,
+    prayerReminders: state.prayerReminders,
+    prayerLocation: state.prayerLocation,
+    prayerMethod: state.prayerMethod,
+    dailyVerseNotification: state.dailyVerseNotification,
+  });
   const suspenseFallback = useMemo(
     () => <AppLoadingFallback lang={lang} />,
     [lang],
@@ -362,6 +378,7 @@ export default function App() {
       state.settingsOpen ||
       state.libraryOpen ||
       state.shareImageOpen ||
+      state.prayerModalOpen ||
       state.tafsirSidebarOpen ||
       showShortcuts,
   );

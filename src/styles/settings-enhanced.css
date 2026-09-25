@@ -1824,3 +1824,14 @@ html[data-theme="dark"] .settings-drawer {
 html[dir="rtl"] .settings-switch[data-state="checked"] span {
   transform: translateX(-1.16rem) !important;
 }
+
+.settings-notification-note {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.settings-notification-note.is-warning {
+  color: var(--toast-warning-text, #9a3412);
+}

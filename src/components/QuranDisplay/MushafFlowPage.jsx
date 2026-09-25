@@ -133,7 +133,12 @@ export default function MushafFlowPage({
   const fitKeyRef = useRef("");
 
   useLayoutEffect(() => {
-    if (!showTajwid || !fontReady) return undefined;
+    if (!showTajwid) return undefined;
+    // WebKit colours each word with a whole-word ink that needs no glyph
+    // metrics, so it must not wait for the Quran face: a slow or failed remote
+    // font load would otherwise leave the sheet with no rule colour at all.
+    // Only the measured gradient bands depend on the settled font.
+    if (CLIP_PAINT_SUPPORTED && !fontReady) return undefined;
     const root = linesRef.current;
     if (!root) return undefined;
     const words = new Map(Array.from(root.querySelectorAll("[data-tajweed-key]"),

@@ -96,6 +96,7 @@ const getInitialState = () => {
   libraryOpen: false,
   libraryTab: "favorites",
   shareImageOpen: false,
+  prayerModalOpen: false,
   // The branded opening returns on each real app launch. A persisted legacy
   // setting can only bypass it in automated browser tests.
   skipSplashAnimation: shouldSkipSplashForAutomation(stored),
@@ -177,6 +178,13 @@ const getInitialState = () => {
   nightEnd: stored.nightEnd || "06:00",
   nightTheme: normalizeNightTheme(stored.nightTheme || "dark"),
   dayTheme: normalizeDayTheme(stored.dayTheme || "light"),
+
+  // Prayer times & notifications
+  prayerTimesEnabled: stored.prayerTimesEnabled ?? false,
+  prayerMethod: stored.prayerMethod ?? 12,
+  prayerLocation: stored.prayerLocation ?? null,
+  prayerReminders: stored.prayerReminders ?? false,
+  dailyVerseNotification: stored.dailyVerseNotification ?? false,
 
   // Loading
   loading: true,
@@ -517,6 +525,11 @@ export function AppProvider({ children }) {
     dayTheme: state.dayTheme,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
+    prayerTimesEnabled: state.prayerTimesEnabled,
+    prayerMethod: state.prayerMethod,
+    prayerLocation: state.prayerLocation,
+    prayerReminders: state.prayerReminders,
+    dailyVerseNotification: state.dailyVerseNotification,
   }), [
     state.lang,
     state.theme,
@@ -556,6 +569,11 @@ export function AppProvider({ children }) {
     state.dayTheme,
     state.karaokeFollow,
     state.surahRepeatCount,
+    state.prayerTimesEnabled,
+    state.prayerMethod,
+    state.prayerLocation,
+    state.prayerReminders,
+    state.dailyVerseNotification,
   ]);
 
   // Persist settings to localStorage on change (debounced — 500ms). The write
