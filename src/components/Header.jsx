@@ -82,6 +82,7 @@ export default function Header({ immersiveHidden = false }) {
 
   const [goToValue, setGoToValue] = useState("");
   const [goToOpen, setGoToOpen] = useState(false);
+  const [goToError, setGoToError] = useState(false);
   const [quickMenuOpen, setQuickMenuOpen] = useState(false);
   const inputRef = useRef(null);
   const headerRef = useRef(null);
@@ -137,6 +138,7 @@ export default function Header({ immersiveHidden = false }) {
 
   useEffect(() => {
     if (!goToOpen) return;
+    setGoToError(false);
     const id = window.setTimeout(() => inputRef.current?.focus(), 50);
     return () => window.clearTimeout(id);
   }, [goToOpen]);
@@ -293,12 +295,21 @@ export default function Header({ immersiveHidden = false }) {
   const handleGoTo = (event) => {
     event.preventDefault();
     const num = Number.parseInt(goToValue, 10);
-    if (Number.isNaN(num)) return;
-    if (displayMode === "page" && num >= 1 && num <= 604) {
+    const max =
+      displayMode === "page" ? 604 : displayMode === "juz" ? 30 : 114;
+    // An out-of-range or empty entry used to close the popover with no jump and
+    // no explanation, which read as a broken control. Keep it open and say why.
+    if (!Number.isFinite(num) || num < 1 || num > max) {
+      setGoToError(true);
+      inputRef.current?.select();
+      return;
+    }
+    setGoToError(false);
+    if (displayMode === "page") {
       navigateReadingTarget("page", num);
-    } else if (displayMode === "juz" && num >= 1 && num <= 30) {
+    } else if (displayMode === "juz") {
       navigateReadingTarget("juz", num);
-    } else if (displayMode === "surah" && num >= 1 && num <= 114) {
+    } else {
       navigateReadingTarget("surah", num);
     }
     setGoToOpen(false);
@@ -651,6 +662,7 @@ export default function Header({ immersiveHidden = false }) {
                 >
                   <form
                     onSubmit={handleGoTo}
+                    noValidate
                     className="flex flex-col gap-3 p-4"
                   >
                     <label
@@ -667,8 +679,13 @@ export default function Header({ immersiveHidden = false }) {
                         min={1}
                         max={goToMax}
                         value={goToValue}
-                        onChange={(event) => setGoToValue(event.target.value)}
+                        onChange={(event) => {
+                          setGoToValue(event.target.value);
+                          if (goToError) setGoToError(false);
+                        }}
                         placeholder="#"
+                        aria-invalid={goToError}
+                        aria-describedby={goToError ? "header-goto-error" : undefined}
                         className="h-[44px] flex-1 rounded-xl border border-border bg-bg-secondary px-3 text-center text-text-primary outline-none focus:border-primary focus:ring-1 focus:ring-primary"
                       />
                       <button
@@ -679,6 +696,18 @@ export default function Header({ immersiveHidden = false }) {
                         <ChevronRight size={16} strokeWidth={2.5} />
                       </button>
                     </div>
+                    {goToError ? (
+                      <p
+                        id="header-goto-error"
+                        role="alert"
+                        className="text-center text-[0.72rem] font-semibold text-[var(--c-danger,#b42318)]"
+                      >
+                        {i18nT("header.goToRange", lang).replace(
+                          "{max}",
+                          lang === "ar" ? toAr(goToMax) : goToMax,
+                        )}
+                      </p>
+                    ) : null}
                   </form>
                 </PopoverContent>
               </Popover>

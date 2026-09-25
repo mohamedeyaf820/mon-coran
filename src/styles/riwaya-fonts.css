@@ -109,11 +109,14 @@
   transform: translateY(-0.03em);
 }
 
-/* Amiri Quran and Noto Naskh Arabic draw U+06DD as an empty or broken rosette
-   that never composes the ayah digits. Their digit-only markers are shaped by
-   the QPC Hafs calt rosette instead. The #root anchor keeps this above the
+/* IndoPak, Scheherazade New, Amiri Quran and Noto Naskh Arabic draw U+06DD as
+   an empty, broken, or plain-disc rosette that never composes the ayah digits.
+   Their digit-only markers are shaped by the QPC Hafs calt rosette instead.
+   The #root anchor keeps this above the
    "html body .app-root ... .quran-arabic-text *" !important font rules. */
 html body #root .app-root :is(
+    [data-quran-font="qpc-indopak"],
+    [data-quran-font="scheherazade-new"],
     [data-quran-font="amiri-quran"],
     [data-quran-font="noto-naskh-arabic"]
   ) .native-ayah-marker {

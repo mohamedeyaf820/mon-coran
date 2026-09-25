@@ -554,6 +554,19 @@
     inset-inline-end: clamp(0.62rem, 2vw, 1.2rem);
 }
 
+/* The compact 34-42px circle is intentional on the reading sheet, but it sat
+   under the 44px touch contract on phones. Keep the visual size and extend the
+   tappable box instead of inflating the icon. */
+.app-root .scroll-top-btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: max(100%, 2.75rem);
+    height: max(100%, 2.75rem);
+    transform: translate(-50%, -50%);
+}
+
 @media (max-width: 1024px) {
     .app-root .hdr-v7__home-chips {
         display: none;

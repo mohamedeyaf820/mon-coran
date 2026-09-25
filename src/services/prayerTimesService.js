@@ -1,4 +1,5 @@
 import { fetchWithTimeout } from "./fetchWithTimeout.js";
+import { encryptData, decryptDataWithMeta } from "./cryptoUtil.js";
 
 // Prayer names in day order. Sunrise (Chourouq) is displayed for reference but
 // is not a prayer: it never triggers a reminder and is excluded from "next".
@@ -102,7 +103,14 @@ function normalizeTimingsPayload(data, coords, methodId) {
 function readCache() {
   try {
     const raw = localStorage.getItem(CACHE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    // The cache holds the reader's coordinates, so it is encrypted like the
+    // other private storage. decryptDataWithMeta also returns a legacy
+    // plaintext JSON payload (needsMigration) so an existing cache keeps
+    // working and is rewritten encrypted on the next fetch.
+    const { data, locked } = decryptDataWithMeta(raw);
+    if (locked || !data || typeof data !== "object") return null;
+    return data;
   } catch {
     return null;
   }
@@ -110,7 +118,7 @@ function readCache() {
 
 function writeCache(entry) {
   try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(entry));
+    localStorage.setItem(CACHE_KEY, encryptData(entry));
   } catch {
     // A full or blocked localStorage only loses the offline convenience.
   }

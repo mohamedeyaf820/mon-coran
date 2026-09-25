@@ -23,7 +23,6 @@ import { applyFontSigns, comparableArabicText, getFontSignVariant, normalizeQura
 
 export const HAFS_FONT_IDS = [
   "qpc-hafs",
-  "qpc-madani-page",
   "qpc-indopak",
   "scheherazade-new",
   "amiri-quran",
@@ -36,19 +35,20 @@ export const WARSH_FONT_IDS = [
 ];
 
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
-export const INTERNAL_QURAN_FONT_IDS = ["qcf-v2", "qcf-v4-tajweed"];
+// qpc-madani-page stays a valid id (the fifteen-line page cut, and preferences
+// saved while it was in the menu) but is no longer offered: it is the same
+// QPC Hafs face as the flowing default, and the two names read as a duplicate.
+export const INTERNAL_QURAN_FONT_IDS = [
+  "qpc-madani-page",
+  "qcf-v2",
+  "qcf-v4-tajweed",
+];
 
 export const QURAN_FONT_OPTIONS = [
   {
     id: "qpc-hafs",
     label: "QPC Uthmani Hafs",
     hintKey: "settings.qpcHafsHint",
-    riwaya: "hafs",
-  },
-  {
-    id: "qpc-madani-page",
-    label: "QPC Uthmani Hafs — Madani page",
-    hintKey: "settings.qpcMadaniPageHint",
     riwaya: "hafs",
   },
   {
@@ -136,27 +136,18 @@ const ARABIC_INDIC_DIGITS = [
   "\u0669",
 ];
 
-const EXTENDED_ARABIC_INDIC_DIGITS = [
-  "\u06f0",
-  "\u06f1",
-  "\u06f2",
-  "\u06f3",
-  "\u06f4",
-  "\u06f5",
-  "\u06f6",
-  "\u06f7",
-  "\u06f8",
-  "\u06f9",
-];
-
 const AYAH_MARKER_BY_FONT = {
   // UthmanicHafs1Ver18 shapes the complete digit sequence as one rosette via OpenType calt.
   // Prefixing U+06DD produces a SECOND empty rosette beside the number \u2014 must NOT add it.
   "qpc-hafs": { marker: "", digits: ARABIC_INDIC_DIGITS },
-  // IndoPak: use U+06DD prefix with Extended Arabic-Indic digits (U+06F0–U+06F9).
-  "qpc-indopak": { marker: "۝", digits: EXTENDED_ARABIC_INDIC_DIGITS },
-  // Scheherazade and other Naskh fonts: U+06DD prefix with standard Arabic-Indic digits.
-  "scheherazade-new": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
+  // IndoPak draws U+06DD as a plain filled disc and never composes the digits
+  // into it; its markers are digits-only, shaped by the QPC Hafs calt rosette
+  // (see QPC_SHAPED_MARKER_FONT_IDS and the [data-quran-font] rule in
+  // riwaya-fonts.css).
+  "qpc-indopak": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  // Scheherazade New draws an empty rosette and leaves the digits outside it —
+  // same defect as IndoPak, same answer: digits-only shaped by QPC Hafs.
+  "scheherazade-new": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // Amiri Quran and Noto Naskh draw U+06DD as an empty or broken rosette that never
   // composes the digits. Their markers are digits-only and shaped by the QPC Hafs calt
   // rosette, forced on .native-ayah-marker via [data-quran-font] in riwaya-fonts.css.
@@ -271,10 +262,16 @@ export function resolveFontFamily(id, riwaya = "hafs") {
   return FONT_MAP[normalizedId] || FONT_MAP[DEFAULT_FONT_ID];
 }
 
-// The family that actually shapes the verse-end marker. Amiri Quran and Noto
-// Naskh carry no composing rosette, so their digits-only markers are shaped by
-// the QPC Hafs calt rosette (mirrors the [data-quran-font] rule in riwaya-fonts.css).
-const QPC_SHAPED_MARKER_FONT_IDS = new Set(["amiri-quran", "noto-naskh-arabic"]);
+// The family that actually shapes the verse-end marker. IndoPak, Scheherazade,
+// Amiri Quran and Noto Naskh carry no composing rosette, so their digits-only
+// markers are shaped by the QPC Hafs calt rosette (mirrors the
+// [data-quran-font] rule in riwaya-fonts.css).
+const QPC_SHAPED_MARKER_FONT_IDS = new Set([
+  "qpc-indopak",
+  "scheherazade-new",
+  "amiri-quran",
+  "noto-naskh-arabic",
+]);
 
 export function getAyahMarkerFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
@@ -417,8 +414,8 @@ export function getNativeAyahMarker(value, fontId, riwaya = "hafs") {
  *
  * Its CSS intentionally uses the QPC Hafs rosette for a consistent medallion
  * in every reading font. Generating the text with another font configuration
- * (for example Scheherazade's U+06DD prefix) and then shaping it as QPC Hafs
- * creates two adjacent rosettes. Keep glyph and font source inseparable.
+ * (for example Scheherazade Warsh's U+06DD prefix) and then shaping it as QPC
+ * Hafs creates two adjacent rosettes. Keep glyph and font source inseparable.
  */
 export function getUiAyahMarker(value, fontId = UI_AYAH_MARKER_FONT_ID, riwaya = "hafs") {
   return getNativeAyahMarker(value, fontId, riwaya);

@@ -203,7 +203,6 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
     getFontOptionsForRiwaya("hafs").map((font) => font.id),
     [
       "qpc-hafs",
-      "qpc-madani-page",
       "qpc-indopak",
       "scheherazade-new",
       "amiri-quran",
@@ -218,17 +217,21 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
   assert.equal(getNativeAyahMarker(10, "qpc-hafs", "hafs"), "\u0661\u0660");
   assert.equal(getNativeAyahMarker(100, "qpc-hafs", "hafs"), "\u0661\u0660\u0660");
-  assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u06dd\u06f1");
+  assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u0661");
   assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u0661");
   assert.equal(getNativeAyahMarker(10, "qpc-warsh", "warsh"), "\u0661\u0660");
   assert.equal(getNativeAyahMarker(100, "qpc-warsh", "warsh"), "\u0661\u0660\u0660");
-  assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u0661");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u06dd\u0661");
   assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
   assert.equal(normalizeFontId("amiri-quran", "warsh"), "qpc-warsh");
   // The merged Warsh entry keeps answering to the id older preferences stored.
   assert.equal(normalizeFontId("kfgqpc-warsh", "warsh"), "qpc-warsh");
   assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
+  // The Madani page cut left the menu (a duplicate name for the same face) but
+  // stays a valid id for the preferences that selected it while it was there.
+  assert.equal(normalizeFontId("qpc-madani-page", "hafs"), "qpc-madani-page");
+  assert.ok(!getFontOptionsForRiwaya("hafs").some((font) => font.id === "qpc-madani-page"));
 });
 
 test("fonts: appends native ayah markers without duplicates", () => {
@@ -243,7 +246,7 @@ test("fonts: appends native ayah markers without duplicates", () => {
   );
   assert.equal(
     appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),
-    "\u0627\u0644\u062d\u0645\u062f\u202f\u06dd\u06f7",
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
   );
 });
 

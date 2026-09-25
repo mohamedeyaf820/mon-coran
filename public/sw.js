@@ -34,7 +34,11 @@ const ASSETS_TO_CACHE = [
   "/favicon.png",
   "/data/reciter-profiles.json",
   "/data/editorial-copy.json",
-  "/data/warsh-page-source.json",
+  // /data/warsh-page-source.json (2,76 Mo) is deliberately NOT precached: it
+  // only serves the Warsh page view, so blocking every install — Hafs readers
+  // included — on it was a large, wasted boot download. The same-origin
+  // Network-First rule caches it on the first Warsh page opened, and it stays
+  // available offline from then on.
   // The reading faces are needed on every route once offline.
   "/fonts/uthmanic-hafs-v18.woff2",
   "/fonts/kfgqpc-warsh-21.woff2",

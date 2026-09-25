@@ -737,12 +737,40 @@ export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'],
 // search route means "nothing found", not "the index is down". Reporting it as
 // an outage sends the reader to retry a query that can never match.
 const SEARCH_NO_MATCH_RE = /^API error 404\b/;
-
 function isSearchNoMatch(error) {
   return SEARCH_NO_MATCH_RE.test(String(error?.message || ''));
 }
 
+// A no-match search returns HTTP 404 from api.alquran.cloud, which fetchJSON
+// throws on before it can cache (only 2xx payloads are stored). So repeating an
+// exhausted query — back/forward, re-opening a term, a debounced re-run of the
+// same candidates — re-fires the whole edition × language fan-out every time.
+// A short, search-only in-memory memo collapses those repeats to one round
+// trip. It is deliberately tiny-lived (never persisted) so a phrase that only
+// matches later is not stale-suppressed, and it caches only resolved values.
+const SEARCH_MEMO = new Map();
+const SEARCH_MEMO_TTL_MS = 60 * 1000;
+function searchMemoGet(key) {
+  const hit = SEARCH_MEMO.get(key);
+  if (!hit) return undefined;
+  if (hit.expiry <= Date.now()) {
+    SEARCH_MEMO.delete(key);
+    return undefined;
+  }
+  return hit.value;
+}
+function searchMemoSet(key, value) {
+  if (SEARCH_MEMO.size >= 120) {
+    SEARCH_MEMO.delete(SEARCH_MEMO.keys().next().value);
+  }
+  SEARCH_MEMO.set(key, { value, expiry: Date.now() + SEARCH_MEMO_TTL_MS });
+}
+
 export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
+  const memoKey = `${riwaya}|${surahNum ?? ''}|${query}`;
+  const memoized = searchMemoGet(memoKey);
+  if (memoized !== undefined) return memoized;
+
   const scope = surahNum ? `/${surahNum}` : '';
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
@@ -750,7 +778,9 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
 
   for (const edition of editions) {
     try {
-      return await fetchJSON(`${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`, signal);
+      const result = await fetchJSON(`${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`, signal);
+      searchMemoSet(memoKey, result);
+      return result;
     } catch (err) {
       if (err.name === 'AbortError') throw err;
       lastError = err;
@@ -760,14 +790,22 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
     }
   }
 
-  if (everyEditionMissed) return { matches: [] };
+  if (everyEditionMissed) {
+    const empty = { matches: [] };
+    searchMemoSet(memoKey, empty);
+    return empty;
+  }
 
   try {
-    return await searchArabicLocally(query, surahNum, signal);
+    const local = await searchArabicLocally(query, surahNum, signal);
+    searchMemoSet(memoKey, local);
+    return local;
   } catch (fallbackError) {
     if (fallbackError.name === 'AbortError') throw fallbackError;
   }
 
+  // A genuine network/server failure (not a 404 miss) is never memoized, so a
+  // retry hits the network again instead of replaying the error for a minute.
   throw lastError || new Error('Search failed');
 }
 

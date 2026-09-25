@@ -256,8 +256,8 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
 
   const fontMarkers = [
     ["qpc-hafs", "hafs", "١"],
-    ["qpc-indopak", "hafs", "۝۱"],
-    ["scheherazade-new", "hafs", "۝١"],
+    ["qpc-indopak", "hafs", "١"],
+    ["scheherazade-new", "hafs", "١"],
     ["amiri-quran", "hafs", "١"],
     ["noto-naskh-arabic", "hafs", "١"],
     ["qpc-warsh", "warsh", "١"],

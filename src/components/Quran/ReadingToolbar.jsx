@@ -15,26 +15,23 @@ import {
   useAppActions,
   useAppSelector,
 } from "../../context/AppContext";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
 
-function labelFor(lang, fr, en, ar = en) {
-  if (lang === "ar") return ar;
-  return lang === "fr" ? fr : en;
-}
-
-function toolbarLabelsFor(lang) {
+function toolbarLabels(lang) {
   return {
-    toolbar: labelFor(lang, "Outils de lecture", "Reading tools", "\u0623\u062f\u0648\u0627\u062a \u0627\u0644\u0642\u0631\u0627\u0621\u0629"),
-    mushaf: labelFor(lang, "Mushaf", "Mushaf", "\u0627\u0644\u0645\u0635\u062d\u0641"),
-    list: labelFor(lang, "Liste", "List", "\u0642\u0627\u0626\u0645\u0629"),
-    translation: labelFor(lang, "Traduction", "Translation", "\u0627\u0644\u062a\u0631\u062c\u0645\u0629"),
-    tajweed: labelFor(lang, "Tajweed", "Tajweed", "\u0627\u0644\u062a\u062c\u0648\u064a\u062f"),
-    listen: labelFor(lang, "\u00c9couter", "Listen", "\u0627\u0633\u062a\u0645\u0627\u0639"),
-    pause: labelFor(lang, "Pause", "Pause", "\u0625\u064a\u0642\u0627\u0641 \u0645\u0624\u0642\u062a"),
-    loading: labelFor(lang, "Chargement", "Loading", "\u062c\u0627\u0631\u064a \u0627\u0644\u062a\u062d\u0645\u064a\u0644"),
-    fullscreen: labelFor(lang, "Plein écran", "Full screen", "\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629"),
+    toolbar: t("reader.toolbar", lang),
+    mushaf: t("reader.mushaf", lang),
+    list: t("reader.list", lang),
+    translation: t("reader.translationToggle", lang),
+    tajweed: t("reader.tajweedToggle", lang),
+    listen: t("reader.listen", lang),
+    pause: t("reader.pause", lang),
+    loading: t("reader.loading", lang),
+    fullscreen: t("reader.fullscreen", lang),
+    text: t("reader.text", lang),
   };
 }
 
@@ -74,7 +71,7 @@ export default function ReadingToolbar({
   const mushafIsOn = mushafLayout === "mushaf";
   const isPlayingThisContext = isPlaying;
 
-  const labels = toolbarLabelsFor(lang);
+  const labels = toolbarLabels(lang);
 
   const setMushafLayout = () => {
     if (mushafIsOn) return;
@@ -251,7 +248,7 @@ export default function ReadingToolbar({
             aria-controls="reader-toolbar-typography-panel"
           >
             <SlidersHorizontal size={13} aria-hidden="true" />
-            <span>{labelFor(lang, "Texte", "Text", "الخط")}</span>
+            <span>{labels.text}</span>
           </button>
 
           <div

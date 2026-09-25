@@ -580,16 +580,17 @@ test("ayah numbers keep one canonical glyph regardless of the reading font", () 
   const fonts = source("src/data/fonts.js");
   const riwayaFonts = source("src/styles/riwaya-fonts.css");
 
-  // Amiri Quran and Noto Naskh carry no composing rosette, so their digits-only
-  // marker is shaped by the QPC Hafs face — in JS and in the stylesheet.
+  // IndoPak, Scheherazade New, Amiri Quran and Noto Naskh carry no composing
+  // rosette, so their digits-only marker is shaped by the QPC Hafs face — in JS
+  // and in the stylesheet.
   assert.match(
     fonts,
-    /QPC_SHAPED_MARKER_FONT_IDS = new Set\(\["amiri-quran", "noto-naskh-arabic"\]\)/,
+    /QPC_SHAPED_MARKER_FONT_IDS = new Set\(\[\s*"qpc-indopak",\s*"scheherazade-new",\s*"amiri-quran",\s*"noto-naskh-arabic",\s*\]\)/,
   );
   assert.match(fonts, /if \(riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS\.has\(normalizedId\)\)/);
   assert.match(
     riwayaFonts,
-    /\[data-quran-font="amiri-quran"\],[\s\S]*?\[data-quran-font="noto-naskh-arabic"\][\s\S]*?\.native-ayah-marker \{\s*font-family: "QPC Hafs", serif !important;/,
+    /\[data-quran-font="qpc-indopak"\],[\s\S]*?\[data-quran-font="scheherazade-new"\],[\s\S]*?\[data-quran-font="amiri-quran"\],[\s\S]*?\[data-quran-font="noto-naskh-arabic"\][\s\S]*?\.native-ayah-marker \{\s*font-family: "QPC Hafs", serif !important;/,
   );
 });
 

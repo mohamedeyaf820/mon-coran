@@ -442,6 +442,12 @@
     --icon-muted: var(--theme-text-muted);
     --primary: var(--theme-primary);
     --primary-rgb: var(--theme-primary-rgb);
+    /* Ink that sits on a --primary fill. Several components referenced these
+       names but no theme ever defined them, so the CSS `var(--primary-fg, #fff)`
+       fallback silently overrode every theme's own choice (dark ink on the
+       gold primaries). Alias the per-theme on-primary colour. */
+    --primary-fg: var(--theme-text-inverse);
+    --primary-contrast: var(--theme-text-inverse);
     --primary-light: color-mix(
         in srgb,
         var(--theme-primary) 18%,
