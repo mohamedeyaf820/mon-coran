@@ -9,12 +9,6 @@
 
 ---
 
-[![Capture de l'écran de l'accueil sur ordinateur](screenshot-desktop.png)](screenshot-desktop.png)
-[![Capture de l'écran mobile](screenshot-mobile.png)](screenshot-mobile.png)
-[![Mode Mushaf - lecture page par page](screenshot-mushaf.png)](screenshot-mushaf.png)
-
----
-
 ## ✨ Fonctionnalités
 
 ### 📖 Lecture du Coran
