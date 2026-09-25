@@ -475,11 +475,10 @@ export default function Header({ immersiveHidden = false }) {
             aria-expanded={sidebarOpen}
             aria-controls="sidebar"
           >
-            {sidebarOpen ? (
-              <X size={18} strokeWidth={2.2} />
-            ) : (
-              <Menu size={18} strokeWidth={2.2} />
-            )}
+            {/* The header is inert while the sidebar is open, so this button
+                cannot close it — the drawer owns the only working close. Keep
+                the hamburger here instead of a second, dead cross. */}
+            <Menu size={18} strokeWidth={2.2} />
           </button>
 
           <button

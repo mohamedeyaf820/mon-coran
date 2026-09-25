@@ -833,3 +833,15 @@ test("WebKit keeps tajweed rule colours by whole-word ink, not the clipped gradi
   assert.match(flow, /word\.style\.color = `var\(--tajwid-\$\{ruleId\}\)`/);
   assert.match(flow, /clearTajweedWordPaint\(word\);[\s\S]{0,40}word\.style\.removeProperty\("color"\);/);
 });
+
+test("the open sidebar shows a single close, the inert header keeps the hamburger", () => {
+  const header = source("src/components/Header.jsx");
+  const sidebar = source("src/components/Sidebar.jsx");
+
+  // The drawer owns the only working close (the header is inert while open).
+  assert.match(sidebar, /className="sidebar-close-button/);
+  // The header toggle must not swap to a second, dead cross when the drawer is
+  // open: it renders the Menu icon unconditionally.
+  assert.doesNotMatch(header, /sidebarOpen \?\s*\(\s*<X size=\{18\}/);
+  assert.match(header, /aria-controls="sidebar"[\s\S]{0,260}<Menu size=\{18\} strokeWidth=\{2\.2\} \/>/);
+});
