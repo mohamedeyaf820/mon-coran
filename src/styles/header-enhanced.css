@@ -1422,3 +1422,15 @@ html body .mp-header-menu.mp-header-menu.mp-header-menu .mp-header-menu__primary
     margin-bottom: 0 !important;
   }
 }
+
+/* Douas: the header reads as a white band floating over the page's tinted
+   background. Let the page surface show through so the top is one uniform
+   colour, keeping the blur so cards scrolling under the sticky header still
+   mask softly. Scoped to this view; reader and home keep their own headers. */
+.app-root[data-view="duas"] > .mp-header,
+.app-root[data-view="duas"] > .mp-header .mp-header__bar {
+    background: transparent !important;
+    background-image: none !important;
+    border-bottom-color: transparent !important;
+    box-shadow: none !important;
+}
