@@ -122,3 +122,9 @@ html body #root .app-root :is(
   ) .native-ayah-marker {
   font-family: "QPC Hafs", serif !important;
 }
+
+/* Scheherazade Warsh has no composing rosette either; its digit-only marker is
+   shaped by KFGQPC Warsh so the Warsh medallion matches the default Warsh face. */
+html body #root .app-root [data-quran-font="scheherazade-new-warsh"] .native-ayah-marker {
+  font-family: "KFGQPC Warsh", serif !important;
+}

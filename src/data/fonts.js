@@ -155,8 +155,11 @@ const AYAH_MARKER_BY_FONT = {
   "noto-naskh-arabic": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // The locally hosted Warsh 10 face shapes the digit sequence as a rosette.
   "qpc-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
-  // Scheherazade Warsh: same U+06DD prefix as its Hafs variant.
-  "scheherazade-new-warsh": { marker: "\u06dd", digits: ARABIC_INDIC_DIGITS },
+  // Scheherazade Warsh draws U+06DD as an empty rosette and leaves the digits
+  // outside it \u2014 same defect as its Hafs sibling. Digits-only, shaped by the
+  // KFGQPC Warsh rosette (see getAyahMarkerFontFamily and the [data-quran-font]
+  // rule in riwaya-fonts.css).
+  "scheherazade-new-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // QCF page fonts: QCF v4 Tajweed uses U+06DD as the base character for verse-end markers.
   "qcf-v2": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "qcf-v4-tajweed": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
@@ -275,6 +278,11 @@ const QPC_SHAPED_MARKER_FONT_IDS = new Set([
 
 export function getAyahMarkerFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
+  if (normalizedId === "scheherazade-new-warsh") {
+    // Scheherazade has no composing rosette, so its digits-only Warsh marker is
+    // shaped by KFGQPC Warsh — the same medallion the default Warsh face prints.
+    return FONT_MAP["qpc-warsh"];
+  }
   if (riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS.has(normalizedId)) {
     return FONT_MAP[DEFAULT_FONT_ID];
   }

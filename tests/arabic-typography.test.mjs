@@ -261,7 +261,7 @@ test("all supported embedded ayah marker forms collapse to one generated marker"
     ["amiri-quran", "hafs", "١"],
     ["noto-naskh-arabic", "hafs", "١"],
     ["qpc-warsh", "warsh", "١"],
-    ["scheherazade-new-warsh", "warsh", "۝١"],
+    ["scheherazade-new-warsh", "warsh", "١"],
   ];
 
   // The marker is attached with a narrow no-break space so that it never

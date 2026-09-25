@@ -222,7 +222,7 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   assert.equal(getNativeAyahMarker(10, "qpc-warsh", "warsh"), "\u0661\u0660");
   assert.equal(getNativeAyahMarker(100, "qpc-warsh", "warsh"), "\u0661\u0660\u0660");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u0661");
-  assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u06dd\u0661");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u0661");
   assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
   assert.equal(normalizeFontId("amiri-quran", "warsh"), "qpc-warsh");
   // The merged Warsh entry keeps answering to the id older preferences stored.
