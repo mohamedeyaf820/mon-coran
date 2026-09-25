@@ -347,7 +347,7 @@
     border: 1px solid var(--border);
     border-radius: 15px;
     background: var(--theme-bg-alt);
-    padding: 0.72rem 0.78rem;
+    padding: 1.1rem 1.15rem;
 }
 
 .reciter-detail__sources h3 {
@@ -373,7 +373,7 @@
     border: 1px solid rgba(var(--primary-rgb), 0.17);
     border-radius: 999px;
     background: rgba(var(--primary-rgb), 0.06);
-    padding: 0.25rem 0.48rem;
+    padding: 0.4rem 0.85rem;
     color: var(--primary);
     font-size: 0.65rem;
     font-weight: 760;
