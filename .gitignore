@@ -63,3 +63,4 @@ design-audit-2/
 
 # Vercel CLI local state (device/session ids) — must never be tracked
 .vercel-cli-data/
+.env*
