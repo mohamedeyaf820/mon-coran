@@ -109,8 +109,12 @@ test("prayer tracker stays honest about its on-device scope", async ({ page }) =
   await expect(page.locator(".prayers-empty")).toBeVisible();
   await page.getByRole("button", { name: /Activer le suivi/ }).click();
   await expect(page.locator(".prayers-day-row")).toHaveCount(5);
+  // The copy has to name the real boundary: a key the browser holds on the
+  // device, not user-controlled encryption. The earlier wording ("chiffrées sur
+  // cet appareil") over-claimed, so this asserts the honest phrase rather than
+  // any string that merely mentions encryption.
   await expect(page.locator(".prayers-private-note").first()).toContainText(
-    "chiffrées sur cet appareil",
+    "clé locale de ce navigateur",
   );
 });
 
