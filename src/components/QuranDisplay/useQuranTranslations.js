@@ -22,6 +22,13 @@ export default function useQuranTranslations({
   const [translations, setTranslations] = useState([]);
   const [translationState, setTranslationState] = useState("idle");
   const [translationSource, setTranslationSource] = useState(null);
+  // Bumped by the strip's retry control: the effect below owns the request
+  // lifecycle (abort on unmount, ignore late answers), so a retry is a new
+  // pass through it rather than a second unguarded fetch.
+  const [retryToken, setRetryToken] = useState(0);
+  const retryTranslations = useCallback(() => {
+    startTransition(() => setRetryToken((token) => token + 1));
+  }, []);
 
   useEffect(() => {
     if (!showTranslation) {
@@ -74,6 +81,7 @@ export default function useQuranTranslations({
     currentPage,
     currentSurah,
     displayMode,
+    retryToken,
     showTranslation,
     translationLangs,
   ]);
@@ -142,5 +150,11 @@ export default function useQuranTranslations({
     [currentSurah, translationMap],
   );
 
-  return { getTranslationForAyah, translations, translationSource, translationState };
+  return {
+    getTranslationForAyah,
+    retryTranslations,
+    translations,
+    translationSource,
+    translationState,
+  };
 }

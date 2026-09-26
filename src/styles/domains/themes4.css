@@ -67,7 +67,7 @@
        paper Quran.com's own tints drop to 2.3:1 and stop teaching the rule.
        Eight hues reused by meaning: concealment/ghunnah→green,
        idgham/silent→grey, qalqala→blue, tafkhim→indigo,
-       madd→amber/orange/red/dark-red by duration; Warsh-only rules fold to the nearest. */
+       madd→amber/orange/red/dark-red by duration; Warsh shares this palette. */
     --tajwid-silent: #8c8c8c;
     --tajwid-lam-shamsiyya: #8c8c8c;
     --tajwid-ghunna: #08a300;
@@ -89,16 +89,36 @@
     --tajwid-tarqiq-ra: #8c8c8c;
     --tajwid-idgham-warsh: #8c8c8c;
 
-    /* The eight printed categories of the coloured Warsh mushaf, measured from
-       its own legend. Only the gold moves off the book to hold 3:1 on paper. */
-    --tajwid-warsh-lazim: #8e2b5b;
-    --tajwid-warsh-mushba: #d42c78;
-    --tajwid-warsh-jawaz: #d76225;
-    --tajwid-warsh-harakatan: #bc831e;
-    --tajwid-warsh-khafa: #0f883d;
-    --tajwid-warsh-idgham: #7d797a;
-    --tajwid-warsh-tafkhim: #324c5b;
-    --tajwid-warsh-qalqala: #0c8fb8;
+    /* Semantic status tokens. Several consumers referenced these names with
+       literal fallbacks (var(--danger, #b42318), var(--bg-hover), the
+       var(--toast-*, #hex) set in App.jsx) but no theme ever defined them, so
+       every theme silently got the light-palette fallback. Text-on-fill
+       contrast on the theme surfaces (--theme-surface #ffffff): danger
+       6.57:1, error 5.44:1, warning #7c5205 6.85:1; toast text reaches
+       >=6.88:1 on its tinted background (success #065f46/#ecfdf5 7.29, error
+       #991b1b/#fef2f2 7.60, warning #9a3412/#fff7ed 6.88, info
+       #1e40af/#eff6ff 8.01). The accent rail and its aria-hidden mark keep the
+       shipped hue-anchor values. */
+    --danger: #b42318;
+    --error: #c0392b;
+    --warning: #7c5205;
+    --bg-hover: #e8efea;
+    --toast-success-bg: #ecfdf5;
+    --toast-success-border: #a7f3d0;
+    --toast-success-text: #065f46;
+    --toast-success-accent: #10b981;
+    --toast-error-bg: #fef2f2;
+    --toast-error-border: #fecaca;
+    --toast-error-text: #991b1b;
+    --toast-error-accent: #ef4444;
+    --toast-warning-bg: #fff7ed;
+    --toast-warning-border: #fed7aa;
+    --toast-warning-text: #9a3412;
+    --toast-warning-accent: #f97316;
+    --toast-info-bg: #eff6ff;
+    --toast-info-border: #bfdbfe;
+    --toast-info-text: #1e40af;
+    --toast-info-accent: #3b82f6;
 }
 
 :root[data-theme="sepia"],
@@ -171,36 +191,59 @@
 
 
     /* Quran.com tajweed palette (sepia theme), on the same 3:1 floor. */
-    --tajwid-silent: #8c8c8c;
-    --tajwid-lam-shamsiyya: #8c8c8c;
-    --tajwid-ghunna: #08a300;
-    --tajwid-idgham: #8c8c8c;
-    --tajwid-ikhfa: #08a300;
-    --tajwid-iqlab: #08a300;
-    --tajwid-qalqala: #0098bd;
+    /* Re-measured against this theme's real paper (--brand-bg #f3ead8): the
+       original five shared hues (grey/green/cyan/gold/orange) landed at
+       2.78-2.83:1 and broke the documented floor. Darkened in place only for
+       sepia so all 20 inks reach >=3.05:1; hue roles, ordering and pairwise
+       separation (min CIE76 dE 31.7) are preserved — see
+       tests/tajweed-contrast-contract.test.mjs. */
+    --tajwid-silent: #858585;
+    --tajwid-lam-shamsiyya: #858585;
+    --tajwid-ghunna: #0b8f0b;
+    --tajwid-idgham: #858585;
+    --tajwid-ikhfa: #0b8f0b;
+    --tajwid-iqlab: #0b8f0b;
+    --tajwid-qalqala: #0a84a5;
     --tajwid-tafkhim: #134fe1;
-    --tajwid-madd-normal: #ab8721;
+    --tajwid-madd-normal: #96761d;
     --tajwid-madd: #b7001c;
-    --tajwid-madd-separated: #d67300;
+    --tajwid-madd-separated: #bf6805;
     --tajwid-madd-connected: #ff0000;
     --tajwid-madd-necessary: #b7001c;
-    --tajwid-madd-badal: #d67300;
-    --tajwid-naql: #d67300;
-    --tajwid-tashil: #08a300;
-    --tajwid-ibdal: #d67300;
+    --tajwid-madd-badal: #bf6805;
+    --tajwid-naql: #bf6805;
+    --tajwid-tashil: #0b8f0b;
+    --tajwid-ibdal: #bf6805;
     --tajwid-sila-kubra: #ff0000;
-    --tajwid-tarqiq-ra: #8c8c8c;
-    --tajwid-idgham-warsh: #8c8c8c;
+    --tajwid-tarqiq-ra: #858585;
+    --tajwid-idgham-warsh: #858585;
 
-    /* Sepia paper is warmer and darker than white, so the gold drops further. */
-    --tajwid-warsh-lazim: #8e2b5b;
-    --tajwid-warsh-mushba: #d42c78;
-    --tajwid-warsh-jawaz: #d76225;
-    --tajwid-warsh-harakatan: #b27c1b;
-    --tajwid-warsh-khafa: #0f883d;
-    --tajwid-warsh-idgham: #7d797a;
-    --tajwid-warsh-tafkhim: #324c5b;
-    --tajwid-warsh-qalqala: #0c8fb8;
+    /* Semantic status tokens, warm-shifted for the parchment surfaces
+       (--theme-surface #fff6e3): danger #9a2718 7.30:1, error #7f1d1d 9.32:1,
+       warning #71450f 7.63:1; toast text on its tinted surface reaches
+       success #2f4d16/#e7efdb 8.10, error #7c2d12/#f8e3d8 7.57, warning
+       #71450f/#f5e7c9 6.70, info #23406e/#e5ebf3 8.63, and the darker accent
+       marks (used as 10px glyph text) stay >=4.9:1 on their own surface. */
+    --danger: #9a2718;
+    --error: #7f1d1d;
+    --warning: #71450f;
+    --bg-hover: #ecdcbe;
+    --toast-success-bg: #e7efdb;
+    --toast-success-border: #b5c99a;
+    --toast-success-text: #2f4d16;
+    --toast-success-accent: #3f660c;
+    --toast-error-bg: #f8e3d8;
+    --toast-error-border: #e2b39b;
+    --toast-error-text: #7c2d12;
+    --toast-error-accent: #b03a0c;
+    --toast-warning-bg: #f5e7c9;
+    --toast-warning-border: #ddbf85;
+    --toast-warning-text: #71450f;
+    --toast-warning-accent: #99470a;
+    --toast-info-bg: #e5ebf3;
+    --toast-info-border: #b9c9de;
+    --toast-info-text: #23406e;
+    --toast-info-accent: #1d4ed8;
 }
 
 :root[data-theme="dark"],
@@ -291,54 +334,44 @@
     --tajwid-tarqiq-ra: #9d9999;
     --tajwid-idgham-warsh: #9d9999;
 
-    /* On the night surface the book's wine and slate go under the ink, so those
-       two lighten; the gold returns to the printed value it carries on paper. */
-    --tajwid-warsh-lazim: #ab326d;
-    --tajwid-warsh-mushba: #d42c78;
-    --tajwid-warsh-jawaz: #d76225;
-    --tajwid-warsh-harakatan: #d59625;
-    --tajwid-warsh-khafa: #0f883d;
-    --tajwid-warsh-idgham: #7d797a;
-    --tajwid-warsh-tafkhim: #42667b;
-    --tajwid-warsh-qalqala: #0c8fb8;
+    /* Semantic status tokens. Dark toasts keep the tinted-surface shape but
+       inverted: dark hue-tinted background with light ink (the alternative
+       light surface would flare against #0c1511). On --theme-surface
+       #191f1c: danger #ff7a8a 6.70:1, error #f87171 6.05:1, warning #fbbf24
+       10.03:1; toast text on its background reaches success #7ee2a8/#123524
+       8.54, error #ffb0ab/#3a1416 9.33, warning #ffce8a/#3a2610 9.86, info
+       #a8cdf9/#14273a 9.24 — and every accent mark glyph is >=5.88:1 on its
+       own surface too. */
+    --danger: #ff7a8a;
+    --error: #f87171;
+    --warning: #fbbf24;
+    --bg-hover: #232b27;
+    --toast-success-bg: #123524;
+    --toast-success-border: #1f5c3d;
+    --toast-success-text: #7ee2a8;
+    --toast-success-accent: #34d399;
+    --toast-error-bg: #3a1416;
+    --toast-error-border: #6e2a2e;
+    --toast-error-text: #ffb0ab;
+    --toast-error-accent: #f87171;
+    --toast-warning-bg: #3a2610;
+    --toast-warning-border: #6e4a1e;
+    --toast-warning-text: #ffce8a;
+    --toast-warning-accent: #fbbf24;
+    --toast-info-bg: #14273a;
+    --toast-info-border: #2a4a6e;
+    --toast-info-text: #a8cdf9;
+    --toast-info-accent: #60a5fa;
 }
 
-/* Warsh drops the Hafs palette and takes the eight categories the coloured
-   Warsh mushaf prints. The engine computes more keys than the book has colours,
-   so each extra key folds into the category it sounds like: the nasalised family
-   (ghunna, ikhfa, iqlab) and the hamza positions (tashil, ibdal) into the
-   concealment green; the assimilated and unpronounced (idgham, lam shamsiyya,
-   tarqiq) into its grey; the permitted lengths (munfasil, sila kabira, naql)
-   into the amber; the two-count substitutions (badl) into the light-madd gold;
-   muttasil into the saturated six. Hues stay the book's — only lightness moves,
-   and only where the theme's surface needs it for the 3:1 floor this file
-   already holds the Hafs set to. */
-/* The second selector is the fullscreen book: its portal root carries the theme
-   and the riwaya on the same element, so it needs to outrank the theme block
-   rather than merely inherit past it. */
-[data-theme] [data-riwaya="warsh"],
-[data-theme][data-riwaya="warsh"] {
-    --tajwid-silent: var(--tajwid-warsh-idgham);
-    --tajwid-lam-shamsiyya: var(--tajwid-warsh-idgham);
-    --tajwid-ghunna: var(--tajwid-warsh-khafa);
-    --tajwid-idgham: var(--tajwid-warsh-idgham);
-    --tajwid-ikhfa: var(--tajwid-warsh-khafa);
-    --tajwid-iqlab: var(--tajwid-warsh-khafa);
-    --tajwid-qalqala: var(--tajwid-warsh-qalqala);
-    --tajwid-tafkhim: var(--tajwid-warsh-tafkhim);
-    --tajwid-madd-normal: var(--tajwid-warsh-harakatan);
-    --tajwid-madd: var(--tajwid-warsh-lazim);
-    --tajwid-madd-separated: var(--tajwid-warsh-jawaz);
-    --tajwid-madd-connected: var(--tajwid-warsh-mushba);
-    --tajwid-madd-necessary: var(--tajwid-warsh-lazim);
-    --tajwid-madd-badal: var(--tajwid-warsh-harakatan);
-    --tajwid-naql: var(--tajwid-warsh-jawaz);
-    --tajwid-tashil: var(--tajwid-warsh-khafa);
-    --tajwid-ibdal: var(--tajwid-warsh-khafa);
-    --tajwid-sila-kubra: var(--tajwid-warsh-jawaz);
-    --tajwid-tarqiq-ra: var(--tajwid-warsh-idgham);
-    --tajwid-idgham-warsh: var(--tajwid-warsh-idgham);
-}
+/* Warsh shares the Hafs (Quran.com) tajweed palette above: the same rule renders
+   in the same colour in both riwayas. Earlier we coloured Warsh with the eight
+   swatches printed in the coloured Warsh mushaf, but on our paper themes several
+   of those (the wine, slate and gold) read as near-black or vanish entirely, and
+   learners were taught a different hue for the same rule depending on riwaya. The
+   canonical Quran.com / Tarteel mapping — green for the nasalised family, grey for
+   the silent and assimilated, blue for qalqala, indigo for tafkhim, and gold →
+   orange → red for madd by duration — is the one used everywhere now. */
 
 :root[data-theme="quran-night"],
 :root[data-theme],
@@ -448,6 +481,11 @@
        gold primaries). Alias the per-theme on-primary colour. */
     --primary-fg: var(--theme-text-inverse);
     --primary-contrast: var(--theme-text-inverse);
+    /* Same on-primary ink under the names other sheets reference
+       (legal-page.css uses var(--on-primary, #fff)); alias instead of
+       inventing a third pair. */
+    --on-primary: var(--primary-fg);
+    --primary-foreground: var(--primary-fg);
     --primary-light: color-mix(
         in srgb,
         var(--theme-primary) 18%,

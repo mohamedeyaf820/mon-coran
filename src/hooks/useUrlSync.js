@@ -12,6 +12,7 @@ import { getWarshSurahAyahCount } from "../constants/warshSource.js";
 export function useUrlSync({
   showHome,
   showDuas,
+  showPrayers,
   legalPage,
   routeNotFound,
   displayMode,
@@ -35,6 +36,7 @@ export function useUrlSync({
     }
     if (showHome) return { targetPath: "/", routeKey: "home" };
     if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
+    if (showPrayers) return { targetPath: "/prires", routeKey: "prires" };
 
     if (displayMode === "surah") {
       return {
@@ -87,6 +89,7 @@ export function useUrlSync({
   }, [
     showHome,
     showDuas,
+    showPrayers,
     legalPage,
     routeNotFound,
     displayMode,
@@ -123,18 +126,23 @@ export function parseRoutePath(pathname = "/") {
       legalPage: legalMatch[1],
       showHome: false,
       showDuas: false,
+      showPrayers: false,
     };
   }
 
   if (/^\/duas\/?$/.test(path)) {
-    return { showHome: false, showDuas: true };
+    return { showHome: false, showDuas: true, showPrayers: false };
+  }
+
+  if (/^\/prires\/?$/.test(path)) {
+    return { showHome: false, showDuas: false, showPrayers: true };
   }
 
   const surahMatch = path.match(/^\/surah\/(\d+)(?:\/(\d+))?\/?$/);
   if (surahMatch) {
     const surah = Number(surahMatch[1]);
     if (!Number.isInteger(surah) || surah < 1 || surah > 114) {
-      return { routeNotFound: true, showHome: false, showDuas: false };
+      return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
     }
     const maxAyah = Math.max(
       getSurahAyahCount(surah),
@@ -142,12 +150,13 @@ export function parseRoutePath(pathname = "/") {
     );
     const requestedAyah = surahMatch[2] ? Number(surahMatch[2]) : 1;
     if (!Number.isInteger(requestedAyah) || requestedAyah < 1 || requestedAyah > maxAyah) {
-      return { routeNotFound: true, showHome: false, showDuas: false };
+      return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
     }
     const ayah = requestedAyah;
     return {
       showHome: false,
       showDuas: false,
+      showPrayers: false,
       routeNotFound: false,
       displayMode: "surah",
       currentSurah: surah,
@@ -159,11 +168,12 @@ export function parseRoutePath(pathname = "/") {
   if (pageMatch) {
     const page = Number(pageMatch[1]);
     if (!Number.isInteger(page) || page < 1 || page > 604) {
-      return { routeNotFound: true, showHome: false, showDuas: false };
+      return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
     }
     return {
       showHome: false,
       showDuas: false,
+      showPrayers: false,
       routeNotFound: false,
       displayMode: "page",
       currentPage: page,
@@ -174,19 +184,20 @@ export function parseRoutePath(pathname = "/") {
   if (juzMatch) {
     const juz = Number(juzMatch[1]);
     if (!Number.isInteger(juz) || juz < 1 || juz > 30) {
-      return { routeNotFound: true, showHome: false, showDuas: false };
+      return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
     }
     return {
       showHome: false,
       showDuas: false,
+      showPrayers: false,
       routeNotFound: false,
       displayMode: "juz",
       currentJuz: juz,
     };
   }
 
-  if (path === "/") return { showHome: true, showDuas: false, routeNotFound: false };
-  return { routeNotFound: true, showHome: false, showDuas: false };
+  if (path === "/") return { showHome: true, showDuas: false, showPrayers: false, routeNotFound: false };
+  return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
 }
 
 export function parseInitialRoute() {

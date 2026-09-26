@@ -25,12 +25,45 @@ function notifyWarshWordAudioFallback() {
     .catch(() => {});
 }
 
+function releaseAudioElement(audio) {
+  if (!audio) return;
+  try {
+    audio.pause();
+    audio.removeAttribute("src");
+    audio.load();
+  } catch {
+    // Best effort: the element may already be idle.
+  }
+}
+
+// One shared element with error/ended handlers that release its decoder
+// resources after each playback, so repeated word taps (including offline
+// rejections) never accumulate media elements.
 function getOrCreateAudio() {
-  if (!_audioInstance && typeof window !== "undefined" && typeof Audio !== "undefined") {
+  if (typeof window === "undefined" || typeof Audio === "undefined") return null;
+  if (!_audioInstance) {
     _audioInstance = new Audio();
     _audioInstance.preload = "auto";
+    const onSettled = () => releaseAudioElement(_audioInstance);
+    _audioInstance.addEventListener("ended", onSettled);
+    _audioInstance.addEventListener("error", onSettled);
+    // The singleton must not outlive the page and keep a decoder alive.
+    _onPageHide = () => releaseAudioElement(_audioInstance);
+    window.addEventListener("pagehide", _onPageHide);
   }
   return _audioInstance;
+}
+
+let _onPageHide = null;
+
+// Reset the shared instance so tests and long sessions start clean.
+export function resetWordAudio() {
+  releaseAudioElement(_audioInstance);
+  if (_onPageHide && typeof window !== "undefined") {
+    window.removeEventListener("pagehide", _onPageHide);
+  }
+  _onPageHide = null;
+  _audioInstance = null;
 }
 
 export function getWordAudioUrl(surah, ayah, wordPosition) {
@@ -61,17 +94,25 @@ export function playWordAudio(input, ayah = null, wordPosition = null) {
   if (activeRiwayaIsWarsh()) notifyWarshWordAudioFallback();
 
   try {
-    const audio = getOrCreateAudio() || new Audio();
+    const audio = getOrCreateAudio();
+    if (!audio) return;
     audio.pause();
     audio.currentTime = 0;
     audio.src = url;
     const promise = audio.play();
     if (promise !== undefined) {
       promise.catch(() => {
+        // The initial play() was rejected (autoplay block, offline, or a
+        // transient decode failure). Retry on the same shared element instead
+        // of allocating a fresh Audio per failure, which used to accumulate
+        // unreleased media elements offline.
         try {
-          const fallback = new Audio(url);
-          fallback.play().catch(() => {});
-        } catch {}
+          audio.currentTime = 0;
+          const retry = audio.play();
+          retry?.catch(() => {});
+        } catch {
+          // Swallow: word playback is best-effort.
+        }
       });
     }
   } catch (err) {

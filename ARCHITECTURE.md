@@ -71,8 +71,10 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
 ### Key Services (src/services/)
 - `storageService.js` / `dbService.js` — localStorage + IndexedDB persistence
 - `fontLoader.js` / `qcf4PageFontService.js` — dynamic Arabic font loading
-- `historyService.js` / `readingStreakService.js` — reading progress tracking
-- `memorizationService.js` — spaced repetition for memorization mode
+- `storageService.js` also owns `lastPosition` (resume-reading) and `readingProgressService.js`
+  tracks the highest ayah read per surah — there is no `historyService.js`
+- Recitation repetition (A-B loop, per-surah cycles) is part of `audioService.js`;
+  there is no spaced-repetition service
 - `tafsirService.js` — Quran commentary/exegesis fetching
 - `cryptoUtil.js` — AES encryption for sensitive local data
 

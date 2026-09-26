@@ -18,6 +18,12 @@ export const PRAYER_METHODS = [
 const VALID_METHOD_IDS = new Set(PRAYER_METHODS.map((method) => method.id));
 const CACHE_KEY = "mushaf-plus-prayer-timings";
 const CACHE_MAX_AGE_MS = 6 * 60 * 60 * 1000;
+// Manual per-prayer adjustments, in minutes (negative = earlier). Kept small:
+// no sane adjustment crosses an hour boundary in either direction.
+export const PRAYER_OFFSET_MIN_MAX = 60;
+export const ADHAN_VOLUME_STEPS = [0.2, 0.4, 0.6, 0.8, 1];
+export const PRE_REMINDER_CHOICES = [0, 5, 10, 15, 20];
+export const POST_REMINDER_CHOICES = [0, 10, 15, 20, 30, 45];
 
 export function normalizePrayerMethod(value, lang = "fr") {
   const parsed = Number(value);
@@ -40,6 +46,96 @@ export function sanitizePrayerLocation(value) {
     latitude: Math.round(latitude * 10000) / 10000,
     longitude: Math.round(longitude * 10000) / 10000,
     label: typeof value.label === "string" ? value.label.slice(0, 80) : "",
+  };
+}
+
+function clampOffset(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.max(-PRAYER_OFFSET_MIN_MAX, Math.min(PRAYER_OFFSET_MIN_MAX, Math.round(parsed)));
+}
+
+/** Per-prayer manual adjustments in minutes; unknown keys and noise dropped. */
+export function sanitizePrayerOffsets(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const out = {};
+  for (const key of PRAYER_KEYS) {
+    out[key] = clampOffset(source[key]);
+  }
+  return out;
+}
+
+/**
+ * Apply the reader's manual adjustments to a fetched timings payload, once.
+ * Adjusted entries carry `baseHhmm` so the UI can show what was shifted.
+ * Sunrise is reference-only and never adjusted.
+ */
+export function applyPrayerOffsets(timings, offsets) {
+  const clean = sanitizePrayerOffsets(offsets);
+  const changed = PRAYER_KEYS.some((key) => clean[key] !== 0);
+  if (!timings || !changed) return timings;
+  const out = { ...timings };
+  for (const key of PRAYER_KEYS) {
+    const entry = out[key];
+    if (!entry || clean[key] === 0) continue;
+    const minutes = Math.max(0, Math.min(24 * 60 - 1, entry.minutes + clean[key]));
+    out[key] = {
+      hhmm: `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`,
+      minutes,
+      baseHhmm: entry.hhmm,
+    };
+  }
+  return out;
+}
+
+function clampChoice(value, choices, fallback) {
+  const parsed = Number(value);
+  return choices.includes(parsed) ? parsed : fallback;
+}
+
+function sanitizePrayerSwitches(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const out = {};
+  for (const key of PRAYER_KEYS) {
+    out[key] = source[key] !== false;
+  }
+  return out;
+}
+
+/**
+ * One settings object owns every prayer-notification preference. Defaults:
+ * reminders on for all five prayers, adhan on with the sound (never silent —
+ * an Adhan the reader cannot hear is worse than none), no pre/post nagging
+ * until the reader opts in.
+ */
+export const DEFAULT_PRAYER_NOTIFICATIONS = {
+  adhanEnabled: true,
+  adhanSourceId: "",
+  adhanVolume: 1,
+  silent: false,
+  preReminderMinutes: 0,
+  postReminderMinutes: 0,
+  catchUp: true,
+  prayers: { Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true },
+};
+
+export function sanitizePrayerNotifications(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const volume = Number(source.adhanVolume);
+  return {
+    adhanEnabled: source.adhanEnabled !== false,
+    adhanSourceId:
+      typeof source.adhanSourceId === "string" ? source.adhanSourceId.slice(0, 40) : "",
+    adhanVolume: Number.isFinite(volume)
+      ? ADHAN_VOLUME_STEPS.reduce((best, step) =>
+        Math.abs(step - volume) < Math.abs(best - volume) ? step : best,
+      )
+      : DEFAULT_PRAYER_NOTIFICATIONS.adhanVolume,
+    silent: Boolean(source.silent),
+    preReminderMinutes: clampChoice(source.preReminderMinutes, PRE_REMINDER_CHOICES, 0),
+    postReminderMinutes: clampChoice(source.postReminderMinutes, POST_REMINDER_CHOICES, 0),
+    catchUp: source.catchUp !== false,
+    prayers: sanitizePrayerSwitches(source.prayers),
   };
 }
 
@@ -139,9 +235,11 @@ export function getCachedTimings({ latitude, longitude, method, date }) {
 /**
  * Stale-while-revalidate: the cached day answers immediately (instant render,
  * offline), the network refreshes in the background at most every
- * CACHE_MAX_AGE_MS. Rejects only when nothing can be served at all.
+ * CACHE_MAX_AGE_MS. Rejects only when nothing can be served at all. The cache
+ * always stores unadjusted API times; the reader's manual adjustments are
+ * applied on the way out so changing an offset needs no refetch.
  */
-export async function fetchTodayTimings({ latitude, longitude, method, date = new Date() }) {
+export async function fetchTodayTimings({ latitude, longitude, method, offsets, date = new Date() }) {
   const cached = getCachedTimings({ latitude, longitude, method, date });
   const networkPromise = (async () => {
     const url =
@@ -158,17 +256,22 @@ export async function fetchTodayTimings({ latitude, longitude, method, date = ne
     return normalized;
   })();
 
+  const adjust = (entry) => ({
+    ...entry,
+    timings: applyPrayerOffsets(entry.timings, offsets),
+  });
+
   if (cached && Date.now() - Number(cached.fetchedAt || 0) < CACHE_MAX_AGE_MS) {
     networkPromise.catch(() => {});
-    return { ...cached, stale: false, refreshing: true };
+    return { ...adjust(cached), stale: false, refreshing: true };
   }
   if (cached) {
     return networkPromise
-      .then((fresh) => ({ ...fresh, stale: false, refreshing: false }))
-      .catch(() => ({ ...cached, stale: true, refreshing: false }));
+      .then((fresh) => ({ ...adjust(fresh), stale: false, refreshing: false }))
+      .catch(() => ({ ...adjust(cached), stale: true, refreshing: false }));
   }
   const fresh = await networkPromise;
-  return { ...fresh, stale: false, refreshing: false };
+  return { ...adjust(fresh), stale: false, refreshing: false };
 }
 
 /** Next prayer among the five (Sunrise excluded), or null after Isha. */

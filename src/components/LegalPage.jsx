@@ -16,6 +16,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useAppActions, useAppLocale } from "../context/AppContext";
+import { fetchWithTimeout } from "../services/fetchWithTimeout.js";
 import { Modal } from "./ui/modal";
 import siteConfig from "../../site.config.json";
 import { CONTENT_ATTRIBUTIONS } from "../data/contentAttributions";
@@ -240,7 +241,9 @@ export default function LegalPage({ page = "privacy" }) {
     }
     let cancelled = false;
     setCopyStatus("loading");
-    fetch("/data/editorial-copy.json")
+    // 8 s bounds the same-origin editorial copy fetch so a stalled response
+    // lands in the retryable "error" state instead of a permanent "loading".
+    fetchWithTimeout("/data/editorial-copy.json", {}, 8000)
       .then((response) => (response.ok ? response.json() : null))
       .then((data) => {
         if (cancelled) return;

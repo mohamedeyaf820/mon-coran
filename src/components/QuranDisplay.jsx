@@ -21,6 +21,7 @@ import Footer from "./Footer";
 import SurahMode from "./QuranDisplay/SurahMode";
 import WarshNotice from "./QuranDisplay/WarshNotice";
 import ReaderSourceStatus from "./QuranDisplay/ReaderSourceStatus";
+import ReaderDataState from "./QuranDisplay/ReaderDataState";
 import { createDisplayClasses } from "./QuranDisplay/displayClasses";
 import useQuranDisplayAudio from "./QuranDisplay/useQuranDisplayAudio";
 import useQuranDisplayData, {
@@ -114,6 +115,7 @@ export default function QuranDisplay() {
     error,
     fetchData,
     isWarshFallback,
+    loadState,
   } =
     useQuranDisplayData({
       currentAyah,
@@ -129,7 +131,7 @@ export default function QuranDisplay() {
       showTransliteration,
       warshStrictMode,
     });
-  const { getTranslationForAyah, translationState } = useQuranTranslations({
+  const { getTranslationForAyah, retryTranslations, translationState } = useQuranTranslations({
     arabicReady: ayahs.length > 0,
     currentJuz,
     currentPage,
@@ -374,75 +376,31 @@ export default function QuranDisplay() {
     };
   }, [fontFamily, currentPage, displayMode]);
 
-  const isNetworkFailure =
-    ayahs.length === 0 &&
-    (error === "reader-load-failed" ||
-      /Failed to fetch|NetworkError|timeout|AbortError/i.test(error || ""));
   const readerBusy =
     dataTransitioning ||
     (loading && ayahs.length === 0) ||
     (fontLoading && ayahs.length === 0);
+  // Settled on an empty result without a classified failure: the surah really
+  // has no text to show, which is its own state and not an outage.
+  const isReaderContentEmpty =
+    !loading && !dataTransitioning && ayahs.length === 0 && !error;
 
-  if (error)
+  if (loadState?.boundary) {
+    // Nothing in the taxonomy matched: this is a defect, and the crash
+    // boundary is the right owner for it. Everything the reader can explain
+    // (offline, timeout, 5xx, empty payload, blocked Warsh fallback) is
+    // answered below instead of escaping as an unclassified throw.
+    throw new Error(`reader-load-unexpected:${loadState.code}`);
+  }
+  if (error || isReaderContentEmpty)
     return (
-      <div className="reader-data-state mx-auto my-4 flex min-h-[18rem] max-w-xl flex-col items-center justify-center rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-6 text-center shadow-sm sm:min-h-[20rem] sm:p-8">
-        <Icon
-          name={isNetworkFailure ? "wifi-slash" : "circle-exclamation"}
-          size={30}
-          className="mb-4 text-primary"
-        />
-        {isNetworkFailure ? (
-          <>
-            <p className="text-lg text-[var(--theme-text)] font-medium mb-3">
-              {t("errors.loadNetwork", lang)}
-            </p>
-          </>
-        ) : (
-          <p className="text-lg text-[var(--theme-text)] mb-8" title={error}>
-            {t("errors.loadError", lang)}
-          </p>
-        )}
-        <div className="reader-data-state__actions flex w-full flex-col gap-3 sm:w-auto sm:flex-row">
-          <button
-            className="px-6 py-3 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
-            onClick={fetchData}
-          >
-            {t("errors.retry", lang)}
-          </button>
-          <button
-            className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
-            onClick={openHome}
-          >
-            {t("errors.backHome", lang)}
-          </button>
-        </div>
-        <p className="reader-data-state__source">
-          {t("errors.attemptedSource", lang)}: {dataSource?.label || (riwaya === "warsh" ? "Warsh dataset" : "Quran.com / AlQuran Cloud")}
-        </p>
-      </div>
-    );
-  if (!loading && ayahs.length === 0)
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-[color-mix(in_srgb,var(--bg-card)_90%,transparent)] m-4 rounded-3xl shadow-xl border border-[var(--border)] max-w-2xl mx-auto">
-        <Icon name="book-open" size={30} className="mb-5 text-[color-mix(in_srgb,var(--primary)_70%,transparent)]" />
-        <p className="text-lg text-[var(--theme-text)] font-medium mb-8">
-          {t("errors.emptyData", lang)}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <button
-            className="px-6 py-3 rounded-xl bg-[var(--primary)] text-white font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
-            onClick={fetchData}
-          >
-            {t("errors.retry", lang)}
-          </button>
-          <button
-            className="px-6 py-3 rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--theme-text)] font-medium hover:bg-[var(--bg-tertiary)] active:scale-95 transition-all"
-            onClick={openHome}
-          >
-            {t("errors.backHome", lang)}
-          </button>
-        </div>
-      </div>
+      <ReaderDataState
+        code={loadState?.code}
+        dataSource={dataSource}
+        lang={lang}
+        onRetry={fetchData}
+        onBackHome={openHome}
+      />
     );
 
   return (
@@ -458,6 +416,7 @@ export default function QuranDisplay() {
       <ReaderSourceStatus
         dataSource={dataSource}
         lang={lang}
+        onRetryTranslation={retryTranslations}
         translationState={showTranslation ? translationState : "idle"}
       />
       <div

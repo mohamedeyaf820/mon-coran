@@ -21,15 +21,25 @@
   // every boot would tax each first visit with glyphs no Hafs route draws, so it is
   // injected only for the one setting that paints with it.
   function preloadWarshFace() {
-    var stored;
+    // saveSettings mirrors this one bit in plain text because the settings blob
+    // itself is opaque once a passphrase is set.
+    var flag = null;
     try {
-      stored = JSON.parse(localStorage.getItem("mushaf-plus-settings") || "null");
-    } catch (_) {
+      flag = localStorage.getItem("mushaf-plus-warsh-preload");
+    } catch (_) {}
+    if (flag === null) {
+      var stored;
+      try {
+        stored = JSON.parse(localStorage.getItem("mushaf-plus-settings") || "null");
+      } catch (_) {
+        return;
+      }
+      if (!stored || stored.riwaya !== "warsh") return;
+      // Scheherazade is the one Warsh choice already declared with font-display: swap.
+      if (stored.fontFamily === "scheherazade-new-warsh") return;
+    } else if (flag !== "1") {
       return;
     }
-    if (!stored || stored.riwaya !== "warsh") return;
-    // Scheherazade is the one Warsh choice already declared with font-display: swap.
-    if (stored.fontFamily === "scheherazade-new-warsh") return;
 
     var link = document.createElement("link");
     link.rel = "preload";

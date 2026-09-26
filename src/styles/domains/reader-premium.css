@@ -720,6 +720,16 @@ html body .mfp-portal-root [dir="rtl"] .qc-ayah-text-ar {
     }
 }
 
+/* Reduced motion: the tooltip appears where the rule it explains already is.
+   `!important` so it also wins over the placement variants that swap the
+   animation name, and the tip stays inside the reduced-motion contract the
+   rest of the reading styles already honour. */
+@media (prefers-reduced-motion: reduce) {
+    .tajweed-rich-tooltip {
+        animation: none !important;
+    }
+}
+
 .tajweed-rich-tooltip__card {
     width: max-content;
     max-width: min(320px, calc(100vw - 2rem));

@@ -153,7 +153,13 @@ function waitForSharedRequest(promise, signal) {
   });
 }
 
+// One background refresh per key at a time: N callers hitting the same
+// expired entry must not fire N identical network requests.
+const _backgroundRefreshInFlight = new Set();
+
 function refreshInBackground(url, cacheKey) {
+  if (_backgroundRefreshInFlight.has(cacheKey)) return;
+  _backgroundRefreshInFlight.add(cacheKey);
   const timed = createTimedSignal(null, FETCH_TIMEOUT);
   fetch(url, {
     signal: timed.signal,
@@ -173,6 +179,7 @@ function refreshInBackground(url, cacheKey) {
     })
     .catch(()=>{})
     .finally(() => {
+      _backgroundRefreshInFlight.delete(cacheKey);
       timed.cleanup();
     });
 }

@@ -1,6 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useId, useRef } from "react";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { lockAppScroll } from "../../lib/scrollLock";
 import { useAppLocale } from "../../context/AppContext";
 import { t } from "../../i18n";
 
@@ -26,6 +27,8 @@ export function Sheet({
   className,
 }) {
   const { lang } = useAppLocale();
+  // Two open sheets/modals must not share one aria-labelledby target.
+  const titleId = useId();
   const sheetRef = useRef(null);
   const restoreFocusRef = useRef(null);
   // `onClose` is usually an inline arrow in the parent: reading it through a
@@ -42,8 +45,7 @@ export function Sheet({
 
     const sheet = sheetRef.current;
     restoreFocusRef.current = document.activeElement;
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlock = lockAppScroll();
 
     const focusTimer = window.setTimeout(() => {
       const firstFocusable = sheet?.querySelector(SHEET_FOCUSABLE_SELECTOR);
@@ -92,7 +94,7 @@ export function Sheet({
     return () => {
       window.clearTimeout(focusTimer);
       document.removeEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = previousOverflow;
+      unlock();
       const restoreTarget = restoreFocusRef.current;
       restoreFocusRef.current = null;
       if (restoreTarget?.isConnected) restoreTarget.focus();
@@ -114,7 +116,7 @@ export function Sheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)]" role="dialog" aria-modal="true" aria-labelledby={title ? "sheet-title" : undefined}>
+    <div className="fixed inset-0 z-[var(--z-modal)]" role="dialog" aria-modal="true" aria-labelledby={title ? titleId : undefined}>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         aria-hidden="true"
@@ -128,7 +130,7 @@ export function Sheet({
           "animate-slideIn",
           sideClasses[side] || sideClasses.right,
           sizeClasses[size] || sizeClasses.md,
-          "overflow-y-auto",
+          "overflow-y-auto overscroll-contain",
           className
         )}
       >
@@ -142,7 +144,7 @@ export function Sheet({
           </button>
         )}
         {title && (
-          <h2 id="sheet-title" className="px-6 pt-6 text-lg font-semibold text-[var(--text-primary)]">
+          <h2 id={titleId} className="px-6 pt-6 text-lg font-semibold text-[var(--text-primary)]">
             {title}
           </h2>
         )}

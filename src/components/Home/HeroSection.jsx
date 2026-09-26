@@ -77,6 +77,7 @@ export default function HeroSection({
   vodAyahNum,
   prayerStatus,
   prayerNext,
+  prayerTimings,
   onOpenPrayer,
 }) {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
@@ -201,6 +202,8 @@ export default function HeroSection({
           isRtl={isRtl}
           status={prayerStatus}
           next={prayerNext}
+          timings={prayerTimings}
+          now={now}
           onOpen={onOpenPrayer}
         />
 

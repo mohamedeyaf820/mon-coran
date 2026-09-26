@@ -1,8 +1,13 @@
-import { dbGet, dbSet } from "./dbService";
+import { dbGet, dbSet } from "./dbService.js";
+import { fetchWithTimeout } from "./fetchWithTimeout.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const AUDIO_BASE_URL = "https://verses.quran.com/";
 const CACHE_TTL = 14 * 24 * 60 * 60 * 1000;
+// Timing metadata is a non-blocking enrichment: 8 s matches the study
+// service and guarantees the inflight dedupe entry is released long before
+// the reader gives up on the request.
+const FETCH_TIMEOUT_MS = 8000;
 const IDB_STORE = "cache";
 const IDB_PREFIX = "qcom-audio-timing:";
 
@@ -74,7 +79,11 @@ async function fetchJson(url) {
 
   if (inflight.has(url)) return inflight.get(url);
 
-  const request = fetch(url, { headers: { Accept: "application/json" } })
+  const request = fetchWithTimeout(
+    url,
+    { headers: { Accept: "application/json" } },
+    FETCH_TIMEOUT_MS,
+  )
     .then((response) => {
       if (!response.ok) throw new Error(`Quran.com audio timing ${response.status}`);
       return response.json();

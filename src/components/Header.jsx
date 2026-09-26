@@ -27,6 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
   HandHeart,
+  CalendarCheck,
   Menu,
   Shapes,
   X,
@@ -55,6 +56,7 @@ export default function Header({ immersiveHidden = false }) {
       warshStrictMode: current.warshStrictMode,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      showPrayers: current.showPrayers,
       legalPage: current.legalPage,
       sidebarOpen: current.sidebarOpen,
       theme: current.theme,
@@ -143,8 +145,10 @@ export default function Header({ immersiveHidden = false }) {
     return () => window.clearTimeout(id);
   }, [goToOpen]);
 
-  const goHome = () => set({ legalPage: null, showHome: true, showDuas: false });
-  const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false });
+  const goHome = () => set({ legalPage: null, showHome: true, showDuas: false, showPrayers: false });
+  const openDuas = () => set({ legalPage: null, showDuas: true, showHome: false, showPrayers: false });
+  const openPrayers = () =>
+    set({ legalPage: null, showPrayers: true, showHome: false, showDuas: false });
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openLibrary = () => set({ libraryOpen: true, libraryTab: "favorites" });
@@ -429,6 +433,13 @@ export default function Header({ immersiveHidden = false }) {
       label: i18nT("nav.duas", lang),
       description: i18nT("header.duasDesc", lang),
       action: openDuas,
+    },
+    {
+      key: "prayers",
+      Icon: CalendarCheck,
+      label: i18nT("nav.prayers", lang),
+      description: i18nT("header.prayersDesc", lang),
+      action: openPrayers,
     },
   ];
 

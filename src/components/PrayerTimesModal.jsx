@@ -310,6 +310,21 @@ export default function PrayerTimesModal({
                   className="prayer-modal__visually-hidden"
                 />
               </label>
+
+              <button
+                type="button"
+                className="prayer-modal__tracker-link"
+                onClick={() =>
+                  set({
+                    prayerModalOpen: false,
+                    showPrayers: true,
+                    showHome: false,
+                    showDuas: false,
+                  })
+                }
+              >
+                {t("prayer.openTracker", lang)}
+              </button>
             </div>
           </Dialog.Content>
         </div>

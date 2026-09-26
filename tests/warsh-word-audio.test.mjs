@@ -11,6 +11,8 @@ import test from "node:test";
 
 const toasts = [];
 const playedSrc = [];
+const plays = [];
+let createdElements = 0;
 let activeRiwaya = "hafs";
 
 globalThis.CustomEvent = class FakeCustomEvent {
@@ -20,6 +22,8 @@ globalThis.CustomEvent = class FakeCustomEvent {
   }
 };
 globalThis.window = {
+  addEventListener() {},
+  removeEventListener() {},
   dispatchEvent: (event) => toasts.push(event.detail),
 };
 globalThis.document = {
@@ -31,11 +35,28 @@ globalThis.document = {
 };
 globalThis.Audio = class FakeAudio {
   constructor(src) {
+    createdElements += 1;
+    this._listeners = {};
     this.src = src || "";
     if (src) playedSrc.push(src);
   }
+  addEventListener(type, fn) {
+    (this._listeners[type] ||= []).push(fn);
+  }
+  removeAttribute(name) {
+    if (name === "src") this.src = "";
+  }
+  load() {}
   play() {
-    if (this.src) playedSrc.push(this.src);
+    if (this.src) {
+      playedSrc.push(this.src);
+      plays.push(this.src);
+    }
+    // Real elements fire `ended`, which releases the decoder; mimic it so the
+    // release path runs in this test too.
+    Promise.resolve().then(() =>
+      (this._listeners.ended || []).forEach((fn) => fn()),
+    );
     return Promise.resolve();
   }
   pause() {}
@@ -56,17 +77,20 @@ test("Hafs word audio keeps its existing url and never warns", async () => {
   activeRiwaya = "hafs";
   resetWarshFallbackNotice();
   toasts.length = 0;
-  playedSrc.length = 0;
+  playedSrc.length = 0; plays.length = 0;
 
   assert.equal(
     getWordAudioUrl(2, 286, 3),
     "https://audio.qurancdn.com/wbw/002_286_003.mp3",
   );
   playWordAudio(2, 286, 3);
+  await flush();
   playWordAudio({ surah: 9, ayah: 129, position: 1 });
   await flush();
 
-  assert.equal(playedSrc.length, 2, "both hafs taps played");
+
+  assert.equal(plays.length, 2, "both hafs taps played");
+  assert.equal(createdElements, 1, "one shared element serves every tap");
   assert.equal(toasts.length, 0, "hafs path stays silent");
 });
 
@@ -74,14 +98,15 @@ test("a warsh word tap still plays but discloses the hafs-only notice once", asy
   activeRiwaya = "warsh";
   resetWarshFallbackNotice();
   toasts.length = 0;
-  playedSrc.length = 0;
+  playedSrc.length = 0; plays.length = 0;
 
   playWordAudio(9, 130, 1);
   await flush();
   playWordAudio(67, 31, 2);
   await flush();
 
-  assert.equal(playedSrc.length, 2, "fallback playback is preserved");
+  assert.equal(plays.length, 2, "fallback playback is preserved");
+  assert.equal(createdElements, 1, "the warsh fallback reuses the same element");
   assert.equal(toasts.length, 1, "one notice per session");
   assert.equal(
     toasts[0].message,
@@ -101,7 +126,7 @@ test("invalid coordinates stay no-ops even in warsh", async () => {
   activeRiwaya = "warsh";
   resetWarshFallbackNotice();
   toasts.length = 0;
-  playedSrc.length = 0;
+  playedSrc.length = 0; plays.length = 0;
 
   playWordAudio(null);
   playWordAudio({});

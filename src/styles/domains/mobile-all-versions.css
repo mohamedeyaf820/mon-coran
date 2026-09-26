@@ -1327,6 +1327,15 @@
     animation: qdAyahActionsReveal 180ms ease-out both;
 }
 
+/* Reduced motion: the action row appears in place instead of sliding. The
+   reveal is decoration on a control the reader already asked for; the ayah
+   text, its markers and its states are not touched. */
+@media (prefers-reduced-motion: reduce) {
+    .app-root .quran-display--platform .rd-actions {
+        animation: none !important;
+    }
+}
+
 .app-root .quran-display--platform .rd-actions .ayah-actions {
     min-width: 0;
 }

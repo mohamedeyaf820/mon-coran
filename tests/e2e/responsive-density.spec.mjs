@@ -827,7 +827,10 @@ test("tiny phone keeps the quick menu and compact player calm and dismissible", 
   expect(menuBox?.width || 0).toBeLessThanOrEqual(315);
   // The 44px touch floor (WCAG 2.5.5) replaces the former sub-305px height
   // budget on tiny phones; the menu stacks its controls instead of shrinking.
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(405);
+  // 445px: the tracker page added a fifth quick entry (Mes prières), one row
+  // taller than the four-item menu this budget was drawn around. The outside
+  // click below still lands past the menu's bottom edge.
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(446);
   expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
   expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
 
@@ -859,7 +862,8 @@ test("general pages use a compact quick-command palette on narrow phones", async
   expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
   // The compact palette still stacks few rows; only the 44px touch floor
   // (WCAG 2.5.5) now bounds its height, not the former 205px budget.
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(235);
+  // 280px: the fifth entry (Mes prières) adds exactly one 44px row.
+  expect(menuBox?.height || 0).toBeLessThanOrEqual(280);
   expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
   expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
   expect(searchBox?.height || 0).toBeLessThanOrEqual(49.5);

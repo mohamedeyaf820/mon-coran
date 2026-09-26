@@ -60,13 +60,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   -webkit-backdrop-filter: blur(12px) !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform .reader-toolbar :is(button, .reader-toolbar-btn) {
-  min-height: 36px !important;
-  border-radius: 10px !important;
-  letter-spacing: 0 !important;
-  font-size: 0.8rem !important;
-}
-
 .app-root[data-view="reading"] .quran-display--platform .qc-verse-by-verse-view {
   width: var(--reader-content-max) !important;
   max-width: var(--reader-content-max) !important;
@@ -362,6 +355,14 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 .reader-data-state__source { margin: 1rem 0 0; color: var(--text-muted); font-size: .75rem; }
 
 @keyframes reader-source-spin { to { transform: rotate(360deg); } }
+
+/* Reduced motion: the spinner is decoration around a text status that already
+   says what is happening. The Quran text and its states are untouched. */
+@media (prefers-reduced-motion: reduce) {
+  .reader-source-status .is-spinning {
+    animation: none !important;
+  }
+}
 
 @media (max-width: 520px) {
   .reader-source-status { justify-content: flex-start; overflow-x: auto; flex-wrap: nowrap; padding-inline: .25rem; }

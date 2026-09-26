@@ -3,7 +3,10 @@
  * Fetches tafsir and translations from Quran.com API.
  */
 
+import { fetchWithTimeout } from "./fetchWithTimeout.js";
+
 const BASE_URL = "https://api.quran.com/api/v4";
+const STUDY_FETCH_TIMEOUT = 8000;
 const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
@@ -244,9 +247,10 @@ function resolveTafsirKey(value, lang = "en") {
 
 async function fetchTafsirText(resource, verseKey, signal) {
   const encodedVerseKey = encodeURIComponent(verseKey);
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${encodedVerseKey}`,
     { signal, headers: { Accept: "application/json" } },
+    STUDY_FETCH_TIMEOUT,
   );
 
   if (!response.ok) {
@@ -366,9 +370,10 @@ export async function getVerseTranslation({
     translation_fields: "text,resource_name,language_name",
   });
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`,
     { signal },
+    STUDY_FETCH_TIMEOUT,
   );
 
   if (!response.ok) {

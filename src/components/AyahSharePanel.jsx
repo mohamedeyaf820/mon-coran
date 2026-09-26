@@ -16,6 +16,7 @@ import { getSurah, getSurahLigature } from "../data/surahs";
 import { t } from "../i18n";
 import { sanitizeSvgMarkup } from "../lib/security";
 import { cleanShareText, createVerseSharePayload, DEFAULT_SHARE_ORIGIN } from "../services/verseShareService";
+import { fetchWithTimeout } from "../services/fetchWithTimeout.js";
 
 export const VERSE_CARD_FORMATS = [
   { id: "square", label: "Carré", detail: "Publication", width: 1080, height: 1080, ratio: "1:1", platforms: "Instagram · Facebook · X" },
@@ -412,6 +413,9 @@ function resolveCardArabicFontFamily(riwaya) {
  * stylesheets and cached.
  */
 const CARD_FONT_MAX_BYTES = 512 * 1024;
+// A stalled font fetch would pin the share-card await forever and cache the
+// empty result, so the card silently loses its Quran face for the session.
+const CARD_FONT_FETCH_TIMEOUT = 8000;
 const cardFontCache = new Map();
 
 function splitFontStack(stack) {
@@ -481,7 +485,7 @@ async function loadCardFontCss(riwaya) {
     const faceFormat = href && fontFormat(href);
     if (!faceFormat) continue;
     try {
-      const response = await fetch(href);
+      const response = await fetchWithTimeout(href, {}, CARD_FONT_FETCH_TIMEOUT);
       if (!response.ok) continue;
       const bytes = new Uint8Array(await response.arrayBuffer());
       if (!bytes.byteLength || bytes.byteLength > CARD_FONT_MAX_BYTES) continue;
@@ -510,7 +514,7 @@ async function loadSurahNamesFontCss() {
     const href = findSameOriginFontUrl(target);
     const faceFormat = href && fontFormat(href);
     if (faceFormat) {
-      const response = await fetch(href);
+      const response = await fetchWithTimeout(href, {}, CARD_FONT_FETCH_TIMEOUT);
       if (response.ok) {
         const bytes = new Uint8Array(await response.arrayBuffer());
         if (bytes.byteLength && bytes.byteLength <= CARD_FONT_MAX_BYTES) {

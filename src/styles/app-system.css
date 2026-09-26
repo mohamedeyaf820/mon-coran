@@ -472,7 +472,10 @@ html body .app-root {
 
 .library-close:hover,
 .library-row__delete:hover {
-  color: var(--danger, #b42318);
+  /* --danger is now defined per theme in themes4.css; the literal fallback
+     here used to mask the undefined token and pinned dark themes to a light
+     red. */
+  color: var(--danger);
   border-color: color-mix(in srgb, currentColor 35%, var(--theme-border));
 }
 

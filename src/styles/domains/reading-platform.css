@@ -1054,9 +1054,12 @@ html body .app-root .quran-display--platform .cpv-container {
         padding: 0.28rem;
     }
 
+    /* min-width/min-height lived here as `2rem !important`, which fought the
+       42px/38px duplicates in search-home-polish.css for the same dead
+       selector (no element carries a bare .reader-toolbar-btn token — only
+       --translation/--tajweed/--primary modifiers render). Sizes for the
+       toolbar controls are owned once, via --mp-header-control above. */
     .app-root .quran-display--platform .reader-toolbar-btn {
-        min-width: 2rem !important;
-        min-height: 2rem !important;
         padding-inline: 0.48rem;
         font-size: 0.68rem !important;
     }
@@ -3571,9 +3574,17 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-contro
     padding: 0;
 }
 
-.quran-display--platform .reader-control-deck :is(.reader-typography-trigger, .reader-fullscreen-trigger) {
+/* Page-mode icon chips (translation, tajweed, typography, fullscreen) collapse
+   to icon-only below 480px and measured 41x44, under the 44px touch contract
+   (AGENTS.md). Route all four through the same --mp-header-control token the
+   header contract uses instead of per-breakpoint size guesses; height stays
+   pinned at 44px by h-11 / the ≤480 button rule, and reader-calm.css's
+   min-height:36px !important cannot shrink the explicit height. Icons and
+   padding are untouched. */
+.quran-display--platform .reader-control-deck :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger) {
     display: inline-flex;
-    min-height: 32px;
+    min-width: var(--mp-header-control, max(2.75rem, 44px));
+    min-height: var(--mp-header-control, max(2.75rem, 44px));
 }
 
 .quran-display--platform .reader-control-deck .reader-typography-panel {

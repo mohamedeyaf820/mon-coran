@@ -12,6 +12,8 @@ import {
 } from "../utils/audioPlaylist.js";
 import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
 import { filterAyahAudioGaps } from "../data/audioAvailability.js";
+import { isTrustedAudioUrl } from "./audioSources.js";
+import { logError } from "./errorAnalytics.js";
 import { hasBasmalaPreroll } from "./audioUrlBuilder.js";
 import {
   downloadProgressMapSchema,
@@ -32,6 +34,12 @@ export const OFFLINE_FULL_QURAN_PROGRESS_EVENT = "mushafplus-full-quran-download
 const activeDownloads = new Map();
 const activeFullQuranDownloads = new Map();
 const FILE_COUNT_CACHE = new Map();
+
+function devLog(method, ...args) {
+  if (import.meta.env?.DEV && typeof console !== "undefined") {
+    console[method]?.(...args);
+  }
+}
 
 function loadProgress() {
   return readLocalStorageWithSchema(PROGRESS_KEY, downloadProgressMapSchema, {});
@@ -188,6 +196,21 @@ function getAudioUrlCandidates({ item, normalized }) {
   );
 }
 
+// The candidate list may be prepended with a remote-supplied timing.url, so
+// the downloader applies the same allow-list the player enforces at playback
+// (audioService._loadUrlWithRetry): a URL it would refuse to play must never
+// be fetched or cached either — an opaque cached response cannot be inspected
+// afterwards. Deletion paths keep the unfiltered list so legacy entries stay
+// removable.
+function getTrustedAudioUrlCandidates({ item, normalized }) {
+  const trusted = [];
+  for (const url of getAudioUrlCandidates({ item, normalized })) {
+    if (isTrustedAudioUrl(url)) trusted.push(url);
+    else devLog("warn", "[download] URL outside the audio allow-list, skipped:", url);
+  }
+  return trusted;
+}
+
 let cacheInventoryPromise = null;
 function getCachedAudioUrls() {
   if (!cacheInventoryPromise) {
@@ -218,7 +241,7 @@ async function verifySurahWithInventory(normalized, cachedUrls, { persist = true
 
   const items = await buildDownloadAudioItems(normalized);
   const present = items.reduce((count, item) => {
-    const candidates = getAudioUrlCandidates({ item, normalized });
+    const candidates = getTrustedAudioUrlCandidates({ item, normalized });
     return count + Number(candidates.some((url) => cachedUrls.has(url)));
   }, 0);
   if (present === items.length) return entry;
@@ -456,7 +479,7 @@ export async function downloadSurahForReciter(
         : 3;
 
     const downloadOne = async (item) => {
-      const urlCandidates = getAudioUrlCandidates({ item, normalized });
+      const urlCandidates = getTrustedAudioUrlCandidates({ item, normalized });
       let existing = null;
       for (const url of urlCandidates) {
         existing = await cache.match(url, { ignoreVary: true });
@@ -582,7 +605,12 @@ export async function downloadSurahForReciter(
     return status;
   } catch (error) {
     const cancelled = controller.signal.aborted;
-    if (!cancelled) console.error("Download error:", error);
+    if (!cancelled) {
+      // terser strips console.error from the production bundle, so mirror the
+      // failure into the local error log the diagnostics export ships.
+      console.error("Download error:", error);
+      logError(error, `download:${normalized.key}`);
+    }
     const latestEntry = loadProgress()[normalized.key] || progress[normalized.key];
     const total =
       latestEntry?.total ||

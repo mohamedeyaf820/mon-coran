@@ -349,9 +349,17 @@ async function _fetchFromNetwork(url, idbKey, signal, timeoutMs = FETCH_TIMEOUT)
   }
 }
 
+// One background refresh per cache key at a time: N callers hitting the same
+// expired entry must not fire N identical network requests.
+const _backgroundRefreshInFlight = new Set();
+
 function _refreshInBackground(url, idbKey) {
-  // Don't deduplicate background refreshes — they're best-effort
-  _fetchFromNetwork(url, idbKey, null).catch(() => { });
+  const key = idbKey || (IDB_API_PREFIX + url);
+  if (_backgroundRefreshInFlight.has(key)) return;
+  _backgroundRefreshInFlight.add(key);
+  _fetchFromNetwork(url, idbKey, null)
+    .catch(() => { })
+    .finally(() => _backgroundRefreshInFlight.delete(key));
 }
 
 async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT) {
@@ -597,8 +605,10 @@ async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
     remoteLangs.length
       ? fetchRemoteTranslations(pathPrefix, remoteLangs, signal).catch((err) => {
           if (err.name === 'AbortError') throw err;
+          // A failed edition is not an absent one: rethrow so the reader sees
+          // the error state instead of a silently missing translation.
           console.warn('Remote translation editions unavailable:', err);
-          return [];
+          throw err;
         })
       : Promise.resolve([]),
   ]);

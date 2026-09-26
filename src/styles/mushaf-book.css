@@ -504,8 +504,8 @@
 
 /* ─── Double-page spread (desktop) ──────────────────────────────────── */
 
-/* Two leaves: the type scales down so both faces plus the gutter fit the
-   viewport, and the shared --mfp-font keeps them at one scale. */
+/* Two leaves: the type scales so both faces plus the gutter fill the viewport
+   width, and the shared --mfp-font keeps them at one scale. */
 .mfp-portal-root[data-layout="double"] {
   --mfp-cols: 2;
   /* One leaf costs its 16.7 em measure plus ~130 px of frame padding and outer
@@ -515,6 +515,13 @@
   /* The spine is a fold, not a moat: at 2.5rem the two leaves read as separate
      cards and the pair lost ~110 px of width the type could have used. */
   --mfp-page-gutter: 1.6rem;
+  /* On a wide desktop the height budget alone left the spread a narrow strip
+     floating in empty side margins. Floor the type at the width-fit size so the
+     two faces fill the screen horizontally; the leaf then grows taller than the
+     window and the reader scrolls vertically to finish the page — the trade the
+     book makes for size on desktop. Capped so an ultrawide does not print 40 px
+     glyphs. The single/mobile layout keeps the pure height fit. */
+  --mfp-min-font: clamp(18px, calc((100vw - var(--mfp-hchrome)) / (16.7 * 2)), 34px);
 }
 
 /* On the spread, the two edges that face the fold are dropped: their juz, hizb
@@ -535,8 +542,16 @@
    budget is the viewport's own safe insets and nothing else. The chrome fades
    to a tap, and the printed page never has to scroll to be read. */
 .mfp-portal-root[data-layout="single"] {
-  --mfp-hchrome: 92px;
-  --mfp-min-font: 15px;
+  /* The 92 px reserve was budgeted for the double spread's outer rubric
+     columns, which the single leaf hides — so it left a phone page narrower
+     than the screen. Reserve only the real horizontal cost: the frame's own
+     side padding plus the viewport gutter. */
+  --mfp-hchrome: calc(2 * clamp(1.3rem, 4vw, 2.4rem) + 0.7rem);
+  /* Fill the width: floor the type at the width-fit size so the leaf adapts to
+     the screen edge to edge (a phone already fits its height at this size; a
+     tall tablet grows past the fold and scrolls, the same trade the desktop
+     spread makes). Capped so a wide portrait does not print oversized glyphs. */
+  --mfp-min-font: clamp(15px, calc((100vw - var(--mfp-hchrome)) / 16.7), 34px);
   --mfp-chrome: 64px;
   --mfp-header-room: max(0.5rem, env(safe-area-inset-top));
 }
@@ -1277,6 +1292,24 @@
   /* The Mushaf always opens right-to-left: the lower folio stays on the
      right even when the interface language is left-to-right. */
   direction: rtl;
+}
+
+/* Stretch alone only equalises the shell; the paper sheet inside it is still
+   sized by its own ink, so a page whose fit loop grows past the shared floor
+   (a dense folio reaching sixteen wrapped lines) ends up taller than its
+   partner and the two frames drift apart at the top. Pin the sheet and its
+   margin columns to a row that fills the stretched shell, so both faces of the
+   spread are one height and share a top edge — the running head and the fold
+   line up, and the folio footer settles at the foot of each page. The caption
+   row (when the layout was adjusted) keeps its own auto row above. */
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell {
+  grid-template-rows: auto minmax(0, 1fr);
+}
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell > .qcm-font-warning {
+  grid-row: 1;
+}
+.mfp-portal-root[data-layout="double"] .mfp-book--exact > .qcm-page-shell > :is(.qcm-page, .qcm-edge) {
+  grid-row: 2;
 }
 
 /* The spine: a soft inner shadow on the two facing edges, never over text. */

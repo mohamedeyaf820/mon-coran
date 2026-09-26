@@ -7,8 +7,8 @@
  * src/constants/warshSource.js for the provenance and the refresh procedure.
  */
 
-import { dbGet, dbSet, dbDelete } from './dbService';
-import { JUZ_DATA } from '../data/juz';
+import { dbGet, dbSet, dbDelete } from './dbService.js';
+import { JUZ_DATA } from '../data/juz.js';
 import {
   WARSH_DATA_BASE_URL,
   WARSH_LEGACY_JSON_URL,
@@ -16,12 +16,11 @@ import {
   WARSH_LEGACY_JSON_SHA256,
   getWarshPageStart,
   getWarshSurahAyahCount,
-} from '../constants/warshSource';
-import { fetchQuranComText } from './quranComAPI';
-import { fetchWithTimeout } from './fetchWithTimeout';
-import { stripEmbeddedAyahMarkers } from '../data/fonts';
-import { WARSH_BASMALA } from '../data/basmala';
-import { warshToHafsNumbers, hafsToWarshNumbers } from '../data/warshHafsNumbering';
+} from '../constants/warshSource.js';
+import { fetchWithTimeout } from './fetchWithTimeout.js';
+import { stripEmbeddedAyahMarkers } from '../data/fonts.js';
+import { WARSH_BASMALA } from '../data/basmala.js';
+import { warshToHafsNumbers } from '../data/warshHafsNumbering.js';
 
 const IDB_STORE = 'cache';
 const IDB_KEY_PREFIX = 'warsh-unicode-v6-s-';
@@ -66,6 +65,82 @@ let legacyIndex = null;
 const cachedPagePayloads = new Map();
 const cachedJuzPayloads = new Map();
 const cachedSurahPayloads = new Map();
+
+// ── Bounded memory caches ────────────────────────────
+// These four Maps used to grow for the lifetime of the tab, and they hold the
+// same normalised Arabic text in different shapes: a full read-through of the
+// mushaf kept ~5.5 MB of Quran text alive per cache. Measured from the shipped
+// dataset (public/data/warsh-page-source.json: 6214 ayahs, 737 012 characters,
+// UTF-16 in memory plus one duplicated word array per ayah), one entry costs
+// about as much as its printed scope:
+//   surah rows      avg 49 kB, Al-Baqara 412 kB   -> cap 4  ≈ 1.11 MB worst
+//   surah payload   derived from the rows above, sharing their word arrays
+//                   (toWarshAyah reuses record.words) -> cap 4 ≈ 0.7 MB marginal
+//   page payload    avg 9.2 kB, max 13 kB          -> cap 32 ≈ 0.37 MB worst
+//   juz payload     avg 186 kB, max 222 kB         -> cap 2  ≈ 0.43 MB worst
+// Worst case residency is therefore ≈ 2.6 MB, against the ~19 MB the four Maps
+// could reach unbounded (each holds up to a full copy of the mushaf text), and
+// a realistic single-surah session stays under 100 kB. The caps are LRU-bounded
+// rather than cleared so a returning reader keeps the page they are on: a miss
+// costs one IndexedDB read of text that is already offline, or a re-fetch of
+// the pinned source only after the reader cleared the cache deliberately.
+// Same shape as quranComAPI.js (MEM_CACHE_MAX_SIZE) and useQuranDisplayData.js
+// (rememberLimited).
+const SURAH_CACHE_MAX = 4;
+const SURAH_PAYLOAD_CACHE_MAX = 4;
+const PAGE_PAYLOAD_CACHE_MAX = 32;
+const JUZ_PAYLOAD_CACHE_MAX = 2;
+
+/** Read a bounded cache and mark the entry as the most recently used. */
+function recallBounded(map, key) {
+  if (!map.has(key)) return undefined;
+  const value = map.get(key);
+  map.delete(key);
+  map.set(key, value);
+  return value;
+}
+
+/**
+ * Insert into a bounded cache, evicting least-recently-used entries over the
+ * cap. `onEvict` lets a derived cache drop what it built from the evicted
+ * entry, so the pair cannot drift to double the budget.
+ */
+function rememberBounded(map, key, value, max, onEvict) {
+  if (map.has(key)) map.delete(key);
+  map.set(key, value);
+  while (map.size > max) {
+    const oldest = map.keys().next().value;
+    map.delete(oldest);
+    onEvict?.(oldest);
+  }
+  return value;
+}
+
+function rememberSurahRows(surahNumber, records) {
+  return rememberBounded(cachedSurahs, surahNumber, records, SURAH_CACHE_MAX, (evicted) =>
+    cachedSurahPayloads.delete(evicted),
+  );
+}
+
+function rememberSurahPayload(surahNumber, payload) {
+  return rememberBounded(cachedSurahPayloads, surahNumber, payload, SURAH_PAYLOAD_CACHE_MAX);
+}
+
+/** Memory-cache sizes and caps, for the contract test and for diagnostics. */
+export function getWarshMemoryCacheStats() {
+  return {
+    surahs: cachedSurahs.size,
+    surahPayloads: cachedSurahPayloads.size,
+    pages: cachedPagePayloads.size,
+    juz: cachedJuzPayloads.size,
+    caps: {
+      surahs: SURAH_CACHE_MAX,
+      surahPayloads: SURAH_PAYLOAD_CACHE_MAX,
+      pages: PAGE_PAYLOAD_CACHE_MAX,
+      juz: JUZ_PAYLOAD_CACHE_MAX,
+    },
+  };
+}
 
 function normalizeWhitespace(text) {
   if (!text) return '';
@@ -384,15 +459,17 @@ export async function loadWarshSurah(surahNum) {
   const n = Number(surahNum);
   if (n < 1 || n > 114) throw new Error(`Invalid surah: ${surahNum}`);
 
-  if (cachedSurahs.has(n)) return cachedSurahs.get(n);
+  const warm = recallBounded(cachedSurahs, n);
+  if (warm) return warm;
   if (pendingSurahs.has(n)) return pendingSurahs.get(n);
 
   const promise = (async () => {
     const idbKey = `${IDB_KEY_PREFIX}${n}`;
     
     // 1. Try memory cache first
-    if (cachedSurahs.has(n)) {
-      return cachedSurahs.get(n);
+    const remembered = recallBounded(cachedSurahs, n);
+    if (remembered) {
+      return remembered;
     }
     
     // 2. Try IndexedDB cache
@@ -402,7 +479,7 @@ export async function loadWarshSurah(surahNum) {
       if (Array.isArray(cachedRows) && cachedRows.length > 0) {
         // Validate cached data
         if (validateWarshRows(cachedRows, n)) {
-          cachedSurahs.set(n, cachedRows);
+          rememberSurahRows(n, cachedRows);
           return cachedRows;
         } else {
           logError(`[WarshService] Cached data for surah ${n} is invalid, clearing...`);
@@ -433,7 +510,7 @@ export async function loadWarshSurah(surahNum) {
       }
     }
 
-    cachedSurahs.set(n, normalized);
+    rememberSurahRows(n, normalized);
 
     // 4. Store in IndexedDB
     dbSet(IDB_STORE, { key: idbKey, data: normalized }).catch(() => { });
@@ -511,81 +588,6 @@ async function loadLegacyWarshData() {
   return legacyWarshDataPromise;
 }
 
-function toWarshAyahWithHafsMeta(record, hafsAyah) {
-  const ayah = toWarshAyah(record);
-  return {
-    ...ayah,
-    number: hafsAyah?.number ?? ayah.number,
-    juz: hafsAyah?.juz ?? ayah.juz,
-    page: hafsAyah?.page ?? ayah.page,
-    hizb: hafsAyah?.hizb ?? null,
-    rubElHizb: hafsAyah?.rubElHizb ?? null,
-    ruku: hafsAyah?.ruku ?? null,
-    manzil: hafsAyah?.manzil ?? null,
-    hafsText: hafsAyah?.text || hafsAyah?.quranCom?.textUthmani || null,
-    hafsSupport: hafsAyah
-      ? {
-          text: hafsAyah.text || hafsAyah.quranCom?.textUthmani || null,
-          quranCom: hafsAyah.quranCom || null,
-          words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
-        }
-      : null,
-  };
-}
-
-async function getWarshVersesByHafsScope(pathPrefix) {
-  const hafsData = await fetchQuranComText(pathPrefix);
-  const hafsAyahs = Array.isArray(hafsData?.ayahs) ? hafsData.ayahs : [];
-  const surahNumbers = [
-    ...new Set(
-      hafsAyahs
-        .map((ayah) => Number(ayah?.surah?.number))
-        .filter(Boolean),
-    ),
-  ];
-  const groupedRecords = new Map();
-  let nextSurahIndex = 0;
-  const loadNextSurah = async () => {
-    while (nextSurahIndex < surahNumbers.length) {
-      const surahNumber = surahNumbers[nextSurahIndex];
-      nextSurahIndex += 1;
-      const records = await getWarshSurahVerses(surahNumber);
-      groupedRecords.set(
-        surahNumber,
-        new Map(records.map((record) => [Number(record.ayahNumber), record])),
-      );
-    }
-  };
-  await Promise.all(
-    Array.from(
-      { length: Math.min(5, surahNumbers.length) },
-      () => loadNextSurah(),
-    ),
-  );
-
-  const result = [];
-  const seenWarsh = new Set();
-  for (const hafsAyah of hafsAyahs) {
-    const surahNumber = Number(hafsAyah?.surah?.number);
-    const ayahNumber = Number(hafsAyah?.numberInSurah);
-    if (!surahNumber || !ayahNumber) continue;
-
-    const warshNumbers = hafsToWarshNumbers(surahNumber, ayahNumber) || [];
-    for (const warshNumber of warshNumbers) {
-      const warshKey = `${surahNumber}:${warshNumber}`;
-      if (seenWarsh.has(warshKey)) continue;
-      seenWarsh.add(warshKey);
-      const record = groupedRecords.get(surahNumber)?.get(warshNumber);
-      if (record) result.push(toWarshAyahWithHafsMeta(record, hafsAyah));
-    }
-  }
-
-  return {
-    ...buildWarshPayload(result),
-    number: Number(pathPrefix.split('/')[1]) || null,
-  };
-}
-
 /**
  * Backward compatibility: returns a promise that resolves when a surah is loaded.
  * Note: this used to load ALL surahs. Now it's a dummy or surah-specific.
@@ -596,6 +598,13 @@ export async function loadWarshData() {
   return Promise.resolve();
 }
 
+/**
+ * True only while the rows are warm in this tab's memory cache. The cache is
+ * LRU-bounded, so a surah that was evicted (but is still in IndexedDB, ready
+ * for one local read) answers false: that is the honest answer for a "is this
+ * cheap right now?" probe, and it must never be read as "the reader does not
+ * have this surah offline". Nothing in src/ or tests/ calls it today.
+ */
 export function isWarshDataLoaded(surahNum) {
   return cachedSurahs.has(Number(surahNum));
 }
@@ -618,7 +627,8 @@ export async function getWarshVerse(surahNum, verseNum) {
 
 export async function getWarshSurahFormatted(surahNum) {
   const cacheKey = Number(surahNum);
-  if (cachedSurahPayloads.has(cacheKey)) return cachedSurahPayloads.get(cacheKey);
+  const warm = recallBounded(cachedSurahPayloads, cacheKey);
+  if (warm) return warm;
 
   const verses = await getWarshSurahVerses(surahNum);
   const surahNumber = Number(surahNum);
@@ -637,7 +647,7 @@ export async function getWarshSurahFormatted(surahNum) {
     bismillah,
     ...buildWarshPayload(ayahs),
   };
-  cachedSurahPayloads.set(cacheKey, payload);
+  rememberSurahPayload(cacheKey, payload);
   return payload;
 }
 
@@ -678,7 +688,8 @@ async function getScopedWarshJuzAyahs(juzNum) {
 
 export async function getWarshJuzVerses(juzNum) {
   const cacheKey = Number(juzNum);
-  if (cachedJuzPayloads.has(cacheKey)) return cachedJuzPayloads.get(cacheKey);
+  const warm = recallBounded(cachedJuzPayloads, cacheKey);
+  if (warm) return warm;
 
   try {
     const scoped = await getScopedWarshJuzAyahs(cacheKey);
@@ -687,7 +698,7 @@ export async function getWarshJuzVerses(juzNum) {
         ...buildWarshPayload(scoped.map((ayah) => ({ ...ayah, juz: ayah.juz || cacheKey }))),
         number: cacheKey,
       };
-      cachedJuzPayloads.set(cacheKey, payload);
+      rememberBounded(cachedJuzPayloads, cacheKey, payload, JUZ_PAYLOAD_CACHE_MAX);
       return payload;
     }
   } catch (err) {
@@ -716,18 +727,19 @@ export async function getWarshJuzVerses(juzNum) {
       };
     });
     const payload = { ...buildWarshPayload(ayahs), number: cacheKey };
-    cachedJuzPayloads.set(cacheKey, payload);
+    rememberBounded(cachedJuzPayloads, cacheKey, payload, JUZ_PAYLOAD_CACHE_MAX);
     return payload;
   }
 
   const payload = { ayahs: [], number: cacheKey };
-  cachedJuzPayloads.set(cacheKey, payload);
+  rememberBounded(cachedJuzPayloads, cacheKey, payload, JUZ_PAYLOAD_CACHE_MAX);
   return payload;
 }
 
 export async function getWarshPageVerses(pageNum) {
   const cacheKey = Number(pageNum);
-  if (cachedPagePayloads.has(cacheKey)) return cachedPagePayloads.get(cacheKey);
+  const warm = recallBounded(cachedPagePayloads, cacheKey);
+  if (warm) return warm;
 
   const raw = await loadLegacyWarshData();
   const indexed = getLegacyIndex(raw);
@@ -780,7 +792,7 @@ export async function getWarshPageVerses(pageNum) {
     ayahs: formattedAyahs,
     number: pageNum,
   };
-  cachedPagePayloads.set(cacheKey, payload);
+  rememberBounded(cachedPagePayloads, cacheKey, payload, PAGE_PAYLOAD_CACHE_MAX);
   return payload;
 }
 
@@ -838,4 +850,5 @@ export default {
   getWarshPageVerses,
   preloadWarshSurah,
   clearWarshCache,
+  getWarshMemoryCacheStats,
 };

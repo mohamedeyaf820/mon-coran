@@ -339,7 +339,9 @@ test("the reading cards take their line from the getter, not from the approximat
 
 test("every populated surah notifies the readers, cache hit included", () => {
   const service = readSource("src/services/transliterationService.js");
-  const populateSites = service.split("loadedSurahs.set(").slice(1);
+  // The map is LRU-bounded, so population goes through rememberBounded() rather
+  // than a bare .set(); the cap itself is asserted in the cache-stats test.
+  const populateSites = service.split("rememberBounded(loadedSurahs,").slice(1);
   assert.equal(populateSites.length, 2, "one cached path and one asset path populate the map");
   for (const site of populateSites) {
     assert.match(

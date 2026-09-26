@@ -79,6 +79,65 @@ for (const [url, cacheName, ignoreVary] of [
   });
 }
 
+function bootWithContext({ flag, settings }) {
+  const preloads = [];
+  const store = new Map();
+  if (settings !== undefined) store.set('mushaf-plus-settings', settings);
+  if (flag !== undefined) store.set('mushaf-plus-warsh-preload', flag);
+  const context = {
+    navigator: { onLine: true },
+    document: {
+      getElementById: () => null,
+      createElement: () => ({}),
+      head: { appendChild: (node) => { preloads.push(node); } },
+    },
+    window: { addEventListener: () => {}, location: { reload: () => {} } },
+    sessionStorage: { getItem: () => null, setItem: () => {}, removeItem: () => {} },
+    localStorage: {
+      getItem: (key) => (store.has(key) ? store.get(key) : null),
+      setItem: (key, value) => store.set(key, value),
+      removeItem: (key) => store.delete(key),
+    },
+    caches: { keys: async () => [], delete: async () => false },
+    fetch: async () => ({ ok: true }),
+    setTimeout: () => {},
+  };
+  vm.runInNewContext(bootSource, context);
+  return preloads;
+}
+
+test('boot preloads the Warsh face from the mirrored flag, not the settings blob', () => {
+  // The settings blob is ciphertext in protected mode: parsing it can never be
+  // the only way to decide, or protected Warsh readers lose the preload.
+  const encrypted = 'mpenc:v2:{"salt":"aaa","nonce":"bbb","ciphertext":"ccc"}';
+  assert.equal(bootWithContext({ flag: '1', settings: encrypted }).length, 1);
+  assert.equal(bootWithContext({ flag: '0', settings: encrypted }).length, 0);
+});
+
+test('boot falls back to the legacy plaintext settings when no flag exists', () => {
+  assert.equal(
+    bootWithContext({ settings: JSON.stringify({ riwaya: 'warsh', fontFamily: 'qpc-madani-page' }) }).length,
+    1,
+  );
+  assert.equal(
+    bootWithContext({ settings: JSON.stringify({ riwaya: 'warsh', fontFamily: 'scheherazade-new-warsh' }) }).length,
+    0,
+  );
+  assert.equal(
+    bootWithContext({ settings: JSON.stringify({ riwaya: 'hafs' }) }).length,
+    0,
+  );
+});
+
+test('saveSettings mirrors the Warsh preload bit in plain text', () => {
+  const storageSource = readFileSync(
+    new URL('../src/services/storageService.js', import.meta.url),
+    'utf8',
+  );
+  assert.match(storageSource, /export const WARSH_PRELOAD_KEY = "mushaf-plus-warsh-preload"/);
+  assert.match(storageSource, /localStorage\.setItem\(SETTINGS_KEY, encryptData\(safe\)\);\s*\n\s*mirrorWarshFacePreload\(safe\);/);
+});
+
 test('worker and downloader open the same offline audio cache', () => {
   const downloadSource = readFileSync(
     new URL('../src/services/downloadService.js', import.meta.url),

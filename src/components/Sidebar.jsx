@@ -222,7 +222,7 @@ export default function Sidebar() {
       navigationRequestRef.current = requestId;
       await warmTarget(mode, value);
       if (navigationRequestRef.current !== requestId) return;
-      set({ displayMode: mode, showHome: false, showDuas: false });
+      set({ displayMode: mode, showHome: false, showDuas: false, showPrayers: false });
       if (mode === "page") {
         dispatch({ type: "NAVIGATE_PAGE", payload: { page: value } });
       } else if (mode === "juz") {

@@ -1835,3 +1835,215 @@ html[dir="rtl"] .settings-switch[data-state="checked"] span {
 .settings-notification-note.is-warning {
   color: var(--toast-warning-text, #9a3412);
 }
+
+/* ── Prayer settings panel (settings/PrayerSettingsSection) ───────────── */
+
+.settings-prayer-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.settings-prayer-field > label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.settings-prayer-hint {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+}
+
+.settings-prayer-subtitle {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.settings-prayer-error {
+  font-size: 0.74rem;
+  color: var(--toast-error-text, #b3261e);
+}
+
+.settings-prayer-city-row {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.settings-prayer-city-row .settings-select {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.settings-prayer-detect {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-height: 44px;
+  padding: 0.45rem 0.8rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--theme-border);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.76rem;
+  cursor: pointer;
+}
+
+.settings-prayer-detect:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.settings-prayer-choices {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.settings-prayer-choices > legend {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  padding: 0;
+}
+
+.settings-prayer-choices__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.settings-prayer-chip {
+  display: inline-flex;
+  cursor: pointer;
+}
+
+/* Same out-ranking as the modal switch: the global input[type] rule beats a
+   single class, so the chip's real radio must be hidden with !important. */
+.settings-prayer-chip input {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.settings-prayer-chip span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid var(--theme-border);
+  font-size: 0.74rem;
+  color: var(--text-secondary);
+}
+
+.settings-prayer-chip input:checked + span {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
+.settings-prayer-chip input:focus-visible + span {
+  outline: 2px solid var(--focus-ring, var(--primary));
+  outline-offset: 2px;
+}
+
+.settings-prayer-per-list {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.settings-prayer-per-list:disabled {
+  opacity: 0.55;
+}
+
+.settings-prayer-per-list > legend {
+  padding: 0;
+  margin-bottom: 0.3rem;
+}
+
+.settings-prayer-adhan-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.settings-prayer-adhan-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--theme-border);
+}
+
+.settings-prayer-adhan-row.is-selected {
+  border-color: var(--primary);
+}
+
+.settings-prayer-adhan-pick {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  cursor: pointer;
+  min-width: 0;
+}
+
+.settings-prayer-adhan-pick input {
+  margin-top: 0.3rem;
+  accent-color: var(--primary);
+}
+
+.settings-prayer-adhan-pick strong {
+  display: block;
+  font-size: 0.82rem;
+  color: var(--text-primary);
+}
+
+.settings-prayer-adhan-pick small {
+  display: block;
+  font-size: 0.7rem;
+  color: var(--text-muted);
+}
+
+.settings-prayer-adhan-actions {
+  display: inline-flex;
+  gap: 0.3rem;
+}
+
+.settings-prayer-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 0.6rem;
+  border: 1px solid var(--theme-border);
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+
+.settings-prayer-icon-btn:hover:not(:disabled) {
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.settings-prayer-icon-btn.is-done {
+  color: var(--primary);
+  border-color: var(--primary);
+  cursor: default;
+}

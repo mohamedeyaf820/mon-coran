@@ -13,6 +13,9 @@ const COPY = {
     duasTitle: "Douas en arabe avec traduction",
     duasDescription:
       "Découvrez une sélection de douas en arabe avec traduction française et références.",
+    prayersTitle: "Mes prières — suivi quotidien",
+    prayersDescription:
+      "Suivez vos cinq prières quotidiennes, leurs horaires et vos rappels, entièrement conservés sur votre appareil.",
     page: "Page",
     juz: "Juz",
     ayah: "verset",
@@ -31,6 +34,9 @@ const COPY = {
     duasTitle: "Duas in Arabic with translation",
     duasDescription:
       "Explore a selection of duas with Arabic text, translation and references.",
+    prayersTitle: "My prayers — daily tracker",
+    prayersDescription:
+      "Track your five daily prayers, their times and reminders, kept entirely on your device.",
     page: "Page",
     juz: "Juz",
     ayah: "verse",
@@ -48,6 +54,9 @@ const COPY = {
       "اقرأ واستمع وتدبّر القرآن الكريم عبر الإنترنت مع أحكام التجويد والترجمات وروايتي حفص وورش على MushafPlus.",
     duasTitle: "أدعية بالنص العربي والترجمة",
     duasDescription: "مجموعة من الأدعية بالنص العربي والترجمة والمراجع.",
+    prayersTitle: "متابعة الصلوات اليومية",
+    prayersDescription:
+      "تتبع صلواتك الخمس ومواقيتها وتذكيراتك، محفوظة بالكامل على جهازك.",
     page: "صفحة",
     juz: "الجزء",
     ayah: "الآية",
@@ -78,6 +87,7 @@ function statePath(state) {
   if (state.legalPage) return `/${state.legalPage}`;
   if (state.showHome) return "/";
   if (state.showDuas) return "/duas";
+  if (state.showPrayers) return "/prires";
   if (state.displayMode === "page") return `/page/${state.currentPage}`;
   if (state.displayMode === "juz") return `/juz/${state.currentJuz}`;
   return Number(state.currentAyah) > 1
@@ -105,6 +115,10 @@ export function buildSeoMetadata(state = {}) {
   } else if (state.showDuas) {
     title = `${copy.duasTitle} | ${suffix}`;
     description = copy.duasDescription;
+    kind = "duas";
+  } else if (state.showPrayers) {
+    title = `${copy.prayersTitle} | ${suffix}`;
+    description = copy.prayersDescription;
     kind = "duas";
   } else if (!state.showHome && state.displayMode === "page") {
     title = `${copy.page} ${state.currentPage} du Saint Coran | ${suffix}`;

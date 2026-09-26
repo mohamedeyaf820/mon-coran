@@ -17,7 +17,7 @@
   box-shadow: 0 20px 55px rgb(0 0 0 / 20%);
 }
 
-.surah-info-modal > #modal-title {
+.surah-info-modal > .modal-title {
   position: relative;
   z-index: 10;
   flex: 0 0 auto;
@@ -365,7 +365,7 @@
     right: 0.55rem;
   }
 
-  .surah-info-modal > #modal-title {
+  .surah-info-modal > .modal-title {
     padding: 1rem 3.7rem 0.8rem 1rem;
   }
 
@@ -412,7 +412,7 @@
 }
 
 @media (max-width: 420px) {
-  .surah-info-modal > #modal-title {
+  .surah-info-modal > .modal-title {
     min-height: 3.15rem;
     padding: 0.88rem 3.45rem 0.72rem 0.9rem;
     font-size: 11px;

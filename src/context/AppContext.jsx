@@ -24,6 +24,7 @@ import {
 import { parseInitialRoute } from "../hooks/useUrlSync";
 import { getSurahAyahCount } from "../data/surahs";
 import { loadAudioService } from "../services/loadAudioService";
+import { noteSettingsWrite } from "../lib/multiTabMessages";
 import {
   LOCAL_DATA_DELETION_EVENT,
   PRIVACY_BEFORE_LOCK_EVENT,
@@ -97,6 +98,7 @@ const getInitialState = () => {
   libraryTab: "favorites",
   shareImageOpen: false,
   prayerModalOpen: false,
+  showPrayers: routeOverrides.showPrayers ?? false,
   // The branded opening returns on each real app launch. A persisted legacy
   // setting can only bypass it in automated browser tests.
   skipSplashAnimation: shouldSkipSplashForAutomation(stored),
@@ -184,6 +186,10 @@ const getInitialState = () => {
   prayerMethod: stored.prayerMethod ?? 12,
   prayerLocation: stored.prayerLocation ?? null,
   prayerReminders: stored.prayerReminders ?? false,
+  prayerTimeOffsets: stored.prayerTimeOffsets ?? { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
+  prayerNotifications: stored.prayerNotifications ?? null,
+  prayerTrackingEnabled: stored.prayerTrackingEnabled ?? false,
+  prayerPostAdhanDuas: stored.prayerPostAdhanDuas ?? true,
   dailyVerseNotification: stored.dailyVerseNotification ?? false,
 
   // Loading
@@ -218,6 +224,7 @@ export function appReducer(state, action) {
         !Object.prototype.hasOwnProperty.call(payload, "routeNotFound") &&
         (payload.showHome === true ||
           payload.showDuas === true ||
+          payload.showPrayers === true ||
           payload.legalPage ||
           Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
           Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
@@ -225,8 +232,28 @@ export function appReducer(state, action) {
       ) {
         next.routeNotFound = false;
       }
-      const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
-      const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
+      // The three full-page views are exclusive whichever setter fires; call
+      // sites historically set only the flags they knew about.
+      if (payload.showHome === true) {
+        next.showDuas = false;
+        next.showPrayers = false;
+      } else if (payload.showDuas === true) {
+        next.showHome = false;
+        next.showPrayers = false;
+      } else if (payload.showPrayers === true) {
+        next.showHome = false;
+        next.showDuas = false;
+      } else if (
+        payload.legalPage ||
+        Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+        Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+        Object.prototype.hasOwnProperty.call(payload, "currentJuz")
+      ) {
+        next.showHome = false;
+        next.showDuas = false;
+        next.showPrayers = false;
+      }
+      const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");      const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
       const targetRiwaya = hasRiwaya
         ? payload.riwaya === "warsh"
           ? "warsh"
@@ -319,6 +346,7 @@ export function appReducer(state, action) {
         displayMode: "surah",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
         legalPage: null,
         sidebarOpen: false,
       };
@@ -334,6 +362,7 @@ export function appReducer(state, action) {
         displayMode: "page",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
         legalPage: null,
         sidebarOpen: false,
       };
@@ -345,6 +374,7 @@ export function appReducer(state, action) {
         displayMode: "juz",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
         legalPage: null,
         sidebarOpen: false,
       };
@@ -529,6 +559,10 @@ export function AppProvider({ children }) {
     prayerMethod: state.prayerMethod,
     prayerLocation: state.prayerLocation,
     prayerReminders: state.prayerReminders,
+    prayerTimeOffsets: state.prayerTimeOffsets,
+    prayerNotifications: state.prayerNotifications,
+    prayerTrackingEnabled: state.prayerTrackingEnabled,
+    prayerPostAdhanDuas: state.prayerPostAdhanDuas,
     dailyVerseNotification: state.dailyVerseNotification,
   }), [
     state.lang,
@@ -573,6 +607,10 @@ export function AppProvider({ children }) {
     state.prayerMethod,
     state.prayerLocation,
     state.prayerReminders,
+    state.prayerTimeOffsets,
+    state.prayerNotifications,
+    state.prayerTrackingEnabled,
+    state.prayerPostAdhanDuas,
     state.dailyVerseNotification,
   ]);
 
@@ -609,13 +647,19 @@ export function AppProvider({ children }) {
     }
     if (!persistenceSuspendedRef.current && persistentSettingsRef.current) {
       mergeSettings(persistentSettingsRef.current);
+      // Record the bytes this tab wrote so the multi-tab guard never reads one
+      // of our own saves as an external change.
+      noteSettingsWrite();
     }
   }, []);
 
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      if (!persistenceSuspendedRef.current) mergeSettings(persistentSettingsRef.current);
+      if (!persistenceSuspendedRef.current) {
+        mergeSettings(persistentSettingsRef.current);
+        noteSettingsWrite();
+      }
       saveTimerRef.current = null;
     }, 500);
     return () => {

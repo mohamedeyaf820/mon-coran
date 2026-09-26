@@ -513,16 +513,21 @@
   background: var(--primary);
 }
 
+/* The switch's real control is the checkbox hidden inside the label. The
+   global `input[type="checkbox"]` rule (specificity 0,1,1) out-ranks a bare
+   class, so the hiding declarations need !important — same shape as
+   .settings-visually-hidden; without it the modal paints a green checkbox
+   next to every switch. */
 .prayer-modal__visually-hidden {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  margin: -1px;
-  padding: 0;
-  overflow: hidden;
-  clip: rect(0 0 0 0);
-  white-space: nowrap;
-  border: 0;
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  margin: -1px !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
 }
 
 /* The switch thumb travels with the writing direction, like the settings one. */
@@ -540,4 +545,104 @@
     justify-content: center;
     min-height: 44px;
   }
+}
+
+.prayer-modal__tracker-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  width: 100%;
+  margin-top: 0.35rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--theme-border);
+  background: transparent;
+  color: var(--primary);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.prayer-modal__tracker-link:hover {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+}
+
+/* ─── Home prayer block: next prayer + the five rows ──────────────────────── */
+
+.app-root[data-view="home"] .home-prayer-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-root[data-view="home"] .home-prayer-block .home-prayer-strip {
+  margin-bottom: 0;
+}
+
+.app-root[data-view="home"] .home-prayer-block__kicker {
+  color: var(--text-muted);
+  font-size: max(0.62rem, 10px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0.1rem 0 0;
+  list-style: none;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 12%, var(--theme-border));
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li > button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 32px;
+  padding: 0.15rem 0.1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li > button:hover {
+  color: var(--text-primary);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li.is-next > button {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li.is-past > button {
+  color: var(--text-muted);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__name small {
+  color: var(--text-muted);
+  font-size: max(0.58rem, 9px);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
 }

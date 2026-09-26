@@ -1,7 +1,8 @@
-import { useLayoutEffect, useRef, useCallback } from "react";
+import { useId, useLayoutEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
+import { lockAppScroll } from "../../lib/scrollLock";
 import { useAppLocale } from "../../context/AppContext";
 import { t } from "../../i18n";
 
@@ -18,6 +19,8 @@ export function Modal({
   overlayClassName,
 }) {
   const { lang } = useAppLocale();
+  // Two open modals must not share one aria-labelledby target.
+  const titleId = useId();
   const modalRef = useRef(null);
   const previousFocusRef = useRef(null);
 
@@ -46,7 +49,7 @@ export function Modal({
     if (open) {
       previousFocusRef.current = document.activeElement;
       document.addEventListener("keydown", handleKeyDown);
-      document.body.style.overflow = "hidden";
+      const unlock = lockAppScroll();
       modalRef.current
         ?.querySelector(
           'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
@@ -54,7 +57,7 @@ export function Modal({
         ?.focus();
       return () => {
         document.removeEventListener("keydown", handleKeyDown);
-        document.body.style.overflow = "";
+        unlock();
         previousFocusRef.current?.focus();
       };
     }
@@ -85,7 +88,7 @@ export function Modal({
       )}
       role="dialog"
       aria-modal="true"
-      aria-labelledby={title ? "modal-title" : undefined}
+      aria-labelledby={title ? titleId : undefined}
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose?.();
       }}
@@ -100,7 +103,7 @@ export function Modal({
         className={cn(
           "relative z-10 w-full rounded-3xl bg-[var(--bg-card)]",
           "border border-[var(--border)] shadow-2xl",
-          "max-h-[90vh] overflow-y-auto",
+          "max-h-[90vh] overflow-y-auto overscroll-contain",
           "animate-modalBoxIn",
           sizeClasses[size] || sizeClasses.md,
           className
@@ -109,14 +112,14 @@ export function Modal({
         {showCloseButton && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 z-20 inline-flex h-9 w-9 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:rotate-90"
+            className="absolute top-4 right-4 z-20 inline-flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-[var(--bg-secondary)] text-[var(--text-secondary)] transition-all duration-150 hover:bg-[var(--bg-hover)] hover:text-[var(--text-primary)] hover:rotate-90"
             aria-label={t("audio.close", lang)}
           >
             <X size={18} />
           </button>
         )}
         {title && (
-          <h2 id="modal-title" className="px-6 pt-6 text-lg font-semibold text-[var(--text-primary)]">
+          <h2 id={titleId} className="modal-title px-6 pt-6 text-lg font-semibold text-[var(--text-primary)]">
             {title}
           </h2>
         )}

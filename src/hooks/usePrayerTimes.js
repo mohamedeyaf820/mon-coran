@@ -10,7 +10,7 @@ function dayKeyOf(date) {
  * render, background refresh, auto-retry when the network comes back, and a
  * re-fetch at midnight so an app left open overnight rolls to the new day.
  */
-export function usePrayerTimes({ enabled, location, method, now }) {
+export function usePrayerTimes({ enabled, location, method, offsets, now }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -28,6 +28,7 @@ export function usePrayerTimes({ enabled, location, method, now }) {
         latitude: location.latitude,
         longitude: location.longitude,
         method,
+        offsets,
         date: new Date(),
       });
       if (requestRef.current !== requestId) return;
@@ -39,7 +40,7 @@ export function usePrayerTimes({ enabled, location, method, now }) {
     } finally {
       if (requestRef.current === requestId) setLoading(false);
     }
-  }, [enabled, location, method]);
+  }, [enabled, location, method, offsets]);
 
   useEffect(() => {
     if (!enabled || !locationReady) {

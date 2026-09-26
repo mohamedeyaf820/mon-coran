@@ -1182,7 +1182,10 @@ html[data-theme="dark"] .search-pro__close:hover {
 }
 
 .app-root .quran-display--platform .reader-toolbar-btn {
-    min-height: 42px;
+    /* min-height: 42px used to fight reading-platform.css's `min-height: 2rem
+       !important` under 640px for this same (currently unrendered) bare
+       .reader-toolbar-btn selector. The 44px floor is owned once, in
+       reading-platform.css via --mp-header-control. */
     border-radius: 12px;
     border-color: color-mix(in srgb, var(--border) 80%, transparent);
     background: color-mix(in srgb, var(--bg-card) 78%, transparent);

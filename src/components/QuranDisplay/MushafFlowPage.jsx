@@ -1,5 +1,5 @@
-import React, { useLayoutEffect, useRef, useState } from "react";
-import { getPerWordTajweedRanges } from "../../data/tajwidRules";
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
+import { getPerWordTajweedRanges, getRulesForRiwaya } from "../../data/tajwidRules";
 import { CLIP_PAINT_SUPPORTED, paintTajweedWord, clearTajweedWordPaint } from "../../utils/tajweedWordPaint";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
@@ -131,6 +131,19 @@ export default function MushafFlowPage({
   const fitRef = useRef(1);
   const fitPassRef = useRef(0);
   const fitKeyRef = useRef("");
+
+  // Rule name/description per riwaya, resolved once for the hover tooltip. The
+  // flow sheet has no element of its own per rule band (Chromium paints a
+  // gradient over the word), so the global TajweedTooltip is driven purely from
+  // these data-* attributes on each coloured word.
+  const ruleLabels = useMemo(() => {
+    const key = lang === "ar" ? "nameAr" : lang === "en" ? "nameEn" : "nameFr";
+    const map = new Map();
+    for (const rule of getRulesForRiwaya(riwaya)) {
+      map.set(rule.id, { name: rule[key] || rule.nameEn || rule.id, desc: rule.description || "" });
+    }
+    return map;
+  }, [riwaya, lang]);
 
   useLayoutEffect(() => {
     if (!showTajwid) return undefined;
@@ -326,6 +339,17 @@ export default function MushafFlowPage({
         data-ayah-global={token.globalAyah}
         data-word-position={token.position}
         data-tajweed-key={`${token.globalAyah}:${token.position}`}
+        {...(() => {
+          const ruleId = showTajwid ? token.tajweedRanges?.[0]?.ruleId : null;
+          const tip = ruleId ? ruleLabels.get(ruleId) : null;
+          return tip
+            ? {
+                "data-tajwid-name": tip.name,
+                "data-tajwid-desc": tip.desc,
+                "data-tajwid-color": `var(--tajwid-${ruleId})`,
+              }
+            : {};
+        })()}
         role="button"
         tabIndex={0}
         onClick={() => {

@@ -1,10 +1,12 @@
 import React from "react";
-import { AlertTriangle, CloudOff } from "lucide-react";
+import { AlertTriangle, CloudOff, RotateCw } from "lucide-react";
+import { t } from "../../i18n";
 
 export default function ReaderSourceStatus({
   dataSource,
   lang = "fr",
   translationState = "idle",
+  onRetryTranslation,
 }) {
   const labels = lang === "ar"
     ? { text: "النص", translation: "الترجمة", unavailable: "غير متاحة", degraded: "وضع احتياطي" }
@@ -33,6 +35,19 @@ export default function ReaderSourceStatus({
           <AlertTriangle size={13} aria-hidden="true" />
           <b>{labels.translation}</b>
           {labels.unavailable}
+          {onRetryTranslation ? (
+            // An inert "unavailable" left the reader with no way back to the
+            // translation once the network returned; the strip now carries the
+            // one action that can succeed.
+            <button
+              type="button"
+              className="min-h-[2.75rem] rounded-full border border-[var(--border)] px-3 inline-flex items-center gap-1.5 text-[0.72rem] font-semibold text-[var(--text-secondary)] hover:bg-[rgba(var(--primary-rgb),0.08)] active:scale-95 transition-colors"
+              onClick={onRetryTranslation}
+            >
+              <RotateCw size={12} aria-hidden="true" />
+              {t("actions.retry", lang)}
+            </button>
+          ) : null}
         </span>
       ) : null}
     </div>

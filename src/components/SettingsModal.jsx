@@ -4,6 +4,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   BookOpen,
   Check,
+  CloudDownload,
   Download,
   Info,
   Palette,
@@ -14,6 +15,7 @@ import {
   Upload,
   Volume2,
   X,
+  CalendarCheck,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
@@ -50,10 +52,20 @@ import {
   ensureNotificationPermission,
   getNotificationPermission,
 } from "../services/notificationService";
-const TABS = [
-  { id: "general", icon: Palette, labelKey: "settings.general" },
+import {
+  Section,
+  SwitchRow,
+  SliderRow,
+  Segmented,
+} from "./settings/controls";
+// The prayer panel is one tab among five; its services (adhan, timings,
+// cities) must not weigh on the settings bundle unless the tab opens.
+const PrayerSettingsSection = React.lazy(() => import("./settings/PrayerSettingsSection"));
+
+const TABS = [  { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
   { id: "audio", icon: Volume2, labelKey: "settings.audio" },
+  { id: "prayer", icon: CalendarCheck, labelKey: "settings.prayer" },
   { id: "privacy", icon: ShieldCheck, labelKey: "settings.privacy" },
 ];
 function localText(lang, fr, en, ar) {
@@ -86,77 +98,6 @@ function SettingsReciterAvatar({ reciter }) {
     >
       {visual.avatar.initials}
     </span>
-  );
-}
-
-function Section({ title, children }) {
-  return (
-    <section className="settings-section">
-      <h3 className="settings-section__title">{title}</h3>
-      <div className="settings-section__body">{children}</div>
-    </section>
-  );
-}
-
-function SwitchRow({ checked, description, id, label, onChange }) {
-  return (
-    <label className="settings-control-row" htmlFor={id}>
-      <span className="settings-control-row__copy">
-        <span className="settings-control-row__label">{label}</span>
-        {description ? (
-          <span className="settings-control-row__description">{description}</span>
-        ) : null}
-      </span>
-      <span className="settings-switch" aria-hidden="true" data-state={checked ? "checked" : "unchecked"}>
-        <span />
-      </span>
-      <input
-        id={id}
-        type="checkbox"
-        checked={Boolean(checked)}
-        onChange={(event) => onChange(event.target.checked)}
-        className="settings-visually-hidden"
-      />
-    </label>
-  );
-}
-
-function SliderRow({ id, label, max, min, onChange, step = 1, suffix = "", value }) {
-  return (
-    <div className="settings-slider-row">
-      <div className="settings-slider-row__head">
-        <label htmlFor={id}>{label}</label>
-        <span>{value}{suffix}</span>
-      </div>
-      <input
-        id={id}
-        type="range"
-        min={min}
-        max={max}
-        step={step}
-        value={value}
-        onChange={(event) => onChange(Number(event.target.value))}
-      />
-    </div>
-  );
-}
-
-function Segmented({ ariaLabel, options, value, onChange }) {
-  return (
-    <div className="settings-segmented" role="group" aria-label={ariaLabel}>
-      {options.map((option) => (
-        <button
-          type="button"
-          key={option.id}
-          className="settings-segmented__item"
-          data-active={value === option.id}
-          aria-pressed={value === option.id}
-          onClick={() => onChange(option.id)}
-        >
-          {option.label}
-        </button>
-      ))}
-    </div>
   );
 }
 
@@ -1026,6 +967,11 @@ export default function SettingsModal() {
               {activeTab === "general" ? renderGeneralTab() : null}
               {activeTab === "reading" ? renderReadingTab() : null}
               {activeTab === "audio" ? renderAudioTab() : null}
+              {activeTab === "prayer" ? (
+                <React.Suspense fallback={null}>
+                  <PrayerSettingsSection lang={lang} state={state} set={set} />
+                </React.Suspense>
+              ) : null}
               {activeTab === "privacy" ? renderPrivacyTab() : null}
             </div>
           </div>

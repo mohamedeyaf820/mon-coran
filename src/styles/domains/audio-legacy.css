@@ -320,6 +320,39 @@
     opacity: 0.85;
 }
 
+/* Compact seek rail: 3px of paint but it carries role="slider" and every
+   pointer/keyboard handler (SimpleAudioPlayerView.jsx PlayerProgress). Keep
+   the visual height and extend the tappable box to the 44px touch contract,
+   mirroring the .scroll-top-btn ::after rescue in reader-consolidation.css.
+   audio-player-simple.css kills both pseudos on .simple-player__progress with
+   display:none !important, so win the cascade with specificity + !important
+   (same technique as mushaf-page-polish.css); ::before stays the decorative
+   gradient above (one pseudo per element). The compact rail is the first
+   child of an overflow:hidden dock, so release the overflow in that state
+   only — seek math is horizontal-only (AudioPlayer.jsx seekFromClientX uses
+   the rail rect width), so a taller hit box cannot skew it, and the row
+   buttons that sit under the band keep receiving taps (later DOM order paints
+   above the pseudo). */
+.mp-audio-player.audio-player-simple.simple-player--compact {
+    overflow: visible;
+}
+
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__progress {
+    position: relative;
+}
+
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__progress::after {
+    content: "";
+    display: block !important;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: max(100%, 44px);
+    transform: translateY(-50%);
+    pointer-events: auto;
+}
+
 .mp-player-progress:hover {
     box-shadow:
         inset 0 0 0 1px rgba(255, 255, 255, 0.08),

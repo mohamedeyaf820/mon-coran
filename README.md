@@ -14,7 +14,7 @@
 ### 📖 Lecture du Coran
 - **Double riwaya** : Hafs & Warsh avec données locales authentiques
 - **3 modes de lecture** : sourate (scroll continu), page (mushaf 604 pages), juz
-- **154 pages** : variantes `liste` et `mushaf` (mise en page page-coran)
+- **Deux rendus** : variante `liste` (colonne continue) et variante `mushaf` (mise en page page-coran)
 - **Police coranique** : QCF4 avec chargement dynamique, taajwid
 - **Trilingue** : français, anglais, arabe — RTL complet
 
@@ -27,9 +27,9 @@
 ### 🧰 Outils & Musique
 - **Tajwid** : coloration des 9 règles, affichage Cursive OpenType
 - **Tafsir** : commentaires islamiques (hors-ligne)
-- **Mémorisation** : répétition espacée (`memorizationService.js`)
+- **Mémorisation** : répétition audio par verset et cycle de sourate (boucle A-B, répétitions réglables)
 - **Notes, favoris, signets, bibliothèque personnelle**
-- **Séries de lecture** (streaks), verset du jour, reprise automatique
+- **Reprise automatique** à la dernière position lue, verset du jour
 - **Recherche** plein texte, index thématique, du'as
 - **Export / import JSON** des notes et favoris
 

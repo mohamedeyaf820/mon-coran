@@ -135,6 +135,11 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
   }, []);
 
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
+  // One number per verse everywhere a human reads it: the riwaya on screen.
+  // `ayah` stays the Hafs coordinate used by bookmarks, notes, playlists and
+  // audio file keys, and is never printed as a label (Warsh 16:120 is stored
+  // as 16:123, and showing both bare read as a data error).
+  const displayAyahNumber = Number(ayahData?.numberInSurah ?? ayah);
   const activeSheet = showPlaylistMenu
         ? "playlist"
         : showNote
@@ -242,17 +247,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     return undefined;
   }, [isTafsirActive]);
 
-  const toastText = useCallback(
-    (fr, ar, en) =>
-      lang === "ar" ? ar : lang === "fr" ? fr : en,
-    [lang],
-  );
-
-  const reportStorageError = () => emitToast("error", toastText(
-    "Impossible d’enregistrer cette modification. Réessayez.",
-    "تعذّر حفظ التغيير. حاول مرة أخرى.",
-    "Unable to save this change. Try again.",
-  ));
+  const reportStorageError = () => emitToast("error", t("actions.storageError", lang));
 
   const toggleBookmark = async () => {
     if (mutationPendingRef.current) return;
@@ -420,11 +415,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
     emitToast(
       "error",
-      lang === "fr"
-        ? "Impossible de copier le texte"
-        : lang === "ar"
-          ? "تعذّر نسخ النص"
-          : "Unable to copy the text",
+      t("actions.copyFailed", lang),
     );
     return false;
   };
@@ -564,25 +555,25 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
-            aria-label={lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
-            title="Options"
+            aria-label={t("actions.verseOptions", lang)}
+            title={t("actions.verseOptions", lang)}
           >
             <Ellipsis size={13} />
           </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
-                {lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
+                {t("actions.verseOptions", lang)}
               </DropdownMenuLabel>
               <DropdownMenuItem onClick={copyText}>
                 <Copy size={13} className="text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}</span>
+                <span>{t("actions.copyVerse", lang)}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={openShareStudio}
               >
                 <Share2 size={13} className="text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}</span>
+                <span>{t("actions.share", lang)}</span>
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => {
@@ -596,7 +587,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={openPlaylistMenu}>
                 <List size={13} className="text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Playlists / Listes" : lang === "ar" ? "قوائم التشغيل" : "Playlists"}</span>
+                <span>{t("actions.playlists", lang)}</span>
               </DropdownMenuItem>
               <DropdownMenuItem onClick={toggleTafsir}>
                 <BookOpen size={13} className="text-[var(--primary)]" />
@@ -702,7 +693,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             onClick={openPlaylistMenu}
           >
             <List size={12} />
-            <span>Playlists</span>
+            <span>{t("actions.playlists", lang)}</span>
           </button>
 
         </div>
@@ -772,7 +763,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
-            aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
+            aria-label={copied ? t("actions.copiedShort", lang) : t("actions.copyVerse", lang)}
             title={t("actions.copy", lang)}
           >
             {copied ? <Check size={12} /> : <Copy size={12} />}
@@ -783,7 +774,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             type="button"
             className="min-h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
-            aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
+            aria-label={t("actions.shareTitle", lang)}
             title={t("actions.share", lang)}
           >
             <Share2 size={12} />
@@ -855,7 +846,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
-            aria-label={copied ? (lang === "fr" ? "Copié !" : lang === "ar" ? "تم النسخ!" : "Copied!") : (lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse")}
+            aria-label={copied ? t("actions.copiedShort", lang) : t("actions.copyVerse", lang)}
             title={t("actions.copy", lang)}
           >
             {copied ? <Check size={13} /> : <Copy size={13} />}
@@ -866,7 +857,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
             type="button"
             className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
             onClick={openShareStudio}
-            aria-label={lang === "fr" ? "Partager ce verset" : lang === "ar" ? "مشاركة الآية" : "Share verse"}
+            aria-label={t("actions.shareTitle", lang)}
             title={t("actions.share", lang)}
           >
             <Share2 size={13} />
@@ -875,8 +866,8 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
       ) : compact ? (
         <div className="ayah-actions-inline flex flex-col gap-[0.48rem] rounded-[0.82rem] border border-[rgba(var(--primary-rgb),0.12)] bg-[rgba(var(--primary-rgb),0.04)] px-[0.68rem] py-[0.62rem] max-[640px]:px-[0.54rem] max-[640px]:py-[0.54rem]">
           <div className="ayah-actions-inline__meta flex items-center justify-between gap-[0.6rem] font-[var(--font-ui)] leading-[1.15] max-[640px]:gap-[0.4rem]">
-            <span className="ayah-actions-inline__ref text-[0.74rem] font-bold tracking-[0.04em] text-[var(--text-muted)]">
-              {surah}:{ayah}
+            <span className="ayah-actions-inline__ref text-[0.74rem] font-bold tracking-[0.04em] text-[var(--text-muted)]" dir="ltr">
+              {surah}:{displayAyahNumber}
             </span>
             {displayMode !== "page" && (
               <span className="ayah-actions-inline__name text-[0.76rem] text-[var(--text-secondary)] opacity-[0.84] max-[640px]:text-[0.7rem]">
@@ -903,7 +894,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                   playAyah();
                 }
               }}
-              title={isPlayingThisAyah ? "Pause" : t("actions.listen", lang)}
+              title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
               aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             >
               {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
@@ -916,7 +907,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               )}
               onClick={toggleBookmark}
               title={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
-              aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
+              aria-label={t("actions.bookmark", lang)}
             >
               <Bookmark size={13} />
             </button>
@@ -926,19 +917,19 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
                   ref={optionsTriggerRef}
                   type="button"
                   className={inlineIconButtonClass}
-                  title={lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More"}
-                  aria-label={lang === "fr" ? "Plus d’actions" : lang === "ar" ? "المزيد من الإجراءات" : "More actions"}
+                  title={t("actions.more", lang)}
+                  aria-label={t("actions.moreActions", lang)}
                 >
                   <Ellipsis size={13} />
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{lang === "fr" ? "Partager en image" : lang === "ar" ? "مشاركة كصورة" : "Share as image"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{lang === "fr" ? "Note" : lang === "ar" ? "ملاحظة" : "Note"}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{t("actions.copy", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{t("actions.shareAsImage", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{t("actions.note", lang)}</span></DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{lang === "fr" ? "Liste d’écoute" : lang === "ar" ? "قائمة الاستماع" : "Listening list"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{lang === "ar" ? "تفسير" : "Tafsir"}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{t("actions.listeningList", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{t("tafsir.title", lang)}</span></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -949,27 +940,15 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <div className="ayah-actions__summary">
             <span className="ayah-actions__kicker">
               <Zap size={13} aria-hidden="true" />
-              {lang === "fr"
-                ? "Choisir une action"
-                : lang === "ar"
-                  ? "اختر إجراءً"
-                  : "Choose an action"}
+              {t("actions.chooseAction", lang)}
             </span>
 
             <div className="ayah-actions__badges">
               <span className={cn("ayah-actions__badge", bookmarked && "is-on")}>
                 <Bookmark size={12} aria-hidden="true" />
                 {bookmarked
-                  ? lang === "fr"
-                    ? "Favori"
-                    : lang === "ar"
-                      ? "مفضلة"
-                      : "Saved"
-                  : lang === "fr"
-                    ? "Non enregistré"
-                    : lang === "ar"
-                      ? "غير محفوظة"
-                      : "Not saved"}
+                  ? t("actions.favorite", lang)
+                  : t("actions.notSaved", lang)}
               </span>
             </div>
           </div>
@@ -993,22 +972,22 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
               aria-pressed={bookmarked}
             >
               <span className="ayah-action-card__icon">{bookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}</span>
-              <span className="ayah-action-card__content"><span className="ayah-action-card__label">{lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Favorite"}</span></span>
+              <span className="ayah-action-card__content"><span className="ayah-action-card__label">{t("actions.favorite", lang)}</span></span>
             </button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button ref={optionsTriggerRef} type="button" className="ayah-action-card" aria-label={lang === "fr" ? "Plus d’actions" : lang === "ar" ? "المزيد من الإجراءات" : "More actions"}>
+                <button ref={optionsTriggerRef} type="button" className="ayah-action-card" aria-label={t("actions.moreActions", lang)}>
                   <span className="ayah-action-card__icon"><Ellipsis size={14} /></span>
-                  <span className="ayah-action-card__content"><span className="ayah-action-card__label">{lang === "fr" ? "Plus" : lang === "ar" ? "المزيد" : "More"}</span></span>
+                  <span className="ayah-action-card__content"><span className="ayah-action-card__label">{t("actions.more", lang)}</span></span>
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{lang === "fr" ? "Partager en image" : lang === "ar" ? "مشاركة كصورة" : "Share as image"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{lang === "fr" ? "Note" : lang === "ar" ? "ملاحظة" : "Note"}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{t("actions.copy", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{t("actions.shareAsImage", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{t("actions.note", lang)}</span></DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{lang === "fr" ? "Liste d’écoute" : lang === "ar" ? "قائمة الاستماع" : "Listening list"}</span></DropdownMenuItem>
-                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{lang === "ar" ? "تفسير" : "Tafsir"}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{t("actions.listeningList", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{t("tafsir.title", lang)}</span></DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
           </div>
@@ -1035,21 +1014,13 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
-                {lang === "fr"
-                  ? "Hub audio"
-                  : lang === "ar"
-                    ? "مركز الصوت"
-                    : "Audio hub"}
+                {t("actions.audioHub", lang)}
               </div>
               <h2
                 id={`${sheetIdBase}-playlist-title`}
                 className="ayah-action-sheet__title"
               >
-                {lang === "fr"
-                  ? "Ajouter à une playlist"
-                  : lang === "ar"
-                    ? "أضف إلى قائمة"
-                    : "Add to a playlist"}
+                {t("actions.addToPlaylist", lang)}
               </h2>
             </div>
             <button
@@ -1064,11 +1035,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
           {playlists.length === 0 ? (
             <div className="ayah-action-sheet__empty">
-              {lang === "fr"
-                ? "Aucune playlist encore. Créez-en une depuis le panneau Playlists."
-                : lang === "ar"
-                  ? "لا توجد قوائم بعد. أنشئ قائمة من لوحة القوائم."
-                  : "No playlist yet. Create one from the Playlists panel."}
+              {t("actions.playlistEmpty", lang)}
             </div>
           ) : (
             <div className="ayah-actions__sheet-grid">
@@ -1141,8 +1108,8 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
 
           {ayahData?.text ? (
             <div className="ayah-action-sheet__verse-preview" dir="rtl" lang="ar">
-              <span className="ayah-action-sheet__verse-preview-ref">
-                {surah}:{ayah}
+              <span className="ayah-action-sheet__verse-preview-ref" dir="ltr">
+                {surah}:{displayAyahNumber}
               </span>
               <p className="ayah-action-sheet__verse-preview-text">
                 {ayahData.text}

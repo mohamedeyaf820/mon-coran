@@ -19,6 +19,21 @@ const CACHE_LIMITS = {
   [API_CACHE_NAME]: 200,
   [QCF_FONT_CACHE_NAME]: 100,
 };
+// Byte ceilings next to the entry ceilings. Entries are a poor proxy for
+// storage here: one QCF4 page font measures 1,95-2,19 MB (measured over the
+// wire), so the 100-entry font cache alone could hold ~100 MB and push the
+// origin past the browser quota - which is how a reader loses their IndexedDB
+// notes and bookmarks. 32 MiB keeps ~15 page fonts warm, i.e. roughly 200
+// mushaf pages of contiguous reading.
+const MIB = 1024 * 1024;
+const CACHE_BYTE_BUDGETS = {
+  [CACHE_NAME]: 16 * MIB,
+  [API_CACHE_NAME]: 24 * MIB,
+  [QCF_FONT_CACHE_NAME]: 32 * MIB,
+};
+// A cached response without Content-Length (typically an opaque CDN entry) is
+// counted at this size so a budget is never silently skipped.
+const DEFAULT_ENTRY_BYTES = 512 * 1024;
 // Revalidation throttle for the Quran API cache: a cached payload older than
 // this delay is refetched in the background. It keeps instant offline/return
 // navigation without re-downloading the same surah on every page change.
@@ -103,7 +118,7 @@ async function precacheAppShell() {
     cache,
     [...new Set([...indexAssetUrls, ...shellAssetUrls])],
   );
-  await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
+  await trimCache(cache, CACHE_LIMITS[CACHE_NAME], CACHE_BYTE_BUDGETS[CACHE_NAME]);
 }
 
 /**
@@ -367,7 +382,7 @@ self.addEventListener("message", (event) => {
               if (!(await cache.match(url))) missing.push(url);
             }
             if (missing.length) await precacheUrls(cache, missing);
-            await trimCache(cache, CACHE_LIMITS[CACHE_NAME]);
+            await trimCache(cache, CACHE_LIMITS[CACHE_NAME], CACHE_BYTE_BUDGETS[CACHE_NAME]);
           })
           .catch(() => {}),
       );
@@ -427,7 +442,40 @@ self.addEventListener("push", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
-  const targetUrl = new URL(event.notification?.data?.url || "/", self.location.origin);
+  const notificationData = event.notification?.data || {};
+  const answer = notificationData.prayerAnswer;
+  // Les boutons-réponse de la notification de suivi ("J'ai prié" / "Pas
+  // encore") sont relayés à une page ouverte ; sans page ouverte, le clic
+  // mène à la page de suivi qui reposit la question.
+  const answered =
+    !!answer &&
+    answer.dayKey &&
+    answer.prayerKey &&
+    (event.action === "prayed" || event.action === "not-yet");
+  if (answered) {
+    event.waitUntil(
+      (async () => {
+        const clientList = await self.clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
+        const message = {
+          type: "mushafplus-prayer-answer",
+          dayKey: String(answer.dayKey).slice(0, 16),
+          prayerKey: String(answer.prayerKey).slice(0, 16),
+          answer: event.action,
+        };
+        for (const client of clientList) {
+          client.postMessage(message);
+          if ("focus" in client) await client.focus();
+          return;
+        }
+        await self.clients.openWindow("/prires");
+      })(),
+    );
+    return;
+  }
+  const targetUrl = new URL(notificationData.url || "/", self.location.origin);
   if (targetUrl.origin !== self.location.origin) return;
   event.waitUntil(
     (async () => {
@@ -478,23 +526,48 @@ const SHELL_PROTECTED_PATHS = new Set([
   "/shell-assets.json",
 ]);
 
-async function trimCache(cache, maxEntries) {
+async function trimCache(cache, maxEntries, maxBytes) {
   if (!Number.isFinite(maxEntries) || maxEntries < 1) return;
   const keys = await cache.keys();
   let overflow = keys.length - maxEntries;
-  if (overflow <= 0) return;
-  for (const key of keys) {
-    if (overflow <= 0) break;
-    const url = key.request?.url;
+  if (overflow > 0) {
+    for (const key of keys) {
+      if (overflow <= 0) break;
+      const url = key.request?.url;
+      if (url && SHELL_PROTECTED_PATHS.has(new URL(url).pathname)) continue;
+      await cache.delete(key);
+      overflow -= 1;
+    }
+  }
+  if (!Number.isFinite(maxBytes) || maxBytes < 1) return;
+  await enforceByteBudget(cache, maxBytes);
+}
+
+/** Evicts the oldest non-shell entries until the cache fits `maxBytes`.
+ *  Header sizes only - a body is never read. `cache.keys()` yields Requests,
+ *  which carry no Content-Length, so the responses come from `matchAll()`. */
+async function enforceByteBudget(cache, maxBytes) {
+  const entries = [];
+  let counted = 0;
+  for (const response of await cache.matchAll()) {
+    const url = response.url;
     if (url && SHELL_PROTECTED_PATHS.has(new URL(url).pathname)) continue;
-    await cache.delete(key);
-    overflow -= 1;
+    const size = Number(response.headers.get("content-length"));
+    const known = Number.isFinite(size) ? size : DEFAULT_ENTRY_BYTES;
+    entries.push({ url, size: known });
+    counted += known;
+  }
+  if (counted <= maxBytes) return;
+  for (const entry of entries) {
+    await cache.delete(entry.url);
+    counted -= entry.size;
+    if (counted <= maxBytes) break;
   }
 }
 
 async function putBounded(cache, request, response, cacheName) {
   await cache.put(request, response);
-  await trimCache(cache, CACHE_LIMITS[cacheName]);
+  await trimCache(cache, CACHE_LIMITS[cacheName], CACHE_BYTE_BUDGETS[cacheName]);
 }
 
 /**

@@ -3,7 +3,6 @@
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
  */
 
-import { recordPerformanceMetric } from "./performanceMetrics.js";
 import { getAdaptiveAudioPreloadCount } from "../utils/networkPolicy.js";
 import {
   getSurahStreamProgressForAyah,
@@ -29,6 +28,20 @@ import {
   normalizePlaylistAyahs,
   withQuranComPrimary,
 } from "./audioUrlBuilder.js";
+import {
+  captureLatencySample,
+  getLatencyForKey,
+  getLatencySnapshot,
+  getReciterTimingBiasSec,
+  notifyLatencyListeners,
+  setLatencySnapshot,
+} from "./reciterLatency.js";
+import { applyEqGains, applyEqPreset, ensureAudioCtx } from "./audioEq.js";
+import {
+  preloadAhead,
+  preloadTrack,
+  releasePreloadPool,
+} from "./audioPreload.js";
 
 const AUDIO_LOAD_TIMEOUT = 12000; // 12s max to start loading
 const MAX_RETRIES = 2;
@@ -127,6 +140,8 @@ class AudioService {
     this._pauseListeners = [];
     this._ayahChangeListeners = [];
     this._rafId = null; // RAF guard — caps UI updates at display refresh rate
+    this._pendingSeekSec = null; // seek asked during the basmala pre-roll
+    this._transientRecoveryTimer = null;
 
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
@@ -157,6 +172,13 @@ class AudioService {
       // as well can switch reciters before the retry has even finished.
       if (this._cancelPendingLoad) return;
       if (recoverBackgroundAudio(this)) return;
+      if (this.isPlaying) {
+        // A media error after playback started is a transient network drop,
+        // not a dead CDN: retry the same track instead of failing over to
+        // another reciter (which would burn a cooldown up to 4 hours).
+        this._scheduleTransientPlaybackRecovery();
+        return;
+      }
       devLog("error", "Audio error:", e);
       this.onError?.(e);
     };
@@ -191,8 +213,25 @@ class AudioService {
       if (this._playbackIntent !== "playing" || this._pendingBackgroundIndex == null) return;
       retryPendingBackgroundAudio(this);
     };
+    // Android's Chrome freezes a backgrounded tab (not merely hides it), which
+    // suspends the media element once its buffer drains. The `resume` lifecycle
+    // event is the unfreeze signal, and it can arrive while the page is still
+    // hidden — before `visibilitychange` — so restart the stalled verse here and
+    // re-assert playback audio focus. Without this the recitation stays silent
+    // until the reader opens the app again.
+    this._boundResume = () => {
+      if (this._playbackIntent !== "playing") return;
+      preparePlaybackSession(this._audioCtx);
+      if (this._pendingBackgroundIndex != null) {
+        retryPendingBackgroundAudio(this);
+      } else if (this.audio?.paused && this.audio.src &&
+                 this.audio.src !== window.location.href) {
+        this.audio.play().catch(() => {});
+      }
+    };
     if (typeof document !== "undefined") {
       document.addEventListener("visibilitychange", this._boundVisibilityChange);
+      document.addEventListener("resume", this._boundResume);
     }
     if (typeof window !== "undefined") window.addEventListener?.("online", this._boundOnline);
   }
@@ -246,6 +285,9 @@ class AudioService {
 
     // New playlist loaded: restart cycle tracking.
     this.surahCurrentCycle = 1;
+    // Preloaded tracks belong to the previous reciter/CDN: drop them so the
+    // pool refills from the new playlist's URLs.
+    this._releasePreloadPool();
 
     const previousCurrent = this.currentAyah;
     const previousPlaylist = this.playlist;
@@ -520,11 +562,7 @@ class AudioService {
     this.audio.currentTime = 0;
     this.audio.removeAttribute("src");
     this.audio.load(); // Reset without triggering error
-    for (const pre of this._preloadPool) {
-      pre.audio?.removeAttribute("src");
-      pre.audio?.load();
-    }
-    this._preloadPool = [];
+    this._releasePreloadPool();
     this.isPlaying = false;
     this.playlist = [];
     this.playlistIndex = -1;
@@ -532,10 +570,14 @@ class AudioService {
     this._playlistIndexByAyahKey.clear();
     this._playlistSourceAyahs = [];
     this._pendingSurahStreamAyah = null;
+    this._pendingSeekSec = null;
+    this._clearTransientPlaybackRecovery();
     this.memCurrentRepeat = 0;
     this.surahCurrentCycle = 1;
-    if (wasPlaying) this._notifyPause(this.currentAyah);
-    this.onEnd?.();
+    if (wasPlaying) {
+      this._notifyPause(this.currentAyah);
+      this.onEnd?.();
+    }
   }
 
   next() {
@@ -626,6 +668,7 @@ class AudioService {
       // Set only once playing: a failed one-shot must never truncate a playlist.
       this._oneShotMode = true;
       this.isPlaying = true;
+      this._applyPendingSeek();
       this.onNetworkState?.("playing");
       this._notifyPlay({ url, ...meta });
       return true;
@@ -658,17 +701,54 @@ class AudioService {
   /* ── Seek ──────────────────────────────────── */
 
   seek(time) {
-    if (this._basmala.active) return;
+    if (this._basmala.active) {
+      this._pendingSeekSec = Number(time);
+      return;
+    }
+    this._pendingSeekSec = null;
     if (this.audio.duration) {
       this.audio.currentTime = time;
     }
   }
 
   seekPercent(pct) {
-    if (this._basmala.active) return;
+    if (this._basmala.active) {
+      this._pendingSeekSec = (Number(pct) || 0) * (this.audio.duration || 0);
+      return;
+    }
+    this._pendingSeekSec = null;
     if (this.audio.duration) {
       this.audio.currentTime = this.audio.duration * pct;
     }
+  }
+
+  _applyPendingSeek() {
+    const pending = this._pendingSeekSec;
+    this._pendingSeekSec = null;
+    if (Number.isFinite(pending) && pending > 0 && this.audio.duration) {
+      this.audio.currentTime = Math.min(pending, this.audio.duration);
+    }
+  }
+
+  _clearTransientPlaybackRecovery() {
+    if (this._transientRecoveryTimer) {
+      clearTimeout(this._transientRecoveryTimer);
+      this._transientRecoveryTimer = null;
+    }
+  }
+
+  _scheduleTransientPlaybackRecovery() {
+    if (this._transientRecoveryTimer) return;
+    this._transientRecoveryTimer = setTimeout(() => {
+      this._transientRecoveryTimer = null;
+      if (this._playbackIntent !== "playing" || !this.audio?.paused) return;
+      if (!this.audio.src || this.audio.src === window.location.href) return;
+      this.audio.play().catch(() => {
+        // The browser refused to resume; surface it so the UI can act.
+        this.isPlaying = false;
+        this.onError?.(new Error("Transient playback interruption"));
+      });
+    }, 1500);
   }
 
   /* ── Playlist repeat ───────────────────────── */
@@ -712,36 +792,11 @@ class AudioService {
   }
 
   _captureLatencySample(currentTime = 0) {
-    if (this._hasCapturedLatency) return;
-    if (!this._playRequestedAt) return;
-    if (!Number.isFinite(currentTime) || currentTime < 0.05) return;
-
-    const now = typeof performance !== "undefined" ? performance.now() : Date.now();
-    const elapsedSec = (now - this._playRequestedAt) / 1000;
-    const latencySec = elapsedSec - currentTime;
-    if (!Number.isFinite(latencySec) || latencySec < -0.2 || latencySec > 1.0) {
-      return;
-    }
-
-    const key = this._activeReciterKey || "everyayah:";
-    const prev = this._reciterLatencyByKey[key];
-    const next =
-      Number.isFinite(prev) ? prev * 0.75 + latencySec * 0.25 : latencySec;
-    this._reciterLatencyByKey[key] = Number(next.toFixed(4));
-    recordPerformanceMetric("audio_start_ms", Math.max(0, latencySec * 1000));
-    this._notifyLatencyListeners();
-    this._hasCapturedLatency = true;
+    captureLatencySample(this, currentTime);
   }
 
   _notifyLatencyListeners() {
-    const snapshot = this.getLatencySnapshot();
-    for (const fn of this._latencyListeners) {
-      try {
-        fn(snapshot);
-      } catch (error) {
-        devLog("warn", "Latency listener error:", error);
-      }
-    }
+    notifyLatencyListeners(this);
   }
 
   /**
@@ -749,16 +804,7 @@ class AudioService {
    * Positive values add lead to compensate rendering/audio pipeline lag.
    */
   getReciterTimingBiasSec() {
-    const key = this._activeReciterKey || "everyayah:";
-    const measured = this._reciterLatencyByKey[key];
-    const measuredBias = Number.isFinite(measured) ? measured * 0.52 : 0;
-    const cdnBias =
-      this._currentCdnType === "everyayah"
-        ? 0.025
-        : this._currentCdnType === "mp3quran-surah"
-          ? 0.04
-          : 0;
-    return Math.max(-0.04, Math.min(0.16, measuredBias + cdnBias));
+    return getReciterTimingBiasSec(this);
   }
 
   /**
@@ -781,8 +827,14 @@ class AudioService {
       if (this.audio.src === url && this.audio.readyState >= 2) {
         this.audio
           .play()
-          .then(() => resolve())
+          .then(() => {
+            // A superseded load must not resolve its caller: the new track
+            // owns the element now, and re-asserting the old one double-starts.
+            if (requestId !== this._loadRequestId) return;
+            resolve();
+          })
           .catch((e) => {
+            if (requestId !== this._loadRequestId) return;
             reject(e);
           });
         return;
@@ -850,6 +902,7 @@ class AudioService {
         cleanup();
 
         const onCanPlay = () => {
+          if (settled || requestId !== this._loadRequestId) return;
           cleanup();
           this._clearLoadTimeout();
           this.audio
@@ -871,6 +924,7 @@ class AudioService {
         };
 
         const onError = () => {
+          if (settled || requestId !== this._loadRequestId) return;
           cleanup();
           this._clearLoadTimeout();
           if (retriesLeft > 0) {
@@ -941,56 +995,15 @@ class AudioService {
    * Preload the next track in background using a separate Audio element.
    */
   _preloadTrack(url) {
-    if (!url) return;
-    if (!isTrustedAudioUrl(url)) return;
-    if (this._preloadPool.some((p) => p.url === url)) return;
-    // Keep the next Android verse warm while the PWA is locked. iOS suspends
-    // hidden media loads, so avoid competing with the active stream there.
-    if (typeof document !== "undefined" && document.visibilityState === "hidden" &&
-        !/Android/i.test(typeof navigator !== "undefined" ? navigator.userAgent : "")) {
-      return;
-    }
+    preloadTrack(this, url);
+  }
 
-    try {
-      const preloadAudio = new Audio();
-      preloadAudio.preload = "auto";
-      preloadAudio.src = url;
-      preloadAudio.load();
-
-      this._preloadAudio = preloadAudio;
-      this._preloadPool.push({ url, audio: preloadAudio });
-
-      while (this._preloadPool.length > this._maxPreloadPool) {
-        const oldest = this._preloadPool.shift();
-        if (oldest?.audio) {
-          oldest.audio.removeAttribute("src");
-          oldest.audio.load();
-        }
-      }
-    } catch {
-      // Preload is best-effort
-    }
+  _releasePreloadPool() {
+    releasePreloadPool(this);
   }
 
   _preloadAhead(startIndex, count = 2) {
-    if (!Array.isArray(this.playlist) || this.playlist.length === 0) return;
-    const adaptiveCount = Math.min(count, getAdaptiveAudioPreloadCount());
-    this._maxPreloadPool = adaptiveCount;
-    if (adaptiveCount === 0) {
-      for (const item of this._preloadPool) {
-        item.audio?.removeAttribute("src");
-        item.audio?.load?.();
-      }
-      this._preloadPool = [];
-      this._preloadAudio = null;
-      return;
-    }
-    for (let i = 0; i < adaptiveCount; i++) {
-      const idx = startIndex + i;
-      if (idx >= 0 && idx < this.playlist.length) {
-        this._preloadTrack(this.playlist[idx].url);
-      }
-    }
+    preloadAhead(this, startIndex, count);
   }
 
   loadAndPlay(index) { return this._loadAndPlay(index); }
@@ -1001,6 +1014,7 @@ class AudioService {
     this._basmala.cancel();
     this.playlistIndex = index;
     this._oneShotMode = false; // playlist playback is never one-shot
+    this._pendingSeekSec = null; // a seek for the previous verse is stale now
     const item = this.playlist[index];
     this.currentAyah = item;
     this.memCurrentRepeat = 0;
@@ -1065,6 +1079,7 @@ class AudioService {
       this.currentAyah = activeItem;
       this.isPlaying = true;
       this._playbackIntent = "playing";
+      this._applyPendingSeek();
       this._pendingBackgroundIndex = null;
       this._clearBackgroundRetry();
       if (this._backgroundRecoveryIndex !== index) this._backgroundRecoveryIndex = null;
@@ -1277,27 +1292,15 @@ class AudioService {
   }
 
   setLatencySnapshot(snapshot = {}) {
-    const safeEntries = Object.entries(snapshot).filter(([key, value]) => {
-      return (
-        typeof key === "string" &&
-        key.length <= 120 &&
-        Number.isFinite(value) &&
-        value >= 0 &&
-        value <= 5
-      );
-    });
-    this._reciterLatencyByKey = Object.fromEntries(
-      safeEntries.map(([key, value]) => [key, Number(Number(value).toFixed(4))]),
-    );
+    setLatencySnapshot(this, snapshot);
   }
 
   getLatencySnapshot() {
-    return { ...this._reciterLatencyByKey };
+    return getLatencySnapshot(this);
   }
 
   getLatencyForKey(key) {
-    const value = this._reciterLatencyByKey?.[key];
-    return Number.isFinite(value) ? value : null;
+    return getLatencyForKey(this, key);
   }
 
   /* ── A-B Repeat ─────────────────────────────────────────────── */
@@ -1324,56 +1327,15 @@ class AudioService {
     return 0.65;
   }
 
-  /* ── Equalizer (Web Audio API, lazy init) ────────────────────── */
+  /* ── Equalizer (Web Audio API, lazy init — lives in audioEq.js) ─ */
   _ensureAudioCtx() {
-    if (this._eqConnected || !this.audio) return;
-    try {
-      const AC = window.AudioContext || window.webkitAudioContext;
-      if (!AC) return;
-      this._audioCtx = new AC();
-      const src = this._audioCtx.createMediaElementSource(this.audio);
-      this._bassFilter = this._audioCtx.createBiquadFilter();
-      this._bassFilter.type = "lowshelf";
-      this._bassFilter.frequency.value = 200;
-      this._midFilter = this._audioCtx.createBiquadFilter();
-      this._midFilter.type = "peaking";
-      this._midFilter.frequency.value = 1000;
-      this._midFilter.Q.value = 1.5;
-      this._trebleFilter = this._audioCtx.createBiquadFilter();
-      this._trebleFilter.type = "highshelf";
-      this._trebleFilter.frequency.value = 3500;
-      src.connect(this._bassFilter);
-      this._bassFilter.connect(this._midFilter);
-      this._midFilter.connect(this._trebleFilter);
-      this._trebleFilter.connect(this._audioCtx.destination);
-      this._eqConnected = true;
-      this._applyEqGains();
-    } catch (e) {
-      devLog("warn", "EQ init failed:", e);
-    }
+    ensureAudioCtx(this);
   }
   _applyEqGains() {
-    const P = {
-      flat: { bass: 0, mid: 0, treble: 0 },
-      bass: { bass: 8, mid: 0, treble: -2 },
-      treble: { bass: -2, mid: 0, treble: 6 },
-      near: { bass: 2, mid: 5, treble: 2 },
-      hall: { bass: -3, mid: -2, treble: 3 },
-      vocals: { bass: -4, mid: 7, treble: 3 },
-    };
-    const p = P[this.eqPreset] || P.flat;
-    if (this._bassFilter) this._bassFilter.gain.value = p.bass;
-    if (this._midFilter) this._midFilter.gain.value = p.mid;
-    if (this._trebleFilter) this._trebleFilter.gain.value = p.treble;
+    applyEqGains(this);
   }
   applyEqPreset(preset) {
-    this.eqPreset = preset;
-    // Flat playback must stay on the native media path; routing it through
-    // Web Audio unnecessarily makes it subject to background suspension.
-    if (preset === "flat" && !this._eqConnected) return;
-    preparePlaybackSession(this._audioCtx);
-    this._ensureAudioCtx();
-    if (this._eqConnected) this._applyEqGains();
+    applyEqPreset(this, preset);
   }
 
   destroy() {
@@ -1384,12 +1346,9 @@ class AudioService {
       this._rafId = null;
     }
     this._clearLoadTimeout();
+    this._clearTransientPlaybackRecovery();
     this.stop();
-    if (this._preloadAudio) {
-      this._preloadAudio.removeAttribute("src");
-      this._preloadAudio = null;
-    }
-    this._preloadPool = [];
+    this._releasePreloadPool();
     if (this.audio) {
       this.audio.removeEventListener("ended", this._boundEnded);
       this.audio.removeEventListener("timeupdate", this._boundTimeUpdate);
@@ -1403,6 +1362,7 @@ class AudioService {
     }
     if (typeof document !== "undefined") {
       document.removeEventListener("visibilitychange", this._boundVisibilityChange);
+      document.removeEventListener("resume", this._boundResume);
     }
     if (typeof window !== "undefined") window.removeEventListener?.("online", this._boundOnline);
   }

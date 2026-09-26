@@ -36,6 +36,22 @@ test("service worker bounds runtime caches and awaits cache writes", () => {
   assert.doesNotMatch(sw, /(?<!await )cache\.put\(/);
 });
 
+// One QCF4 page font measures ~2.2 MB over the wire, so an entry ceiling alone
+// lets the font cache grow past the origin quota - which is how the browser
+// evicts the user's IndexedDB notes and bookmarks.
+test("service worker caps caches in bytes, not only in entries", () => {
+  assert.match(sw, /const CACHE_BYTE_BUDGETS = \{/);
+  for (const name of ["CACHE_NAME", "API_CACHE_NAME", "QCF_FONT_CACHE_NAME"]) {
+    assert.match(sw, new RegExp(`\\[${name}\\]: \\d+ \\* MIB`), `${name} has no byte budget`);
+  }
+  // Every trim path must carry the byte budget, or the cap is decorative.
+  const unbounded = [...sw.matchAll(/trimCache\(([^)]*)\)/g)].filter(
+    (m) => !m[1].includes("BYTE_BUDGETS") && !m[0].startsWith("trimCache(cache, maxEntries, maxBytes"),
+  );
+  assert.deepEqual(unbounded, [], "trimCache call sites without a byte budget");
+  assert.match(sw, /await cache\.matchAll\(\)/, "byte accounting must read response headers");
+});
+
 test('runtime cache does not persist opaque network responses', async () => {
   let writes = 0;
   const opaque = { status: 0, type: 'opaque' };

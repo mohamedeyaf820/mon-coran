@@ -17,6 +17,10 @@ import {
 import { t } from "./i18n";
 import SplashScreen from "./components/SplashScreen";
 import { runWhenIdle } from "./utils/idleUtils";
+import {
+  createMultiTabWriteGuard,
+  MULTI_TAB_NOTICE_KEY,
+} from "./lib/multiTabMessages";
 import { isLowPerformanceDevice } from "./utils/networkPolicy";
 import { loadAudioService } from "./services/loadAudioService";
 import { useUrlSync } from "./hooks/useUrlSync";
@@ -39,6 +43,7 @@ if (typeof globalThis !== "undefined") {
 const loadHeader = () => import("./components/Header");
 const loadLegalPage = () => import("./components/LegalPage");
 const loadDuasPage = () => import("./components/DuasPage");
+const loadPrayersPage = () => import("./components/PrayersPage");
 const HomePage = lazy(loadHomePage);
 const Header = lazy(loadHeader);
 const LazyQuranDisplay = lazy(loadQuranDisplay);
@@ -56,6 +61,7 @@ const SearchModal = lazy(() => import("./components/SearchModal"));
 const SettingsModal = lazy(() => import("./components/SettingsModal"));
 const LibraryModal = lazy(() => import("./components/LibraryModal"));
 const DuasPage = lazy(loadDuasPage);
+const PrayersPage = lazy(loadPrayersPage);
 const AyahSharePanel = lazy(() => import("./components/AyahSharePanel"));
 const KeyboardShortcutsModal = lazy(
   () => import("./components/KeyboardShortcutsModal"),
@@ -202,6 +208,7 @@ export default function App() {
       homeSection: current.homeSection,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      showPrayers: current.showPrayers,
       legalPage: current.legalPage,
       routeNotFound: current.routeNotFound,
       focusReading: current.focusReading,
@@ -224,6 +231,8 @@ export default function App() {
       prayerReminders: current.prayerReminders,
       prayerLocation: current.prayerLocation,
       prayerMethod: current.prayerMethod,
+      prayerTimeOffsets: current.prayerTimeOffsets,
+      prayerNotifications: current.prayerNotifications,
       dailyVerseNotification: current.dailyVerseNotification,
       tafsirSidebarOpen: current.tafsirSidebarOpen,
     }),
@@ -239,6 +248,7 @@ export default function App() {
     currentJuz,
     showHome,
     showDuas,
+    showPrayers,
     legalPage,
     routeNotFound,
     focusReading,
@@ -264,6 +274,7 @@ export default function App() {
   useUrlSync({
     showHome,
     showDuas,
+    showPrayers,
     legalPage,
     routeNotFound,
     displayMode,
@@ -293,6 +304,7 @@ export default function App() {
   }, [
     showHome,
     showDuas,
+    showPrayers,
     displayMode,
     currentSurah,
     currentPage,
@@ -313,8 +325,34 @@ export default function App() {
     prayerReminders: state.prayerReminders,
     prayerLocation: state.prayerLocation,
     prayerMethod: state.prayerMethod,
+    prayerTimeOffsets: state.prayerTimeOffsets,
+    prayerNotifications: state.prayerNotifications,
     dailyVerseNotification: state.dailyVerseNotification,
   });
+
+  // Answers tapped on a notification arrive from the service worker; the
+  // log service owns the encrypted write, the routines own the snooze policy.
+  useEffect(() => {
+    if (typeof navigator === "undefined" || !navigator.serviceWorker) return undefined;
+    const onMessage = (event) => {
+      const message = event.data;
+      if (!message || message.type !== "mushafplus-prayer-answer") return;
+      if (message.answer !== "prayed" && message.answer !== "not-yet") return;
+      import("./services/prayerLogService")
+        .then((logModule) => {
+          if (message.answer === "prayed") {
+            logModule.markPrayer(message.dayKey, message.prayerKey, "prayed");
+          } else {
+            window.dispatchEvent(
+              new CustomEvent("mushafplus-prayer-answer", { detail: message }),
+            );
+          }
+        })
+        .catch(() => {});
+    };
+    navigator.serviceWorker.addEventListener("message", onMessage);
+    return () => navigator.serviceWorker.removeEventListener("message", onMessage);
+  }, []);
   const suspenseFallback = useMemo(
     () => <AppLoadingFallback lang={lang} />,
     [lang],
@@ -363,14 +401,14 @@ export default function App() {
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const immersiveActive = !showHome && !showDuas && !legalPage && !routeNotFound;
+  const immersiveActive = !showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound;
   // While the panel is the floating sheet it covers the reading column, so the
   // click-out overlay and inert apply; they stop where the rail takes its own
   // space in the layout, and come back for focusReading, which floats the
   // panel over unshifted content at any width.
   const sidebarLocksMain = sidebarOpen && !(isRailViewport && !focusReading);
   const shouldMountAudioPlayer =
-    (!showHome && !showDuas && !legalPage && !routeNotFound) ||
+    (!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound) ||
     state.isPlaying ||
     Boolean(state.currentPlayingAyah);
   const blockingModalOpen = Boolean(
@@ -432,6 +470,25 @@ export default function App() {
 
     window.addEventListener("quran-toast", handleToast);
     return () => window.removeEventListener("quran-toast", handleToast);
+  }, []);
+
+  // Two tabs share the single settings blob and each debounced save rewrites
+  // the whole of it, so the last writer silently wins. The browser delivers a
+  // `storage` event only to the documents that did not write, so this is the
+  // cheapest honest detector: say once per session that the reading state
+  // moved elsewhere. Nothing reloads, merges or rolls back by itself — the
+  // reader decides when to reload.
+  useEffect(() => {
+    const guard = createMultiTabWriteGuard(() => {
+      setToast({
+        type: "warning",
+        message: t(MULTI_TAB_NOTICE_KEY, document.documentElement.lang || "fr"),
+      });
+    });
+    const handleStorage = (event) => guard.handleStorageEvent(event);
+
+    window.addEventListener("storage", handleStorage);
+    return () => window.removeEventListener("storage", handleStorage);
   }, []);
 
   const revealImmersiveChrome = useCallback(() => {
@@ -798,10 +855,12 @@ export default function App() {
         ? loadHomePage()
         : state.showDuas
           ? loadDuasPage()
-          : loadQuranDisplay();
+          : state.showPrayers
+            ? loadPrayersPage()
+            : loadQuranDisplay();
 
     const criticalTasks = [loadHeader(), screenPromise];
-    if (!state.legalPage && !state.routeNotFound && !state.showHome && !state.showDuas) {
+    if (!state.legalPage && !state.routeNotFound && !state.showHome && !state.showDuas && !state.showPrayers) {
       // Start the Quran request early, but let the reader shell render instead
       // of keeping the user behind the splash until the network settles.
       import("./services/quranAPI")
@@ -832,11 +891,11 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !legalPage && !routeNotFound ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-dir={lang === "ar" ? "rtl" : "ltr"}
-        data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : "reading"}
+        data-view={routeNotFound ? "not-found" : legalPage ? "legal" : showHome ? "home" : showDuas ? "duas" : showPrayers ? "prayers" : "reading"}
         data-home-section={showHome ? state.homeSection || "surah" : undefined}
         data-display-mode={displayMode}
         data-riwaya={state.riwaya}
@@ -926,7 +985,7 @@ export default function App() {
             }}
           >
             <div
-              className={`app-view-shell ${routeNotFound ? "app-view-not-found" : legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : "app-view-reading"} ${!showHome && !showDuas && !legalPage && !routeNotFound ? `app-mode-${displayMode}` : ""}`}
+              className={`app-view-shell ${routeNotFound ? "app-view-not-found" : legalPage ? "app-view-legal" : showHome ? "app-view-home" : showDuas ? "app-view-duas" : showPrayers ? "app-view-prayers" : "app-view-reading"} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? `app-mode-${displayMode}` : ""}`}
             >
               {routeNotFound ? (
                 <ErrorBoundary>
@@ -952,6 +1011,12 @@ export default function App() {
                     <DuasPage />
                   </Suspense>
                 </ErrorBoundary>
+              ) : showPrayers ? (
+                <ErrorBoundary>
+                  <Suspense fallback={suspenseFallback}>
+                    <PrayersPage />
+                  </Suspense>
+                </ErrorBoundary>
               ) : (
                 <ErrorBoundary>
                   <Suspense fallback={suspenseFallback}>
@@ -965,7 +1030,7 @@ export default function App() {
 
         {toast && (
           <div
-            className="fixed left-1/2 top-4 z-[9999] w-[min(90vw,400px)] -translate-x-1/2"
+            className="fixed left-1/2 top-4 z-[var(--z-toast)] w-[min(90vw,400px)] -translate-x-1/2"
             role="alert"
             aria-live="polite"
           >

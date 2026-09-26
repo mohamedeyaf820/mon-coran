@@ -75,18 +75,39 @@ export async function fetchTafsir(surah, ayah, tafsirId = null) {
   };
 }
 
+/**
+ * Runs an async mapper over a range with a bounded concurrency, so a whole
+ * surah's worth of tafsir requests cannot fan out into hundreds of parallel
+ * network calls and exhaust connections or the upstream API.
+ */
+async function mapWithConcurrency(count, concurrency, mapper) {
+  const results = new Array(count);
+  let cursor = 0;
+  const workers = Array.from(
+    { length: Math.min(concurrency, count) },
+    async () => {
+      while (cursor < count) {
+        const index = cursor;
+        cursor += 1;
+        results[index] = await mapper(index);
+      }
+    },
+  );
+  await Promise.all(workers);
+  return results;
+}
+
 export async function fetchTafsirRange(surah, fromAyah, toAyah, tafsirId = null) {
-  const promises = [];
-  for (let ayah = fromAyah; ayah <= toAyah; ayah += 1) {
-    promises.push(
-      fetchTafsir(surah, ayah, tafsirId).catch((error) => ({
-        text: null,
-        error: error.message,
-        ayah,
-      })),
-    );
-  }
-  return Promise.all(promises);
+  const ayahs = [];
+  for (let ayah = fromAyah; ayah <= toAyah; ayah += 1) ayahs.push(ayah);
+  return mapWithConcurrency(ayahs.length, 4, async (index) => {
+    const ayah = ayahs[index];
+    try {
+      return await fetchTafsir(surah, ayah, tafsirId);
+    } catch (error) {
+      return { text: null, error: error.message, ayah };
+    }
+  });
 }
 
 export function getAvailableTafsirs(lang = "fr") {

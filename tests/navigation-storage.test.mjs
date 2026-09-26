@@ -44,6 +44,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "surah",
     currentSurah: 2,
     currentAyah: 255,
@@ -54,6 +55,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "page",
     currentPage: 604,
     routeNotFound: false,
@@ -63,19 +65,24 @@ test("navigation: parses reading, duas and legal routes safely", () => {
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "juz",
     currentJuz: 30,
     routeNotFound: false,
   });
 
   setPathname("/duas");
-  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true });
+  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true, showPrayers: false });
+
+  setPathname('/prires');
+  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: false, showPrayers: true });
 
   setPathname("/privacy");
   assert.deepEqual(parseInitialRoute(), {
     legalPage: "privacy",
     showHome: false,
     showDuas: false,
+    showPrayers: false,
   });
 });
 

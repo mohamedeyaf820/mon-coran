@@ -31,6 +31,7 @@ export default function Footer() {
       homeSection: state.homeSection,
       legalPage: state.legalPage,
       showDuas: state.showDuas,
+      showPrayers: state.showPrayers,
       showHome: state.showHome,
     }),
     shallowEqual,
@@ -57,7 +58,7 @@ export default function Footer() {
     return () => window.clearInterval(timer);
   }, [reduceMotion, rotationPaused]);
 
-  const activeView = view.legalPage || view.showDuas
+  const activeView = view.legalPage || view.showDuas || view.showPrayers
     ? null
     : view.showHome
       ? view.homeSection === "audio"
@@ -71,15 +72,15 @@ export default function Footer() {
     else window.scrollTo({ top: 0, behavior: "smooth" });
   };
   const openHome = () => {
-    set({ legalPage: null, showHome: true, showDuas: false });
+    set({ legalPage: null, showHome: true, showDuas: false, showPrayers: false });
     scrollTop();
   };
   const openReader = () => {
-    set({ legalPage: null, showHome: false, showDuas: false });
+    set({ legalPage: null, showHome: false, showDuas: false, showPrayers: false });
     scrollTop();
   };
   const openAudio = () => {
-    set({ legalPage: null, showHome: true, showDuas: false, homeSection: "audio" });
+    set({ legalPage: null, showHome: true, showDuas: false, showPrayers: false, homeSection: "audio" });
     window.requestAnimationFrame(() => {
       document.querySelector(".home-content-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
@@ -107,7 +108,7 @@ export default function Footer() {
 
   const openPage = (event, page) => {
     event.preventDefault();
-    set({ legalPage: page, showHome: false, showDuas: false });
+    set({ legalPage: page, showHome: false, showDuas: false, showPrayers: false });
     scrollTop();
   };
   const currentVerse = FOOTER_VERSES[verseIndex];

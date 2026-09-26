@@ -8,7 +8,8 @@ import {
   ensureRequestedRiwaya,
   loadArabicData,
   loadHafsSupportData,
-} from "./quranDisplayDataApi";
+} from "./quranDisplayDataApi.js";
+import { classifyReaderLoadError } from "./readerLoadError.js";
 
 const DISPLAY_DATA_CACHE = new Map();
 const DISPLAY_DATA_CACHE_MAX = 120;
@@ -117,6 +118,7 @@ export default function useQuranDisplayData({
     initialCachedData ? currentCacheKey : null,
   );
   const [error, setError] = useState(null);
+  const [loadState, setLoadState] = useState(null);
   const [isWarshFallback, setIsWarshFallback] = useState(() =>
     Boolean(initialCachedData?.isWarshFallback),
   );
@@ -162,6 +164,7 @@ export default function useQuranDisplayData({
     let cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
 
     setError(null);
+    setLoadState(null);
     if (cachedData) {
       setAyahs(cachedData.ayahs);
       setResolvedCacheKey(cacheKey);
@@ -293,8 +296,17 @@ export default function useQuranDisplayData({
     } catch (err) {
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
       if (import.meta.env.DEV) console.warn("Fetch error:", err);
+      // Classify at the source so the reader can answer the failure the user
+      // actually hit. A raw throw here used to end up in the crash boundary,
+      // whose only answers (reload, home) are both dead ends offline.
+      const loadState = classifyReaderLoadError(err, {
+        online: typeof navigator === "undefined" || navigator.onLine !== false,
+        aborted: signal.aborted || requestSeqRef.current !== requestId,
+        hadPayload: DISPLAY_DATA_CACHE.has(cacheKey),
+      });
       setSettledCacheKey(cacheKey);
-      setError("reader-load-failed");
+      setLoadState(loadState);
+      setError(loadState.code);
       dispatch({ type: "SET_ERROR", payload: "reader-load-failed" });
     } finally {
       if (!signal.aborted && requestSeqRef.current === requestId) {
@@ -348,6 +360,7 @@ export default function useQuranDisplayData({
     error,
     fetchData,
     isWarshFallback: visibleWarshFallback,
+    loadState,
     setError,
   };
 }

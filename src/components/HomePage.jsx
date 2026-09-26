@@ -10,6 +10,7 @@ import React, {
   useState,
 } from "react";
 import { createPortal } from "react-dom";
+import { lockAppScroll } from "../lib/scrollLock";
 import "../styles/domains/search-home-polish.css";
 import {
   shallowEqual,
@@ -151,6 +152,7 @@ export default function HomePage({ lowPerfMode = false }) {
       prayerMethod: current.prayerMethod,
       prayerLocation: current.prayerLocation,
       prayerReminders: current.prayerReminders,
+      prayerTimeOffsets: current.prayerTimeOffsets,
     }),
     shallowEqual,
   );
@@ -180,6 +182,7 @@ export default function HomePage({ lowPerfMode = false }) {
     enabled: state.prayerTimesEnabled,
     location: state.prayerLocation,
     method: state.prayerMethod,
+    offsets: state.prayerTimeOffsets,
     now,
   });
   const openPrayerModal = useCallback(() => set({ prayerModalOpen: true }), [set]);
@@ -303,8 +306,7 @@ export default function HomePage({ lowPerfMode = false }) {
       previousActiveElement instanceof HTMLElement
         ? previousActiveElement
         : null;
-    const previousBodyOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
+    const unlockScroll = lockAppScroll();
     const rafId = window.requestAnimationFrame(() => {
       reciterModalCloseBtnRef.current?.focus();
     });
@@ -345,7 +347,7 @@ export default function HomePage({ lowPerfMode = false }) {
     return () => {
       cancelled = true;
       window.cancelAnimationFrame(rafId);
-      document.body.style.overflow = previousBodyOverflow;
+      unlockScroll();
       document.removeEventListener("keydown", handleKeyDown);
       reciterModalTriggerRef.current?.focus();
       reciterModalTriggerRef.current = null;
@@ -933,6 +935,7 @@ export default function HomePage({ lowPerfMode = false }) {
         vodAyahNum={vodAyahNum}
         prayerStatus={prayer.status}
         prayerNext={prayer.next}
+        prayerTimings={prayer.data?.timings}
         onOpenPrayer={openPrayerModal}
       />
 

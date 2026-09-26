@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/generate-shell-manifest.mjs && node scripts/purge-css.mjs && node scripts/generate-seo-pages.mjs && node scripts/check-seo-output.mjs && node scripts/audit-performance.mjs",
-    "build:ci": "vite build && node scripts/generate-shell-manifest.mjs && node scripts/purge-css.mjs && node scripts/generate-seo-pages.mjs && node scripts/check-seo-output.mjs && node scripts/audit-performance.mjs && node scripts/check-screen-budget.mjs && node scripts/check-bundle-budget.mjs && node scripts/audit-css-architecture.mjs --check && node scripts/check-security-headers.mjs",
+    "build:ci": "vite build && node scripts/generate-shell-manifest.mjs && node scripts/purge-css.mjs && node scripts/generate-seo-pages.mjs && node scripts/run-gates.mjs",
     "preview": "vite preview",
     "perf:budget": "node scripts/check-bundle-budget.mjs",
     "audit:css": "node scripts/audit-css-architecture.mjs",
@@ -27,6 +27,7 @@
     "pwa:screenshots": "node scripts/capture-pwa-screenshots.mjs",
     "test:e2e:reading": "playwright test tests/e2e/reading-scroll.spec.mjs tests/e2e/reading-stability.spec.mjs",
     "test:e2e:responsive": "playwright test tests/e2e/responsive-density.spec.mjs",
+    "test:e2e:offline": "playwright test tests/e2e/pwa-offline.spec.mjs --project=pwa-offline",
     "test:e2e:headed": "playwright test --headed",
     "test:e2e:ui": "playwright test --ui",
     "test:e2e:debug": "playwright test --debug",

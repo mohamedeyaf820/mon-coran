@@ -101,7 +101,9 @@ test("verse action modal renders a reduced, responsive action grid", () => {
   assert.match(modal, /ayah-actions-modal__body/);
   assert.match(modal, /ayah-actions-modal__ref/);
   assert.match(actions, /ayah-action-card--play/);
-  assert.match(actions, /Plus d’actions/);
+  // Localized label: the literal moved to `actions.moreActions`, and the i18n
+  // parity test is what guarantees it resolves in fr, en and ar.
+  assert.match(actions, /t\("actions\.moreActions", lang\)/);
   assert.match(actions, /ayah-actions__surface--modal/);
   assert.match(styles, /\.ayah-actions-modal__body \{[\s\S]*?overflow-y: auto/);
   assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
@@ -677,50 +679,22 @@ test("every tajweed colour stays readable on its theme paper", () => {
   }
 });
 
-test("Warsh takes the eight printed colours of the coloured Warsh mushaf", () => {
+test("Warsh shares the Hafs tajweed palette: the same rule keeps the same colour", () => {
   const theme = source("src/styles/domains/themes4.css");
-  const light = /:root\[data-theme="light"\][^{]*\{([^}]*)\}/.exec(theme)[1];
-  const dark = /\[data-theme="dark"\] \{([^}]*)\}/.exec(theme)[1];
 
-  // Measured 2026-09-24 from the legend printed on the first page of the mushaf
-  // (core-pixel medians of the eight swatches). Only the gold moves off the
-  // printed value on the light papers, and only the wine and the slate on the
-  // night surface — the hues are the book's.
-  for (const [token, hex] of [
-    ["--tajwid-warsh-lazim", "#8e2b5b"],
-    ["--tajwid-warsh-mushba", "#d42c78"],
-    ["--tajwid-warsh-jawaz", "#d76225"],
-    ["--tajwid-warsh-harakatan", "#bc831e"],
-    ["--tajwid-warsh-khafa", "#0f883d"],
-    ["--tajwid-warsh-idgham", "#7d797a"],
-    ["--tajwid-warsh-tafkhim", "#324c5b"],
-    ["--tajwid-warsh-qalqala", "#0c8fb8"],
-  ]) {
-    assert.match(light, new RegExp(`${token}: ${hex};`));
-  }
-  assert.match(dark, /--tajwid-warsh-harakatan: #d59625;/);
-  assert.match(dark, /--tajwid-warsh-lazim: #ab326d;/);
-  assert.match(dark, /--tajwid-warsh-tafkhim: #42667b;/);
-
-  // The engine computes more rules than the book has colours, so every key has
-  // to fold into one of the eight; a key left out would keep a Hafs hue.
-  const alias = /\[data-theme\]\[data-riwaya="warsh"\] \{([^}]*)\}/.exec(theme);
-  assert.ok(alias, "missing the Warsh alias block");
-  const aliased = new Set(
-    [...alias[1].matchAll(/--tajwid-([a-z-]+): var\(--tajwid-warsh-([a-z]+)\);/g)].map(
-      (m) => m[1],
-    ),
+  // The separate "printed Warsh mushaf" palette was retired: on our paper themes
+  // several of its swatches read as near-black or vanished, and it taught a
+  // different hue for the same rule depending on riwaya. Warsh now inherits the
+  // canonical Quran.com / Tarteel hues every theme defines.
+  assert.doesNotMatch(
+    theme,
+    /--tajwid-warsh-/,
+    "the retired per-theme Warsh palette swatches must be gone",
   );
-  for (const [, token] of light.matchAll(/--tajwid-([a-z-]+): #/g)) {
-    if (token.startsWith("warsh-")) continue;
-    assert.ok(aliased.has(token), `--tajwid-${token} is not folded into the Warsh palette`);
-  }
-  // The alias has to come after the theme blocks: the fullscreen book carries
-  // the theme and the riwaya on the same element, so it wins on order, not depth.
-  assert.ok(
-    theme.indexOf('[data-theme][data-riwaya="warsh"]') >
-      theme.indexOf("--tajwid-idgham-warsh: #9d9999;"),
-    "the Warsh alias must follow the last theme palette",
+  assert.doesNotMatch(
+    theme,
+    /\[data-riwaya=["']warsh["']\][^{]*\{[^}]*--tajwid-/,
+    "Warsh must not remap any tajweed colour away from the Hafs palette",
   );
 });
 

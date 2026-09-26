@@ -41,6 +41,9 @@ test("WCAG: action sheets expose dialog semantics and focus management", () => {
 test("WCAG: forms, tabs and audio status keep programmatic names", () => {
   const header = source("src/components/Header.jsx");
   const settings = source("src/components/SettingsModal.jsx");
+  // The segmented/tab-row primitives moved to the shared controls module when
+  // the prayer panel joined the settings tabs; the contract follows the code.
+  const controls = source("src/components/settings/controls.jsx");
   const sidebar = source("src/components/Sidebar.jsx");
   const audio = source("src/components/AudioPlayer.jsx");
 
@@ -48,7 +51,7 @@ test("WCAG: forms, tabs and audio status keep programmatic names", () => {
   assert.match(header, /id="header-goto-input"/);
   assert.match(settings, /htmlFor="settings-font-family"/);
   assert.match(settings, /htmlFor="settings-reciter-search"/);
-  assert.match(settings, /aria-pressed=\{value === option\.id\}/);
+  assert.match(controls, /aria-pressed=\{value === option\.id\}/);
   assert.match(sidebar, /aria-controls=\{`sidebar-panel-\$\{tabId\}`\}/);
   assert.match(sidebar, /role="tabpanel"/);
   assert.match(audio, /role="status"/);

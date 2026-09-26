@@ -53,6 +53,52 @@ function sanitizePrayerLocation(value) {
   };
 }
 
+// Mirrors applyPrayerOffsets/sanitizePrayerNotifications in
+// prayerTimesService (see the boot-graph comment above for why these are
+// duplicated rather than imported).
+const PRAYER_OFFSET_KEYS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+function sanitizePrayerOffsetsSetting(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const out = {};
+  for (const key of PRAYER_OFFSET_KEYS) {
+    const parsed = Number(source[key]);
+    out[key] = Number.isFinite(parsed) ? Math.max(-60, Math.min(60, Math.round(parsed))) : 0;
+  }
+  return out;
+}
+
+const ADHAN_VOLUME_CHOICES = [0.2, 0.4, 0.6, 0.8, 1];
+const PRE_REMINDER_CHOICES = [0, 5, 10, 15, 20];
+const POST_REMINDER_CHOICES = [0, 10, 15, 20, 30, 45];
+
+function sanitizePrayerNotificationsSetting(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const volume = Number(source.adhanVolume);
+  const pre = Number(source.preReminderMinutes);
+  const post = Number(source.postReminderMinutes);
+  const prayers =
+    source.prayers && typeof source.prayers === "object" && !Array.isArray(source.prayers)
+      ? source.prayers
+      : {};
+  return {
+    adhanEnabled: source.adhanEnabled !== false,
+    adhanSourceId: typeof source.adhanSourceId === "string" ? source.adhanSourceId.slice(0, 40) : "",
+    adhanVolume: Number.isFinite(volume)
+      ? ADHAN_VOLUME_CHOICES.reduce((best, step) =>
+        Math.abs(step - volume) < Math.abs(best - volume) ? step : best,
+      )
+      : 1,
+    silent: Boolean(source.silent),
+    preReminderMinutes: PRE_REMINDER_CHOICES.includes(pre) ? pre : 0,
+    postReminderMinutes: POST_REMINDER_CHOICES.includes(post) ? post : 0,
+    catchUp: source.catchUp !== false,
+    prayers: Object.fromEntries(
+      PRAYER_OFFSET_KEYS.map((key) => [key, prayers[key] !== false]),
+    ),
+  };
+}
+
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);
   return result.success ? result.data : null;
@@ -377,6 +423,19 @@ const DEFAULT_SETTINGS = {
   prayerMethod: 12,
   prayerLocation: null,
   prayerReminders: false,
+  prayerTimeOffsets: { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
+  prayerNotifications: {
+    adhanEnabled: true,
+    adhanSourceId: "",
+    adhanVolume: 1,
+    silent: false,
+    preReminderMinutes: 0,
+    postReminderMinutes: 0,
+    catchUp: true,
+    prayers: { Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true },
+  },
+  prayerTrackingEnabled: false,
+  prayerPostAdhanDuas: true,
   dailyVerseNotification: false,
   showHome: true,
   showDuas: false,
@@ -411,6 +470,41 @@ function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
   };
 }
 
+// An unreadable settings blob must survive the defaults that replace it:
+// saveSettings would otherwise overwrite the key and lose the reading
+// position for good. Archive once per session, keeping the ciphertext as-is.
+let corruptArchivedThisSession = false;
+function archiveCorruptSettingsBlob(raw) {
+  if (corruptArchivedThisSession || typeof raw !== "string" || !raw) return;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith(`${SETTINGS_KEY}.corrupt.`)) {
+        corruptArchivedThisSession = true;
+        return;
+      }
+    }
+    localStorage.setItem(`${SETTINGS_KEY}.corrupt.${Date.now()}`, raw);
+    corruptArchivedThisSession = true;
+  } catch {
+    // Quota or private mode: nothing further we can do.
+  }
+}
+
+// boot-recovery.js runs before the bundle and needs to know whether the Warsh
+// mushaf face is worth a 90 kB preload. The settings blob is opaque once a
+// passphrase is set, so mirror only that yes/no bit — never the riwaya, the
+// font name or the reading position.
+export const WARSH_PRELOAD_KEY = "mushaf-plus-warsh-preload";
+function mirrorWarshFacePreload(safe) {
+  const warshFont = safe.fontFamilyByRiwaya?.warsh ?? safe.fontFamily;
+  const needed = safe.riwaya === "warsh" && warshFont !== "scheherazade-new-warsh";
+  try {
+    localStorage.setItem(WARSH_PRELOAD_KEY, needed ? "1" : "0");
+  } catch {
+    // Quota or private mode: boot simply falls back to reading the legacy blob.
+  }
+}
+
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
@@ -420,7 +514,10 @@ export function getSettings() {
       needsMigration,
       locked,
     } = decryptDataWithMeta(raw);
-    if (locked) return cloneDefaultSettings();
+    if (locked) {
+      archiveCorruptSettingsBlob(raw);
+      return cloneDefaultSettings();
+    }
     const parsed = decrypted ?? JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return cloneDefaultSettings();
@@ -464,6 +561,13 @@ export function getSettings() {
       prayerMethod: normalizePrayerMethodSetting(parsed?.prayerMethod, parsed?.lang),
       prayerLocation: sanitizePrayerLocation(parsed?.prayerLocation),
       prayerReminders: Boolean(parsed?.prayerReminders),
+      prayerTimeOffsets: sanitizePrayerOffsetsSetting(parsed?.prayerTimeOffsets),
+      prayerNotifications: sanitizePrayerNotificationsSetting(parsed?.prayerNotifications),
+      prayerTrackingEnabled: Boolean(parsed?.prayerTrackingEnabled),
+      prayerPostAdhanDuas:
+        parsed?.prayerPostAdhanDuas !== undefined
+          ? Boolean(parsed.prayerPostAdhanDuas)
+          : DEFAULT_SETTINGS.prayerPostAdhanDuas,
       dailyVerseNotification: Boolean(parsed?.dailyVerseNotification),
     };
 
@@ -474,7 +578,9 @@ export function getSettings() {
     }
 
     return normalized;
-  } catch {
+  } catch (err) {
+    archiveCorruptSettingsBlob(localStorage.getItem(SETTINGS_KEY));
+    console.warn("[storage] Réglages illisibles : defaults restaurés, copie archivée pour récupération.", err);
     return cloneDefaultSettings();
   }
 }
@@ -605,6 +711,13 @@ function sanitizeSettings(settings) {
     prayerMethod: normalizePrayerMethodSetting(safeInput.prayerMethod, safeInput.lang),
     prayerLocation: sanitizePrayerLocation(safeInput.prayerLocation),
     prayerReminders: Boolean(safeInput.prayerReminders),
+    prayerTimeOffsets: sanitizePrayerOffsetsSetting(safeInput.prayerTimeOffsets),
+    prayerNotifications: sanitizePrayerNotificationsSetting(safeInput.prayerNotifications),
+    prayerTrackingEnabled: Boolean(safeInput.prayerTrackingEnabled),
+    prayerPostAdhanDuas:
+      safeInput.prayerPostAdhanDuas !== undefined
+        ? Boolean(safeInput.prayerPostAdhanDuas)
+        : true,
     dailyVerseNotification: Boolean(safeInput.dailyVerseNotification),
     lastPosition: {
       surah: lastSurah,
@@ -624,6 +737,7 @@ export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
     localStorage.setItem(SETTINGS_KEY, encryptData(safe));
+    mirrorWarshFacePreload(safe);
     return true;
   } catch {
     // Never fall back to plaintext when encryption/storage is unavailable.

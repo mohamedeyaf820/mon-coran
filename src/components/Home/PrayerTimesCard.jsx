@@ -8,15 +8,19 @@ import {
   Sunrise,
 } from "lucide-react";
 import { t } from "../../i18n";
-import { formatCountdown } from "../../services/prayerTimesService";
+import {
+  PRAYER_KEYS,
+  formatCountdown,
+} from "../../services/prayerTimesService";
 import "../../styles/domains/prayer-times.css";
 
 /**
- * One compact row in the home "Aujourd'hui" panel: the next prayer and its
- * countdown when set up, a single enable affordance otherwise. All states are
- * one line so the panel keeps its verse-of-the-day priority.
+ * The home "Aujourd'hui" panel's prayer block: the next prayer up front with
+ * its countdown, then the whole day as five quiet rows. Everything here is a
+ * single affordance — it opens the detail modal — and it stays under the
+ * Quran text in weight: one accent (the next row), no decoration elsewhere.
  */
-export default function PrayerTimesCard({ lang, isRtl, status, next, onOpen }) {
+export default function PrayerTimesCard({ lang, isRtl, status, next, timings, now, onOpen }) {
   let icon = <Sunrise size={15} aria-hidden="true" />;
   let title = t("prayer.cardEnable", lang);
   let detail = t("prayer.cardEnableHint", lang);
@@ -42,8 +46,8 @@ export default function PrayerTimesCard({ lang, isRtl, status, next, onOpen }) {
   } else if (status === "ready") {
     stateClass = "is-ready";
     if (next) {
-      title = t(`prayer.names.${next.key}`, lang);
-      detail = `${t("prayer.next", lang)} · ${formatCountdown(next.minutesUntil, lang)}`;
+      title = t("prayer.next", lang);
+      detail = t(`prayer.names.${next.key}`, lang);
       time = next.hhmm;
     } else {
       title = t("prayer.title", lang);
@@ -51,24 +55,58 @@ export default function PrayerTimesCard({ lang, isRtl, status, next, onOpen }) {
     }
   }
 
+  const nowMinutes = now ? now.getHours() * 60 + now.getMinutes() : -1;
+
   return (
-    <button
-      type="button"
-      className={`home-prayer-strip ${stateClass}`}
-      onClick={onOpen}
-      aria-label={`${title} — ${detail}`}
-    >
-      <span className="home-prayer-strip__icon" aria-hidden="true">{icon}</span>
-      <span className="home-prayer-strip__copy">
-        <strong>{title}</strong>
-        <small>{detail}</small>
-      </span>
-      {time ? (
-        <span className="home-prayer-strip__time" dir="ltr">{time}</span>
+    <div className={`home-prayer-block ${stateClass}`}>
+      {status === "ready" && next ? (
+        <span className="home-prayer-block__kicker">{t("prayer.next", lang)}</span>
       ) : null}
-      <span className="home-prayer-strip__arrow" aria-hidden="true">
-        {isRtl ? <ChevronLeft size={13} /> : <ChevronRight size={13} />}
-      </span>
-    </button>
+      <button
+        type="button"
+        className={`home-prayer-strip ${stateClass}`}
+        onClick={onOpen}
+        aria-label={
+          status === "ready" && next
+            ? `${t("prayer.next", lang)}: ${t(`prayer.names.${next.key}`, lang)} ${next.hhmm} — ${formatCountdown(next.minutesUntil, lang)}`
+            : `${title} — ${detail}`
+        }
+      >
+        <span className="home-prayer-strip__icon" aria-hidden="true">{icon}</span>
+        <span className="home-prayer-strip__copy">
+          <strong>{status === "ready" && next ? `${t(`prayer.names.${next.key}`, lang)}` : title}</strong>
+          <small>
+            {status === "ready" && next ? formatCountdown(next.minutesUntil, lang) : detail}
+          </small>
+        </span>
+        {time ? (
+          <span className="home-prayer-strip__time" dir="ltr">{time}</span>
+        ) : null}
+        <span className="home-prayer-strip__arrow" aria-hidden="true">
+          {isRtl ? <ChevronLeft size={13} /> : <ChevronRight size={13} />}
+        </span>
+      </button>
+
+      {status === "ready" && timings ? (
+        <ul className="home-prayer-daylist">
+          {PRAYER_KEYS.map((key) => {
+            const entry = timings[key];
+            if (!entry) return null;
+            const isNext = next?.key === key;
+            const isPast = !isNext && entry.minutes <= nowMinutes;
+            return (
+              <li key={key} className={isNext ? "is-next" : isPast ? "is-past" : ""}>
+                <button type="button" onClick={onOpen} aria-current={isNext ? "true" : undefined}>
+                  <span className="home-prayer-daylist__name">
+                    {t(`prayer.names.${key}`, lang)}
+                  </span>
+                  <span className="home-prayer-daylist__time" dir="ltr">{entry.hhmm}</span>
+                </button>
+              </li>
+            );
+          })}
+        </ul>
+      ) : null}
+    </div>
   );
 }

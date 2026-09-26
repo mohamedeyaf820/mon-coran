@@ -7,6 +7,7 @@ test("all 114 surah routes resolve without clamping or redirection", () => {
     assert.deepEqual(parseRoutePath(`/surah/${surah}`), {
       showHome: false,
       showDuas: false,
+      showPrayers: false,
       routeNotFound: false,
       displayMode: "surah",
       currentSurah: surah,
@@ -27,6 +28,20 @@ test("published transparency routes resolve explicitly", () => {
       legalPage: page,
       showHome: false,
       showDuas: false,
+      showPrayers: false,
     });
   }
+});
+
+test("prayer tracking and duas routes resolve explicitly", () => {
+  assert.deepEqual(parseRoutePath("/prires"), {
+    showHome: false,
+    showDuas: false,
+    showPrayers: true,
+  });
+  assert.deepEqual(parseRoutePath("/duas"), {
+    showHome: false,
+    showDuas: true,
+    showPrayers: false,
+  });
 });

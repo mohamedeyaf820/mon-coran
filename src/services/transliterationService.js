@@ -43,6 +43,40 @@ const scheduled = new Set();
 let indexPromise = null;
 const listeners = new Set();
 
+// Bounded, least-recently-used memory cache (same pattern as quranComAPI's
+// MEM_CACHE_MAX_SIZE and useQuranDisplayData's rememberLimited). One entry is a
+// Map of Latin lines for a whole surah: measured on the vendored assets
+// (public/data/transliteration-en, 1.05 MB of JSON for 114 surahs) an average
+// surah costs ~19 kB in memory and the longest one ~140 kB, so ten entries hold
+// under 0.7 MB in the worst case and ~0.2 MB in a normal reading session.
+// Uncapped, a reader who browsed the whole mushaf kept the entire transliteration
+// alive next to the Arabic text, the Warsh translation and the display payloads.
+const LOADED_SURAH_CACHE_MAX = 10;
+
+function recallBounded(map, key) {
+  if (!map.has(key)) return undefined;
+  const value = map.get(key);
+  map.delete(key);
+  map.set(key, value);
+  return value;
+}
+
+function rememberBounded(map, key, value, max) {
+  if (map.has(key)) map.delete(key);
+  map.set(key, value);
+  while (map.size > max) map.delete(map.keys().next().value);
+  return value;
+}
+
+/** Sizes and caps of the memory caches, for the contract test and diagnostics. */
+export function getTransliterationCacheStats() {
+  return {
+    loadedSurahs: loadedSurahs.size,
+    cap: LOADED_SURAH_CACHE_MAX,
+    pending: pendingSurahs.size,
+  };
+}
+
 function emit() {
   for (const listener of listeners) listener();
 }
@@ -139,7 +173,8 @@ export async function getTransliterationSurah(surahNumber) {
   if (!Number.isInteger(surah) || surah < 1 || surah > 114) {
     throw new Error(`Invalid surah for the transliteration: ${surahNumber}`);
   }
-  if (loadedSurahs.has(surah)) return loadedSurahs.get(surah);
+  const warm = recallBounded(loadedSurahs, surah);
+  if (warm) return warm;
   if (pendingSurahs.has(surah)) return pendingSurahs.get(surah);
 
   const promise = (async () => {
@@ -153,7 +188,7 @@ export async function getTransliterationSurah(surahNumber) {
       const cached = await dbGet(IDB_STORE, idbKey);
       const cachedMap = toSurahMap(cached?.data?.ayahs);
       if (cached?.sha256 === pinned.sha256 && validateSurahMap(cachedMap, surah)) {
-        loadedSurahs.set(surah, cachedMap);
+        rememberBounded(loadedSurahs, surah, cachedMap, LOADED_SURAH_CACHE_MAX);
         emit();
         return cachedMap;
       }
@@ -175,7 +210,7 @@ export async function getTransliterationSurah(surahNumber) {
       throw new Error(`Incomplete transliteration for surah ${surah}`);
     }
 
-    loadedSurahs.set(surah, map);
+    rememberBounded(loadedSurahs, surah, map, LOADED_SURAH_CACHE_MAX);
     if (digest === pinned.sha256) {
       dbSet(IDB_STORE, {
         key: idbKey,
@@ -199,7 +234,9 @@ export async function getTransliterationSurah(surahNumber) {
 
 /** The pinned line for one Hafs verse, from memory only. "" when unavailable. */
 export function getTransliterationText(surahNumber, ayahNumber) {
-  const map = loadedSurahs.get(Number(surahNumber));
+  // Reading a line marks the surah as most recently used: the cards on screen
+  // are the entries the cache must never evict out from under the reader.
+  const map = recallBounded(loadedSurahs, Number(surahNumber));
   if (!map) return "";
   const text = map.get(Number(ayahNumber));
   return typeof text === "string" ? text : "";

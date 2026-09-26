@@ -66,6 +66,44 @@ const cachedSurahs = new Map();
 const pendingSurahs = new Map();
 const indexPromises = new Map();
 
+// Bounded, least-recently-used memory cache (quranComAPI.js MEM_CACHE_MAX_SIZE,
+// useQuranDisplayData.js rememberLimited). Keys are `${edition}:${surah}`, so
+// one Map holds every edition at once: an entry is the translation records of a
+// whole surah, measured on the vendored assets (public/data/warsh-translation-fr
+// is 1.68 MB of JSON across 114 files, average 15 kB, longest 132 kB) at ~30 kB
+// of memory on average and ~270 kB worst. Six entries therefore hold under
+// 0.9 MB even if the reader loads the six longest surahs, against ~3.4 MB for
+// all 114 of one edition, and a normal session (one surah, one edition) stays
+// near 30 kB. The translation renders below the Arabic the reader is on, so a
+// miss costs one IndexedDB read of the already-vendored text (or one same-origin
+// asset request if the reader cleared the cache), never a third-party fetch.
+const CACHED_SURAH_MAX = 6;
+
+function recallBounded(map, key) {
+  if (!map.has(key)) return undefined;
+  const value = map.get(key);
+  map.delete(key);
+  map.set(key, value);
+  return value;
+}
+
+function rememberBounded(map, key, value, max) {
+  if (map.has(key)) map.delete(key);
+  map.set(key, value);
+  while (map.size > max) map.delete(map.keys().next().value);
+  return value;
+}
+
+/** Sizes and caps of the memory caches, for the contract test and diagnostics. */
+export function getWarshTranslationCacheStats() {
+  return {
+    cachedSurahs: cachedSurahs.size,
+    cap: CACHED_SURAH_MAX,
+    editions: WARSH_TRANSLATION_EDITION_IDS.length,
+    pending: pendingSurahs.size,
+  };
+}
+
 function assetUrl(config, name) {
   const baseUrl = import.meta.env?.BASE_URL || "/";
   return `${baseUrl}data/${config.dir}/${name}?v=${config.schema}`;
@@ -207,7 +245,8 @@ export async function getWarshTranslationSurah(surahNumber, editionId) {
   }
   const config = editionConfig(editionId);
   const cacheKey = `${config.dir}:${surah}`;
-  if (cachedSurahs.has(cacheKey)) return cachedSurahs.get(cacheKey);
+  const warm = recallBounded(cachedSurahs, cacheKey);
+  if (warm) return warm;
   if (pendingSurahs.has(cacheKey)) return pendingSurahs.get(cacheKey);
 
   const promise = (async () => {
@@ -221,7 +260,7 @@ export async function getWarshTranslationSurah(surahNumber, editionId) {
       const cached = await dbGet(IDB_STORE, idbKey);
       const records = cached?.data?.records;
       if (cached?.sha256 === pinned.sha256 && validateTranslationRecords(records, surah)) {
-        cachedSurahs.set(cacheKey, records);
+        rememberBounded(cachedSurahs, cacheKey, records, CACHED_SURAH_MAX);
         return records;
       }
       if (cached) {
@@ -242,7 +281,7 @@ export async function getWarshTranslationSurah(surahNumber, editionId) {
       throw new Error(`Incomplete Warsh translation for surah ${surah}`);
     }
 
-    cachedSurahs.set(cacheKey, records);
+    rememberBounded(cachedSurahs, cacheKey, records, CACHED_SURAH_MAX);
     if (digest === pinned.sha256) {
       dbSet(IDB_STORE, {
         key: idbKey,
