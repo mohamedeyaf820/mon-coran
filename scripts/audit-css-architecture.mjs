@@ -28,7 +28,17 @@ const LIMITS = {
   // hex swaps are length-neutral and the removed Hafs saturate filter cut retained).
   // 2026-09-24: raised to 1788 kB — the share-format picker badges/hint and the
   // prayer-modal next-prayer hero added ~5 kB of rules (1782.2 kB measured).
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1788),
+  // 2026-09-26: raised to 1810 kB (1808.8 kB measured on CI) — two workstreams
+  // in one commit. Prayer: the new domains/prayers-page.css tracker sheet plus
+  // the reminder rows in prayer-times.css. Audit campaign: the per-theme
+  // --danger/--error/--warning/--bg-hover and --toast-* token blocks, the
+  // 44px seek-rail hit band, the ref-counted scroll-lock and settings-drawer
+  // rules, and the sepia tajweed darkening. Offsetting this, the commit deleted
+  // dead rules that fought the reading toolbar over touch targets
+  // (reading-ux-refonte.css and reading-platform.css), so the campaign is not a
+  // pure addition. 3384 selectors are still reported removable against the
+  // production app: that purge is the way to bring this ceiling back down.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1810),
   // 2026-09-20: retained raised after the purge safelist fix brought back the
   // [dir=]/[lang=] RTL rules that PurgeCSS v8 had been silently dropping.
   // 2026-09-21: +1 kB for the retained portal rules of the same cartouche,

@@ -23,7 +23,14 @@ const LIMITS = {
   // 2026-09-24: +2 kB; the share format picker now states ratio, platform list
   // and a localized hint per format, and the prayer modal gains its next-prayer
   // hero — 1310.6 kB measured.
-  js: Number(process.env.BUDGET_JS_KB || 1312),
+  // 2026-09-26: +63 kB; /prires tracker, the Prayer settings tab, the adhan
+  // service, the prayer log and the notification planner land in this commit
+  // (~50 kB of new source), together with the audit campaign's reader error
+  // taxonomy, multi-tab guard and the verse-action locale keys they required.
+  // The campaign also paid part of it back: audioService.js is split into
+  // reciterLatency / audioEq / audioPreload, which brought screen-budget from
+  // EXCEEDED (47.2 > 46 kB) back to OK at 45.6 kB. 1369.3 kB measured on CI.
+  js: Number(process.env.BUDGET_JS_KB || 1375),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -33,9 +40,16 @@ const LIMITS = {
   // stylesheet rules (2314.2 kB measured).
   // 2026-09-24: +4 kB, share-format hints, prayer-hero markup and their styles
   // (2321.4 kB measured).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2324),
+  // 2026-09-26: +76 kB for the same commit as the JS line above: the prayer
+  // feature and the audit campaign together, CSS and JS counted once
+  // (2393.3 kB measured on CI).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2400),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
-  singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 225),
+  // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
+  // the reader load-error taxonomy (the boundary needs it synchronously), the
+  // multi-tab notice and the verse-action locale keys added in three dictionaries.
+  // Per-module contribution was not measured; the total is (232.2 kB on CI).
+  singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 235),
   initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
   // 2026-09-21: +2 kB headroom; cumulative print-engine and audio campaigns
   // measured 422.3 kB of initial JS against the old 422 cap.
@@ -46,13 +60,21 @@ const LIMITS = {
   // API client itself stays out of the boot graph via lazy chunks.
   // 2026-09-24: +2 kB; the trilingual share-format hint strings ship with the
   // dictionaries (435.5 kB measured).
-  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 437),
-  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 810),
-  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 200),
+  // 2026-09-26: +25 kB; the boot graph grew by the reader load-error taxonomy,
+  // the multi-tab notice and the verse-action locale keys, and by the prayer
+  // settings/state wiring that shares the entry chunk. The timings and adhan
+  // clients stay out of boot behind lazy chunks (459.5 kB measured on CI).
+  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 462),
+  // 2026-09-26: 813.8 kB measured on CI.
+  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 815),
+  // 2026-09-26: 204.7 kB measured on CI.
+  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 206),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),
   // 2026-09-24: +2 kB; the home prayer strip and its modal styles landed in the
   // home sheet (57.1 kB measured against the old 58 cap).
-  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 60),
+  // 2026-09-26: +2 kB; the strip gained the adhan/prayer-notification controls
+  // and the per-prayer reminder rows (61.6 kB measured on CI).
+  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 62),
   readerCss: Number(process.env.BUDGET_READER_CSS_KB || 252),
 };
 
