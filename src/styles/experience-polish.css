@@ -1125,9 +1125,34 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
    device-responsive.css (deferred) sets the same grid, but this eager rule prevents
    a brief layout window where center expands into the actions area. */
 @media (max-width: 640px) {
-  .mp-header__bar {
-    display: grid;
-    grid-template-columns: 80px minmax(0, 1fr) 80px;
+  /* The deferred responsive cascade disables desktop scrollbar gutters on
+     touch layouts. Match it before first paint so the whole 390px viewport
+     does not jump from 370px to full width when that stylesheet arrives. */
+  html {
+    scrollbar-gutter: auto !important;
+  }
+
+  html body .app-root .app-main-shell {
+    scrollbar-gutter: auto !important;
+  }
+
+  html body .app-root > .mp-header .mp-header__bar {
+    --mp-header-control: max(2.75rem, 44px);
+    --mp-header-icon: 0.78rem;
+    display: grid !important;
+    min-height: 52px !important;
+    height: 52px !important;
+    max-height: 52px !important;
+    grid-template-columns: auto minmax(0, 1fr) auto !important;
+    gap: 0.18rem;
+  }
+
+  /* Match the deferred mobile header before its chunk arrives. Showing the
+     desktop brand for a few hundred milliseconds and then removing it caused
+     a 0.21 CLS jump on a cold phone load. */
+  html body .app-root > .mp-header .mp-header__brand,
+  html body .app-root > .mp-header .mp-header__brand-text {
+    display: none !important;
   }
 
   /* Eagerly hide the header search button on the home view on mobile to match

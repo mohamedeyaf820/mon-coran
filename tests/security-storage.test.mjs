@@ -80,7 +80,9 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("img-src 'self' data: blob:;"), true);
   assert.doesNotMatch(csp, /img-src[^;]*(assabile|qurancdn|static\.quran\.com|way2quran|pinimg|suratmp3|surahquran|wikimedia)/);
   assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
-  assert.doesNotMatch(csp, /suratmp3\.com|surahquran\.com|wikimedia\.org/);
+  assert.doesNotMatch(csp, /suratmp3\.com|surahquran\.com/);
+  assert.match(csp, /media-src[^;]*https:\/\/upload\.wikimedia\.org/);
+  assert.doesNotMatch(csp, /img-src[^;]*wikimedia\.org/);
   assert.match(csp, /script-src-attr 'none'/);
   assert.match(csp, /upgrade-insecure-requests/);
   assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);

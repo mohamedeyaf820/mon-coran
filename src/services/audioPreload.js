@@ -17,10 +17,12 @@ export function preloadTrack(svc, url) {
   if (!url) return;
   if (!isTrustedAudioUrl(url)) return;
   if (svc._preloadPool.some((p) => p.url === url)) return;
-  // Keep the next Android verse warm while the PWA is locked. iOS suspends
-  // hidden media loads, so avoid competing with the active stream there.
+  // Keep the next verse warm while the PWA is locked — that is the verse the
+  // synchronous hand-off will start with no time to spare. Keep the pool
+  // bounded to one entry there so the preload never competes with the active
+  // stream for bandwidth (iOS suspends long hidden downloads).
   if (typeof document !== "undefined" && document.visibilityState === "hidden" &&
-      !/Android/i.test(typeof navigator !== "undefined" ? navigator.userAgent : "")) {
+      svc._preloadPool.length >= Math.max(1, svc._maxPreloadPool)) {
     return;
   }
 
@@ -70,7 +72,14 @@ export function releasePreloadPool(svc) {
 
 export function preloadAhead(svc, startIndex, count = 2) {
   if (!Array.isArray(svc.playlist) || svc.playlist.length === 0) return;
-  const adaptiveCount = Math.min(count, getAdaptiveAudioPreloadCount());
+  const hidden = typeof document !== "undefined" && document.visibilityState === "hidden";
+  // One warm track while hidden: enough for a gapless hand-off at the verse
+  // boundary, small enough not to starve the verse being recited.
+  const adaptiveCount = Math.min(
+    count,
+    getAdaptiveAudioPreloadCount(),
+    hidden ? 1 : count,
+  );
   svc._maxPreloadPool = adaptiveCount;
   if (adaptiveCount === 0) {
     releasePreloadPool(svc);

@@ -80,6 +80,14 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     url: "https://verses.quran.foundation/",
   },
   {
+    id: "adhan-ejaz215",
+    category: "audio",
+    name: "Islamic call to prayer from the Prophet Mosque — ejaz215",
+    usage: "Adhan optionnel, avec téléchargement local pour l’écoute hors connexion.",
+    rights: "Creative Commons Attribution 3.0 Unported.",
+    url: "https://commons.wikimedia.org/wiki/File:33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg",
+  },
+  {
     id: "portraits",
     category: "image",
     name: "Portraits de récitateurs",

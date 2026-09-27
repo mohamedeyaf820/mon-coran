@@ -689,7 +689,15 @@ export default function AudioPlayer() {
       optionsCloseButtonRef.current?.focus();
     });
     const handleKeyDown = (e) => {
-      if (e.key === "Escape") { setOptionsModalOpen(false); return; }
+      if (e.key === "Escape") {
+        // Escape belongs to the topmost dialog only. Without stopping the
+        // native event here, a fullscreen reader underneath can consume the
+        // same keystroke after this modal unmounts and close both layers.
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        setOptionsModalOpen(false);
+        return;
+      }
       if (e.key !== "Tab") return;
       const modalEl = optionsCloseButtonRef.current?.closest('[role="dialog"]');
       if (!modalEl) return;
@@ -883,6 +891,11 @@ export default function AudioPlayer() {
     album: "MushafPlus",
     artwork: "/logo-512.png",
     isPlaying,
+    // The reader's intent, not the element's instant state: a background
+    // suspension must not publish `paused` to the OS (it releases Android's
+    // audio focus and lets the tab be frozen before the retry runs).
+    playbackState:
+      isPlaying || audioService._playbackIntent === "playing" ? "playing" : "paused",
     onPlay: () => audioService.resume(),
     onPause: () => audioService.pause(),
     onNext: next,

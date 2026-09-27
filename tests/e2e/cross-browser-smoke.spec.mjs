@@ -18,18 +18,26 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test("compatibilité: accueil, route légale et lecteur", async ({ page }) => {
-  await page.goto("/", { waitUntil: "commit" });
+test("compatibilité: accueil, route légale et lecteur", async ({ page, context }) => {
+  await installQuranNetworkFixtures(page);
+  await page.goto("/", { waitUntil: "load" });
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/lire|lecture|reading|قراءة/i);
   await expect(page.locator(".hp-card--surah").first()).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-deferred-styles", "ready");
 
-  await page.goto("/privacy", { waitUntil: "commit" });
-  await expect(page.locator(".legal-page")).toBeVisible();
-  await expect(page.getByRole("heading", { level: 1 })).toContainText(/lecture|reading|بيانات/i);
+  // Firefox can abort a document request when a second hard navigation starts
+  // while late PWA assets from the first route are settling. Independent tabs
+  // exercise each direct-entry route without introducing that browser race.
+  const privacyPage = await context.newPage();
+  await privacyPage.goto("/privacy", { waitUntil: "load" });
+  await expect(privacyPage.locator(".legal-page")).toBeVisible();
+  await expect(privacyPage.getByRole("heading", { level: 1 })).toContainText(/lecture|reading|بيانات/i);
 
-  await page.goto("/surah/1", { waitUntil: "commit" });
-  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator("html")).toHaveAttribute("lang", "fr");
+  const readerPage = await context.newPage();
+  await installQuranNetworkFixtures(readerPage);
+  await readerPage.goto("/surah/1", { waitUntil: "load" });
+  await expect(readerPage.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
+  await expect(readerPage.locator("html")).toHaveAttribute("lang", "fr");
 });
 
 test("la recherche unifiée reste simple sur un très petit écran", async ({ page }) => {

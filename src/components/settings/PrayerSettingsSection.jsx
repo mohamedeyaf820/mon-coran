@@ -11,7 +11,14 @@ import {
   PRE_REMINDER_CHOICES,
   requestLocation,
 } from "../../services/prayerTimesService";
-import { ADHAN_SOURCES, isAdhanCached } from "../../services/adhanService";
+import {
+  ADHAN_SOURCES,
+  DEFAULT_ADHAN_SOURCE_ID,
+  downloadAdhan as saveAdhan,
+  isAdhanCached,
+  playAdhan,
+  stopAdhan,
+} from "../../services/adhanService";
 import {
   ensureNotificationPermission,
   getNotificationPermission,
@@ -151,7 +158,6 @@ export default function PrayerSettingsSection({ lang, state, set }) {
 
   const previewAdhan = useCallback(
     async (sourceId) => {
-      const { playAdhan, stopAdhan } = await import("../../services/adhanService");
       if (playingId === sourceId) {
         stopAdhan();
         setPlayingId("");
@@ -165,8 +171,7 @@ export default function PrayerSettingsSection({ lang, state, set }) {
   );
 
   const downloadAdhan = useCallback(async (sourceId) => {
-    const { downloadAdhan: save } = await import("../../services/adhanService");
-    const ok = await save(sourceId).catch(() => false);
+    const ok = await saveAdhan(sourceId).catch(() => false);
     setDownloadFailedId(ok ? "" : sourceId);
     if (ok) {
       setCachedIds((current) => (current.includes(sourceId) ? current : [...current, sourceId]));
@@ -320,7 +325,7 @@ export default function PrayerSettingsSection({ lang, state, set }) {
         {ADHAN_SOURCES.length ? (
           <div className="settings-prayer-adhan-list">
             {ADHAN_SOURCES.map((source) => {
-              const selected = prefs.adhanSourceId === source.id;
+              const selected = (prefs.adhanSourceId || DEFAULT_ADHAN_SOURCE_ID) === source.id;
               const cached = cachedIds.includes(source.id);
               return (
                 <div key={source.id} className={`settings-prayer-adhan-row${selected ? " is-selected" : ""}`}>

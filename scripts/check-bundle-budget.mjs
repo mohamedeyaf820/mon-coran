@@ -30,7 +30,10 @@ const LIMITS = {
   // The campaign also paid part of it back: audioService.js is split into
   // reciterLatency / audioEq / audioPreload, which brought screen-budget from
   // EXCEEDED (47.2 > 46 kB) back to OK at 45.6 kB. 1369.3 kB measured on CI.
-  js: Number(process.env.BUDGET_JS_KB || 1375),
+  // 2026-09-26: +5 kB for the verified CC-BY adhan source, persistent
+  // gesture-safe player, offline fallback and resume-time notification rearm
+  // (1378.2 kB measured locally; no dependency added).
+  js: Number(process.env.BUDGET_JS_KB || 1380),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -43,7 +46,8 @@ const LIMITS = {
   // 2026-09-26: +76 kB for the same commit as the JS line above: the prayer
   // feature and the audit campaign together, CSS and JS counted once
   // (2393.3 kB measured on CI).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2400),
+  // 2026-09-26: +5 kB for the same adhan reliability change (2403.5 kB).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2405),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the
@@ -65,8 +69,8 @@ const LIMITS = {
   // settings/state wiring that shares the entry chunk. The timings and adhan
   // clients stay out of boot behind lazy chunks (459.5 kB measured on CI).
   initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 462),
-  // 2026-09-26: 813.8 kB measured on CI.
-  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 815),
+  // 2026-09-26: 816.5 kB after the adhan source/default wiring.
+  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 817),
   // 2026-09-26: 204.7 kB measured on CI.
   initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 206),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),

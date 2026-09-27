@@ -14,7 +14,21 @@ export const ADHAN_CACHE_NAME = "mushafplus-audio-v2";
  * `source` credits where the recording comes from and is shown in the picker.
  * URLs are added only after being verified reachable (HTTP 200, audio body).
  */
-export const ADHAN_SOURCES = [];
+export const DEFAULT_ADHAN_SOURCE_ID = "prophets-mosque-ejaz215";
+
+export const ADHAN_SOURCES = [
+  {
+    id: DEFAULT_ADHAN_SOURCE_ID,
+    fr: "Mosquée du Prophète",
+    en: "The Prophet's Mosque",
+    ar: "المسجد النبوي",
+    source: "ejaz215 · Wikimedia Commons · CC BY 3.0",
+    sourceUrl:
+      "https://commons.wikimedia.org/wiki/File:33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg",
+    url:
+      "https://upload.wikimedia.org/wikipedia/commons/transcoded/7/7c/33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg/33937_ejaz215_call-to-prayer-from-the-prophet-s-mo.ogg.mp3",
+  },
+];
 
 export function getAdhanSource(id) {
   return ADHAN_SOURCES.find((source) => source.id === id) || null;
@@ -104,33 +118,65 @@ async function adhanBlob(sourceId) {
 }
 
 let currentAudio = null;
+let currentObjectUrl = "";
+
+function getAudioElement() {
+  if (currentAudio) return currentAudio;
+  if (typeof Audio === "undefined") return null;
+  currentAudio = new Audio();
+  currentAudio.preload = "auto";
+  currentAudio.setAttribute("playsinline", "");
+  currentAudio.addEventListener("ended", () => {
+    if (currentObjectUrl) {
+      URL.revokeObjectURL(currentObjectUrl);
+      currentObjectUrl = "";
+    }
+  });
+  return currentAudio;
+}
 
 export function stopAdhan() {
   if (currentAudio) {
     currentAudio.pause();
-    currentAudio.src = "";
-    currentAudio = null;
+    currentAudio.currentTime = 0;
+  }
+  if (currentObjectUrl) {
+    URL.revokeObjectURL(currentObjectUrl);
+    currentObjectUrl = "";
   }
 }
 
 /** True only when audio actually started; callers decide the silent fallback. */
 export async function playAdhan(sourceId, volume = 1) {
-  const blob = await adhanBlob(sourceId);
-  if (!blob) return false;
+  const source = getAdhanSource(sourceId || DEFAULT_ADHAN_SOURCE_ID);
+  const audio = getAudioElement();
+  if (!source || !audio) return false;
   stopAdhan();
-  const audio = new Audio(URL.createObjectURL(blob));
-  currentAudio = audio;
   audio.volume = Math.max(0, Math.min(1, volume));
-  // Revoke once decoded; the element keeps playing from its buffer.
-  audio.addEventListener("loadeddata", () => URL.revokeObjectURL(audio.src), { once: true });
-  audio.addEventListener("ended", () => {
-    if (currentAudio === audio) currentAudio = null;
-  });
+  // Keep the first play() in the click/timer task. On iOS a fetch or any other
+  // await before play() spends the user activation; on an installed PWA the
+  // service worker serves this same URL from Cache Storage when offline.
+  if (audio.src !== source.url) audio.src = source.url;
   try {
     await audio.play();
     return true;
   } catch {
-    stopAdhan();
-    return false;
+    // A page that is not yet controlled by the service worker can still use a
+    // downloaded response directly. This fallback is also useful after a
+    // transient CDN failure; the persistent element keeps any prior unlock.
+    const blob = await adhanBlob(source.id);
+    if (!blob) {
+      stopAdhan();
+      return false;
+    }
+    currentObjectUrl = URL.createObjectURL(blob);
+    audio.src = currentObjectUrl;
+    try {
+      await audio.play();
+      return true;
+    } catch {
+      stopAdhan();
+      return false;
+    }
   }
 }

@@ -278,6 +278,7 @@ function isTrustedAudioRequest(request, url) {
     host === "mirrors.quranicaudio.com" ||
     host === "audio.qurancdn.com" ||
     host === "files.quranpedia.net" ||
+    host === "upload.wikimedia.org" ||
     host === "verses.quran.com" ||
     /^server\d+\.mp3quran\.net$/i.test(host)
   );

@@ -26,8 +26,10 @@ export function useNotificationRoutines({
     if (!prayerTimesEnabled || !prayerReminders || !prayerLocation) return undefined;
     let active = true;
     let cancelScheduled = () => {};
+    let armRequest = 0;
 
     const arm = async () => {
+      const request = ++armRequest;
       try {
         const [prayerModule, notifModule, logModule, plannerModule] = await Promise.all([
           import("../services/prayerTimesService"),
@@ -35,7 +37,7 @@ export function useNotificationRoutines({
           import("../services/prayerLogService"),
           import("../services/prayerNotificationPlanner"),
         ]);
-        if (!active) return;
+        if (!active || request !== armRequest) return;
         if (notifModule.getNotificationPermission() !== "granted") return;
         const data = await prayerModule.fetchTodayTimings({
           latitude: prayerLocation.latitude,
@@ -43,7 +45,7 @@ export function useNotificationRoutines({
           method: prayerMethod,
           offsets: prayerTimeOffsets,
         });
-        if (!active) return;
+        if (!active || request !== armRequest) return;
         cancelScheduled();
 
         const prefs = {
@@ -94,17 +96,21 @@ export function useNotificationRoutines({
               item.kind === "pre"
                 ? t("prayer.preBody", lang).replace("{minutes}", prefs.preReminderMinutes)
                 : t("prayer.notificationBody", lang).replace("{time}", hhmm);
+            let adhanStarted = false;
+            if (item.kind === "adhan" && prefs.adhanEnabled) {
+              const { DEFAULT_ADHAN_SOURCE_ID, playAdhan } = await import("../services/adhanService");
+              adhanStarted = await playAdhan(
+                prefs.adhanSourceId || DEFAULT_ADHAN_SOURCE_ID,
+                prefs.adhanVolume,
+              ).catch(() => false);
+            }
             shown = await notifModule.showAppNotification(title, body, {
               tag: `mushafplus-prayer-${item.kind}-${item.prayerKey}`,
-              silent: prefs.silent,
+              // Avoid two sounds when the adhan starts. If autoplay is blocked,
+              // keep the OS notification audible as the reliable fallback.
+              silent: prefs.silent || adhanStarted,
               data: { url: item.kind === "adhan" ? "/prires" : "/" },
             });
-            if (item.kind === "adhan" && prefs.adhanEnabled && prefs.adhanSourceId) {
-              const { playAdhan } = await import("../services/adhanService");
-              if (document.visibilityState === "visible") {
-                playAdhan(prefs.adhanSourceId, prefs.adhanVolume).catch(() => {});
-              }
-            }
           }
           if (shown) logModule.markNotified(item.dayKey, item.prayerKey, item.kind);
         };
@@ -124,10 +130,20 @@ export function useNotificationRoutines({
 
     arm();
     const rearm = window.setInterval(arm, REARM_INTERVAL_MS);
+    const rearmWhenActive = () => {
+      if (document.visibilityState === "visible") arm();
+    };
+    document.addEventListener("visibilitychange", rearmWhenActive);
+    window.addEventListener("pageshow", rearmWhenActive);
+    window.addEventListener("online", rearmWhenActive);
     return () => {
       active = false;
+      armRequest += 1;
       cancelScheduled();
       window.clearInterval(rearm);
+      document.removeEventListener("visibilitychange", rearmWhenActive);
+      window.removeEventListener("pageshow", rearmWhenActive);
+      window.removeEventListener("online", rearmWhenActive);
     };
   }, [
     lang,

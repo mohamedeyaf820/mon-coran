@@ -110,7 +110,7 @@ function sanitizePrayerSwitches(value) {
  */
 export const DEFAULT_PRAYER_NOTIFICATIONS = {
   adhanEnabled: true,
-  adhanSourceId: "",
+  adhanSourceId: "prophets-mosque-ejaz215",
   adhanVolume: 1,
   silent: false,
   preReminderMinutes: 0,

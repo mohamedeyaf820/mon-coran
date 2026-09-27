@@ -218,10 +218,19 @@ test("cold Hafs reading keeps study actions usable without speculative audio or 
   });
   await page.addInitScript(() => {
     window.__readerCumulativeLayoutShift = 0;
+    window.__readerLayoutShifts = [];
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (!entry.hadRecentInput) {
           window.__readerCumulativeLayoutShift += entry.value;
+          window.__readerLayoutShifts.push({
+            value: entry.value,
+            at: entry.startTime,
+            sources: entry.sources.map((source) =>
+              source.node instanceof Element
+                ? `${source.node.tagName.toLowerCase()}.${source.node.className}`
+                : "unknown"),
+          });
         }
       }
     }).observe({ type: "layout-shift", buffered: true });
@@ -252,8 +261,10 @@ test("cold Hafs reading keeps study actions usable without speculative audio or 
         url.pathname.endsWith("/warshData_v2-1.json"),
     ),
   ).toHaveLength(0);
-  expect(
-    await page.evaluate(() => window.__readerCumulativeLayoutShift || 0),
-  ).toBeLessThan(0.1);
+  const layoutStability = await page.evaluate(() => ({
+    total: window.__readerCumulativeLayoutShift || 0,
+    shifts: window.__readerLayoutShifts || [],
+  }));
+  expect(layoutStability.total, JSON.stringify(layoutStability.shifts)).toBeLessThan(0.1);
   await assertNoHorizontalOverflow(page);
 });
