@@ -157,6 +157,33 @@ test('an online hidden advance retries on its own without the foreground', async
   service.destroy();
 });
 
+test('a cached hidden verse retries after a native interruption while offline', async () => {
+  const service = new AudioService();
+  const url = 'https://audio.qurancdn.com/Alafasy/mp3/001001.mp3';
+  service.playlist = [{ surah: 1, ayah: 1, url }];
+  await service.loadAndPlay(0);
+
+  document.visibilityState = 'hidden';
+  document.hidden = true;
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  service.audio.pause();
+  service.audio.dispatchEvent(new Event('error'));
+
+  assert.equal(service._pendingBackgroundIndex, 0);
+  assert.notEqual(service._backgroundRetryTimer, null, 'cached audio gets a bounded retry');
+
+  await new Promise((resolve) => setTimeout(resolve, 1200));
+  assert.equal(service.audio.src, url);
+  assert.equal(service.audio.paused, false, 'offline cached playback resumed while hidden');
+  assert.equal(service.isPlaying, true);
+  assert.equal(service._pendingBackgroundIndex, null);
+
+  document.visibilityState = 'visible';
+  document.hidden = false;
+  delete navigator.onLine;
+  service.destroy();
+});
+
 test('an OS interruption is not mistaken for the user pausing', async () => {
   const service = new AudioService();
   service.playlist = [{ surah: 1, ayah: 1, url: 'https://audio.qurancdn.com/Alafasy/mp3/001001.mp3' }];

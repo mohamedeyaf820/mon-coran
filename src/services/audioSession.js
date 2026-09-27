@@ -80,6 +80,10 @@ export function recoverBackgroundAudio(service) {
     });
   } else {
     reportPausedState(service);
+    // Offline playback may still be available from the service-worker cache.
+    // A native suspension/error is not evidence that this verse needs network,
+    // so retry the pending cached source just like an online interruption.
+    service._scheduleBackgroundRetry?.(index);
   }
   return true;
 }

@@ -69,7 +69,16 @@ for (const viewport of VIEWPORTS) {
         path: path.join(OUTPUT_DIR, `${prefix}-header.png`),
       });
 
-      await page.getByRole("button", { name: /Rechercher|Search|بحث/i }).first().click();
+      if (viewport.isMobile) {
+        // Search is grouped into the compact header menu on phones; the direct
+        // desktop action is hidden at this breakpoint.
+        await page.locator(".mp-header__more").click();
+        await page
+          .locator('.mp-header-menu__primary-command [data-key="search"]')
+          .click();
+      } else {
+        await page.getByRole("button", { name: /Rechercher|Search/i }).first().click();
+      }
       const searchModal = page.locator(".search-pro-overlay");
       await expect(searchModal).toBeVisible();
       await searchModal.screenshot({

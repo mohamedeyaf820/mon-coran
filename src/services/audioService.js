@@ -1138,8 +1138,9 @@ class AudioService {
    */
   _scheduleBackgroundRetry(index) {
     if (this._backgroundRetryTimer != null) return;
-    // Offline: the `online` listener retries, and a timer would only fail again.
-    if (typeof navigator !== "undefined" && navigator.onLine === false) return;
+    // Retry offline too: the active URL may be in the audio service-worker
+    // cache, and an OS suspension is independent of network connectivity.
+    // Retries are bounded below, so an uncached file cannot loop forever.
     if (this._backgroundRetryAttempts >= 6) return; // visibility/online still recover
     this._backgroundRetryAttempts += 1;
     const delay = Math.min(1000 * 2 ** (this._backgroundRetryAttempts - 1), 15000);
