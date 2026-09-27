@@ -34,11 +34,13 @@ test("published transparency routes resolve explicitly", () => {
 });
 
 test("prayer tracking and duas routes resolve explicitly", () => {
-  assert.deepEqual(parseRoutePath("/prires"), {
+  const expectedPrayers = {
     showHome: false,
     showDuas: false,
     showPrayers: true,
-  });
+  };
+  assert.deepEqual(parseRoutePath("/prieres"), expectedPrayers);
+  assert.deepEqual(parseRoutePath("/prires"), expectedPrayers);
   assert.deepEqual(parseRoutePath("/duas"), {
     showHome: false,
     showDuas: true,

@@ -2,11 +2,11 @@ import React, { useEffect, useState } from "react";
 import {
   BookOpenText,
   BookOpen,
+  CalendarDays,
   CircleUserRound,
   Database,
   Headphones,
   Home,
-  Search,
   Scale,
   ShieldCheck,
 } from "lucide-react";
@@ -85,11 +85,15 @@ export default function Footer() {
       document.querySelector(".home-content-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
     });
   };
+  const openPrayers = () => {
+    set({ legalPage: null, showHome: false, showDuas: false, showPrayers: true });
+    scrollTop();
+  };
 
   const navItems = [
     { key: "home",      Icon: Home,      label: t("nav.home", lang),      onClick: openHome },
     { key: "read",      Icon: BookOpen,  label: t("footer.navRead", lang),      onClick: openReader },
-    { key: "search",    Icon: Search,    label: t("nav.search", lang),     onClick: () => set({ searchOpen: true }) },
+    { key: "prayers",   Icon: CalendarDays, label: t("nav.prayers", lang), onClick: openPrayers },
     { key: "audio",     Icon: Headphones,label: t("footer.navListen", lang), onClick: openAudio },
   ];
   const legalLabels = {

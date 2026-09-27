@@ -36,7 +36,7 @@ export function useUrlSync({
     }
     if (showHome) return { targetPath: "/", routeKey: "home" };
     if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
-    if (showPrayers) return { targetPath: "/prires", routeKey: "prires" };
+    if (showPrayers) return { targetPath: "/prieres", routeKey: "prieres" };
 
     if (displayMode === "surah") {
       return {
@@ -134,7 +134,7 @@ export function parseRoutePath(pathname = "/") {
     return { showHome: false, showDuas: true, showPrayers: false };
   }
 
-  if (/^\/prires\/?$/.test(path)) {
+  if (/^\/(?:prieres|prires)\/?$/.test(path)) {
     return { showHome: false, showDuas: false, showPrayers: true };
   }
 

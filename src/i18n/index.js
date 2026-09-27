@@ -2,8 +2,13 @@
 import ar from './ar.js';
 import fr from './fr.js';
 import en from './en.js';
+import ux from './ux.js';
 
-const LOCALES_MAP = { ar, fr, en };
+const LOCALES_MAP = {
+  ar: { ...ar, ux: ux.ar },
+  fr: { ...fr, ux: ux.fr },
+  en: { ...en, ux: ux.en },
+};
 
 /**
  * Global translation function.

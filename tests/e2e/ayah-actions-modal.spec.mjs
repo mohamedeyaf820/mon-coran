@@ -111,6 +111,7 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
   await expect(studio.locator(".share-studio__preview-frame img")).toBeVisible();
   await expect(studio.locator(".share-format-picker button")).toHaveCount(3);
   await expect(studio.locator(".share-theme-picker button")).toHaveCount(8);
+  await studio.locator("details > summary").click();
   await expect(studio.locator(".share-studio__quick-setting")).toBeVisible();
   await expect(studio.locator(".share-studio__quick-setting .share-toggle")).toHaveCount(3);
   await expect(studio.locator("textarea, .share-editor")).toHaveCount(0);

@@ -395,7 +395,11 @@ export default function ContentSection({
         )}
 
         {/* Tri + vue */}
-        <div className="flex items-center justify-between gap-3 w-full md:w-auto">
+        <details className="ms-auto">
+          <summary className="flex min-h-11 cursor-pointer items-center rounded-xl border border-border px-3 py-1.5 text-[0.82rem] font-semibold text-text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+            {t("ux.displayOptions", lang)}
+          </summary>
+          <div className="mt-2 flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-bg-card p-2 md:w-auto">
           <div className="flex items-center gap-1.5 ml-auto">
             {activeTab === "surah" && (
               <label className="home-sort-menu">
@@ -444,7 +448,8 @@ export default function ContentSection({
               </div>
             )}
           </div>
-        </div>
+          </div>
+        </details>
       </div>
 
       {activeTab === "audio" && (

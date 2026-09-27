@@ -60,6 +60,7 @@ export default function DuasPage() {
   const { lang } = state;
 
   const [activeCategory, setActiveCategory] = useState("all");
+  const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const searchRef = useRef(null);
 
@@ -114,6 +115,13 @@ export default function DuasPage() {
         ? activeCategoryMeta.fr
         : activeCategoryMeta.en;
   const resultCountLabel = t("duas.resultsCount", lang, filteredDuas.length);
+  const initialCategoryCount = 5;
+  const visibleCategories = categoriesExpanded
+    ? CATEGORIES
+    : CATEGORIES.slice(0, initialCategoryCount).some((category) => category.id === activeCategory)
+      ? CATEGORIES.slice(0, initialCategoryCount)
+      : [...CATEGORIES.slice(0, initialCategoryCount), CATEGORY_MAP[activeCategory]];
+  const hiddenCategoryCount = CATEGORIES.length - visibleCategories.length;
 
   return (
     <div className="duas-page duas-page--platform">
@@ -154,7 +162,7 @@ export default function DuasPage() {
             aria-label={t("duas.categoriesLabel", lang)}
             tabIndex={0}
           >
-            {CATEGORIES.map((cat) => (
+            {visibleCategories.map((cat) => (
               <button
                 key={cat.id}
                 className={`duas-cat-btn ${activeCategory === cat.id ? "active" : ""}`}
@@ -166,6 +174,16 @@ export default function DuasPage() {
               </button>
             ))}
           </div>
+          <button
+            type="button"
+            className="duas-categories-toggle"
+            aria-expanded={categoriesExpanded}
+            onClick={() => setCategoriesExpanded((expanded) => !expanded)}
+          >
+            {categoriesExpanded
+              ? t("ux.fewerCategories", lang)
+              : t("ux.moreCategories", lang).replace("{count}", String(hiddenCategoryCount))}
+          </button>
         </div>
       </section>
 

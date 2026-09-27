@@ -324,6 +324,11 @@ test("home audit breakpoints preserve hierarchy without horizontal overflow", as
   expect(firstCards).toHaveLength(2);
   expect(Math.abs(firstCards[0].x - firstCards[1].x)).toBeLessThanOrEqual(1);
   expect(firstCards[1].y).toBeGreaterThan(firstCards[0].y);
+
+  const displayOptions = page.locator(".home-content-toolbar details");
+  await displayOptions.locator("summary").click();
+  await expect(displayOptions.locator(".home-sort-menu")).toBeVisible();
+  await expect(displayOptions.getByRole("combobox", { name: "Trier les sourates" })).toBeVisible();
 });
 
 test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
@@ -1037,7 +1042,8 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
-  const searchBtn = page.getByRole("button", { name: "Rechercher", exact: true }).last();
+  await page.locator(".mp-header__more").click();
+  const searchBtn = page.locator('.mp-header-menu [data-key="search"]');
   await expect(searchBtn).toBeVisible();
   await searchBtn.click();
 
