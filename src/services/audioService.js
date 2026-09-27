@@ -10,12 +10,14 @@ import {
 } from "../utils/surahStreamSync.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
+import { handOffToIndex, handleVerseEnded } from "./audioHandoff.js";
 import { createBasmalaPreroll } from "./basmalaPreroll.js";
 import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
 import {
   observeNativePlayback,
   preparePlaybackSession,
   recoverBackgroundAudio,
+  reportPausedState,
   retryPendingBackgroundAudio,
 } from "./audioSession.js";
 import {
@@ -142,6 +144,10 @@ class AudioService {
     this._rafId = null; // RAF guard — caps UI updates at display refresh rate
     this._pendingSeekSec = null; // seek asked during the basmala pre-roll
     this._transientRecoveryTimer = null;
+    // True while a source swap we initiated is in flight. Swapping the source
+    // of a live element makes the engine report the *old* resource as paused;
+    // that is our transition, not the reader stopping the recitation.
+    this._handOffInFlight = false;
 
     // Wire up native events (store bound refs for cleanup)
     this._boundEnded = () => this._handleEnded();
@@ -168,6 +174,7 @@ class AudioService {
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
+      this._handOffInFlight = false;
       // A load already owns its retry/error path. Reporting this native event
       // as well can switch reciters before the retry has even finished.
       if (this._cancelPendingLoad) return;
@@ -199,10 +206,15 @@ class AudioService {
     // visibility instead of silently stopping. Recovery is driven by the
     // playback intent, because an OS suspension clears `isPlaying` first.
     this._boundVisibilityChange = () => {
-      if (document.hidden || this._playbackIntent !== "playing") return;
-      if (this._audioCtx?.state === "suspended") {
-        this._audioCtx.resume().catch(() => {});
+      // Re-assert the session in both directions: iOS reads the audio session
+      // type at the moment the app leaves the foreground, and every further
+      // background advance has to keep the playback context out of
+      // `suspended` or the recitation goes silent even though the element
+      // keeps buffering.
+      if (this._playbackIntent === "playing") {
+        preparePlaybackSession(this._audioCtx);
       }
+      if (document.hidden || this._playbackIntent !== "playing") return;
       if (this._pendingBackgroundIndex != null) {
         retryPendingBackgroundAudio(this);
         return;
@@ -499,6 +511,7 @@ class AudioService {
   pause() {
     this._playbackIntent = "paused";
     this._pendingBackgroundIndex = null;
+    this._handOffInFlight = false;
     this._clearBackgroundRetry();
     this.audio.pause();
     this.isPlaying = false;
@@ -521,8 +534,7 @@ class AudioService {
           );
         })
         .catch((err) => {
-          this.isPlaying = false;
-          this._notifyPause(this.currentAyah);
+          reportPausedState(this, this.currentAyah);
           // A blocked gesture is not a dead CDN: the UI must not switch
           // reciters over it, it just needs another tap.
           if (err?.name !== "NotAllowedError") this.onError?.(err);
@@ -549,6 +561,7 @@ class AudioService {
     this._playbackIntent = "stopped";
     this._pendingBackgroundIndex = null;
     this._backgroundRecoveryIndex = null;
+    this._handOffInFlight = false;
     this._clearBackgroundRetry();
     this._basmala.cancel();
     this._cancelPendingLoad?.();
@@ -1079,6 +1092,7 @@ class AudioService {
       this.currentAyah = activeItem;
       this.isPlaying = true;
       this._playbackIntent = "playing";
+      this._handOffInFlight = false;
       this._applyPendingSeek();
       this._pendingBackgroundIndex = null;
       this._clearBackgroundRetry();
@@ -1096,10 +1110,11 @@ class AudioService {
       if (hidden && this._playbackIntent === "playing") {
         // Backgrounded loads get suspended by the browser all the time. Keep
         // the intent and retry on a timer (and again on visibility/online)
-        // instead of reporting an error nobody can see.
+        // instead of reporting an error nobody can see — and without
+        // announcing a pause to the OS, which would give up audio focus and
+        // let the tab be frozen before the retry can run.
         this._pendingBackgroundIndex = index;
-        this.isPlaying = false;
-        this._notifyPause(this.currentAyah);
+        reportPausedState(this, this.currentAyah);
         this._scheduleBackgroundRetry(index);
         return;
       }
@@ -1143,51 +1158,16 @@ class AudioService {
     this._backgroundRetryAttempts = 0;
   }
 
+  /**
+   * Verse boundary: see services/audioHandoff.js for the hidden-playback
+   * rationale (a source swap that stays inside the `ended` task).
+   */
+  _handOffToIndex(index) {
+    return handOffToIndex(this, index);
+  }
+
   _handleEnded() {
-    // The basmala is not a verse: finishing it must not advance the playlist.
-    if (this._basmala.ended()) return;
-    // One-shots often play without a playlist: clearing the flag here would
-    // truncate the next playlist.
-    if (this._oneShotMode) {
-      this._oneShotMode = false;
-      this.isPlaying = false;
-      this._playbackIntent = "stopped";
-      this.onEnd?.();
-      for (const fn of this._endListeners) fn();
-      return;
-    }
-    if (this.playlist.length === 0) return;
-
-    // A-B Repeat: if we've reached end point B, loop back to A
-    if (this.abRepeatStart >= 0 && this.abRepeatEnd >= 0) {
-      if (this.playlistIndex >= this.abRepeatEnd) {
-        this._loadAndPlay(this.abRepeatStart);
-        return;
-      }
-    }
-
-    // Normal mode: advance playlist
-    if (this.playlistIndex < this.playlist.length - 1) {
-      this._loadAndPlay(this.playlistIndex + 1);
-    } else {
-      const repeatInfinitely = this.surahRepeatCount === 0;
-      const hasMoreCycles =
-        repeatInfinitely || this.surahCurrentCycle < this.surahRepeatCount;
-
-      if (this.playlist.length > 0 && hasMoreCycles) {
-        if (!repeatInfinitely) {
-          this.surahCurrentCycle += 1;
-        }
-        this._loadAndPlay(0);
-        return;
-      }
-
-      this.surahCurrentCycle = 1;
-      this.isPlaying = false;
-      this._playbackIntent = "stopped";
-      this.onEnd?.();
-      for (const fn of this._endListeners) fn();
-    }
+    handleVerseEnded(this);
   }
 
   /* ── Getters ───────────────────────────────── */

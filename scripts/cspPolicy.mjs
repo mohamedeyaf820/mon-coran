@@ -8,8 +8,8 @@ export function buildCspPolicy(mode = "production") {
   
   // Connect sources - API endpoints and CDNs
   const connectSrc = isDev
-    ? "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com ws://localhost:* http://localhost:*"
-    : "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com";
+    ? "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com ws://localhost:* http://localhost:*"
+    : "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com";
 
   return [
     "default-src 'self'",
@@ -28,7 +28,7 @@ export function buildCspPolicy(mode = "production") {
     // hot-linked third-party files to public/images/reciters (see the build script).
     "img-src 'self' data: blob:",
     `connect-src ${connectSrc}`,
-    "media-src 'self' blob: https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com",
+    "media-src 'self' blob: https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
     isDev ? "" : "upgrade-insecure-requests",

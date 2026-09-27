@@ -75,6 +75,12 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
   tracks the highest ayah read per surah — there is no `historyService.js`
 - Recitation repetition (A-B loop, per-surah cycles) is part of `audioService.js`;
   there is no spaced-repetition service
+- `audioService.js` owns the single `<audio>` element and the playlist. The
+  background-playback pieces sit beside it to keep that file inside its screen
+  budget: `audioSession.js` (native audio session + MediaSession intent),
+  `audioHandoff.js` (the verse-boundary swap, which has to run inside the
+  `ended` task with nothing awaited before `play()`), `audioPreload.js`,
+  `reciterLatency.js` and `audioEq.js`
 - `tafsirService.js` — Quran commentary/exegesis fetching
 - `cryptoUtil.js` — AES encryption for sensitive local data
 

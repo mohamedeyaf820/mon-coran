@@ -39,9 +39,22 @@ test("a cold mobile Warsh page stays stable as verified text arrives", async ({ 
       lastPosition: { surah: 77, ayah: 1, page: 565, juz: 29 },
     }));
     window.__readerLayoutShift = 0;
+    window.__readerLayoutShiftEntries = [];
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!entry.hadRecentInput) window.__readerLayoutShift += entry.value;
+        if (!entry.hadRecentInput) {
+          window.__readerLayoutShift += entry.value;
+          window.__readerLayoutShiftEntries.push({
+            value: entry.value,
+            startTime: entry.startTime,
+            sources: (entry.sources || []).map((source) => ({
+              node: source.node?.className || source.node?.nodeName || null,
+              text: source.node?.textContent?.trim().slice(0, 80) || null,
+              previousRect: source.previousRect,
+              currentRect: source.currentRect,
+            })),
+          });
+        }
       }
     }).observe({ type: "layout-shift", buffered: true });
   });
@@ -53,5 +66,9 @@ test("a cold mobile Warsh page stays stable as verified text arrives", async ({ 
   await expect(printedPage).toBeVisible({ timeout: 12_000 });
   await expect(printedPage.locator('.qcm-word').first()).toBeVisible();
   await page.waitForTimeout(1_000);
-  expect(await page.evaluate(() => window.__readerLayoutShift)).toBeLessThan(0.1);
+  const layoutShift = await page.evaluate(() => ({
+    total: window.__readerLayoutShift,
+    entries: window.__readerLayoutShiftEntries,
+  }));
+  expect(layoutShift.total, JSON.stringify(layoutShift.entries, null, 2)).toBeLessThan(0.1);
 });

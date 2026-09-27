@@ -29,12 +29,22 @@ async function seedPlayer(page) {
       }),
     );
     const NativeAudio = window.Audio;
+    const createdAudioElements = [];
     window.Audio = function TrackedAudio(...args) {
       const audio = new NativeAudio(...args);
-      window.__playerAudio ??= audio;
+      createdAudioElements.push(audio);
       return audio;
     };
     window.Audio.prototype = NativeAudio.prototype;
+    Object.defineProperty(window, "__playerAudio", {
+      configurable: true,
+      get() {
+        const serviceElements = createdAudioElements.filter((audio) =>
+          audio.hasAttribute("webkit-playsinline"));
+        return serviceElements.findLast((audio) => audio.currentSrc || audio.src) ||
+          serviceElements.at(-1) || createdAudioElements.at(-1);
+      },
+    });
   });
   await page.route(/\.mp3(?:\?.*)?$/i, (route) =>
     route.fulfill({
@@ -138,7 +148,12 @@ test("a downloaded surah keeps playing verse by verse with no network", async ({
     .poll(() => page.locator(".is-playing").count(), { timeout: 10_000 })
     .toBeGreaterThan(0);
 
-  // The fixture is two seconds long, so the queue has to roll on by itself.
+  // Drive the media boundary deterministically. Browser media clocks can be
+  // throttled when the complete suite runs several workers, while the ended
+  // event is the production boundary this test needs to verify.
+  await page.evaluate(() => {
+    window.__playerAudio.dispatchEvent(new Event("ended"));
+  });
   await expect
     .poll(async () => (await playerState(page)).file, { timeout: 20_000 })
     .not.toBe("001001.mp3");

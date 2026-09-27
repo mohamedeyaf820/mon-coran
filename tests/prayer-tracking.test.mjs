@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 // prayerLogService stores an encrypted blob through localStorage; cryptoUtil
 // needs Web Crypto. Node 18+ exposes both, localStorage does not — stub it.
@@ -28,6 +29,11 @@ const {
   sanitizePrayerNotifications,
   DEFAULT_PRAYER_NOTIFICATIONS,
 } = await import("../src/services/prayerTimesService.js");
+const {
+  ADHAN_SOURCES,
+  DEFAULT_ADHAN_SOURCE_ID,
+  getAdhanSource,
+} = await import("../src/services/adhanService.js");
 
 const TIMINGS = {
   Fajr: { hhmm: "05:30", minutes: 330 },
@@ -37,6 +43,27 @@ const TIMINGS = {
   Maghrib: { hhmm: "20:10", minutes: 1210 },
   Isha: { hhmm: "21:45", minutes: 1305 },
 };
+
+test("the default adhan has an attributed downloadable audio source", () => {
+  const source = getAdhanSource(DEFAULT_ADHAN_SOURCE_ID);
+  assert.equal(ADHAN_SOURCES.length > 0, true);
+  assert.ok(source);
+  assert.match(source.url, /^https:\/\/upload\.wikimedia\.org\/.+\.mp3$/);
+  assert.match(source.source, /ejaz215.+CC BY 3\.0/);
+  assert.equal(DEFAULT_PRAYER_NOTIFICATIONS.adhanSourceId, source.id);
+});
+
+test("adhan playback spends the mobile activation before any async cache fallback", () => {
+  const source = readFileSync("src/services/adhanService.js", "utf8");
+  const start = source.indexOf("export async function playAdhan");
+  const implementation = source
+    .slice(start, source.indexOf("\n}", start) + 2)
+    .replace(/\/\/.*$/gm, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "");
+  const directPlay = implementation.indexOf("await audio.play()");
+  assert.ok(start >= 0 && directPlay > 0);
+  assert.equal(/await\s/.test(implementation.slice(0, directPlay)), false);
+});
 
 test("prayer marks round-trip through the encrypted log", () => {
   const day = localDayKey(new Date(2026, 0, 15));

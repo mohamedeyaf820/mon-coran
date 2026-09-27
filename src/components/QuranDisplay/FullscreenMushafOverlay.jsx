@@ -357,6 +357,12 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (!fullPage) return undefined;
     const handleDocumentEscape = (event) => {
       if (event.key !== "Escape") return;
+      const cameFromChildDialog =
+        event.target instanceof Element &&
+        event.target.closest(
+          ".audio-player-modal--simple, .ayah-actions-modal--fullscreen",
+        );
+      if (cameFromChildDialog) return;
       const visibleChildDialog = Array.from(document.querySelectorAll(
         ".audio-player-modal--simple, .ayah-actions-modal--fullscreen",
       )).some((element) => element.getClientRects().length > 0);

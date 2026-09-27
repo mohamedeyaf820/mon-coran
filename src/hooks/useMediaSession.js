@@ -10,6 +10,11 @@ import { useEffect, useRef } from 'react';
  * @param {string}   opts.album       - Album (defaults to "MushafPlus")
  * @param {string}   [opts.artwork]   - Artwork URL (512×512 PNG)
  * @param {boolean}  opts.isPlaying   - Current playback state
+ * @param {string}   [opts.playbackState] - Authoritative state for the OS
+ *   (`playing`/`paused`). Defaults to `isPlaying`. A background suspension is
+ *   not a user pause: publishing `paused` there gives up Android's audio-focus
+ *   exemption and freezes the tab mid-recitation, so callers pass the reader's
+ *   intent instead of the element's instant state.
  * @param {Function} opts.onPlay      - Called when user taps play on lock screen
  * @param {Function} opts.onPause     - Called when user taps pause
  * @param {Function} opts.onNext      - Called when user taps next-track
@@ -21,6 +26,7 @@ export function useMediaSession({
   album,
   artwork,
   isPlaying,
+  playbackState,
   onPlay,
   onPause,
   onNext,
@@ -61,15 +67,18 @@ export function useMediaSession({
     }
   }, [title, artist, album, artwork]);
 
-  // Sync playback state
+  // Sync playback state. The caller may pass the reader's intent explicitly:
+  // while the recitation is meant to keep going, the lock screen must not read
+  // `paused`, or Android hands the audio focus back and freezes the tab.
   useEffect(() => {
     if (!('mediaSession' in navigator)) return;
+    const state = playbackState || (isPlaying ? 'playing' : 'paused');
     try {
-      navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+      navigator.mediaSession.playbackState = state;
     } catch {
       // ignore
     }
-  }, [isPlaying]);
+  }, [isPlaying, playbackState]);
 
   // Keep the lock-screen progress bar synchronized with the real media
   // element. Invalid/unknown durations are intentionally skipped because

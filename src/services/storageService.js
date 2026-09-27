@@ -426,7 +426,7 @@ const DEFAULT_SETTINGS = {
   prayerTimeOffsets: { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
   prayerNotifications: {
     adhanEnabled: true,
-    adhanSourceId: "",
+    adhanSourceId: "prophets-mosque-ejaz215",
     adhanVolume: 1,
     silent: false,
     preReminderMinutes: 0,

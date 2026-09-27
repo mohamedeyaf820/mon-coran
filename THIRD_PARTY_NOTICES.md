@@ -4,6 +4,7 @@ MushafPlus peut utiliser les services et ressources suivants selon la fonctionna
 
 - Quran.com API et AlQuran Cloud : texte, mots, traductions et métadonnées coraniques ;
 - Quran.com Audio, EveryAyah, MP3Quran, QuranicAudio et Islamic Network CDN : récitations ;
+- « Islamic call to prayer from the Prophet Mosque » par ejaz215, distribué via Wikimedia Commons sous licence Creative Commons Attribution 3.0 : Adhan optionnel ;
 - Quran.com, Quran Foundation et Quran Word by Word : polices et ressources coraniques ;
 - React, Vite, Radix UI, Lucide et autres dépendances listées dans `package.json` : interface et outillage.
 
