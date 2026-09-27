@@ -1218,8 +1218,10 @@ export default function AyahSharePanel() {
                   </div>
                 </fieldset>
 
-                <details className="share-studio__advanced">
-                  <summary>{t("ux.customizeShare", lang)}</summary>
+                <details className="col-span-full rounded-xl border border-border bg-bg-secondary px-3 py-2">
+                  <summary className="flex min-h-11 cursor-pointer items-center font-semibold text-text-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
+                    {t("ux.customizeShare", lang)}
+                  </summary>
                 <fieldset className="share-control-group">
                   <legend>{labels.frame}</legend>
                   <div className="share-choice-picker">

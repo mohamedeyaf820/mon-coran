@@ -65,6 +65,10 @@ test("share format picker states ratio, platforms and a contextual hint", async 
   await expect(hint).toContainText("WhatsApp");
   await expect(tiles.nth(2)).toHaveAttribute("aria-pressed", "true");
 
+  const advancedDesign = studio.locator("details");
+  await advancedDesign.locator("summary").click();
+  await expect(advancedDesign.locator(".share-choice-picker").first()).toBeVisible();
+
   await page.screenshot({ path: "test-results/share-format-mobile.png", fullPage: false });
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.screenshot({ path: "test-results/share-format-desktop.png", fullPage: false });
