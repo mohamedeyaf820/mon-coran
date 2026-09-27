@@ -395,7 +395,9 @@ export default function ContentSection({
         )}
 
         {/* Tri + vue */}
-        <div className="flex items-center justify-between gap-3 w-full md:w-auto">
+        <details className="home-display-options">
+          <summary>{t("ux.displayOptions", lang)}</summary>
+          <div className="flex items-center justify-between gap-3 w-full md:w-auto">
           <div className="flex items-center gap-1.5 ml-auto">
             {activeTab === "surah" && (
               <label className="home-sort-menu">
@@ -444,7 +446,8 @@ export default function ContentSection({
               </div>
             )}
           </div>
-        </div>
+          </div>
+        </details>
       </div>
 
       {activeTab === "audio" && (

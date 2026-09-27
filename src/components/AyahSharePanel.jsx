@@ -1218,6 +1218,8 @@ export default function AyahSharePanel() {
                   </div>
                 </fieldset>
 
+                <details className="share-studio__advanced">
+                  <summary>{t("ux.customizeShare", lang)}</summary>
                 <fieldset className="share-control-group">
                   <legend>{labels.frame}</legend>
                   <div className="share-choice-picker">
@@ -1301,6 +1303,7 @@ export default function AyahSharePanel() {
                     </button>
                   </div>
                 </fieldset>
+                </details>
 
               </section>
             </div>

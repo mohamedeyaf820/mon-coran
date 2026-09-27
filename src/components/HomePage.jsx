@@ -127,7 +127,6 @@ import ContentSection from "./Home/ContentSection";
 import PrayerTimesCard from "./Home/PrayerTimesCard";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
 
-const PrayerTimesModal = lazy(() => import("./PrayerTimesModal"));
 
 export default function HomePage({ lowPerfMode = false }) {
   const { dispatch, set } = useAppActions();
@@ -185,8 +184,10 @@ export default function HomePage({ lowPerfMode = false }) {
     offsets: state.prayerTimeOffsets,
     now,
   });
-  const openPrayerModal = useCallback(() => set({ prayerModalOpen: true }), [set]);
-  const closePrayerModal = useCallback(() => set({ prayerModalOpen: false }), [set]);
+  const openPrayerModal = useCallback(
+    () => set({ showHome: false, showDuas: false, showPrayers: true }),
+    [set],
+  );
 
   const homeInitialSurahCount = lowPerfMode
     ? HOME_INITIAL_SURAHS_LOW
@@ -1025,22 +1026,6 @@ export default function HomePage({ lowPerfMode = false }) {
         : null}
 
       {/* ── Modal horaires de prière ───────────────────────────────────── */}
-      {state.prayerModalOpen ? (
-        <Suspense fallback={null}>
-          <PrayerTimesModal
-            lang={lang}
-            now={now}
-            prayer={prayer}
-            enabled={state.prayerTimesEnabled}
-            method={state.prayerMethod}
-            location={state.prayerLocation}
-            reminders={state.prayerReminders}
-            set={set}
-            onClose={closePrayerModal}
-          />
-        </Suspense>
-      ) : null}
-
       {/* ── Pied de page ──────────────────────────────────────────────── */}
       <div className="relative z-10">
         <Footer goSurah={goSurah} />

@@ -94,6 +94,7 @@ const getInitialState = () => {
   sidebarOpen: false,
   searchOpen: false,
   settingsOpen: false,
+  settingsActiveTab: "general",
   libraryOpen: false,
   libraryTab: "favorites",
   shareImageOpen: false,

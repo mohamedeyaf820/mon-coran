@@ -7959,6 +7959,60 @@ input:focus-visible {
     scrollbar-width: thin;
 }
 
+.share-studio__advanced {
+  grid-column: 1 / -1;
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  background: var(--bg-secondary);
+}
+
+.share-studio__advanced > summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--text-primary);
+}
+
+.share-studio__advanced > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 3px;
+  border-radius: 0.35rem;
+}
+
+.home-display-options {
+  position: relative;
+  margin-inline-start: auto;
+}
+
+.home-display-options > summary {
+  min-height: 2.75rem;
+  display: flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.home-display-options > summary:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.home-display-options[open] > div {
+  margin-top: 0.5rem;
+  padding: 0.4rem;
+  border: 1px solid var(--border);
+  border-radius: 0.8rem;
+  background: var(--bg-card);
+}
+
 .share-control-group {
     min-width: 0;
     margin: 0 0 0.72rem;

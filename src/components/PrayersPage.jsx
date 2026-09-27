@@ -32,7 +32,7 @@ export default function PrayersPage() {
   const [view, setView] = useState("day");
   const [log, setLog] = useState({});
   const prayer = usePrayerTimes({
-    enabled: state.prayerTimesEnabled,
+    enabled: Boolean(state.prayerLocation),
     location: state.prayerLocation,
     method: state.prayerMethod,
     offsets: state.prayerTimeOffsets,
@@ -139,6 +139,15 @@ export default function PrayersPage() {
           <Home size={15} aria-hidden="true" />
           <span>{t("prayers.backHome", lang)}</span>
         </button>
+        <button
+          type="button"
+          className="prayers-back-btn"
+          aria-label={t("ux.prayerSettings", lang)}
+          onClick={() => set({ settingsActiveTab: "prayer", settingsOpen: true })}
+        >
+          <Settings2 size={15} aria-hidden="true" />
+          <span>{t("nav.settings", lang)}</span>
+        </button>
       </section>
 
       <div className="prayers-view-switch" role="tablist" aria-label={t("prayers.switchAria", lang)}>
@@ -146,14 +155,30 @@ export default function PrayersPage() {
           { id: "day", icon: Clock },
           { id: "week", icon: CalendarDays },
           { id: "month", icon: MoonStar },
-        ].map(({ id, icon: Icon }) => (
+        ].map(({ id, icon: Icon }, index, tabs) => (
           <button
             key={id}
+            id={`prayers-tab-${id}`}
             type="button"
             role="tab"
             aria-selected={view === id}
+            aria-controls={`prayers-panel-${id}`}
+            tabIndex={view === id ? 0 : -1}
             className={`prayers-view-btn${view === id ? " is-active" : ""}`}
             onClick={() => setView(id)}
+            onKeyDown={(event) => {
+              const forward = isRtl ? "ArrowLeft" : "ArrowRight";
+              const backward = isRtl ? "ArrowRight" : "ArrowLeft";
+              let nextIndex = index;
+              if (event.key === forward) nextIndex = (index + 1) % tabs.length;
+              else if (event.key === backward) nextIndex = (index - 1 + tabs.length) % tabs.length;
+              else if (event.key === "Home") nextIndex = 0;
+              else if (event.key === "End") nextIndex = tabs.length - 1;
+              else return;
+              event.preventDefault();
+              setView(tabs[nextIndex].id);
+              document.getElementById(`prayers-tab-${tabs[nextIndex].id}`)?.focus();
+            }}
           >
             <Icon size={14} aria-hidden="true" />
             <span>{t(`prayers.views.${id}`, lang)}</span>
@@ -161,20 +186,7 @@ export default function PrayersPage() {
         ))}
       </div>
 
-      {!state.prayerTrackingEnabled ? (
-        <div className="prayers-empty card">
-          <Sparkles size={18} aria-hidden="true" />
-          <h2>{t("prayers.offTitle", lang)}</h2>
-          <p>{t("prayers.offBody", lang)}</p>
-          <button
-            type="button"
-            className="prayers-enable-btn"
-            onClick={() => set({ prayerTrackingEnabled: true })}
-          >
-            {t("prayers.offEnable", lang)}
-          </button>
-        </div>
-      ) : !state.prayerLocation ? (
+      {!state.prayerLocation ? (
         <div className="prayers-empty card">
           <MapPin size={18} aria-hidden="true" />
           <h2>{t("prayers.noLocationTitle", lang)}</h2>
@@ -182,14 +194,22 @@ export default function PrayersPage() {
           <button
             type="button"
             className="prayers-enable-btn"
-            onClick={() => set({ settingsOpen: true })}
+            onClick={() => set({ settingsActiveTab: "prayer", settingsOpen: true })}
           >
             <Settings2 size={14} aria-hidden="true" />
             <span>{t("prayers.goSettings", lang)}</span>
           </button>
         </div>
+      ) : view !== "day" && !state.prayerTrackingEnabled ? (
+        <div className="prayers-empty card">
+          <Sparkles size={18} aria-hidden="true" />
+          <p>{t("ux.prayerTrackingHint", lang)}</p>
+          <button type="button" className="prayers-enable-btn" onClick={() => set({ prayerTrackingEnabled: true })}>
+            {t("ux.enablePrayerTracking", lang)}
+          </button>
+        </div>
       ) : view === "day" ? (
-        <section className="prayers-day" aria-label={t("prayers.views.day", lang)}>
+        <section id="prayers-panel-day" role="tabpanel" aria-labelledby="prayers-tab-day" className="prayers-day" aria-label={t("prayers.views.day", lang)}>
           <div className="prayers-day-head">
             <time dateTime={now.toISOString()}>
               {now.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
@@ -221,7 +241,7 @@ export default function PrayersPage() {
                   <span className="prayers-day-flag">
                     {!prayed && entry?.s === 1 ? t("prayers.notYet", lang) : null}
                   </span>
-                  <button
+                  {state.prayerTrackingEnabled ? <button
                     type="button"
                     className={`prayers-mark-btn${prayed ? " is-on" : ""}`}
                     onClick={() => togglePrayer(key)}
@@ -232,12 +252,22 @@ export default function PrayersPage() {
                   >
                     {prayed ? <Check size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
                     <span>{prayed ? t("prayers.prayed", lang) : t("prayers.markPrayed", lang)}</span>
-                  </button>
+                  </button> : null}
                 </li>
               );
             })}
           </ul>
-          <p className="prayers-private-note">{t("prayers.privateNote", lang)}</p>
+          {state.prayerTrackingEnabled ? (
+            <p className="prayers-private-note">{t("prayers.privateNote", lang)}</p>
+          ) : (
+            <div className="prayers-empty card">
+              <Sparkles size={18} aria-hidden="true" />
+              <p>{t("ux.prayerTrackingHint", lang)}</p>
+              <button type="button" className="prayers-enable-btn" onClick={() => set({ prayerTrackingEnabled: true })}>
+                {t("ux.enablePrayerTracking", lang)}
+              </button>
+            </div>
+          )}
           {state.prayerPostAdhanDuas ? (
             <section className="prayers-duas" aria-label={t("prayers.duasTitle", lang)}>
               <h2>
@@ -263,7 +293,7 @@ export default function PrayersPage() {
           ) : null}
         </section>
       ) : view === "week" ? (
-        <section className="prayers-grid-view" aria-label={t("prayers.views.week", lang)}>
+        <section id="prayers-panel-week" role="tabpanel" aria-labelledby="prayers-tab-week" className="prayers-grid-view" aria-label={t("prayers.views.week", lang)}>
           <div className="prayers-week-grid" role="table">
             <span className="prayers-grid-corner" aria-hidden="true" />
             {week.map((day) => (
@@ -305,7 +335,7 @@ export default function PrayersPage() {
           <p className="prayers-private-note">{t("prayers.privateNote", lang)}</p>
         </section>
       ) : (
-        <section className="prayers-grid-view" aria-label={t("prayers.views.month", lang)}>
+        <section id="prayers-panel-month" role="tabpanel" aria-labelledby="prayers-tab-month" className="prayers-grid-view" aria-label={t("prayers.views.month", lang)}>
           <h2 className="prayers-month-title">
             {now.toLocaleDateString(locale, { month: "long", year: "numeric" })}
           </h2>

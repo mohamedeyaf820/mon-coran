@@ -149,7 +149,7 @@ export default function SettingsModal() {
   };
 
   const [cacheBusy, setCacheBusy] = useState(false);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState(state.settingsActiveTab || "general");
   const [reciterSearch, setReciterSearch] = useState("");
   const [privacyConfigured, setPrivacyConfigured] = useState(() =>
     hasEncryptionPassphraseConfigured(),

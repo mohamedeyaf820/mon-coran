@@ -1037,7 +1037,8 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
-  const searchBtn = page.getByRole("button", { name: "Rechercher", exact: true }).last();
+  await page.locator(".mp-header__more").click();
+  const searchBtn = page.locator('.mp-header-menu [data-key="search"]');
   await expect(searchBtn).toBeVisible();
   await searchBtn.click();
 

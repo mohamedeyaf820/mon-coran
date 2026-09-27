@@ -70,7 +70,7 @@ test("share format picker states ratio, platforms and a contextual hint", async 
   await page.screenshot({ path: "test-results/share-format-desktop.png", fullPage: false });
 });
 
-test("prayer modal leads with the next prayer and icons every row", async ({ page }) => {
+test("home prayer shortcut opens the full prayer schedule", async ({ page }) => {
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(({ settingsKey, cacheKey }) => {
@@ -130,25 +130,21 @@ test("prayer modal leads with the next prayer and icons every row", async ({ pag
   await expect(strip).toBeVisible({ timeout: 20_000 });
   await strip.click();
 
-  const modal = page.locator(".prayer-modal");
-  await expect(modal).toBeVisible();
+  await expect(page.locator(".app-view-prayers")).toBeVisible();
+  const schedule = page.locator(".prayers-day-list");
+  await expect(schedule).toBeVisible();
+  await expect(schedule.locator(".prayers-day-row")).toHaveCount(5);
+  await expect(schedule.locator(".prayers-day-time").first()).not.toHaveText("—");
+  await expect(page.getByRole("button", { name: /réglages des horaires et rappels/i })).toBeVisible();
 
-  // Hero: kicker, bilingual name, clock and a countdown in French.
-  await expect(modal.locator(".prayer-modal__hero")).toBeVisible();
-  await expect(modal.locator(".prayer-modal__hero-name")).not.toBeEmpty();
-  await expect(modal.locator(".prayer-modal__hero-clock")).toHaveText(/^\d{2}:\d{2}$/);
-  await expect(modal.locator(".prayer-modal__hero-countdown")).toContainText(/dans/);
+  const todayTab = page.locator("#prayers-tab-day");
+  await todayTab.press("ArrowRight");
+  const weekTab = page.locator("#prayers-tab-week");
+  await expect(weekTab).toHaveAttribute("aria-selected", "true");
+  await weekTab.press("Home");
+  await expect(todayTab).toHaveAttribute("aria-selected", "true");
 
-  // Every displayed time has an icon and its Arabic twin; the current moment is
-  // either a next-prayer row or the after-Isha note.
-  await expect(modal.locator(".prayer-modal__row")).toHaveCount(6);
-  await expect(modal.locator(".prayer-modal__row-icon svg")).toHaveCount(6);
-  await expect(modal.locator(".prayer-modal__row-ar")).toHaveCount(6);
-  const nextRow = modal.locator(".prayer-modal__row.is-next");
-  const afterIsha = modal.locator(".prayer-modal__note");
-  await expect(nextRow.or(afterIsha).first()).toBeVisible();
-
-  await page.screenshot({ path: "test-results/prayer-modal-mobile.png", fullPage: false });
+  await page.screenshot({ path: "test-results/prayer-schedule-mobile.png", fullPage: false });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.screenshot({ path: "test-results/prayer-modal-desktop.png", fullPage: false });
+  await page.screenshot({ path: "test-results/prayer-schedule-desktop.png", fullPage: false });
 });
