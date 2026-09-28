@@ -104,9 +104,13 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
 
 ### Key Services (src/services/)
 - `storageService.js` / `dbService.js` — localStorage + IndexedDB persistence
-- `fontLoader.js` / `qcf4PageFontService.js` — dynamic Arabic font loading
-- `storageService.js` also owns `lastPosition` (resume-reading) and `readingProgressService.js`
-  tracks the highest ayah read per surah — there is no `historyService.js`
+- `fontLoader.js` — dynamic Arabic font loading, including the per-page QCF4
+  faces (`ensureFontLoaded`, `ensureQcfPageFontLoaded`); the QCF page font
+  resolver lives there and not in a second service
+- `storageService.js` also owns `lastPosition` (resume-reading). The reader
+  keeps that position and records no progression metrics at all — no
+  per-surah "highest ayah read", no session history — so there is neither a
+  `historyService.js` nor a `readingProgressService.js`
 - Prayer tracking keys one local day as `YYYY-M-D` with a **0-based** month
   (`Date#getMonth()`), so `2026-0-15` is 15 January. `localDayKey` in
   `prayerTimesService.js` and `prayerLogService.js` write that shape and

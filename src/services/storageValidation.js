@@ -1,6 +1,5 @@
 const SAFE_LOCAL_STORAGE_KEY = /^[a-z0-9:_-]{1,64}$/i;
 const AYAH_KEY = /^\d{1,3}:\d{1,3}$/;
-const SURAH_KEY = /^\d{1,3}$/;
 const DOWNLOAD_KEY = /^(hafs|warsh):.{1,80}:\d{1,3}$/;
 
 function schema(validate) {
@@ -71,14 +70,6 @@ export function writeLocalStorageJson(key, data) {
     return false;
   }
 }
-
-export const readProgressSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  for (const [key, progress] of Object.entries(value)) {
-    if (!SURAH_KEY.test(key) || !isIntBetween(progress, 0, 286)) return null;
-  }
-  return value;
-});
 
 export const downloadProgressEntrySchema = schema((value) => {
   if (!isPlainObject(value)) return null;
