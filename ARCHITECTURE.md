@@ -126,7 +126,10 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
   `audioHandoff.js` (the verse-boundary swap, which has to run inside the
   `ended` task with nothing awaited before `play()`), `audioPreload.js`,
   `reciterLatency.js` and `audioEq.js`
-- `tafsirService.js` — Quran commentary/exegesis fetching
+- `quranComStudyService.js` — Quran commentary/exegesis fetching and the tafsir
+  source registry (`TAFSIR_RESOURCES`); `frenchTafsirService.js` serves the
+  vendored Al-Mukhtasar commentary from `public/data/tafsir-fr-mokhtasar`,
+  digest-gated for offline use. There is no separate `tafsirService.js`
 - `cryptoUtil.js` — AES encryption for sensitive local data
 
 ### Bundle Strategy
