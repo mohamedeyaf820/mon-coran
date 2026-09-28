@@ -1024,6 +1024,11 @@ class AudioService {
   async _loadAndPlay(index, { throwOnError = false } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
 
+    // Claim the native playback session synchronously at the point playback
+    // is requested. The basmala pre-roll and URL loader both await; waiting
+    // until `_loadUrlWithRetry` to set this can lose the mobile user-activation
+    // window before the first audio resource is handed to the browser.
+    preparePlaybackSession(this._audioCtx);
     this._basmala.cancel();
     this.playlistIndex = index;
     this._oneShotMode = false; // playlist playback is never one-shot
