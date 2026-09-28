@@ -24,15 +24,32 @@ test("tajwid segments keep leading Arabic marks attached to their base glyph", (
   assert.equal(segments.map((segment) => segment.text).join("").includes("\u0672"), false);
 });
 
-test("Hafs and Warsh Tajweed ranges cover letters within a word", () => {
-  for (const riwaya of ["hafs", "warsh"]) {
-    const word = "إِنَّهُ";
-    const ranges = getPerWordTajweedRanges([word], riwaya);
-    assert.ok(ranges[0].some(({ start, end, ruleId }) =>
-      ruleId === "ghunna" && start > 0 && end < word.length));
-    assert.equal(ranges[0].some(({ start, end }) => start === 0 && end === word.length), false);
+test("only an annotated source produces Tajweed ranges", () => {
+  // Plain text carries no verified rule, so nothing is painted. The letter
+  // patterns that used to fill this test were an unsourced guess, and the
+  // absence of a range is the honest answer for a word we cannot annotate.
+  const plain = "\u0627\u0650\u0646\u0651\u064e\u0647\u064f";
+  assert.deepEqual(getPerWordTajweedRanges([plain], "hafs")[0], []);
+
+  // Warsh has no annotated source at all (WARSH_TAJWID_SOURCE_REQUIRED):
+  // showing an invented rule there would be worse than showing none.
+  assert.deepEqual(getPerWordTajweedRanges([plain], "warsh")[0], []);
+
+  // An annotated word does yield ranges, and they stay inside the word:
+  // a rule covering the whole word is not a rule range.
+  const annotated = "\u0627\u0650<rule class=ikhafa>\u0646</rule>\u0651\u064e\u0647\u064f";
+  const ranges = getPerWordTajweedRanges([annotated], "hafs")[0];
+  assert.ok(ranges.length > 0, "the annotation must produce a range");
+  for (const { start, end } of ranges) {
+    assert.ok(start >= 0 && end <= annotated.length, "a range must stay in the word");
   }
+  assert.equal(
+    ranges.some(({ start, end }) => start === 0 && end === annotated.length),
+    false,
+    "a whole-word range is not a rule range",
+  );
 });
+
 
 test("tajwid segments retain the coloured base after moving a leading harakah", () => {
   const segments = stabilizeTajwidSegments([

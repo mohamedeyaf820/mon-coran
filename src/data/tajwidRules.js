@@ -446,88 +446,70 @@ function _cacheSet(cache, maxSize, key, value) {
   cache.set(key, value);
 }
 
+// Rewritten as annotation-only. The single entry point every rendering mode
+// goes through, so gating the invented patterns here is what actually removes
+// them from the app.
+import {
+  ANNOTATED_RIWAYAS,
+  parseTajweedAnnotation,
+  stripTajweedMarkup,
+} from "../utils/tajwidAnnotation.js";
+
 /**
- * Apply all tajwid rules to a text string.
- * Returns an array of segments: { text, ruleId | null }
- * @param {string} text - Arabic text to parse
+ * Apply the provider's Tajweed annotation to a text string.
+ *
+ * Colour comes only from the annotation the API returns
+ * (`text_uthmani_tajweed`), never from letter patterns: a recitation rule
+ * depends on how the verse is read, so inferring one from the characters alone
+ * is guessing, and guessing a Quran reading rule is not acceptable here.
+ *
+ * Consequences that are intentional:
+ *  - Warsh renders uncoloured (WARSH_TAJWID_SOURCE_REQUIRED).
+ *  - Hafs renders uncoloured when the annotation is missing, which is what
+ *    offline looks like until the payload is cached.
+ *  - The Quran text itself is never altered in any of those cases.
+ *
+ * @param {string} text - annotated or plain Arabic text
  * @param {string} riwaya - 'hafs' or 'warsh' (default: 'hafs')
+ * @returns {Array<{ text: string, ruleId: string|null }>}
  */
 export function parseTajwid(text, riwaya = "hafs") {
   if (!text) return [{ text: "", ruleId: null }];
+  const source = String(text);
 
-  const clean = String(text).replace(/[<>]/g, '');
-  const cacheKey = `${riwaya}:${clean}`;
+  if (!ANNOTATED_RIWAYAS.includes(riwaya)) {
+    return stabilizeTajwidSegments([{ text: source, ruleId: null }]);
+  }
+
+  const cacheKey = `${riwaya}:${source}`;
   const cached = _cacheGet(_parseTajwidCache, cacheKey);
   if (cached) return cached;
 
-  const rules = getRulesForRiwaya(riwaya);
-
-  // Collect all matches with positions
-  const matches = [];
-  for (const rule of rules) {
-    for (const pattern of rule.patterns) {
-      // Reset regex state
-      const re = new RegExp(pattern.source, pattern.flags);
-      let m;
-      while ((m = re.exec(clean)) !== null) {
-        matches.push({
-          start: m.index,
-          end: m.index + m[0].length,
-          ruleId: rule.id,
-          text: m[0],
-        });
-      }
-    }
-  }
-
-  if (matches.length === 0) {
-    const result = stabilizeTajwidSegments([{ text: clean, ruleId: null }]);
-    _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
-    return result;
-  }
-
-  // Sort by position, longest match first for same position
-  matches.sort((a, b) => a.start - b.start || b.end - a.end);
-
-  // Remove overlapping matches (keep first/longest)
-  const cleaned = [];
-  let lastEnd = 0;
-  for (const m of matches) {
-    if (m.start >= lastEnd) {
-      cleaned.push(m);
-      lastEnd = m.end;
-    }
-  }
-
-  // Build segments
-  const segments = [];
-  let pos = 0;
-  for (const m of cleaned) {
-    if (m.start > pos) {
-      segments.push({ text: clean.slice(pos, m.start), ruleId: null });
-    }
-    segments.push({ text: m.text, ruleId: m.ruleId });
-    pos = m.end;
-  }
-  if (pos < clean.length) {
-    segments.push({ text: clean.slice(pos), ruleId: null });
-  }
-
-  const stabilizedSegments = stabilizeTajwidSegments(segments);
-  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, stabilizedSegments);
-  return stabilizedSegments;
+  const parsed = parseTajweedAnnotation(source);
+  const result = stabilizeTajwidSegments(
+    parsed || [{ text: source, ruleId: null }],
+  );
+  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
+  return result;
 }
 
 /** UTF-16 rule ranges for each word, preserving the complete Arabic text run. */
 export function getPerWordTajweedRanges(words, riwaya = "hafs") {
   if (!Array.isArray(words) || words.length === 0) return [];
-  const text = words.join(" ");
-  const segments = parseTajwid(text, riwaya);
-  // A font-specific normalization must never shift a colour onto another
-  // Quranic letter. In that case render the uncoloured, intact words.
-  if (segments.map((segment) => segment.text).join("") !== text) {
+  const annotated = words.join(" ");
+  const segments = parseTajwid(annotated, riwaya);
+  // Segments are expressed in the markup-free text, so every offset below is
+  // computed on it. The parser only assigns rules to characters; it never
+  // rewrites them, which the equality check re-proves before any colour is
+  // allowed to reach a Quranic letter.
+  const plain = segments.map((segment) => segment.text).join("");
+  if (plain !== stripTajweedMarkup(annotated)) {
     return words.map(() => []);
   }
+  // Word boundaries must come from the text the renderer actually paints.
+  const plainWords = plain.split(/\s+/).filter((word) => word.length > 0);
+  if (plainWords.length !== words.length) return words.map(() => []);
+  words = plainWords;
   const ranges = words.map(() => []);
   const positions = [];
   let cursor = 0;
