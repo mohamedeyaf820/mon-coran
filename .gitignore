@@ -40,6 +40,12 @@ scratch/
 # Backend cache
 server/.cache/
 
+# Local agent tooling: plans, worktrees and per-machine config. The worktrees
+# folder holds a full checkout of this repository, which must never be pushed.
+.kilo/
+# Throwaway HTTPS dev config for on-device secure-context testing; it imports a
+# plugin that is deliberately not a dependency.
+vite.https.config.mjs
 # IDE
 .vscode/
 *.swp
