@@ -203,6 +203,12 @@ test("a hidden verse boundary swaps the source inside the event task", async ({ 
 
   await page.goto("/surah/1");
   await expect(page.locator(".quran-display")).toBeVisible({ timeout: 30_000 });
+  // The reader shell can render while the surah payload is still loading.
+  // Wait for its first verse before clicking: playSurah intentionally refuses
+  // to start an empty playlist, and a click during that brief state is lost.
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({
+    timeout: 30_000,
+  });
   // The reader chrome is the real control surface: clicking Listen loads the
   // playlist and starts the recitation through the ordinary service path.
   await page.locator(".srh-play-btn").first().click();

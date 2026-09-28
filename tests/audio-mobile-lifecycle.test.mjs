@@ -39,8 +39,9 @@ test('mobile playback requests a playback audio session and advances without ani
   const service = new AudioService();
   const urls = [1, 2].map(n => `https://audio.qurancdn.com/Alafasy/mp3/00100${n}.mp3`);
   service.playlist = urls.map((url, i) => ({ surah: 1, ayah: i + 1, number: i + 1, url }));
-  await service.loadAndPlay(0);
-  assert.equal(audioSession.type, 'playback');
+  const starting = service.loadAndPlay(0);
+  assert.equal(audioSession.type, 'playback', 'native playback is prepared before async loading');
+  await starting;
   // Background tabs may never execute requestAnimationFrame.
   globalThis.requestAnimationFrame = () => 1;
   service.audio.dispatchEvent(new Event('ended'));

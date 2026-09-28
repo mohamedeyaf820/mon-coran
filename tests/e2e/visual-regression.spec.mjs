@@ -22,7 +22,11 @@ for (const theme of THEMES) {
     await page.goto("/");
     const card = page.locator(".hp-card--surah").first();
     await expect(card).toBeVisible();
-    await expect(card).toHaveScreenshot(`surah-card-${theme}.png`, {
+    // Linux and Windows Chromium rasterize the same font metrics to different
+    // element heights; keep reviewed references per runner OS instead of
+    // weakening the pixel-difference threshold for both environments.
+    const platformSuffix = process.platform === "linux" ? "-linux" : "";
+    await expect(card).toHaveScreenshot(`surah-card-${theme}${platformSuffix}.png`, {
       animations: "disabled",
       caret: "hide",
     });
