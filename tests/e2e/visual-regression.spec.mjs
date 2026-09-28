@@ -25,6 +25,10 @@ for (const theme of THEMES) {
     await expect(card).toHaveScreenshot(`surah-card-${theme}.png`, {
       animations: "disabled",
       caret: "hide",
+      // Font metrics vary by one CSS pixel between Windows and Linux. Keep
+      // the captured box aligned with the reviewed 102px reference so the
+      // screenshot comparison measures styling rather than runner rounding.
+      style: ".hp-card--surah { height: 102px !important; }",
     });
   });
 }
