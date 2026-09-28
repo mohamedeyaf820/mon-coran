@@ -19,6 +19,12 @@ export const CSS_SAFELIST = {
     // 15-line flex grid into plain blocks. Fullscreen book classes are
     // retained by their literal names in the overlay module.
     /^qcm-/,
+    // The reader composes the riwaya class as `quran-display--${riwaya}`, so
+    // neither `quran-display--hafs` nor `quran-display--warsh` appears as a
+    // literal token in the built JS. All 33 rules keyed on them were dropped
+    // from production: the `--waqf-font-family` and `--font-quran` definitions
+    // in riwaya-fonts.css, and the Quran text rules that follow them.
+    /^quran-display--/,
     /^qcom-list-study/,
     /^qc-list-card__study$/,
     // Tajweed rule classes of the span fallback (browsers without the

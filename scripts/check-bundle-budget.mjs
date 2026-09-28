@@ -70,9 +70,14 @@ const LIMITS = {
   // clients stay out of boot behind lazy chunks (459.5 kB measured on CI).
   initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 462),
   // 2026-09-26: 816.5 kB after the adhan source/default wiring.
-  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 817),
+  // 2026-09-28: +3 kB (819.2 kB) to bring back the 33 reading rules the purge
+  // dropped because the reader composes its riwaya class at runtime: the
+  // --waqf-font-family and --font-quran definitions plus the Quran text rules
+  // keyed on them. Correct Quran rendering outranks 0.35% of payload.
+  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 820),
   // 2026-09-26: 204.7 kB measured on CI.
-  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 206),
+  // 2026-09-28: 206.1 kB, the same restored riwaya rules.
+  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 207),
   deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),
   // 2026-09-24: +2 kB; the home prayer strip and its modal styles landed in the
   // home sheet (57.1 kB measured against the old 58 cap).
