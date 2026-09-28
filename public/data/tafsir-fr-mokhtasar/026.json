@@ -1,0 +1,917 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 26,
+  "number_of_ayahs": 227,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Ṭâ, Sîn, Mîm: Il a déjà été question de telles lettres séparées au début de Sourate Al-Baqarah."
+    },
+    {
+      "ayah_number": 2,
+      "text": "Voici les versets du Coran qui distingue clairement le vrai du faux."
+    },
+    {
+      "ayah_number": 3,
+      "text": "Ô Messager, il se peut que tu t’affliges de chagrin de voir ceux que tu espères être guidés ne pas devenir croyants."
+    },
+    {
+      "ayah_number": 4,
+      "text": "Si Nous avions voulu leur faire descendre un miracle du Ciel, Nous l’aurions fait et alors, leurs cous resteraient courbés en signe de soumission mais Nous ne le voulons pas afin de les éprouver: croiront-ils en l’Invisible ou s’y refuseront-ils ?"
+    },
+    {
+      "ayah_number": 5,
+      "text": "Aucun nouveau rappel accompagné des preuves de l’Unicité d’Allah et de la véracité de Son Prophète n’est révélé par le Tout Miséricordieux à ces polythéistes sans qu’ils ne s’en détournent et refusent d’y croire."
+    },
+    {
+      "ayah_number": 6,
+      "text": "Ils ont démenti tout ce que leur Messager leur a apporté mais ce qu’ils raillaient se réalisera et le châtiment s’abattra alors sur eux."
+    },
+    {
+      "ayah_number": 7,
+      "text": "Ces gens persistent-ils à mécroire, ne voient-ils pas les nombreuses variétés de plantes splendides et bénéfiques que Nous avons fait pousser sur la Terre?"
+    },
+    {
+      "ayah_number": 8,
+      "text": "Le pouvoir de faire sortir de terre des variétés diverses de plantes est assurément une preuve claire que Celui qui détient ce pouvoir détient également le pouvoir de faire revivre les morts. Seulement, la plupart d’entre eux n’y croient pas."
+    },
+    {
+      "ayah_number": 9,
+      "text": "Ô Messager, ton Seigneur est invincible et Il est miséricordieux envers Ses serviteurs."
+    },
+    {
+      "ayah_number": 10,
+      "text": "Ô Messager, rappelle-toi lorsque ton Seigneur appela Moïse et lui ordonna de se rendre auprès du peuple injuste. Ce peuple était injuste à cause de sa mécréance et de son asservissement du peuple de Moïse"
+    },
+    {
+      "ayah_number": 11,
+      "text": "Il s’agit du peuple de Pharaon. Il fut ordonné à Moïse de leur ordonner avec douceur et bienveillance de craindre Allah, de se conformer à Ses commandements et de renoncer à ce qu’Il a défendu."
+    },
+    {
+      "ayah_number": 12,
+      "text": "Moïse dit: Je crains qu’ils ne me démentent lorsque je leur transmettrai ce que Tu m’as ordonné de leur transmettre."
+    },
+    {
+      "ayah_number": 13,
+      "text": "Je crains aussi que ma poitrine ne se resserre de déception à cause de leur démenti et que ma langue ne prononce aucune parole. Envoie donc Gabriel à mon frère Aaron afin qu’il m’assiste."
+    },
+    {
+      "ayah_number": 14,
+      "text": "De plus, ces gens me reprochent d’avoir tué un des leurs et je crains donc qu’ils me tuent en représailles."
+    },
+    {
+      "ayah_number": 15,
+      "text": "Allah dit à Moïse: Pas du tout, ils ne te tueront pas. Vas avec ton frère Aaron leur présenter les preuves de votre véracité. Nous vous accompagnerons par Notre secours et Notre soutien. Nous écouterons ce que vous direz tout comme Nous écouterons ce qui vous sera dit et rien ne Nous échappera de vos conversations."
+    },
+    {
+      "ayah_number": 16,
+      "text": "Rendez-vous auprès de Pharaon et dites-lui: Nous sommes les messagers que t’a envoyés le Seigneur de toutes les créatures."
+    },
+    {
+      "ayah_number": 17,
+      "text": "Il t’ordonne d’envoyer les Israélites avec nous."
+    },
+    {
+      "ayah_number": 18,
+      "text": "Pharaon dit à Moïse: Ne t’avons-nous pas élevé chez nous lorsque tu étais tout petit et n’es-tu pas resté de longues années parmi nous ? Pour quelle raison prétends-tu donc être prophète ?"
+    },
+    {
+      "ayah_number": 19,
+      "text": "Par ailleurs, tu as commis un crime impardonnable en assassinant un Egyptien qui s’en prenait à l’un des tiens et tu renies de surcroît les bienfaits dont je t’ai comblé."
+    },
+    {
+      "ayah_number": 20,
+      "text": "Moïse, reconnaissant sa faute, dit à Pharaon: J’ai bien tué cet homme et j’étais du nombre des ignorants avant que je ne reçoive la Révélation."
+    },
+    {
+      "ayah_number": 21,
+      "text": "Je vous ai fuis après l’avoir tué et me suis refugié dans la cité de Madyan car je craignais que vous me tuiez en représailles. Mon Seigneur m’a pourvu de science et a fait de moi un de Ses messagers qu’Il envoie aux gens."
+    },
+    {
+      "ayah_number": 22,
+      "text": "Tu m’as éduqué sans m’asservir comme les autres membres de mon peuple et ceci est une faveur que tu me rappelles avec raison. Seulement, elle ne m’empêche pas de te prêcher."
+    },
+    {
+      "ayah_number": 23,
+      "text": "Pharaon dit ensuite à Moïse: Qui est donc ce Seigneur des créatures dont tu prétends être le Messager ?"
+    },
+    {
+      "ayah_number": 24,
+      "text": "Moïse lui répondit: Le Seigneur des créatures est le Seigneur des Cieux, de la Terre et de ce qui se trouve entre les deux. Si vous êtes convaincus qu’Il est leur Seigneur, adorez-Le donc Seul."
+    },
+    {
+      "ayah_number": 25,
+      "text": "Pharaon dit aux notables qui l’entouraient: Avez-vous entendu la réponse mensongère de Moïse?"
+    },
+    {
+      "ayah_number": 26,
+      "text": "Moïse leur dit: Allah est votre Seigneur et le Seigneur de vos ancêtres."
+    },
+    {
+      "ayah_number": 27,
+      "text": "Pharaon dit: Celui qui prétend être un messager qui vous a été envoyé est fou et n’est pas conscient de ce qu’il dit."
+    },
+    {
+      "ayah_number": 28,
+      "text": "Moïse dit: Allah, le Dieu que je vous appelle à adorer, est le Seigneur du Levant, du Couchant et de ce qui se trouve entre les deux, si vous êtes dotés d'une raison qui vous permet de comprendre."
+    },
+    {
+      "ayah_number": 29,
+      "text": "Vaincu et incapable de répondre aux arguments de Moïse, Pharaon lui dit: Si tu adores un autre dieu que moi, je t’emprisonnerai."
+    },
+    {
+      "ayah_number": 30,
+      "text": "Tu m’emprisonnerais même si je t’apportais les preuves de ma véracité ? l’interrogea Moïse."
+    },
+    {
+      "ayah_number": 31,
+      "text": "Pharaon répondit: Apporte ce que tu prétends être la preuve que tu es véritablement un messager, si tu es véridique."
+    },
+    {
+      "ayah_number": 32,
+      "text": "Moïse jeta alors à terre son bâton et celui-ci se transforma en un serpent visible à tous."
+    },
+    {
+      "ayah_number": 33,
+      "text": "Il introduisit ensuite sa main sous ses vêtements et il la ressortit blanche et étincelante, et non blanche comme pourrait l’être la main d’un lépreux. Sa main fut également visible de tous."
+    },
+    {
+      "ayah_number": 34,
+      "text": "Pharaon dit aux notables qui l’entouraient: Cet homme est un magicien habile."
+    },
+    {
+      "ayah_number": 35,
+      "text": "Il vise, à l’aide de sa magie, de vous expulser de votre terre. Que pensez-vous que nous devons faire de lui ?"
+    },
+    {
+      "ayah_number": 36,
+      "text": "Ils répondirent: Ne les punis pas immédiatement lui et son frère. Envoie plutôt des gens réunir des magiciens de toutes les villes."
+    },
+    {
+      "ayah_number": 37,
+      "text": "Ils t’amèneront alors tout magicien habile qu’ils trouveront."
+    },
+    {
+      "ayah_number": 38,
+      "text": "Pharaon détermina ensuite un jour et un lieu afin que ses magiciens affrontent Moïse."
+    },
+    {
+      "ayah_number": 39,
+      "text": "On dit aux gens: Allez-vous assister à l’affrontement et voir qui en sortira vainqueur ?"
+    },
+    {
+      "ayah_number": 40,
+      "text": "Nous embrasserons alors la religion des magiciens s’ils sortent vainqueurs de cet affrontement."
+    },
+    {
+      "ayah_number": 41,
+      "text": "Lorsque les magiciens se présentèrent auprès de Pharaon avant le début des représentations, ils lui dirent:\nAurons-nous droit à une gratification matérielle ou morale si nous vainquons Moïse ?"
+    },
+    {
+      "ayah_number": 42,
+      "text": "Il leur répondit: Oui, vous serez récompensés. Si vous êtes vainqueurs, je vous rapprocherai de moi et vous accorderai des postes prestigieux."
+    },
+    {
+      "ayah_number": 43,
+      "text": "Persuadé qu’il allait être secouru par Allah et par désir de montrer que les prouesses dont il était capable n’étaient pas de la magie, Moïse dit aux magiciens: Jetez les cordes et les bâtons que vous comptez jeter."
+    },
+    {
+      "ayah_number": 44,
+      "text": "Ils jetèrent alors leurs cordes et leurs bâtons en disant: Par la grandeur de Pharaon, nous serons les vainqueurs, Moïse sera vaincu."
+    },
+    {
+      "ayah_number": 45,
+      "text": "Puis Moïse jeta son bâton qui se transforma en serpent qui avala toutes les illusions qu’ils avaient suscitées aux yeux des gens afin de les tromper."
+    },
+    {
+      "ayah_number": 46,
+      "text": "Voyant cela, les messagers se jetèrent à terre afin de se prosterner."
+    },
+    {
+      "ayah_number": 47,
+      "text": "Ils dirent: Nous croyons au Seigneur de toutes les créatures."
+    },
+    {
+      "ayah_number": 48,
+      "text": "Il s’agit du Seigneur de Moïse et d’Aaron."
+    },
+    {
+      "ayah_number": 49,
+      "text": "Réprouvant la conversion des magiciens, Pharaon dit: Avez-vous cru en Moïse sans que je ne vous le permette ? Il est surement votre maître qui vous a enseigné la magie et vous avez comploté de concert pour expulser les habitants d’Egypte de leur terre. Vous saurez alors quel châtiment je vous réserve: j’amputerai le pied de chacun d’entre vous et sa main opposée (pied droit et main gauche ou inversement) et je vous crucifierai tous sur des troncs de palmiers."
+    },
+    {
+      "ayah_number": 50,
+      "text": "Les magiciens répondirent à Pharaon: Il n’y a aucun préjudice pour nous à subir l’amputation et la crucifixion dans le bas monde car ton châtiment aura une fin. Nous retournerons alors auprès de notre Seigneur qui nous enveloppera de Sa miséricorde éternelle."
+    },
+    {
+      "ayah_number": 51,
+      "text": "Nous espérons qu’Allah efface nos fautes passées pour avoir été les premiers à croire en Moïse et lui avoir accordé du crédit."
+    },
+    {
+      "ayah_number": 52,
+      "text": "Nous avons révélé et ordonné à Moïse de partir de nuit avec les Israélites car ils seront traqués par Pharaon et ses adeptes dans le but de les ramener en Egypte."
+    },
+    {
+      "ayah_number": 53,
+      "text": "Pharaon envoya alors certains de ses soldats dans les villes afin de former des armées, après que lui soit parvenue la nouvelle du départ des Israélites."
+    },
+    {
+      "ayah_number": 54,
+      "text": "Pharaon dit sur un ton méprisant: Ces gens-là ne sont qu’un petit groupe."
+    },
+    {
+      "ayah_number": 55,
+      "text": "Seulement, ils commettent des méfaits qui nous exaspèrent."
+    },
+    {
+      "ayah_number": 56,
+      "text": "Mais qu’ils sachent que nous sommes vigilants."
+    },
+    {
+      "ayah_number": 57,
+      "text": "Nous fîmes alors sortir Pharaon et son peuple de la terre d’Egypte pourvue en vergers opulents et en sources d’eau abondante."
+    },
+    {
+      "ayah_number": 58,
+      "text": "Une terre de richesse où il fait bon vivre."
+    },
+    {
+      "ayah_number": 59,
+      "text": "Après avoir fait sortir Pharaon et son peuple de cette opulence, accordâmes cette dernière comme bienfait aux Israélites en terre du Levant."
+    },
+    {
+      "ayah_number": 60,
+      "text": "Puis Pharaon et son peuple se mirent à poursuivre la trace des Israélites dès l’aube."
+    },
+    {
+      "ayah_number": 61,
+      "text": "Lorsque chacun des deux partis eut l’autre en vision, les compagnons de Moïse dirent: Pharaon et les siens nous rattraperons et nous ne pourrons alors pas les affronter"
+    },
+    {
+      "ayah_number": 62,
+      "text": "Moïse leur dit: Les évènements ne suivront pas le cours que vous imaginez car mon Seigneur me soutient et me secourt. Il m’orientera donc et me guidera vers le chemin du salut"
+    },
+    {
+      "ayah_number": 63,
+      "text": "Nous révélâmes ensuite à Moïse de frapper la mer à l’aide de son bâton et il obéit. La mer se fendit alors et leur fraya douze passages, du nombre des tribus Israélites.\nChaque versant de chaque passage était aussi immense et aussi ferme qu’une montagne puisqu’il ne laissait pas l’eau atteindre les Israélites."
+    },
+    {
+      "ayah_number": 64,
+      "text": "Puis Nous laissâmes Pharaon et les siens approcher et entrer dans la mer, croyant que les passages était également praticables pour eux."
+    },
+    {
+      "ayah_number": 65,
+      "text": "C’est ainsi que Nous sauvâmes Moïse et les Israélites qui l’accompagnaient sans que personne parmi eux ne perde la vie."
+    },
+    {
+      "ayah_number": 66,
+      "text": "D’autre part, Nous anéantîmes Pharaon et son peuple en les noyant dans la mer."
+    },
+    {
+      "ayah_number": 67,
+      "text": "Le fait que la mer se fende afin de laisser passer Moïse, que Moïse soit sauvé et que Pharaon et les siens soient anéantis est assurément un signe démontrant la véracité de Moïse, sachant que la plupart de ceux qui accompagnaient Pharaon n’étaient pas des croyants."
+    },
+    {
+      "ayah_number": 68,
+      "text": "Ô Messager, ton Seigneur est le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux parmi eux qui se repentent."
+    },
+    {
+      "ayah_number": 69,
+      "text": "Ô Messager, raconte-leur le récit d’Abraham."
+    },
+    {
+      "ayah_number": 70,
+      "text": "Raconte-leur lorsqu’il dit à son père Âzar et aux siens: Qu’adorez-vous en dehors d’Allah ?"
+    },
+    {
+      "ayah_number": 71,
+      "text": "Ils répondirent: Nous adorons avec ferveur des idoles dont nous sommes inséparables."
+    },
+    {
+      "ayah_number": 72,
+      "text": "Ensuite, Abraham leur dit: Vos idoles entendent-elles les invocations que vous leur adressez ?"
+    },
+    {
+      "ayah_number": 73,
+      "text": "Vous comblent-elles de bienfaits lorsque vous leur faites des offrandes ou vous poursuivent-elles de représailles lorsque vous leur désobéissez?"
+    },
+    {
+      "ayah_number": 74,
+      "text": "Non, répondirent-ils. Elles ne nous entendent pas lorsque nous les invoquons, ne nous comblent pas de bienfaits lorsque nous leur faisons des offrandes, ne nous poursuivent pas de représailles lorsque nous leur désobéissons. Nous ne faisons qu’imiter nos ancêtres qui les ont adorées avant nous."
+    },
+    {
+      "ayah_number": 75,
+      "text": "Abraham dit: Avez-vous déjà réfléchi aux idoles que vous adorez en dehors d’Allah ?"
+    },
+    {
+      "ayah_number": 76,
+      "text": "Ces idoles que vos aïeuls ont adorées par le passé?"
+    },
+    {
+      "ayah_number": 77,
+      "text": "Elles sont toutes mes ennemis car toutes sont fausseté, contrairement au Seigneur de toutes les créatures."
+    },
+    {
+      "ayah_number": 78,
+      "text": "C’est Lui qui m’a créé et m’a orienté vers le bien de ce bas monde et celui de l’au-delà."
+    },
+    {
+      "ayah_number": 79,
+      "text": "Il me nourrit lorsque j’ai faim et m’abreuve lorsque j’ai soif."
+    },
+    {
+      "ayah_number": 80,
+      "text": "Lorsque je suis malade, c’est Lui et personne d’autre qui me guérit."
+    },
+    {
+      "ayah_number": 81,
+      "text": "Il est le Seul à mettre fin à ma vie lorsque mes jours prendront fin et c’est Lui qui me ressuscitera après ma mort."
+    },
+    {
+      "ayah_number": 82,
+      "text": "C’est Lui Seul dont j’espère le pardon de mes fautes le Jour de la Rétribution."
+    },
+    {
+      "ayah_number": 83,
+      "text": "Puis Abraham invoqua Allah en ces termes: Ô Seigneur, accorde-moi un savoir en religion et fais-moi entrer au Paradis en compagnie des gens vertueux qu’étaient les prophètes précédents."
+    },
+    {
+      "ayah_number": 84,
+      "text": "Fasse aussi que je sois favorablement mentionné par les générations futures."
+    },
+    {
+      "ayah_number": 85,
+      "text": "Fasse que je sois l’un de Tes serviteurs croyants qui hériteront des différents rangs de Ton Paradis et fais-y-moi demeurer."
+    },
+    {
+      "ayah_number": 86,
+      "text": "Pardonne à mon père qui s’est égaré de la vérité par son polythéisme. Abraham invoqua Allah en faveur de son père avant qu’il ne lui apparaisse avec certitude qu’il était voué à l’Enfer mais dès qu’il fut conscient de cette vérité, il se désavoua de lui et n’invoqua plus Allah en sa faveur."
+    },
+    {
+      "ayah_number": 87,
+      "text": "Ne me couvre pas d’opprobre en me châtiant lorsque les gens seront ressuscités afin de rendre des comptes."
+    },
+    {
+      "ayah_number": 88,
+      "text": "Ce jour-là, ni les richesses amassées par l’être humain dans le bas monde ni sa progéniture qui lui était d’un grand secours, ne lui seront d’une quelconque utilité."
+    },
+    {
+      "ayah_number": 89,
+      "text": "Excepté celui qui se présente auprès d’Allah avec un cœur sain, c’est-à-dire exempt d’hypocrisie, d’ostentation et d’orgueil. Celui-là, il bénéficiera de la récompense pour ce qu’il a dépensé pour la cause d’Allah et des invocations que sa progéniture a faites en sa faveur."
+    },
+    {
+      "ayah_number": 90,
+      "text": "C’est alors qu’on rapprochera le Paradis pour ceux qui ont craint leur Seigneur, en s’étant conformé à Ses commandements et en ayant renoncé à ce qu’Il leur a défendu."
+    },
+    {
+      "ayah_number": 91,
+      "text": "D’autre part, on montrera bien en évidence l’Enfer dans le lieu de rassemblement afin que ceux qui se sont égarés de la vérité le voient."
+    },
+    {
+      "ayah_number": 92,
+      "text": "On leur dira en guise de remontrance: Où sont les divinités que vous adoriez?"
+    },
+    {
+      "ayah_number": 93,
+      "text": "Ces divinités que vous adoriez en dehors d’Allah, vous ont-elles secourus et sauvés du châtiment d’Allah ou se sont-elles sauvées elles-mêmes de ce châtiment?"
+    },
+    {
+      "ayah_number": 94,
+      "text": "Ils seront ainsi jetés en Enfer eux et ceux qui les ont égarés, les uns au-dessus des autres."
+    },
+    {
+      "ayah_number": 95,
+      "text": "On y jettera aussi tous les démons sans exception."
+    },
+    {
+      "ayah_number": 96,
+      "text": "Les polythéistes qui adoraient des divinités autres qu’Allah et en faisaient Ses associés se querelleront avec les divinités qu’ils adoraient. Ils leur diront:"
+    },
+    {
+      "ayah_number": 97,
+      "text": "Par Allah, nous étions clairement égarés de la vérité."
+    },
+    {
+      "ayah_number": 98,
+      "text": "En effet, nous vous considérions égaux au Seigneur de toutes les créatures et nous vous adorions tout comme nous L’adorions Lui."
+    },
+    {
+      "ayah_number": 99,
+      "text": "Seuls les criminels qui nous ont appelés à les adorer en dehors d’Allah nous ont égarés de la vérité."
+    },
+    {
+      "ayah_number": 100,
+      "text": "Aujourd’hui, personne n’intercèdera en notre faveur auprès d’Allah afin qu’Il nous sauve du châtiment."
+    },
+    {
+      "ayah_number": 101,
+      "text": "Nous n’avons pas non plus d’ami rapproché et sincère qui prendra notre défense et intercèdera en notre faveur."
+    },
+    {
+      "ayah_number": 102,
+      "text": "Si seulement nous pouvions retourner dans le bas monde et croire en Allah."
+    },
+    {
+      "ayah_number": 103,
+      "text": "Ce que nous te racontons du récit d’Abraham et du sort réservé aux dénégateurs est une leçon adressée aux concernés, mais la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 104,
+      "text": "Ô Messager, ton Seigneur est le Puissant qui se venge de Ses ennemis et le Miséricordieux avec ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 105,
+      "text": "Le peuple de Noé démentit l’ensemble des messagers lorsqu’il démentit Noé."
+    },
+    {
+      "ayah_number": 106,
+      "text": "Noé leur dit: Ne craignez-vous pas Allah en renonçant à adorer des divinités autres que Lui?"
+    },
+    {
+      "ayah_number": 107,
+      "text": "Je suis un messager qui vous a été envoyé et je suis digne de confiance, puisque je n’ajoute ni ne retranche rien à ce que mon Seigneur m’a révélé."
+    },
+    {
+      "ayah_number": 108,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 109,
+      "text": "Je ne vous demande aucune récompense en échange de ce que je vous transmets de mon Seigneur. Il n’appartient qu’à Allah, le Seigneur des créatures, de me récompenser et à personne d’autre."
+    },
+    {
+      "ayah_number": 110,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 111,
+      "text": "Les siens lui dirent alors: Ô Noé, veux-tu que nous croyions en toi et que nous nous conformions aux préceptes que tu apportes alors que nous voyons que seuls les plus méprisables des gens sont tes disciples ? Pas un seul noble ou notable ne figure parmi eux !"
+    },
+    {
+      "ayah_number": 112,
+      "text": "Noé leur dit: Que sais-je des actions de ces croyants ? Je ne suis pas garant de ce qu’ils ont, ni ne consigne leurs œuvres."
+    },
+    {
+      "ayah_number": 113,
+      "text": "Il n’appartient qu’à Allah, Celui qui connaît ce qu’ils font en secret et en public, de leur demander des comptes et non à moi. Si vous étiez conscients de ces paroles, vous ne les auriez pas proférées."
+    },
+    {
+      "ayah_number": 114,
+      "text": "Je ne chasserai pas les croyants de mon assemblée pour que vous daigniez embrasser la foi."
+    },
+    {
+      "ayah_number": 115,
+      "text": "Je ne fais qu’avertir de manière claire contre le châtiment d’Allah."
+    },
+    {
+      "ayah_number": 116,
+      "text": "Les siens lui dirent: Si tu n’arrêtes pas de nous prêcher, nous nous en prendrons à toi et te tuerons par lapidation."
+    },
+    {
+      "ayah_number": 117,
+      "text": "Noé invoqua alors Allah en ces termes: Ô Seigneur, les miens m’ont démenti et n’ont pas accordé de crédit à ce que je leur ai apporté de Ta part."
+    },
+    {
+      "ayah_number": 118,
+      "text": "Juge donc entre eux et moi d’une manière à les anéantir, pour s’être obstinés à être les adeptes du faux et sauve-moi ainsi que les croyants qui m’accompagnent du châtiment que Tu abattras sur les mécréants."
+    },
+    {
+      "ayah_number": 119,
+      "text": "Nous exauçâmes son invocation et Nous le sauvâmes ainsi que les croyants qui l’accompagnaient en les embarquant dans un vaisseau chargé de gens et de bêtes."
+    },
+    {
+      "ayah_number": 120,
+      "text": "Puis Nous noyâmes ceux qui sont restés du peuple de Noé."
+    },
+    {
+      "ayah_number": 121,
+      "text": "Les concernés par l'exposé du récit de Noé et de son peuple doivent méditer un enseignement contenu dans ce récit: c’est le salut de Noé et des croyants qui l’accompagnaient et l’anéantissement des mécréants de son peuple. Seulement, la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 122,
+      "text": "Ô Messager, ton Seigneur est certainement le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 123,
+      "text": "Les ‘Âd ont démenti l’ensemble des messagers lorsqu’ils démentirent leur messager Hûd."
+    },
+    {
+      "ayah_number": 124,
+      "text": "Rappelle-toi lorsque leur prophète Hûd leur dit: Ne craindrez-vous pas Allah en renonçant à adorer autre que Lui?"
+    },
+    {
+      "ayah_number": 125,
+      "text": "Je suis un messager qu’Allah vous a envoyé et je suis digne de confiance puisque je n’ajoute ni ne soustrais rien à ce que mon Seigneur m’a révélé."
+    },
+    {
+      "ayah_number": 126,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 127,
+      "text": "Je ne vous demande aucune récompense en contrepartie de ce que je vous transmets de mon Seigneur. Il n’appartient qu’à Allah, le Seigneur des créatures, de me récompenser et à personne d’autre."
+    },
+    {
+      "ayah_number": 128,
+      "text": "Erigez-vous sur chaque lieu surélevé une construction vaine et inutile qui ne vous est d’aucun bénéfice pour votre vie terrestre ni pour celle de l’au-delà."
+    },
+    {
+      "ayah_number": 129,
+      "text": "Bâtissez-vous des forteresses et des palais comme si vous alliez demeurez éternellement dans ce bas monde et ne pas le quitter?"
+    },
+    {
+      "ayah_number": 130,
+      "text": "Lorsque vous êtes en position de force, vous tuez et frappez avec cruauté sans compassion ni pitié."
+    },
+    {
+      "ayah_number": 131,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 132,
+      "text": "Redoutez la colère d’Allah, Celui qui vous a comblés des bienfaits que vous connaissez."
+    },
+    {
+      "ayah_number": 133,
+      "text": "Il vous a fait don de bestiaux et d’une progéniture."
+    },
+    {
+      "ayah_number": 134,
+      "text": "Il vous a également fait don de vergers et de sources d’eau abondante."
+    },
+    {
+      "ayah_number": 135,
+      "text": "Ô mon peuple, je crains que vous ne subissiez le châtiment du Jour de la Résurrection."
+    },
+    {
+      "ayah_number": 136,
+      "text": "Les siens lui répondirent: Il nous est aussi indifférent que tu nous exhortes ou que tu ne nous exhortes pas. Nous ne croirons pas en toi et nous ne renoncerons pas à notre religion."
+    },
+    {
+      "ayah_number": 137,
+      "text": "Ce que tu proposes n’est que la religion des anciens, leurs traditions et leurs valeurs."
+    },
+    {
+      "ayah_number": 138,
+      "text": "De plus, nous ne serons certainement pas châtiés."
+    },
+    {
+      "ayah_number": 139,
+      "text": "Ils persistèrent à démentir leur prophète Hûd et Nous les anéantîmes alors en faisant souffler sur eux un vent stérile. Ceci est une leçon adressée aux concernés mais la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 140,
+      "text": "Ô Messager, ton Seigneur est certainement le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 141,
+      "text": "Les Thamûd démentirent l’ensemble des messagers lorsqu’ils démentirent leur prophète Şâliħ."
+    },
+    {
+      "ayah_number": 142,
+      "text": "Leur compatriote Şâliħ leur dit: Ne craindrez-vous pas Allah en renonçant à adorer autre que Lui?"
+    },
+    {
+      "ayah_number": 143,
+      "text": "Je suis un messager qu’Allah vous a envoyé et je suis digne de confiance puisque je n’ajoute ni ne soustrais rien à ce que mon Seigneur m’a révélé."
+    },
+    {
+      "ayah_number": 144,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 145,
+      "text": "Je ne vous demande aucune récompense en échange de ce que je vous transmets de mon Seigneur. Il n’appartient qu’à Allah, le Seigneur des créatures, de me récompenser et à personne d’autre."
+    },
+    {
+      "ayah_number": 146,
+      "text": "Espérez-vous qu’on vous laisse jouir paisiblement des plaisirs et des bienfaits sans ne rien craindre ?"
+    },
+    {
+      "ayah_number": 147,
+      "text": "Bien installés dans vos jardins irrigués par des sources d’eau abondante."
+    },
+    {
+      "ayah_number": 148,
+      "text": "Au milieu de vos cultures et des palmiers aux dattes mures."
+    },
+    {
+      "ayah_number": 149,
+      "text": "Alors que vous sculptez habilement les montagnes afin d’en façonner des demeures habitables."
+    },
+    {
+      "ayah_number": 150,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 151,
+      "text": "Ne vous soumettez pas à ce que vous ordonnent ceux qui se sont lésés eux-mêmes par leurs actes de désobéissance."
+    },
+    {
+      "ayah_number": 152,
+      "text": "Ils corrompent sur Terre par ces mêmes actes de désobéissance et ne s’amendent pas en obéissant à Allah."
+    },
+    {
+      "ayah_number": 153,
+      "text": "Les siens lui dirent: Tu fais partie de ceux qui ont été ensorcelés d’innombrables fois, au point d’en avoir perdu la raison."
+    },
+    {
+      "ayah_number": 154,
+      "text": "Tu n’es qu’un être humain comme nous, et rien ne te distingue de nous et fait de toi un messager. Apporte-nous donc la preuve que tu es un messager si tu es véridique."
+    },
+    {
+      "ayah_number": 155,
+      "text": "Après qu’Allah lui eut accordé comme signe une chamelle qu’il fit sortir d’un roc, Şâliħ leur répondit: Cette chamelle, que vous voyez et que vous pouvez toucher pour vous assurer de son existence, a droit à sa part d’eau et vous-mêmes avez droit à votre part. Elle ne s’abreuve pas le jour où c’est à vous de vous abreuver et vous ne vous abreuvez pas le jour où c’est à elle de s’abreuver."
+    },
+    {
+      "ayah_number": 156,
+      "text": "Ne vous en prenez pas à elle en l’immolant ou en la frappant. Sinon, le châtiment d’un jour terrible par le malheur que vous subirez provenant d’Allah s’abattra sur vous et vous anéantira."
+    },
+    {
+      "ayah_number": 157,
+      "text": "Faisant fi de ce que leur dit Şâliħ, ils s’accordèrent à immoler la chamelle et c’est le plus misérable d’entre eux qui passa à l’acte. Ils furent ensuite pris de regret lorsqu’ils surent que le châtiment allait irrémédiablement s’abattre sur eux. Seulement, il ne sert à rien de regretter lorsque l’on voit de ses yeux le châtiment."
+    },
+    {
+      "ayah_number": 158,
+      "text": "Le châtiment qui leur a été promis, c’est-à-dire un tremblement et un cri, s’abattit sur eux. Ce que Nous te racontons du récit de Şâliħ et de son peuple est une leçon adressée aux concernés, mais la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 159,
+      "text": "Ô Messager, ton Seigneur est certainement le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 160,
+      "text": "Le peuple de Loth a démenti l’ensemble des messagers lorsqu’il démentit son messager Loth."
+    },
+    {
+      "ayah_number": 161,
+      "text": "Leur compatriote Loth leur dit: Ne craindrez-vous pas Allah en renonçant à adorer autre que Lui?"
+    },
+    {
+      "ayah_number": 162,
+      "text": "Je suis un messager qu’Allah vous a envoyé et je suis digne de confiance puisque je n’ajoute ni ne soustrais rien à ce que mon Seigneur m’a révélé."
+    },
+    {
+      "ayah_number": 163,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 164,
+      "text": "Je ne vous demande aucune récompense en contrepartie de ce que je vous transmets de mon Seigneur. Il n’appartient qu’à Allah, le Seigneur des créatures, de me récompenser et à personne d’autre."
+    },
+    {
+      "ayah_number": 165,
+      "text": "Pratiquez-vous la sodomie avec des hommes ?"
+    },
+    {
+      "ayah_number": 166,
+      "text": "Et délaissez-vous les rapports charnels qu’Allah vous a permis avec vos épouses ? Vous transgressez plutôt les limites d’Allah en commettant cette déviance abominable."
+    },
+    {
+      "ayah_number": 167,
+      "text": "Les siens lui répondirent: Ô Loth, si tu ne cesses pas de nous interdire cette pratique et de la réprouver, toi et tes disciples serez expulsés de notre cité."
+    },
+    {
+      "ayah_number": 168,
+      "text": "Loth leur dit: Je déteste et réprouve votre pratique."
+    },
+    {
+      "ayah_number": 169,
+      "text": "Puis il invoqua Allah en ces termes: Ô Seigneur, sauve-moi et sauve ma famille du châtiment que ces gens subiront pour ce qu’ils commettent."
+    },
+    {
+      "ayah_number": 170,
+      "text": "Nous exauçâmes son invocation et le sauvâmes donc lui et toute sa famille."
+    },
+    {
+      "ayah_number": 171,
+      "text": "Excepté son épouse qui était mécréante. Elle fut du nombre des anéantis."
+    },
+    {
+      "ayah_number": 172,
+      "text": "Puis après avoir évacué Loth et sa famille de la cité de Sodome, Nous anéantîmes ceux qui y sont restés de la manière la plus terrible."
+    },
+    {
+      "ayah_number": 173,
+      "text": "Nous fîmes pleuvoir sur eux des pierres aussi nombreuses que des gouttes de pluie et quelle pire pluie que celle contre laquelle Loth les a avertis! Il les a en effet avertis contre le châtiment s’ils s’obstinaient dans leur pratique abominable."
+    },
+    {
+      "ayah_number": 174,
+      "text": "Ce châtiment subi par le peuple de Loth pour leur pratique de la turpitude est une leçon adressée aux concernés mais la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 175,
+      "text": "Ô Messager, ton Seigneur est certainement le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 176,
+      "text": "Les habitants de la cité aux arbres touffus et entremêlés (al-aykatu(aykah)) située près de Madyan démentirent tous les messagers lorsqu’ils démentirent leur prophète Chu’ayb."
+    },
+    {
+      "ayah_number": 177,
+      "text": "Chu’ayb leur dit: Ne craindrez-vous pas Allah en renonçant à adorer autre que Lui ?"
+    },
+    {
+      "ayah_number": 178,
+      "text": "Je suis un messager qu’Allah vous a envoyé et je suis digne de confiance puisque je n’ajoute ni ne soustrais rien à ce que mon Seigneur m’a révélé."
+    },
+    {
+      "ayah_number": 179,
+      "text": "Craignez donc Allah en vous conformant à Ses commandements et en renonçant à ce qu’Il vous a défendu, et obéissez-moi lorsque je vous ordonne quelque chose ou lorsque je vous le défends."
+    },
+    {
+      "ayah_number": 180,
+      "text": "Je ne vous demande aucune récompense en contrepartie de ce que je vous transmets de mon Seigneur. Il n’appartient qu’à Allah, le Seigneur des créatures, de me récompenser et à personne d’autre."
+    },
+    {
+      "ayah_number": 181,
+      "text": "Soyez honnêtes lorsque vous pesez ou mesurez des marchandises aux gens et ne soyez pas de ceux qui lèsent les autres."
+    },
+    {
+      "ayah_number": 182,
+      "text": "Pesez plutôt avec exactitude et honnêteté."
+    },
+    {
+      "ayah_number": 183,
+      "text": "Ne bafouez pas les droits des gens et ne corrompez pas sur Terre en commettant des actes de désobéissance."
+    },
+    {
+      "ayah_number": 184,
+      "text": "Craignez Celui qui vous a créés et a créé les peuples anciens et redoutez qu’Il abatte son châtiment sur vous."
+    },
+    {
+      "ayah_number": 185,
+      "text": "Le peuple de Chu’ayb lui dit: Tu fais partie de ceux qui ont été ensorcelés d’innombrables fois, au point d’en avoir perdu la raison."
+    },
+    {
+      "ayah_number": 186,
+      "text": "Tu n’es qu’un être humain comme nous et rien ne te distingue de nous. Comment peux-tu donc être un messager ?\nNous pensons que tu es un menteur lorsque tu prétends être un messager."
+    },
+    {
+      "ayah_number": 187,
+      "text": "Si tu es véridique, fais tomber sur nous des parties du Ciel."
+    },
+    {
+      "ayah_number": 188,
+      "text": "Chu’ayb leur répondit: Mon Seigneur connaît le mieux votre polythéisme et ce que vous commettez comme actes de désobéissance. Rien de ce que vous faites ne Lui échappe."
+    },
+    {
+      "ayah_number": 189,
+      "text": "Ils persistèrent néanmoins à le démentir et un châtiment s’abattit alors sur eux: un nuage leur fit de l’ombre suite à une journée de très forte chaleur et de ce nuage tomba sur eux une pluie de feu qui les consuma Ce jour-là fut terrible et effrayant."
+    },
+    {
+      "ayah_number": 190,
+      "text": "Ceci est une leçon adressée aux concernés mais la plupart d’entre eux ne sont pas croyants."
+    },
+    {
+      "ayah_number": 191,
+      "text": "Ô Messager, ton Seigneur est certainement le Puissant qui se venge de Ses ennemis et le Miséricordieux envers ceux d’entre eux qui se repentent."
+    },
+    {
+      "ayah_number": 192,
+      "text": "Ce Coran révélé à Muħammad provient du Seigneur des créatures."
+    },
+    {
+      "ayah_number": 193,
+      "text": "Il a été révélé par l’intermédiaire de Gabriel, le Messager digne de confiance."
+    },
+    {
+      "ayah_number": 194,
+      "text": "Gabriel l’a transmis à ton cœur, ô Messager, afin que tu sois du nombre des messagers qui avertissent les gens et leur font redouter le châtiment d’Allah."
+    },
+    {
+      "ayah_number": 195,
+      "text": "Ce Coran est révélé dans une langue arabe très explicite."
+    },
+    {
+      "ayah_number": 196,
+      "text": "Ce Coran est mentionné dans les livres des anciens messagers puisque les précédents livres révélés l’ont annoncé."
+    },
+    {
+      "ayah_number": 197,
+      "text": "Ceux qui te démentent ne voient-ils pas un signe de ta véracité dans le fait que des savants israélites, à l’image de ‘AbduLlâh ibn Salâm, sachent la véritable nature de ce qui t’a été révélé ?"
+    },
+    {
+      "ayah_number": 198,
+      "text": "Si Nous avions révélé ce Coran à des gens qui ne parlent pas l’arabe,"
+    },
+    {
+      "ayah_number": 199,
+      "text": "et que le Messager le leur avait récité, ils n’y auraient pas cru et auraient dit: Nous ne le comprenons pas. Qu’ils louent donc Allah que le Coran ait été révélé dans leur langue."
+    },
+    {
+      "ayah_number": 200,
+      "text": "C’est ainsi que Nous introduisons le démenti et la mécréance dans les cœurs des criminels."
+    },
+    {
+      "ayah_number": 201,
+      "text": "Leur mécréance restera telle quelle et ils ne croiront pas avant d’avoir vu de leurs propres yeux le châtiment douloureux."
+    },
+    {
+      "ayah_number": 202,
+      "text": "Il s’abattra alors sur eux subitement sans qu’ils ne s’y attendent."
+    },
+    {
+      "ayah_number": 203,
+      "text": "Emplis de dépit, ils diront alors: Nous accordera-t-on un délai supplémentaire afin de nous repentir à Allah ?"
+    },
+    {
+      "ayah_number": 204,
+      "text": "Ces mécréants désirent-ils hâter notre châtiment lorsqu’ils disent: Nous ne croirons pas en toi tant que tu n’auras pas fait tomber sur nous des parties du Ciel comme tu nous l’as promis?"
+    },
+    {
+      "ayah_number": 205,
+      "text": "Ô Messager, que penses-tu si Nous laissions ces mécréants, qui refusent de croire en ce que tu apportes, jouir longtemps de plaisirs variés ?"
+    },
+    {
+      "ayah_number": 206,
+      "text": "Puis après cette longue période de jouissance, ils subiront le châtiment qu’on leur avait promis."
+    },
+    {
+      "ayah_number": 207,
+      "text": "A quoi leur ont servi les plaisirs du bas monde ? Ils ont cessé et ne leur ont rien rapporté."
+    },
+    {
+      "ayah_number": 208,
+      "text": "Nous n’avons pas anéanti un peuple avant de lui envoyer un messager et de lui révéler un livre."
+    },
+    {
+      "ayah_number": 209,
+      "text": "Ceci, afin de les exhorter et de leur faire un rappel. Nous n’étions pas injustes lorsque Nous les avons châtiés après leur avoir envoyé des messagers et leur avoir révélé des livres."
+    },
+    {
+      "ayah_number": 210,
+      "text": "Ce ne sont pas les démons qui ont révélé ce Coran au cœur du Prophète."
+    },
+    {
+      "ayah_number": 211,
+      "text": "Il ne convient pas qu’ils le fassent et d’ailleurs, ils n’en ont pas le pouvoir."
+    },
+    {
+      "ayah_number": 212,
+      "text": "Ils n’en ont pas le pouvoir car ils sont éloignés de sa source dans le Ciel. Comment peuvent-ils donc l’atteindre et le révéler?"
+    },
+    {
+      "ayah_number": 213,
+      "text": "N’adore aucune prétendue divinité associée à Allah. Sinon, tu serais du nombre des châtiés."
+    },
+    {
+      "ayah_number": 214,
+      "text": "Ô Messager, avertis les gens qui te sont les plus proches parmi ton peuple et ainsi de suite jusqu’à avertir les gens les moins proches parmi eux. Avertis-les afin qu’ils ne restent pas dans leur polythéisme et que le châtiment d’Allah ne s’abatte pas sur eux."
+    },
+    {
+      "ayah_number": 215,
+      "text": "Sois doux par les paroles et les actes avec tes disciples croyants et fais preuve de miséricorde et de compassion envers eux."
+    },
+    {
+      "ayah_number": 216,
+      "text": "S’ils te désobéissent et ne t’obéissent pas lorsque tu les appelles à reconnaître l’Unicité d’Allah et à Lui obéir, dis-leur: Je me désavoue de votre polythéisme et de vos actes de désobéissance"
+    },
+    {
+      "ayah_number": 217,
+      "text": "Remets t’en, dans chacune de tes affaires, au Puissant qui se venge de Ses ennemis et au Miséricordieux envers ceux parmi eux qui se repentent à Lui."
+    },
+    {
+      "ayah_number": 218,
+      "text": "Il est Celui qui te voit lorsque tu te lèves pour prier."
+    },
+    {
+      "ayah_number": 219,
+      "text": "Il te voit aussi accomplir les rites de la prière parmi les fidèles. Rien de ce que tu fais et de ce que font les autres ne Lui échappe."
+    },
+    {
+      "ayah_number": 220,
+      "text": "Il entend le mieux les versets du Coran que tu récites durant la prière et connaît le mieux ton intention."
+    },
+    {
+      "ayah_number": 221,
+      "text": "Voulez-vous que je vous dise à qui les démons, dont vous prétendez qu’ils ont révélé le Coran, font des révélations ?"
+    },
+    {
+      "ayah_number": 222,
+      "text": "Ils les font à tout menteur, pécheur et désobéissant invétéré parmi les devins."
+    },
+    {
+      "ayah_number": 223,
+      "text": "Les démons tentent d’écouter ce qui se dit dans les plus hautes sphères du Ciel puis se manifestent à leurs alliés parmi les devins. Or la plupart des devins sont des menteurs puisque lorsqu’ils disent une vérité, ils profèrent cent mensonges."
+    },
+    {
+      "ayah_number": 224,
+      "text": "Les poètes, dont vous prétendez que Muħammad fait partie, ont pour disciples ceux qui ont dévié de la voie de la guidée et de la droiture et récitent ainsi les poèmes qu’ils leur rapportent."
+    },
+    {
+      "ayah_number": 225,
+      "text": "Ô Messager, ne vois-tu pas que l’un des signes de leur égarement est qu’ils se déplacent de vallée en vallée, tantôt afin de faire l’éloge de quelqu’un, tantôt afin de le diffamer?"
+    },
+    {
+      "ayah_number": 226,
+      "text": "Ne vois-tu pas qu’ils mentent et prétendent qu’ils ont accompli telle prouesse alors que cela est faux?"
+    },
+    {
+      "ayah_number": 227,
+      "text": "Il est fait exception de ceux parmi eux qui croient, accomplissent de bonnes œuvres, évoquent abondamment Allah et se servent de leur talent contre les ennemis d’Allah qui les ont traités injustement. L’un de ces poètes est Ħassân ibn Thâbit. Ceux qui se sont montrés injustes par leur polythéisme et leur agression de Ses serviteurs sauront quel sera leur devenir: ils assisteront à un évènement terrible et rendront des comptes minutieux pour leurs agissements."
+    }
+  ]
+}

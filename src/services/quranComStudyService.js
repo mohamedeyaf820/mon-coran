@@ -4,12 +4,26 @@
  */
 
 import { fetchWithTimeout } from "./fetchWithTimeout.js";
+import {
+  FRENCH_TAFSIR_EDITION_ID,
+  getFrenchTafsirVerse,
+} from "./frenchTafsirService.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
 const STUDY_FETCH_TIMEOUT = 8000;
 const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
+  // Vendored, offline French commentary (see frenchTafsirService.js). `local`
+  // marks it as served from public/data rather than the Quran.com resource index,
+  // so getVerseTafsir routes it away from the HTTP path and the per-verse cache.
+  [FRENCH_TAFSIR_EDITION_ID]: {
+    id: 259,
+    name: "Al-Mukhtasar (French)",
+    nameFr: "Al-Mukhtasar (français)",
+    lang: "fr",
+    local: true,
+  },
   "ar-muyassar": {
     id: 16,
     name: "Tafsir Al-Muyassar",
@@ -73,13 +87,11 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
-  // There is no French tafsir to declare here. Quran.com's resource index has
-  // no French entry at all (20 tafsirs: 7 Arabic, 3 English, Bengali, Urdu,
-  // Russian, Kurdish), and the id 816 this app used to advertise as
-  // "Al-Mukhtasar (French)" answers HTTP 503 on every verse and is absent from
-  // /resources/tafsirs. A French reader therefore gets the source's own
-  // language plus the French translation of the verse, and the note below says
-  // so instead of a dead request pretending otherwise.
+  // The French reader's default is `fr-mokhtasar` (declared at the top): a
+  // vendored, offline Al-Mukhtasar commentary. It is not a Quran.com resource —
+  // Quran.com's index has no French tafsir at all, and the id 816 this app once
+  // advertised answers 503 on every verse — so it is served from local assets
+  // instead of a dead HTTP request.
 };
 
 function normalizeText(text) {
@@ -229,7 +241,7 @@ export function getAvailableTafsirs() {
 const FALLBACK_TAFSIRS_BY_LANG = {
   ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
   en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
-  fr: ["en-kathir", "en-maarif", "ar-muyassar"],
+  fr: [FRENCH_TAFSIR_EDITION_ID, "en-kathir", "en-maarif", "ar-muyassar"],
   wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
 };
 
@@ -242,7 +254,9 @@ function resolveTafsirKey(value, lang = "en") {
     );
     if (found) return found[0];
   }
-  return lang === "ar" ? "ar-muyassar" : "en-kathir";
+  if (lang === "ar") return "ar-muyassar";
+  if (lang === "fr") return FRENCH_TAFSIR_EDITION_ID;
+  return "en-kathir";
 }
 
 async function fetchTafsirText(resource, verseKey, signal) {
@@ -292,12 +306,19 @@ export async function getVerseTafsir({
   for (const key of candidates) {
     const resource = TAFSIR_RESOURCES[key];
     if (!resource) continue;
-    const cachedText = readCachedTafsir(resource.id, verseKey);
-    if (cachedText && !cachedFallback) {
-      cachedFallback = { key, resource, text: cachedText };
+    // The vendored French edition caches itself in IndexedDB; the Quran.com
+    // per-verse localStorage cache must not shadow or duplicate it.
+    if (!resource.local) {
+      const cachedText = readCachedTafsir(resource.id, verseKey);
+      if (cachedText && !cachedFallback) {
+        cachedFallback = { key, resource, text: cachedText };
+      }
     }
     try {
-      const text = await fetchTafsirText(resource, verseKey, signal);
+      const text = resource.local
+        ? (await getFrenchTafsirVerse({ surah, ayah, signal }))?.text
+        : await fetchTafsirText(resource, verseKey, signal);
+      if (!text) continue;
       const langMismatch = resource.lang !== normalizedLang;
       return {
         source: resource.name,
@@ -307,7 +328,7 @@ export async function getVerseTafsir({
         tafsirId: key,
         note:
           normalizedLang === "fr" && langMismatch
-            ? "Aucun tafsir français vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
+            ? "Aucun commentaire français n'existe pour cette source : le tafsir est affiché dans sa langue d'origine. Choisissez Al-Mukhtasar [FR] pour lire en français."
             : normalizedLang === "wo" && langMismatch
               ? "Aucun tafsir wolof vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
               : null,

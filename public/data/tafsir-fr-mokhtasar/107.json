@@ -1,0 +1,37 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 107,
+  "number_of_ayahs": 7,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Connais-tu celui qui traite de mensonge la Rétribution du Jour de la Résurrection?"
+    },
+    {
+      "ayah_number": 2,
+      "text": "C’est bien lui qui repousse avec rudesse l’orphelin en lui refusant ce dont il a besoin"
+    },
+    {
+      "ayah_number": 3,
+      "text": "et qui ne s’incite pas lui-même ni n’incite autrui à nourrir les pauvres."
+    },
+    {
+      "ayah_number": 4,
+      "text": "Anéantissement et châtiment donc pour ceux qui prient,"
+    },
+    {
+      "ayah_number": 5,
+      "text": "tout en étant distraits et ne se souciant pas de respecter l'horaire de la prière,"
+    },
+    {
+      "ayah_number": 6,
+      "text": "qui prient et œuvrent avec ostentation, sans être sincères envers Allah,"
+    },
+    {
+      "ayah_number": 7,
+      "text": "et refusent d'aider autrui quand ils n’encourent aucun préjudice à l'aider."
+    }
+  ]
+}

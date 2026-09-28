@@ -6,4 +6,7 @@ import "./domains/premium-plus.css";
 import "./expert-overhaul.css";
 import "./home-audio-ux-refonte.css";
 import "./device-responsive.css";
+// Home-only responsive polish is non-critical to the first frame and follows
+// the same post-paint path as the rest of the optional refinement layer.
+import "./home-resume-refinement.css";
 

@@ -1,10 +1,13 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 
 import {
   getAvailableTafsirs,
   getVerseTafsir,
 } from "../src/services/quranComStudyService.js";
+import { FRENCH_TAFSIR_EDITION_ID } from "../src/services/frenchTafsirService.js";
 
 function mockTafsirFetch(handler) {
   const previousFetch = globalThis.fetch;
@@ -19,11 +22,13 @@ test("tafsir: exposes stable keys for selector values", () => {
   const kathir = sources.find((source) => source.key === "en-kathir");
   assert.equal(kathir.id, 169);
   assert.equal(kathir.lang, "en");
-  // Resource 816 was advertised as a French tafsir but Quran.com answers 503
-  // for it on every verse and lists no French tafsir at all: offering it would
-  // only make every French request fail before falling back.
+  // A French source now exists: the vendored Al-Mukhtasar edition, flagged local
+  // so it routes away from the Quran.com HTTP path. The dead resource 816 (which
+  // Quran.com answered 503 for) must never return.
+  const french = sources.find((source) => source.lang === "fr");
+  assert.equal(french?.key, FRENCH_TAFSIR_EDITION_ID);
+  assert.equal(french?.local, true);
   assert.equal(sources.some((source) => source.id === 816), false);
-  assert.equal(sources.some((source) => source.lang === "fr"), false);
   // The Warsh reader is pointed at the sources that record the readings.
   assert.deepEqual(
     sources.filter((source) => source.qiraat).map((source) => source.key).sort(),
@@ -63,6 +68,9 @@ test("tafsir: falls back when the selected resource fails", async () => {
     if (url.includes("/tafsirs/90/")) {
       return { ok: false, status: 404 };
     }
+    // The local French edition reaches for its index asset here; with no array
+    // buffer on this stub it rejects and the chain moves on, exactly as a
+    // missing offline corpus would.
     return {
       ok: true,
       async json() {
@@ -80,10 +88,42 @@ test("tafsir: falls back when the selected resource fails", async () => {
     });
     assert.equal(result.text, "Fallback tafsir");
     assert.equal(result.tafsirId, "en-kathir");
-    // A French reader who lands on a non-French source is told so: no French
-    // tafsir corpus exists to promise.
-    assert.match(result.note, /Aucun tafsir français/);
-    assert.equal(calls.length, 2);
+    // A French reader who lands on a non-French source is told the French
+    // commentary exists as an alternative, rather than being left guessing.
+    assert.match(result.note, /Aucun commentaire français/);
+    assert.match(result.note, /Al-Mukhtasar/);
+    assert.ok(calls.some((url) => url.includes("/tafsirs/169/")));
+  } finally {
+    restore();
+  }
+});
+
+test("tafsir: serves the French edition from the vendored, digest-pinned asset", async () => {
+  const restore = mockTafsirFetch(async (url) => {
+    const match = /data\/tafsir-fr-mokhtasar\/([^?]+)\.json/.exec(url);
+    assert.ok(match, `expected a French tafsir asset request, got ${url}`);
+    const file = path.join("public", "data", "tafsir-fr-mokhtasar", `${match[1]}.json`);
+    const bytes = await readFile(file);
+    return {
+      ok: true,
+      async arrayBuffer() {
+        return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
+      },
+    };
+  });
+
+  try {
+    const result = await getVerseTafsir({
+      surah: 114,
+      ayah: 1,
+      lang: "fr",
+      tafsirId: FRENCH_TAFSIR_EDITION_ID,
+    });
+    assert.equal(result.tafsirId, FRENCH_TAFSIR_EDITION_ID);
+    assert.equal(result.language, "fr");
+    assert.equal(result.note, null, "a French reader on the French source gets no language warning");
+    assert.ok(typeof result.text === "string" && result.text.length > 10);
+    assert.ok(!result.text.includes("`"), "vendored text carries no markdown backticks");
   } finally {
     restore();
   }

@@ -777,8 +777,19 @@ test("tafsir sources are grouped by language with the reading-aware ones first",
     sidebar,
     /Number\(Boolean\(b\.qiraat\)\) - Number\(Boolean\(a\.qiraat\)\)/,
   );
-  // The marker and the Warsh note must exist in every locale, not just French.
-  for (const key of ["groupArabic", "groupEnglish", "qiraatBadge", "warshHint"]) {
+  // The marker, the Warsh note and the French-edition affordances must exist in
+  // every locale, not just French.
+  for (const key of [
+    "groupArabic",
+    "groupEnglish",
+    "groupFrench",
+    "qiraatBadge",
+    "warshHint",
+    "shownInFrench",
+    "offlineSourceBadge",
+    "frenchAttribution",
+    "reportError",
+  ]) {
     for (const lang of ["fr", "en", "ar"]) {
       assert.ok(locales[lang].tafsir[key], `${lang}.tafsir.${key}`);
     }

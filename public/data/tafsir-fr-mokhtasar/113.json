@@ -1,0 +1,29 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 113,
+  "number_of_ayahs": 5,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Ô Messager, dis: Je me prémunis par le Seigneur de l’aube et je cherche refuge auprès de Lui"
+    },
+    {
+      "ayah_number": 2,
+      "text": "contre le mal des créatures malfaisantes,"
+    },
+    {
+      "ayah_number": 3,
+      "text": "contre les maux de la nuit provenant des animaux et des voleurs,"
+    },
+    {
+      "ayah_number": 4,
+      "text": "contre le mal des sorcières qui soufflent dans les nœuds,"
+    },
+    {
+      "ayah_number": 5,
+      "text": "et contre le mal de l’envieux lorsque son envie le pousse à l’action."
+    }
+  ]
+}

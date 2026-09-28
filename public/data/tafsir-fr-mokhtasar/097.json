@@ -1,0 +1,29 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 97,
+  "number_of_ayahs": 5,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Nous avons fait descendre la totalité du Coran vers le Ciel le plus bas et Nous avons commencé à le révéler au Prophète la Nuit du Destin (laylatu l-qadri) du mois de Ramadan."
+    },
+    {
+      "ayah_number": 2,
+      "text": "Ô Prophète, connais-tu le bien et la bénédiction qu’il y a dans cette nuit?"
+    },
+    {
+      "ayah_number": 3,
+      "text": "Cette nuit contient un bien immense puisqu’elle est meilleure que mille mois, pour ceux qui la veillent en accomplissant des adorations qu’ils mettent en dépôt auprès d’Allah."
+    },
+    {
+      "ayah_number": 4,
+      "text": "Les anges et Gabriel descendent durant cette nuit avec la permission de leur Seigneur et transmetttent tout décret qu’Allah émet pour l’année: subsistance, décès, naissance ou autre."
+    },
+    {
+      "ayah_number": 5,
+      "text": "Cette nuit est toute bénie depuis son commencement jusqu’à sa fin à l’aube."
+    }
+  ]
+}

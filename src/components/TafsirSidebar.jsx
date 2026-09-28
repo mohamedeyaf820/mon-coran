@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import {
   AlertCircle,
   BookOpen,
+  Flag,
   Languages,
   RefreshCw,
   X,
@@ -13,10 +14,26 @@ import {
   getVerseTafsir,
   getVerseTranslation,
 } from "../services/quranComStudyService";
+import {
+  FRENCH_TAFSIR_EDITION_ID,
+  getFrenchTafsirAttribution,
+} from "../services/frenchTafsirService";
 import { cn } from "../lib/utils";
 import { t } from "../i18n";
+import siteConfig from "../../site.config.json";
 
 const TAFSIR_OPTIONS = [
+  {
+    key: FRENCH_TAFSIR_EDITION_ID,
+    id: 259,
+    name: "Al-Mukhtasar",
+    lang: "fr",
+    langBadge: "FR",
+    local: true,
+    labelFr: "Al-Mukhtasar",
+    labelEn: "Al-Mukhtasar",
+    labelAr: "المختصر في التفسير",
+  },
   {
     key: "en-kathir",
     id: 169,
@@ -102,20 +119,22 @@ const TAFSIR_OPTIONS = [
   },
 ];
 
-// Grouped by the language each tafsir is written in, readings-aware ones
-// first: a Warsh reader is looking for them. No French group exists because no
-// French tafsir corpus does — the French reader gets the verse translation.
-// The `qiraat` flag is measured, not assumed: over 1:5, 2:189, 5:6 and 36:52
-// these three cite the reciters and the readings (qara'a / qira'at) while
-// Al-Muyassar and Al-Saadi never do — Al-Qurtubi is the richest, and names
-// Warsh's own transmitter Nafi'.
-const TAFSIR_GROUPS = ["ar", "en"].map((code) => ({
-  code,
-  labelKey: code === "ar" ? "tafsir.groupArabic" : "tafsir.groupEnglish",
-  options: TAFSIR_OPTIONS.filter((o) => o.lang === code).sort(
-    (a, b) => Number(Boolean(b.qiraat)) - Number(Boolean(a.qiraat)),
-  ),
-}));
+// Grouped by the language each tafsir is written in. French leads for a French
+// reader: it is the only corpus in their own language and it is the default.
+// Within Arabic, the readings-aware sources sort first — a Warsh reader is
+// looking for them. The `qiraat` flag is measured over 1:5, 2:189, 5:6 and
+// 36:52: Al-Tabari, Al-Qurtubi and Al-Baghawi cite the reciters and readings
+// while Al-Muyassar and Al-Saadi never do.
+const GROUP_LABEL_KEYS = { fr: "groupFrench", ar: "groupArabic", en: "groupEnglish" };
+const TAFSIR_GROUPS = ["fr", "ar", "en"]
+  .map((code) => ({
+    code,
+    labelKey: `tafsir.${GROUP_LABEL_KEYS[code]}`,
+    options: TAFSIR_OPTIONS.filter((o) => o.lang === code).sort(
+      (a, b) => Number(Boolean(b.qiraat)) - Number(Boolean(a.qiraat)),
+    ),
+  }))
+  .filter((group) => group.options.length);
 
 function getTafsirLabel(option, lang) {
   const name =
@@ -130,6 +149,14 @@ function getTafsirLabel(option, lang) {
   return `${name} [${option.langBadge}]${badge}`;
 }
 
+// A French reader defaults to the vendored French commentary; everyone else to
+// the English Ibn Kathir, an Arabic reader to Al-Muyassar.
+function defaultTafsirKeyFor(lang) {
+  if (lang === "ar") return "ar-muyassar";
+  if (lang === "fr") return FRENCH_TAFSIR_EDITION_ID;
+  return "en-kathir";
+}
+
 export default function TafsirSidebar() {
   const { state, set } = useApp();
   const { lang, riwaya, tafsirSidebarVerse } = state;
@@ -137,7 +164,7 @@ export default function TafsirSidebar() {
   const sidebarRef = useRef(null);
 
   const [selectedTafsirKey, setSelectedTafsirKey] = useState(() =>
-    lang === "ar" ? "ar-muyassar" : "en-kathir",
+    defaultTafsirKeyFor(lang),
   );
   const [tafsirState, setTafsirState] = useState({
     status: "idle",
@@ -151,6 +178,21 @@ export default function TafsirSidebar() {
   });
   const [showTranslation, setShowTranslation] = useState(true);
   const [retryToken, setRetryToken] = useState(0);
+  const [attribution, setAttribution] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    getFrenchTafsirAttribution()
+      .then((data) => {
+        if (active) setAttribution(data);
+      })
+      .catch(() => {
+        // The attribution is a footer nicety; its absence must not hide the tafsir.
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const verse = tafsirSidebarVerse || {};
   const surahNumber = Number(verse.surah);
@@ -166,13 +208,48 @@ export default function TafsirSidebar() {
     TAFSIR_OPTIONS.find((o) => o.key === tafsirState.data?.tafsirId) ||
     selectedOption;
   const isArabicTafsir = displayedOption.lang === "ar";
+  const displayedIsFrench =
+    tafsirState.data?.tafsirId === FRENCH_TAFSIR_EDITION_ID;
+
+  // The report affordance reuses the app's existing GitHub-issue flow (the same
+  // one the Legal page drives), prefilled with the exact verse and source so a
+  // content error is traceable. No data leaves the device until the reader sends
+  // the issue.
+  const reportUrl = useMemo(() => {
+    const repository = String(siteConfig.repositoryUrl || "").replace(/\/$/, "");
+    if (!repository) return null;
+    const url = new URL(`${repository}/issues/new`);
+    const reference = `${surahNumber}:${displayAyahNumber}`;
+    url.searchParams.set(
+      "title",
+      `[Tafsir] ${getTafsirLabel(displayedOption, lang)} ${reference}`,
+    );
+    url.searchParams.set(
+      "body",
+      [
+        "## Signalement d'une erreur de tafsir",
+        "",
+        `- **Référence :** ${reference}`,
+        `- **Source :** ${displayedOption.name}`,
+        ...(attribution?.source?.sha
+          ? [`- **Jeu de données :** ${attribution.source.slug}@${attribution.source.sha.slice(0, 7)}`]
+          : []),
+        `- **Version :** ${siteConfig.version}`,
+        "",
+        "## Description de l'erreur",
+        "",
+        "",
+      ].join("\n"),
+    );
+    return url.toString();
+  }, [attribution, displayAyahNumber, displayedOption, lang, surahNumber]);
 
   useEffect(() => {
     // Only reset tafsir key if the current selection is no longer valid for this lang;
     // preserve user's explicit choice otherwise.
     const currentOption = TAFSIR_OPTIONS.find((o) => o.key === selectedTafsirKey);
     if (!currentOption) {
-      setSelectedTafsirKey(lang === "ar" ? "ar-muyassar" : "en-kathir");
+      setSelectedTafsirKey(defaultTafsirKeyFor(lang));
     }
     setShowTranslation(lang !== "ar");
   }, [lang, selectedTafsirKey]);
@@ -332,13 +409,16 @@ export default function TafsirSidebar() {
                     </optgroup>
                   ))}
                 </select>
-                {lang !== "ar" && (
+                {displayedOption.lang !== lang && (
                   <div className="mt-2 flex items-start gap-1.5 text-[0.7rem] text-[color-mix(in_srgb,var(--theme-text-muted)_80%,var(--theme-text)_20%)]">
                     <Languages size={12} className="mt-0.5 shrink-0" />
                     <span>
-                      {selectedOption.lang === "en"
-                        ? t("tafsir.shownInEnglish", lang)
-                        : t("tafsir.shownInArabic", lang)}
+                      {tafsirState.data?.note ||
+                        (displayedOption.lang === "en"
+                          ? t("tafsir.shownInEnglish", lang)
+                          : displayedOption.lang === "ar"
+                            ? t("tafsir.shownInArabic", lang)
+                            : t("tafsir.shownInFrench", lang))}
                     </span>
                   </div>
                 )}
@@ -425,7 +505,11 @@ export default function TafsirSidebar() {
                           ? ` - ${t("tafsir.offlineBadge", lang)}`
                           : ""}
                       </span>
-                      <span className="text-[var(--text-secondary)]">Quran.com</span>
+                      <span className="text-[var(--text-secondary)]">
+                        {displayedIsFrench
+                          ? t("tafsir.offlineSourceBadge", lang)
+                          : "Quran.com"}
+                      </span>
                     </div>
                     <article
                       dir={isArabicTafsir ? "rtl" : "ltr"}
@@ -442,6 +526,25 @@ export default function TafsirSidebar() {
                     >
                       {tafsirState.data.text}
                     </article>
+                    {displayedIsFrench ? (
+                      <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-[color-mix(in_srgb,var(--theme-border)_52%,transparent_48%)] pt-3 text-[0.7rem] text-[color-mix(in_srgb,var(--theme-text-muted)_82%,var(--theme-text)_18%)]">
+                        <span className="min-w-0 flex-1">
+                          {attribution?.attribution ||
+                            t("tafsir.frenchAttribution", lang)}
+                        </span>
+                        {reportUrl ? (
+                          <a
+                            href={reportUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-xl border border-[color-mix(in_srgb,var(--theme-primary)_44%,transparent_56%)] px-3 font-bold text-[color-mix(in_srgb,var(--theme-primary)_76%,var(--theme-text)_24%)]"
+                          >
+                            <Flag size={13} />
+                            {t("tafsir.reportError", lang)}
+                          </a>
+                        ) : null}
+                      </div>
+                    ) : null}
                   </>
                 ) : (
                   <div className="flex min-h-[14rem] items-center justify-center text-sm text-[var(--text-secondary)]">

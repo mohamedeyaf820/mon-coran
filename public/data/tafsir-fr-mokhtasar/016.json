@@ -1,0 +1,521 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 16,
+  "number_of_ayahs": 128,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Le châtiment qu’Allah a décrété de vous faire subir est proche, ô mécréants. Ne cherchez donc pas à le hâter. Qu’Allah soit au-dessus de ce que les polythéistes Lui attribuent comme associés !"
+    },
+    {
+      "ayah_number": 2,
+      "text": "Allah fait descendre les anges portant la Révélation aux messagers qu’Il veut et leur ordonne: Ô Messagers, avertissez contre le fait de m’associer des divinités car il n’existe pas de divinité méritant d’être adorée hormis Moi. Craignez-moi donc, ô gens, en vous conformant à Mes commandements et en délaissant Mes interdits."
+    },
+    {
+      "ayah_number": 3,
+      "text": "Allah créa les Cieux et la Terre sans modèle préalable et avec juste raison. En effet, Il ne les créa pas vainement mais plutôt dans le but qu’elles soient des indices de Sa grandeur. Qu’Il soit au-dessus des associés qu’on Lui attribue !"
+    },
+    {
+      "ayah_number": 4,
+      "text": "Il créa l’être humain à partir d’une goutte de sperme vile qui après plusieurs étapes successives de croissance devient une créature qui défend le faux avec férocité et éloquence, afin d’effacer la vérité."
+    },
+    {
+      "ayah_number": 5,
+      "text": "Il créa également les bestiaux (camelins, bovins, ovins et caprins) pour que vous en tiriez profit, ô gens, en confectionnant des vêtements chauds à partir de leur laine et de leurs poils, en vous nourrissant de leur lait, en vous habillant de leur cuir ou en les montant."
+    },
+    {
+      "ayah_number": 6,
+      "text": "Vous ne cessez d’être satisfaits par la possession de ces bestiaux: le soir lorsque vous rentrez chez vous et le matin lorsque vous les emmenez paître."
+    },
+    {
+      "ayah_number": 7,
+      "text": "Ces bestiaux que Nous avons créés pour vous, portent vos lourds bagages lorsque vous voyagez vers des pays difficiles à atteindre. Ô gens, votre Seigneur est miséricordieux avec vous en mettant à votre disposition ces bestiaux."
+    },
+    {
+      "ayah_number": 8,
+      "text": "Il créa aussi pour vous les chevaux, les mulets et les ânes afin que vous en fassiez des montures et des bêtes de somme ou que vous vous en serviez comme apparat devant les gens.\nAllah crée aussi de nombreuses autres créatures que vous ne connaissez pas."
+    },
+    {
+      "ayah_number": 9,
+      "text": "Il incombe à Allah de montrer clairement le droit chemin qui mène à Lui et ce droit chemin est l’Islam. Il existe d’autres voies menant vers Satan et déviant de la vérité, sachant que toute voie autre que celle de l’Islam est déviante. Et si Allah avait voulu vous faciliter à tous d’adhérer à la foi, Il l’aurait assurément fait."
+    },
+    {
+      "ayah_number": 10,
+      "text": "Il est Celui qui fait descendre pour vous de l’eau à partir des nuages, laquelle eau vous abreuve, abreuve votre bétail et fait pousser les plantes dont se nourrissent vos bêtes."
+    },
+    {
+      "ayah_number": 11,
+      "text": "Allah fait également pousser grâce à cette eau les céréales dont vous vous nourrissez ainsi que les oliviers, les palmiers, les vignes et bien d’autres arbres fruitiers encore. Cet eau et ce qu’elle engendre est certainement une preuve du pouvoir d’Allah adressée à ceux qui méditent Sa Création et en déduisent l’étendue de Sa grandeur."
+    },
+    {
+      "ayah_number": 12,
+      "text": "Il mit à votre disposition la nuit afin que vous vous y reposiez et le jour afin que vous y soyez en quête de votre subsistance. Il mit à votre disposition le soleil afin d’éclairer vos jours et la lune afin d’éclairer vos nuits ainsi que les étoiles à qui Il ordonna de vous guider dans les ténèbres de la terre ferme et de la mer. C’est aussi grâce à ces astres que vous vous repérez dans le temps et que vous tirez d’autres informations. Tous ces bienfaits qu’Allah a mis à votre disposition sont autant de preuves manifestes du pouvoir d’Allah adressées à des gens doués de raison, puisque ce sont eux qui comprennent la finalité de ces preuves."
+    },
+    {
+      "ayah_number": 13,
+      "text": "Allah a mis également à votre disposition des minéraux, des animaux, des plantes et des céréales de couleurs diverses. Ces bienfaits constituent également des preuves pour des gens capables de les comprendre et qui sont conscients qu’Allah est Omnipotent et Bienfaiteur."
+    },
+    {
+      "ayah_number": 14,
+      "text": "C’est aussi Allah qui a mis à votre disposition la mer et vous a rendu possible de vous déplacer à sa surface et d’y puiser ce qu'elle contient afin que vous consommiez la chair tendre de ses poissons et que vous façonniez des parures pour vous et vos femmes à partir de certains de ses produits comme les perles. Vous voyagez à bord de bateaux qui se déplacent en fendant la surface de l’eau et partez en quête de la grâce d’Allah lors de vos voyages où vous réalisez des profits par le négoce. Tout ceci afin que vous soyez reconnaissants envers Allah pour les bienfaits dont Il vous a comblés et afin que vous L’adoriez Seul."
+    },
+    {
+      "ayah_number": 15,
+      "text": "Allah a implanté dans la Terre des montagnes qui la stabilisent afin qu’elle ne vacille pas sous vos pieds et ne chavire. Il y a fait couler des rivières dont l’eau vous abreuve, abreuve votre bétail et irrigue vos cultures, et y a dessiné des chemins que vous empruntez, vous permettant ainsi de parvenir à la destination désirée sans vous égarer."
+    },
+    {
+      "ayah_number": 16,
+      "text": "Il y a également établi des points de repère visibles qui vous servent dans vos déplacements de jour et pour vos déplacements de nuit. Il vous a également établi comme repères les étoiles."
+    },
+    {
+      "ayah_number": 17,
+      "text": "Comment mettre sur un pied d’égalité Celui qui a créé tout cela et d’autres choses encore et celui qui ne crée rien? Ne finirez-vous pas par vous rappeler de la Grandeur d’Allah qui crée toute chose puis par L’adorer exclusivement et ne plus Lui associer des divinités qui ne créent rien?"
+    },
+    {
+      "ayah_number": 18,
+      "text": "Ô gens, si vous tentiez de dénombrer les bienfaits dont Allah vous a comblés, vous n’en seriez pas capables car ils sont trop nombreux et variés. Allah est Pardonneur puisqu’Il ne vous reproche pas d’oublier de Lui être reconnaissant et Miséricordieux dans le sens où Il ne suspend pas Ses bienfaits malgré votre désobéissance et votre ingratitude."
+    },
+    {
+      "ayah_number": 19,
+      "text": "Ô serviteurs, Allah connaît les œuvres que vous dissimulez aussi bien qu’Il connaît celles que vous manifestez. Rien ne Lui échappe et Il vous rétribuera pour tout ce que vous faites."
+    },
+    {
+      "ayah_number": 20,
+      "text": "Ceux que les polythéistes adorent à la place d’Allah ne créent rien, pas même quelque chose d’insignifiant. Pire, ces idoles ont été façonnées par ceux qui les adorent. Comment est-il concevable qu’ils adorent à la place d’Allah ce qu’ils façonnent de leurs propres mains?!"
+    },
+    {
+      "ayah_number": 21,
+      "text": "Ils n’ont façonné que des formes inertes qui n’ont ni vie ni connaissance puisque ces idoles ne savent pas quand elles seront ressuscitées avec leurs adorateurs le Jour de la Résurrection pour être jetés ensemble dans le feu de l’Enfer."
+    },
+    {
+      "ayah_number": 22,
+      "text": "Le Seul Etre méritant d’être adoré est Un et n’a pas d’associé: c’est Allah. Les cœurs de ceux qui ne croient pas en la Résurrection et en la Rétribution rejettent l’Unicité d’Allah puisqu’ils ne Le craignent pas. En effet, ces cœurs ne croient ni à la Reddition de Comptes ni à la punition qu’ils encourent et de surcroît, ils rejettent la vérité avec arrogance et ne s’y soumettent pas."
+    },
+    {
+      "ayah_number": 23,
+      "text": "En vérité, Allah connaît les agissements secrets de ces gens tout comme leurs agissements manifestes. Rien ne Lui en échappe et Il les rétribuera en conséquence de ce qu’ils font. Il n’aime pas ceux qui refusent avec orgueil de L’adorer et de se soumettre à Lui. Il les abhorre plutôt au plus haut point."
+    },
+    {
+      "ayah_number": 24,
+      "text": "Quand on demande à ces gens qui rejettent l’Unicité d’Allah et démentent la réalité de la Ressuscitation « Qu’a révélé Allah à Muħammad? », ils répondent: Il ne lui a rien révélé. Il a plutôt inventé les mêmes légendes et mythes que les anciens ont inventés."
+    },
+    {
+      "ayah_number": 25,
+      "text": "Que leur sort soit donc de payer pour tous les péchés qu’ils ont commis sans que rien ne leur en soit pardonné ainsi que les péchés que ceux qu’ils ont égarés de l’Islam et qui les ont suivis par ignorance ou mimétisme. Que les péchés dont ils sont responsables et que les péchés de leurs adeptes sont hideux!"
+    },
+    {
+      "ayah_number": 26,
+      "text": "Les mécréants du passé ont précédé ceux-là dans ce qu’ils ourdissaient comme complots contre leurs messagers mais Allah a démoli leur édifice à sa base. Son toit s’écroula au-dessus de leurs têtes et le châtiment s’abattit sur eux d’où ils ne s’y attendaient pas, puisqu’ils étaient convaincus que leurs édifices les protégeaient. Or ils furent anéantis à l’intérieur même de ces édifices."
+    },
+    {
+      "ayah_number": 27,
+      "text": "Ensuite, Allah les rabaissera et les humiliera en les châtiant. Il leur dira alors: Où sont les associés que vous adoriez avec Moi et pour lesquels vous combattiez Mes messagers et les croyants? Les savants transcendants diront en guise de réponse: L’opprobre et le châtiment seront le lot des mécréants."
+    },
+    {
+      "ayah_number": 28,
+      "text": "Ce sont ceux dont les âmes seront saisies par l’Ange de la Mort et ses assistants alors qu’ils se rendent coupables d’injustice envers eux-mêmes en mécroyant en Allah. A ce moment-là, ils se soumettront à la mort et renieront leur mécréance et leur désobéissance passées, pensant que cette attitude leur sera bénéfique. Seulement, on leur dira: Vous mentez. Vous étiez auparavant des mécréants qui commettaient des actes de désobéissance et Allah sait le mieux ce que vous faisiez dans ce bas monde. Rien ne Lui en a échappé et Il vous rétribuera en conséquence."
+    },
+    {
+      "ayah_number": 29,
+      "text": "On leur dira ensuite: Entrez, selon la gravité de vos agissements, par l’une des portes de l’enfer où vous demeurerez éternellement et quelle pire demeure que l’Enfer pour ceux qui ont dédaigné croire en Allah et L’adorer Seul."
+    },
+    {
+      "ayah_number": 30,
+      "text": "Quant à ceux qui craignaient leur Seigneur en s’étant conformé à Ses commandements et en ayant délaissé Ses interdits, on leur dira: Qu’a révélé votre Seigneur à votre Prophète Muħammad? Ils répondront: Allah lui a révélé un bien immense. Ceux qui auront excellé dans leur adoration d’Allah et auront été bienfaisant envers Ses créatures recevront dans le bas monde une belle récompense, dont une part est le soutien d’Allah et la subsistance étendue, or ce qui les attend dans l’au-delà est encore meilleur. Que sera belle la demeure de l’au-delà dans laquelle habiteront dans ceux qui craignent leur Seigneur !"
+    },
+    {
+      "ayah_number": 31,
+      "text": "En effet, ils demeureront dans des vergers où leur séjour sera éternel et sous les palais et les arbres de ces vergers couleront des rivières. Ils y trouveront tout ce qu’ils désirent comme nourritures, boissons et autres plaisirs et cette rétribution que recevront les pieux de la communauté de Muħammad sera aussi du lot des pieux des communautés précédentes."
+    },
+    {
+      "ayah_number": 32,
+      "text": "Ceux-là, l’Ange de la Mort et ses aides, saisiront leurs âmes pendant que leurs cœurs seront dans un état de pureté puisqu’ils n’auront jamais été maculés de mécréance. Les anges s’adresseront à eux en disant: Salâmun ‘alaykum (paix sur vous), vous êtes sains de toute désobéissance capitale. Entrez au Paradis pour avoir eu la croyance appropriée et avoir accompli des œuvres appropriées dans le bas monde."
+    },
+    {
+      "ayah_number": 33,
+      "text": "Ces polythéistes dénégateurs attendent-ils que l’Ange de la Mort et ses aides viennent saisir leurs âmes en les frappant par devant et par derrière, ou attendent-ils que l’ordre d’Allah de les anéantir dans le bas monde soit émis? Le comportement des polythéistes à la Mecque est le même que ceux qui les ont précédés dans le polythéisme. Sont-ils au courant qu’Allah les a détruits et qu’Il n’a pas été injuste en les détruisant mais que ce sont plutôt eux qui étaient injustes envers eux-mêmes en mécroyant et en exposant leurs propres personnes à la perdition?"
+    },
+    {
+      "ayah_number": 34,
+      "text": "La punition méritée pour leurs comportements s’est abattue sur eux et le châtiment qu’ils raillaient lorsqu’on le leur rappelait les entoura alors de toutes parts."
+    },
+    {
+      "ayah_number": 35,
+      "text": "Ceux qui associent à Allah des divinités dans leurs adorations diront: Si Allah avait voulu qu’on L’adore Seul et qu’on ne Lui associe rien, Nous-mêmes ni nos ancêtres n’aurions alors adoré d’autres divinités que Lui et s’Il avait voulu que nous ne déclarions rien illicite, nous ne l’aurions pas fait. C’est cet argument invalide que les mécréants du passé ont avancé mais les messagers ne sont tenus que de transmettre avec clarté ce qu’on leur a ordonné de transmettre et ils l’ont effectivement transmis avec clarté. Les mécréants n’ont donc aucune excuse à avancer comme de prétexter le destin, après qu’Allah les ait dotés d’une volonté et d’un libre arbitre et après qu’Il leur ait envoyé des messagers."
+    },
+    {
+      "ayah_number": 36,
+      "text": "Nous avons envoyé à chaque peuple du passé un messager qui leur ordonnait d’adorer Allah Seul et de délaisser l’adoration des idoles, des démons et d’autres créatures. Allah facilita à certains de croire et de suivre les enseignements de Son messager tandis qu’Il ne facilita pas cela à d’autres à cause de leur mécréance et de leur désobéissance, les vouant ainsi à l’égarement. Parcourez donc la Terre afin que vous voyiez de vos yeux ce qu’il est advenu des dénégateurs après que ce soit abattu sur eux le châtiment destructeur."
+    },
+    {
+      "ayah_number": 37,
+      "text": "Ô Messager, Allah ne facilitera pas la guidée à ceux qu’Il a égarés, même si tu prêchais ces gens-là que tu espères ardemment guider et à qui tu consacres tous tes moyens, en y mettant toute la vigueur dont tu es capable. Ils ne trouveront personne d’autre qu’Allah pour éloigner d’eux le châtiment."
+    },
+    {
+      "ayah_number": 38,
+      "text": "Ces dénégateurs firent les serments les plus fermes, affirmant que la Ressuscitation n’est pas une réalité et dirent: Allah ne ressuscitera jamais les morts. Or ils ne détenaient aucun argument appuyant cette dénégation. Bien au contraire, Allah ressuscitera certainement chaque mort mais comme la plupart des gens ne connaissent pas cette vérité, ils la nient."
+    },
+    {
+      "ayah_number": 39,
+      "text": "Allah les ressuscitera tous le Jour de la Résurrection afin de leur expliquer avec clarté le monothéisme, la Ressuscitation et la Prophétie au sujet desquels ils divergeaient, afin que les mécréants sachent qu’ils étaient dans le faux lorsqu’ils attribuaient des associés à Allah et niaient la Ressuscitation."
+    },
+    {
+      "ayah_number": 40,
+      "text": "Lorsque Nous voulons faire revivre les morts et les ressusciter, rien ne Nous en empêche. Nous ne faisons que dire « Kun (sois) » et ce que Nous voulons a alors irrémédiablement lieu."
+    },
+    {
+      "ayah_number": 41,
+      "text": "Ceux qui ont délaissé leurs demeures, leurs familles et leurs biens afin de migrer du pays de mécréance vers le pays de l’Islam en recherchant par cette migration à obtenir l’agrément d’Allah, après que les mécréants les aient persécutés, Nous les ferons établir dans un lieu du bas monde où ils acquerront la puissance et la récompense qu’ils obtiendront dans l’au-delà sera encore meilleure. Si ceux qui sont restés en retrait, refusant de migrer, connaissaient la récompense méritée par les migrants, ils ne seraient assurément pas restés en retrait."
+    },
+    {
+      "ayah_number": 42,
+      "text": "Ces migrants pour la cause d’Allah sont ceux qui ont eu la patience d’endurer la persécution des leurs et l’éloignement de leurs familles et de leur patrie et de surcroît sont patients dans leur obéissance à Allah et s’en remettent à Allah Seul dans toutes leurs affaires. Voilà les raisons pour lesquelles Allah leur accorda cette immense rétribution."
+    },
+    {
+      "ayah_number": 43,
+      "text": "Ô Messager, Nous n’avons envoyé avant toi que des humains à qui Nous avons révélé des préceptes. Nous n’avons donc pas envoyé de messagers qui étaient des anges. Ceci est Notre habitude établie et si vous niez cela, demandez aux communautés ayant reçu les livres précédents de vous confirmer que les messagers étaient des humains et non des anges si vous en doutez."
+    },
+    {
+      "ayah_number": 44,
+      "text": "Nous avons envoyé ces messagers humains accompagnés de preuves manifestes et de livres révélés et Nous t’avons révélé, ô Messager, le Coran afin que tu expliques aux gens ce qui nécessite d’être expliqué. Peut-être qu’ils se serviront alors de leur faculté de réflexion et tireront des enseignements de ce que contient le Coran."
+    },
+    {
+      "ayah_number": 45,
+      "text": "Ceux qui ourdissent des stratagèmes afin de détourner les gens du chemin d’Allah croient-ils être à l’abri qu’Allah les engloutisse sous terre comme Il a auparavant englouti sous terre Qârûn ou que le châtiment s’abatte sur eux d’où ils ne s’attendent pas?"
+    },
+    {
+      "ayah_number": 46,
+      "text": "Croient-ils être à l’abri d’être saisis par un châtiment lorsqu’ils voyagent et partent en quête de leur subsistance? Assurément non, ils ne pourront s’y soustraire."
+    },
+    {
+      "ayah_number": 47,
+      "text": "Croient-ils être à l’abri du châtiment d’Allah lorsqu’ils le redoutent? Certainement pas car Allah a le pouvoir de les châtier quel que soit leur état d’esprit. Votre Seigneur est plein de mansuétude et de miséricorde puisqu’Il ne se hâte pas de punir et donne une chance à Ses serviteurs de se repentir à Lui."
+    },
+    {
+      "ayah_number": 48,
+      "text": "Ces dénégateurs n’ont-ils pas scruté les créatures d’Allah afin que cela les amène à réfléchir à leur création? Les ombres des choses s’allongent tantôt à gauche tantôt à droite suivant le parcours du soleil le jour ou celui de la lune la nuit. Ces ombres sont soumises à leur Seigneur et se prosternent véritablement à Lui en toute humilité."
+    },
+    {
+      "ayah_number": 49,
+      "text": "C’est à Allah Seul que se prosternent tout ce qui se trouve dans les Cieux et tous les êtres vivants sur Terre. C’est à Lui aussi que se prosternent les anges qui ne dédaignent jamais L’adorer et Lui obéir."
+    },
+    {
+      "ayah_number": 50,
+      "text": "Tout en L’adorant continuellement, les anges craignent leur Seigneur, qui est au-dessus d’eux au sens propre (par Son Etre) et au sens figuré (par Sa domination), et accomplissent les actes d’obéissance qu’Il leur ordonne."
+    },
+    {
+      "ayah_number": 51,
+      "text": "Allah dit à tous Ses serviteurs: N’adorez pas deux divinités car il n’existe qu’un Seul Dieu méritant d’être adoré qui n’a pas d’associé et il n’y en a pas de second. Craignez-Moi donc et ne craignez personne d’autre que Moi."
+    },
+    {
+      "ayah_number": 52,
+      "text": "C’est Lui qui créa les Cieux et la Terre, Lui Seul est leur possesseur et Lui Seul est leur gestionnaire. C’est à Lui que l’on doit obéir, se soumettre et vouer une adoration exclusive. Craindrez-vous donc quelqu’un d’autre qu’Allah? Non ! Craignez-Le plutôt Lui Seul."
+    },
+    {
+      "ayah_number": 53,
+      "text": "Ô gens, tout bienfait religieux ou terrestre provient d’Allah et de personne d’autre. Par ailleurs, quand une épreuve, une maladie ou la pauvreté vous frappent, c’est lui Seul que vous implorez afin de dissiper votre malheur. Ainsi, Celui qui accorde les bienfaits et fait disparaître le mal est Celui que Nous devons adorer Seul."
+    },
+    {
+      "ayah_number": 54,
+      "text": "Puis lorsqu’Allah vous exauce et dissipe votre malheur, certains d’entre vous se mettent à associer d’autres divinités à leur Seigneur en les adorant avec Lui. Quelle est donc cette bassesse dont ils font preuve."
+    },
+    {
+      "ayah_number": 55,
+      "text": "Associer des divinités à Allah les a conduits à renier les bienfaits qu’Allah leur avait octroyés, parmi lesquels le fait d’éloigner le mal d’eux. C’est pourquoi on leur dira: Jouissez des bienfaits dont vous disposez jusqu’à ce que s’abatte sur vous le châtiment d’Allah dans le bas monde et dans l’au-delà."
+    },
+    {
+      "ayah_number": 56,
+      "text": "Les polythéistes concèdent à leurs idoles –qui ne sont que des objets inertes, inconscients, incapables d’être utiles ni de nuire– une part des richesses dont Nous leur avons fait don et avec laquelle ils se rapprochent d’elles. Ô polythéistes, par Allah vous serez questionnés le Jour de la Résurrection pour avoir prétendu que ces idoles sont des divinités et qu’une part de vos richesses leur est due."
+    },
+    {
+      "ayah_number": 57,
+      "text": "Les polythéistes attribuent à Allah des filles qu’ils identifient aux anges et disent donc ce fait qu’Allah procrée. Ils attribuent à Allah, qu’Il soit élevé et sanctifié, ce qu’ils détestent pour eux tandis qu’ils revendiquent la progéniture mâle qu’ils convoitent. Quel crime est pire que celui-là?"
+    },
+    {
+      "ayah_number": 58,
+      "text": "Lorsque quelqu’un apprend à l’un de ces polythéistes que le nouveau-né qu’il attend est une fille, son visage s’assombrit tellement son aversion est grande et son cœur s’emplit de tristesse, puis voilà qu’il attribue à Allah ce qu’il n’accepte pas pour lui-même!"
+    },
+    {
+      "ayah_number": 59,
+      "text": "Il disparaît et s’éloigne de ses proches tellement la nouvelle est dure pour lui et il se retrouve face à un dilemme:\nVa-t-il garder cette fille malgré la honte et l’humiliation ou va-t-il l’enterrer et la cacher sous terre? Qu’il est immonde le jugement des polythéistes consistant à attribuer à Allah ce qu’ils détestent pour eux-mêmes!"
+    },
+    {
+      "ayah_number": 60,
+      "text": "Aux mécréants reviennent les qualificatifs d’infériorité comme le besoin d’avoir une progéniture, l’ignorance et la mécréance, tandis qu’à Allah reviennent les qualificatifs louables et suprêmes comme la majesté, la perfection, l’autonomie et la science. Il est le Puissant dans Son Royaume où personne ne Lui tient tête et le Sage dans Sa création, Sa gestion et Sa Législation."
+    },
+    {
+      "ayah_number": 61,
+      "text": "Si Allah punissait les gens pour leur injustice et leur mécréance, Il ne laisserait sur Terre aucun être humain ni aucun animal se déplacer à sa surface. Allah leur accorde plutôt un répit déterminé par Sa connaissance et lorsque le terme de ce répit échoit, leur punition ne sera ni reportée ni avancée, pas même d’une durée infime."
+    },
+    {
+      "ayah_number": 62,
+      "text": "Ils attribuent à Allah une progéniture femelle qu’ils détestent s’attribuer à eux-mêmes et de plus, ils mentent lorsqu’ils prétendent qu’ils jouiront du rang suprême auprès d’Allah s’il est vrai qu’ils seront ressuscités, doutant par ces paroles de la réalité de la Ressuscitation. En vérité, ils auront comme rétribution le Feu de l’Enfer dans lequel ils seront abandonnés et d’où ils ne sortiront jamais."
+    },
+    {
+      "ayah_number": 63,
+      "text": "Par Allah, Nous avons envoyé des messagers à des peuples dans le passé, ô Messager, et Satan a embelli à ces peuples leurs agissements immondes comme le polythéisme, la mécréance et les actes de désobéissance. Il sera leur prétendu secours le Jour de la Résurrection, qu’ils implorent donc son secours. Ils auront droit ce Jour-là à un châtiment douloureux."
+    },
+    {
+      "ayah_number": 64,
+      "text": "Ô Messager, Nous ne t’avons révélé le Coran que pour que tu exposes avec clarté à tous les gens les réalités à propos desquelles ils divergeaient: le monothéisme, la Ressuscitation et les lois de la religion. Nous te l’avons également révélé afin qu’il soit une guidée et une miséricorde pour ceux qui croient en Allah, en Ses messagers et au contenu du Coran. Ce sont eux en effet qui tirent profit de la vérité."
+    },
+    {
+      "ayah_number": 65,
+      "text": "Allah fit descendre du Ciel de la pluie par laquelle Il fit vivre la Terre d’où surgissent des végétaux après qu’elle eut été aride et stérile. La descente de pluie du Ciel puis l’apparition de végétaux à la surface de la Terre sont assurément des indices clairs du pouvoir d’Allah adressés à ceux qui écoutent les paroles d’Allah et les méditent."
+    },
+    {
+      "ayah_number": 66,
+      "text": "Ô gens, vous trouverez certainement des enseignements qui vous sont adressés dans les dromadaires, les bovins, les ovins et les caprins. Ainsi, Nous vous abreuvons avec le lait qui sort de leurs pis, lequel lait provient de leurs ventres dans lesquels se mélangent entrailles pleines de déjections et organes irrigués de sang… or malgré ces entrailles peu ragoûtantes, le lait qui en sort est pur et délicieux."
+    },
+    {
+      "ayah_number": 67,
+      "text": "Vous trouverez également des enseignements dans les fruits des palmiers et des vignes à partir desquels vous fabriquez une boisson enivrante qui embrume la raison, ce qui est une utilisation impropre de ces bienfaits. D’un autre côté, vous transformez ces fruits en une bonne subsistance comme lorsque vous en faites des dattes séchées, du raisin sec, du vinaigre et de la mélasse. Ces fruits et leurs utilisations sont des indices du pouvoir d’Allah et de Sa faculté à octroyer des bienfaits, adressés à des gens doués de raison puisque ce sont eux qui en déduisent des enseignements."
+    },
+    {
+      "ayah_number": 68,
+      "text": "Ô Messager, ton Seigneur a inspiré ce qui suit aux abeilles: Fabriquez des demeures dans les montagnes, dans les arbres et dans les toits des constructions humaines."
+    },
+    {
+      "ayah_number": 69,
+      "text": "Ensuite, mangez de tous les fruits qui vous plaisent et suivez les parcours qu’Allah a mis à votre disposition. Des entrailles de ces abeilles sort un miel aux couleurs variées (blanc, jaune, etc...) dont les gens se servent pour soigner certaines maladies. Ce qui est inspiré aux abeilles et le miel qui sort de leurs entrailles sont des indices du pouvoir d’Allah et de la gestion des affaires de Ses créatures, adressées à des gens qui réfléchissent puisque ce sont eux qui en déduisent des enseignements."
+    },
+    {
+      "ayah_number": 70,
+      "text": "Allah vous a créés sans modèle préalable puis Il vous fait mourir lorsque la durée de vos vies s'écoule. Certains parmi vous vivent jusqu’à devenir séniles et perdent les connaissances qu’ils avaient auparavant. Allah est Omniscient puisque aucun des agissements de Ses serviteurs ne Lui échappe. Il est aussi Omnipotent car rien ne Lui est impossible."
+    },
+    {
+      "ayah_number": 71,
+      "text": "Allah a favorisé certains d’entre vous par rapport à d’autres dans l’octroi de Sa subsistance. Il fit ainsi de certains des gens riches et d’autres des gens pauvres et fit de certains des chefs et d’autres des gens ordinaires. Ceux qu’Allah a favorisés ne sont pas disposés à céder une part de ce qu’Allah leur a accordé à leurs esclaves et à en faire leurs égaux. Pourquoi imputent-ils donc à Allah des associés parmi Ses serviteurs tandis qu’eux-mêmes refusent que leurs esclaves soient leurs associés et leurs égaux? Comment qualifier cette injustice et quelle ingratitude est plus grave que celle-là?"
+    },
+    {
+      "ayah_number": 72,
+      "text": "Ô gens, Allah a créé de votre espèce, des personnes du sexe opposé qui vous tiennent compagnie et vous a permis d’avoir une progéniture que vous concevez avec ces personnes du sexe opposé. En plus de cela, Il vous a fait don de bonnes nourritures comme la viande, les grains et les fruits. Malgré cela ils croient aux fausses divinités que sont les idoles, ils renient les innombrables bienfaits d’Allah et ils ne se montrent pas reconnaissants envers Lui en l’adoptant comme Seul Dieu."
+    },
+    {
+      "ayah_number": 73,
+      "text": "Ces polythéistes adorent au lieu d’Allah des idoles qui n’ont pas le pouvoir de leur faire don d’une subsistance venant des Cieux ou de la Terre. Il est évident qu’ils ne peuvent pas avoir ce pouvoir puisque ce sont des corps inertes qui ne sont pas vivant et qui ne détiennent aucune connaissance."
+    },
+    {
+      "ayah_number": 74,
+      "text": "Ô gens, ne donnez pas à Allah des égaux parmi ces idoles qui n’ont ni le pouvoir d’être utiles, ni le pouvoir d’être nuisibles. En effet, Allah n’a pas d’égaux méritant de Lui être associés dans l’adoration. Il connaît le mieux les attributs de la majesté et de la perfection que sont les Siens, tandis que vous n’en connaissez rien, ce qui vous amène à lui associer des idoles et à prétendre que celles-ci Lui sont égales."
+    },
+    {
+      "ayah_number": 75,
+      "text": "Allah énonce la parabole suivante à l’adresse des polythéistes: Que disent-ils d’un esclave, propriété d’un autre homme, incapable de prendre la moindre décision et ne possédant rien à dépenser, et d’un homme libre à qui Nous avons donné des richesses licites dont il dispose à sa guise, en dépensant ce qu’il veut publiquement et secrètement? Ces deux hommes ne sont certainement pas égaux. Comment affirmez-vous donc qu’Allah, le Propriétaire et Celui qui dispose de Sa propriété comme bon Lui semble, est l’égal de vos idoles impuissantes? Louange à Allah, Celui qui mérite qu’on Le loue ! La plupart des polythéistes ne savent pas que l’attribut de la Divinité est l’apanage d’Allah Seul et que Lui Seul mérite d’être adoré."
+    },
+    {
+      "ayah_number": 76,
+      "text": "Allah énonce une seconde parabole à l’attention des polythéistes: Que disent-ils des deux hommes suivants? Le premier est muet, sourd, incapable de comprendre en raison de ces deux handicaps et ne peut être utile, ni à lui-même ni à autrui. Cet homme est une lourde charge pour celui qui subvient à ses besoins et gère ses affaires puisque quand son tuteur s’en remet à lui pour accomplir quelque chose, il n’apporte rien de bon ni ne remplit sa mission. Le second a une ouïe saine et une bonne élocution, ce qui fait de lui quelqu’un d’utile à lui-même et à autrui. Il ordonne ainsi aux gens d’être justes et lui-même est droit, empruntant de ce fait une voie claire ne comportant ni ambigüité ni tortuosité. Ces deux hommes sont-ils égaux? Ô polythéistes, comment pouvez-vous mettre sur un même pied d’égalité, Allah, Celui qui détient les attributs de la majesté et de la perfection, et vos idoles, sourdes et muettes, incapable d’être d’une quelconque utilité ou d’une quelconque nuisance?"
+    },
+    {
+      "ayah_number": 77,
+      "text": "Allah Seul est au fait de ce qui est invisible dans les Cieux et sur Terre. Il détient donc une connaissance exclusive à ce sujet. La survenance de la Résurrection, qui est l’une des connaissances relevant de l’Invisible qu’Il est le Seul à détenir, sera lorsque Nous en déciderons aussi rapide qu’un clignement d’œil ou même plus rapide. Allah a pouvoir sur toute chose et rien ne Lui est impossible: lorsqu’Il veut quelque chose, Il lui dit « Kun (sois) » et il est aussitôt."
+    },
+    {
+      "ayah_number": 78,
+      "text": "Ô gens, Allah vous a fait sortir des ventres de vos mères au terme de leur grossesse sous l’apparence de nourrissons ne détenant aucun savoir et Il vous a fait comme dons l’ouïe afin que puissiez entendre, la vue afin que vous puissiez voir et le cœur afin que vous puissiez raisonner. Peut-être qu’en ayant connaissance de ces dons Lui en serez-vous reconnaissants."
+    },
+    {
+      "ayah_number": 79,
+      "text": "Les polythéistes n’ont-ils pas regardé les oiseaux à qui ont été octroyés les ailes nécessaires pour voler? Allah ne les a-t-Il pas pourvus d’ailes et fait en sorte que l’air dans lequel ils se déplacent soit fluide? Allah leur a aussi inspiré d’ouvrir et de fermer leurs ailes et personne d’autre qu’Allah, l’Omnipotent, ne les retient de tomber. Cette disposition à voler et le fait qu’Allah retienne les oiseaux afin qu’ils ne tombent pas sont certes des indices adressés à des gens qui croient en Allah puisque ce sont eux qui se servent à leur avantage des indices et des enseignements."
+    },
+    {
+      "ayah_number": 80,
+      "text": "Des maisons que vous construisez en pierre et avec d’autres matériaux, Allah a fait des lieux où vous vous plaisez et vous sentez en sécurité. Il vous a aussi fourni des peaux de dromadaire, de vache et de mouton afin que vous en fabriquiez des tentes et des chapiteaux, ressemblant aux maisons des sédentaires, qu’il vous est facile de transporter lorsque vous déménagez et que vous dressez aisément lorsque vous vous installez. De même, Il mit à votre disposition la laine des moutons, le duvet des dromadaires et les poils des chèvres avec lesquels vous confectionnez des effets pour vos maisons, des vêtements et des couvertures dont vous vous servez pour un certain temps."
+    },
+    {
+      "ayah_number": 81,
+      "text": "Allah mit à votre disposition les ombres des arbres et des édifices afin que vous vous abritiez de la chaleur et Il a creusé des grottes et des cavernes dans les montagnes où vous cherchez refuge contre le froid, la chaleur et les attaques des ennemis. Il a fait en sorte que vous fabriquiez des tuniques et des vêtements en coton et avec d’autres matières afin de vous protéger de la chaleur et du froid et que vous fabriquiez des armures qui vous protègent contre les coups que vous vous assenez en temps de guerre, empêchant ainsi les armes de transpercer vos corps. De la même façon qu’Allah vous a accordé ces bienfaits, Il les parachève pour que, peut-être, vous vous soumettiez à Lui Seul et ne Lui associiez aucune divinité."
+    },
+    {
+      "ayah_number": 82,
+      "text": "S’ils rejettent la foi et refusent d’accorder du crédit à ce que tu apportes, sache ô Messager que tu n’es tenu que de transmettre ce qui t’a été ordonné de transmettre. Tu n’es donc pas chargé de les guider."
+    },
+    {
+      "ayah_number": 83,
+      "text": "Les polythéistes sont conscients des bienfaits dont Allah les comble et l’un de ces bienfaits est qu’Il leur a envoyé un Prophète. Seulement, ils renient l’ensemble de ces bienfaits, ne se montrent pas reconnaissants et démentent Ses messagers. Cela est vrai pour la plupart d’entre eux."
+    },
+    {
+      "ayah_number": 84,
+      "text": "Ô Messager, rappelle-toi du Jour où Allah ressuscitera de chaque peuple le messager qui lui a été envoyé afin d’attester de la foi de leurs croyants et de la mécréance de leurs mécréants. Ensuite, il ne sera pas permis aux mécréants de justifier leur mécréance et ils ne retourneront pas dans le bas monde afin d’œuvrer de manière à obtenir l’agrément de leur Seigneur. En effet, l’au-delà est une demeure de reddition de comptes et non une demeure où l’on œuvre."
+    },
+    {
+      "ayah_number": 85,
+      "text": "Ce Jour-là, les polythéistes injustes verront de leurs yeux le châtiment qui leur est préparé et qu’on ne reportera pas le moment où ils le subiront. Ils leur sera plutôt instantanément infligé et pour l’éternité."
+    },
+    {
+      "ayah_number": 86,
+      "text": "Lorsque les polythéistes verront dans l’au-delà leurs divinités qu’ils adoraient au lieu d’Allah, ils diront: Ô notre Seigneur, ce sont les associés que nous adorions à Ta place. Ils prononceront ces paroles afin de faire porter leurs péchés à leurs divinités, mais Allah ferra parler les divinités en question qui leur répondront: Ô polythéistes, vous mentiez lorsque vous adoriez des associés à Allah, car Allah n’a pas d’associé digne d’être adoré."
+    },
+    {
+      "ayah_number": 87,
+      "text": "Les polythéistes se résigneront alors et se soumettront à Allah Seul et leur invention, à savoir que leurs idoles intercèderont en leur faveur auprès d’Allah, partira en fumée."
+    },
+    {
+      "ayah_number": 88,
+      "text": "En plus du châtiment mérité pour leur mécréance, Nous ferons subir d’autres supplices à ceux qui ont mécru en Allah et ont détourné autrui de Son chemin puisqu’ils étaient eux-mêmes corrompus et corrupteurs."
+    },
+    {
+      "ayah_number": 89,
+      "text": "Ô Messager, rappelle-toi lorsque Nous ressusciterons de chaque peuple un messager issu de lui, qui parle sa langue et attestera de sa foi ou de sa mécréance et que Nous te convoquerons alors comme témoin pour attester de la foi ou de la mécréance de tous les peuples. Nous t’avons révélé le Coran afin d’exposer clairement tout ce qui nécessite d’être exposé: le licite, l’illicite, la récompense, la punition, etc… Nous l’avons révélé en guise de guidée vers la vérité pour les gens, de miséricorde pour ceux qui y croient et mettent en pratique ses enseignements et d’annonce des délices éternels qui attendent les croyants dans l’au-delà."
+    },
+    {
+      "ayah_number": 90,
+      "text": "Allah ordonne à Ses serviteurs la justice, qui consiste à s’acquitter des droits d’Allah et des droits des serviteurs et à ne pas favoriser quelqu’un lorsque l’on juge, si ce n’est avec raison. Il ordonne la bienfaisance, qui consiste à accomplir de bon cœur une bonne œuvre non obligatoire, comme faire l’aumône et pardonner à un offenseur. Il ordonne également de mettre à la disposition de ses proches tout ce dont ils ont besoin. D’autre part, Il défend tout ce qui est hideux comme paroles, à l’image des obscénités par exemple, et comme agissements, à l’image de la fornication. Il défend ce que la religion réprouve, c’est-à-dire tout péché, et interdit également l’injustice et l’arrogance. Allah vous explique ce qu’Il vous a ordonné et défendu dans ce verset en guise d’exhortation, allez-vous en déduire des enseignements?"
+    },
+    {
+      "ayah_number": 91,
+      "text": "Remplissez chaque engagement pris avec Allah ou avec les gens et ne commettez pas de parjure quand vous faites un serment solennellement appuyé par le nom d’Allah et que vous avez pris Allah à témoin de votre intention d’y rester fidèle. Allah sait ce que vous faites: rien de vos agissements ne Lui échappe et Il vous rétribuera en fonction de ceux-ci."
+    },
+    {
+      "ayah_number": 92,
+      "text": "Ne soyez pas des faibles d’esprit et des gens frivoles en rompant vos engagements. Vous seriez alors tels une femme idiote qui est incohérente dans son tissage: après l’avoir correctement terminé, elle le défait et revient à son point de départ. Elle se sera alors fatiguée à tisser et à défaire sans parvenir à un résultat. Par ailleurs, vous vous servez de vos serments comme ruses les uns contre les autres en ayant comme finalité que votre communauté soit plus nombreuse et plus forte que les communautés ennemies. Seulement, ce n’est que pour vous éprouver qu’Allah vous a imposé de remplir vos engagements: Allez-vous les remplir ou les rompre? Le Jour de la Résurrection, Allah tranchera certainement au sujet de ce que vous divergiez dans le bas monde et désignera qui est adepte du vrai ou du faux et qui est véridique ou menteur."
+    },
+    {
+      "ayah_number": 93,
+      "text": "Si Allah l’avait voulu, Il aurait fait de vous une seule communauté unanimement adepte du vrai, mais Allah égare qui Il veut par Sa justice en le détournant de la vérité et en ne lui faisant pas remplir ses engagements tandis qu’Il facilite cela par Sa grâce à qui Il veut et le Jour de la Résurrection, vous serez questionné au sujet de vos agissements dans le bas monde."
+    },
+    {
+      "ayah_number": 94,
+      "text": "Ne vous servez pas de vos engagements comme ruses les uns contre les autres, vous soumettant par ce comportement à vos passions qui vous dictent de rompre ou de tenir vos engagements selon l’humeur du moment. Si vous agissez ainsi, sachez que vos pieds glisseront du droit chemin après qu’ils y aient été fermement engagés et que vous goûterez au châtiment pour vous être ainsi égarés et avoir égaré autrui. Vous aurez même droit à un châtiment dédoublé."
+    },
+    {
+      "ayah_number": 95,
+      "text": "N’échangez pas la fidélité à l’engagement pris avec Allah contre une contrepartie méprisable. Le secours d’Allah dans le bas monde, le butin que vous prendrez ainsi que les délices éternels dans l’au-delà sont meilleurs pour vous, que ce que vous obtenez en échange de la rupture de votre engagement si vous saviez."
+    },
+    {
+      "ayah_number": 96,
+      "text": "Ô gens, toutes les richesses ainsi que tous les plaisirs et les délices que vous détenez prendront fin même s’ils sont immenses tandis que la rétribution d’Allah est inépuisable. Comment pouvez-vous donc préférer ce qui est éphémère à ce qui est éternel? Nous rétribuerons certainement ceux qui auront patiemment tenu leurs engagements et ne les auront pas rompus en leur attribuant pour récompense celle de leurs meilleures œuvres. Ainsi, Nous multiplierons chaque bonne œuvre accomplie par dix, par sept cent et même plus."
+    },
+    {
+      "ayah_number": 97,
+      "text": "Tout être humain, homme ou femme, ayant accompli une bonne œuvre conforme à la religion tout en étant croyant, Nous lui ferons vivre une vie agréable ici-bas en le rendant satisfait du décret d’Allah, en lui inspirant le contentement et en lui facilitant d’accomplir des actes d’obéissance. Puis dans l’au-delà, Nous les rétribuerons en leur attribuant pour récompense celle de leurs meilleures œuvres accomplies dans le bas monde."
+    },
+    {
+      "ayah_number": 98,
+      "text": "Ô croyant, lorsque tu veux réciter le Coran, demande d’abord à Allah de te protéger des insufflations de Satan, le banni de la miséricorde d’Allah."
+    },
+    {
+      "ayah_number": 99,
+      "text": "Satan n’a pas d’emprise sur ceux qui croient en Allah et qui s’en remettent à leur Seigneur dans toutes leurs affaires."
+    },
+    {
+      "ayah_number": 100,
+      "text": "Ses insufflations n’ont d’emprise que sur ceux qui le prennent pour allié et se soumettent à sa tentation, l’associant de ce fait à Allah puisque cette soumission revient à l’adorer avec Allah."
+    },
+    {
+      "ayah_number": 101,
+      "text": "Lorsque Nous abrogeons le jugement contenu dans un verset du Coran par un autre verset, sachant qu’Allah sait le mieux ce qu’Il abroge dans le Coran et ce qu’Il en garde, les mécréants disent: Ô Muħammad, tu n’es qu’un menteur qui invente des choses sur Allah. Seulement, la plupart d’entre eux ne savent pas que l’abrogation a une raison divine suprême."
+    },
+    {
+      "ayah_number": 102,
+      "text": "Ô Messager, dis-leur: C’est Gabriel qui est descendu avec ce Coran provenant d’Allah et contenant une vérité infaillible exempte de modification et d’altération. Ceci, afin de raffermir la foi de ceux qui croient en Allah à chaque fois qu’un verset est révélé et qu’un autre est abrogé, et afin que ce Livre soit pour eux un guide vers la vérité et une annonce de la récompense généreuse qui attend les croyants."
+    },
+    {
+      "ayah_number": 103,
+      "text": "Nous savons que les polythéistes disent: C’est un être humain qui inculque le Coran à Muħammad. Or ils mentent en prétendant cela car la langue parlée par celui dont ils prétendent qu’il lui inculque le Coran est étrangère à l’Arabie tandis que ce Coran a été révélé dans une langue arabe claire et extrêmement éloquente. Comment le Prophète aurait-il pu recevoir le Coran d’un homme qui parle une langue étrangère?"
+    },
+    {
+      "ayah_number": 104,
+      "text": "Allah ne facilite pas la guidée à ceux qui ne croient pas que Ses versets proviennent de Lui tant qu’ils persistent dans cette posture et ils subiront un châtiment douloureux en raison de leur mécréance en Allah et du démenti de Ses versets."
+    },
+    {
+      "ayah_number": 105,
+      "text": "Muħammad n’a pas attribué mensongèrement à Allah ce qui lui a été révélé. Ce sont plutôt ceux qui ne croient pas aux versets d’Allah qui inventent des mensonges car ils ne redoutent aucun châtiment ni n’espèrent pas de récompense. Ce sont ces mécréants qui sont des menteurs puisque le mensonge est une de leurs habitudes dont ils ne peuvent se passer."
+    },
+    {
+      "ayah_number": 106,
+      "text": "Celui qui mécroit en Allah après avoir eu la foi –excepté celui qui prononce des paroles de mécréance sous la contrainte mais dont le cœur est sereinement attaché à la foi et empli de certitude– ouvre délibérément son cœur à la mécréance qu’il choisit au détriment de la foi et s’y soumet avec des paroles, est un apostat. Les apostats subiront la colère et un châtiment terrible."
+    },
+    {
+      "ayah_number": 107,
+      "text": "Leur apostasie s’explique par le fait qu’ils préfèrent les décombres du bas monde remportés comme récompense pour leur mécréance, à l’au-delà. Allah ne facilite pas aux mécréants d’adhérer à la foi et les abandonne plutôt à leur propre sort."
+    },
+    {
+      "ayah_number": 108,
+      "text": "Ceux qui apostasient après avoir eu la foi, Allah a scellé leurs cœurs les rendant insensibles aux exhortations, leurs ouïes les rendant sourdes à ce qui leur est bénéfique et leurs vues les rendant aveugles face aux signes menant à la foi. Ces gens sont inattentifs aux causes du bonheur et du malheur et inconscients du châtiment qu’Allah leur réserve."
+    },
+    {
+      "ayah_number": 109,
+      "text": "En vérité, ce seront les perdants le Jour de la Résurrection car leur mécréance qui aura succédé à leur foi leur aura fait perdre leurs âmes et s’ils étaient restés fidèles à leur foi, ils seraient entrés au Paradis."
+    },
+    {
+      "ayah_number": 110,
+      "text": "Ô Messager, sache aussi que ton Seigneur est Pardonneur et Miséricordieux avec les croyants affaiblis qui ont migré de la Mecque vers Médine après que les polythéistes les aient persécutés et les aient éprouvés dans leur religion à un point tel qu’ils durent prononcer des paroles de mécréance alors que leurs cœurs étaient restés sereinement attachés à la foi. Ils ont ensuite lutté pour la cause d’Allah, afin que Sa parole soit la plus haute et celle des mécréants soit la plus basse, et ont enduré avec patience les peines de cette lutte. Après le trouble qu’ils ont vécu et la persécution qu’ils ont subie et qui leur a fait prononcer des paroles de mécréance, ton Seigneur leur pardonnera et sera miséricordieux avec eux car ils n’ont prononcé ces paroles que sous l’effet de la contrainte."
+    },
+    {
+      "ayah_number": 111,
+      "text": "Ô Messager, rappelle-toi du jour où chaque être humain viendra plaider sa cause et où la situation sera tellement grave que personne ne pensera à plaider pour autrui mais seulement pour lui-même. Chaque âme aura sa pleine rétribution pour le bien qu’elle aura accompli ou le mal qu’elle aura commis et elle ne sera nullement lésée par le retranchement de ses bonnes œuvres ou l’ajout de mauvaises œuvres."
+    },
+    {
+      "ayah_number": 112,
+      "text": "Allah énonce la parabole suivante: Prenons le cas d’une cité sure –la Mecque– dont les habitants sont en sécurité, tandis que les gens aux alentours subissent toutes sortes d’agressions, et dont la subsistance parvient à ses portes de toutes part sans difficulté. Comme ses habitants ont opposé de l’ingratitude à ces bienfaits et ne se sont pas montrés reconnaissants, Allah les rétribua par une faim et une terreur telles qu’on en voyait les effets sur leurs corps maigres et leurs visages apeurés. La faim et la peur devinrent ainsi pour eux de seconds vêtements, tel est ce qu’ils ont mérités pour leur mécréance et leur démenti."
+    },
+    {
+      "ayah_number": 113,
+      "text": "Un Messager –Muħammad– issu des gens de la Mecque et connu parmi eux pour sa loyauté et sa véracité, est venu à eux mais au lieu de croire en lui, ils démentirent ce qui lui a été révélé par son Seigneur et Allah abattit sur eux comme châtiment la faim et la terreur. Ces gens ont assurément commis une injustice à l’égard d’eux-mêmes en s’exposant à la perdition lorsqu’ils ont associé d’autres divinités à Allah et ont démenti Son Messager."
+    },
+    {
+      "ayah_number": 114,
+      "text": "Ô serviteurs, mangez des nourritures licites et savoureuses dont Allah vous a pourvus et faites montre de gratitude envers Allah en reconnaissant Ses bienfaits et en vous en servant de manière à mériter Son agrément si vous L’adorez réellement Seul et ne Lui associez aucune divinité."
+    },
+    {
+      "ayah_number": 115,
+      "text": "Allah vous a déclaré illicite de consommer les nourritures suivantes: La chair de bêtes non sacrifiées et qu’il est obligatoire de sacrifier( ), le sang versé, la chair de porc dans son ensemble ainsi que la chair de bêtes sacrifiées au nom d’un autre qu’Allah. Ces nourritures sont illicites lorsque l’on peut en consommer d’autres, mais si on est contraint par nécessité de les manger sans éprouver le désir de commettre un acte illicite, ni manger plus que la quantité faisant sortir du cadre de la nécessité, alors on ne commet aucun péché. Allah pardonne en effet cela et est miséricordieux en le permettant en cas de nécessité."
+    },
+    {
+      "ayah_number": 116,
+      "text": "Ô polythéistes, ne prétendez pas que telle chose est licite et telle autre illicite, alors que vos bouches profèrent des mensonges à l’encontre d’Allah dans l’intention de déclarer illicite ce qu’Il n’a pas déclaré illicite et de déclarer licite ce qu’Il pas déclaré licite. Ceux qui inventent des mensonges sur Allah n’obtiendront pas ce qu’ils désirent, ni n’échapperont à ce qu’ils redoutent"
+    },
+    {
+      "ayah_number": 117,
+      "text": "Pour avoir suivi leurs passions, ils jouiront du peu de choses que leur offre le bas monde et ils auront droit à un châtiment douloureux le Jour de la Résurrection."
+    },
+    {
+      "ayah_number": 118,
+      "text": "Nous avons déclaré illicites spécifiquement aux juifs, les aliments que Nous t’avons énumérés (verset 146 de Sourate Al-An’âm) et Nous n’avons pas été injuste en les leur interdisant. Ce sont plutôt eux qui ont été injustes envers eux-mêmes lorsqu’ils ont commis ce qui leur a valu d’être punis et Nous les avons alors châtiés pour leur transgression en leur interdisant ces aliments."
+    },
+    {
+      "ayah_number": 119,
+      "text": "Ô Messager, sache que ton Seigneur sera Pardonneur et Miséricordieux avec ceux qui commettent des péchés, même intentionnellement, en ignorant leurs conséquences puis se repentent à Allah de ce péché et réparent leurs fautes s’ils sont porté un quelconque préjudice."
+    },
+    {
+      "ayah_number": 120,
+      "text": "Abraham réunissait en lui les valeurs du bien, obéissait continuellement à son Seigneur, n’avait d’autre religion que l’Islam et n’était guère du nombre des polythéistes."
+    },
+    {
+      "ayah_number": 121,
+      "text": "Il était empli de gratitude pour les bienfaits dont Allah le comblait. Allah l’a choisis pour être prophète et l’a guidé vers la religion droite de l’Islam."
+    },
+    {
+      "ayah_number": 122,
+      "text": "Dans ce bas monde, Nous lui avons fait don de la Prophétie, de la mention élogieuse que les gens font de lui et une descendance vertueuse tandis que dans l’au-delà, il sera du nombre des vertueux installés dans les degrés les plus élevés du Paradis."
+    },
+    {
+      "ayah_number": 123,
+      "text": "Puis bien plus tard, Nous t’avons révélé ô Messager d’être fidèle à la confession d’Abraham concernant le monothéisme, le désaveu des mécréants, la diffusion de la religion d’Allah et la mise en application de Ses lois. De la même manière que lui, dévie de toutes les religions pour n’embrasser que l’Islam et sache qu’Abraham n’était pas un polythéiste, comme le prétendent ces gens, mais bien quelqu’un qui adorait exclusivement Allah."
+    },
+    {
+      "ayah_number": 124,
+      "text": "La vénération du Sabbat (as-sabtu, le samedi) n’a été imposée qu’aux juifs qui ont divergé à son sujet afin qu’ils délaissent durant ce jour, leurs préoccupations habituelles et se consacrent à l’adoration et après qu’ils aient refusé de vouer cette adoration à Allah le vendredi. Ô Messager, Allah jugera entre eux le Jour de la Résurrection et tranchera ce au sujet de quoi ils divergeaient, rétribuant alors chacun selon ce qu’il mérite."
+    },
+    {
+      "ayah_number": 125,
+      "text": "Ô Messager, prêche la religion de l’Islam et que tes disciples croyants fassent de même en adaptant la prédication à la situation de l’interlocuteur, à son intelligence et à sa disposition à répondre favorablement. Use ainsi de bons conseils incitatifs et dissuasifs et discute avec eux en disant poliment de bonnes paroles et en transmettant des idées pertinentes. Tu n’es pas tenu de guider les gens mais seulement de leur transmettre le Message. C’est ton Seigneur qui sait le mieux qui s’est égaré de la religion de l’Islam et qui sait le mieux qui y a été guidés. Que leur sort ne t’afflige pas."
+    },
+    {
+      "ayah_number": 126,
+      "text": "Lorsque vous voulez punir votre ennemi, infligez-lui le même mal qu’il vous a infligé sans aller au-delà et si vous êtes capables de vous retenir alors que vous avez le pouvoir de vous venger, alors la patience est un meilleur comportement que de le punir."
+    },
+    {
+      "ayah_number": 127,
+      "text": "Ô Messager, endure patiemment leurs offenses et si tu parviens à être patient, ce n’est que parce qu’Allah te facilite la patience. Ne sois pas attristé par le refus que t’opposent les mécréants et que ton cœur ne se resserre pas par appréhension pour leurs ruses et leurs stratagèmes."
+    },
+    {
+      "ayah_number": 128,
+      "text": "Allah est avec ceux qui Le craignent, lorsqu’ils délaissent les actes de désobéissance, accomplissent avec excellence les actes d’obéissance et se conforment à ce qu’Il leur a ordonnés. Il est avec eux par Son secours et Son soutien."
+    }
+  ]
+}
