@@ -22,14 +22,13 @@ for (const theme of THEMES) {
     await page.goto("/");
     const card = page.locator(".hp-card--surah").first();
     await expect(card).toBeVisible();
-    await expect(card).toHaveScreenshot(`surah-card-${theme}.png`, {
+    // Linux and Windows Chromium rasterize the same font metrics to different
+    // element heights; keep reviewed references per runner OS instead of
+    // weakening the pixel-difference threshold for both environments.
+    const platformSuffix = process.platform === "linux" ? "-linux" : "";
+    await expect(card).toHaveScreenshot(`surah-card-${theme}${platformSuffix}.png`, {
       animations: "disabled",
       caret: "hide",
-      // Font metrics vary by one CSS pixel between Windows and Linux. Keep
-      // the captured box aligned with the reviewed 102px reference so the
-      // screenshot comparison measures styling rather than runner rounding.
-      style:
-        ".hp-card--surah { box-sizing: border-box !important; height: 102px !important; min-height: 102px !important; max-height: 102px !important; }",
     });
   });
 }
