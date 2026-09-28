@@ -478,7 +478,11 @@ export function parseTajwid(text, riwaya = "hafs") {
   const source = String(text);
 
   if (!ANNOTATED_RIWAYAS.includes(riwaya)) {
-    return stabilizeTajwidSegments([{ text: source, ruleId: null }]);
+    // Strip any markup rather than pass it through: a Warsh segment must never
+    // be able to render `<rule …>` as literal Quran text.
+    return stabilizeTajwidSegments([
+      { text: stripTajweedMarkup(source), ruleId: null },
+    ]);
   }
 
   const cacheKey = `${riwaya}:${source}`;
@@ -487,7 +491,7 @@ export function parseTajwid(text, riwaya = "hafs") {
 
   const parsed = parseTajweedAnnotation(source);
   const result = stabilizeTajwidSegments(
-    parsed || [{ text: source, ruleId: null }],
+    parsed || [{ text: stripTajweedMarkup(source), ruleId: null }],
   );
   _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
   return result;

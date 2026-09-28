@@ -8,6 +8,7 @@ import {
   ruleFromClassName,
   stripTajweedMarkup,
 } from "../src/utils/tajwidAnnotation.js";
+import { parseTajwid } from "../src/data/tajwidRules.js";
 
 const require = createRequire(import.meta.url);
 /** Real Quran.com word-by-word capture committed in this repo (15:7). */
@@ -113,6 +114,34 @@ test("Tajwid OFF is a rendering choice, never a text choice", () => {
 });
 
 /* ── Rule coverage of the observed provider taxonomy ─────────────────── */
+
+test("QURAN_TEXT_INTEGRITY: no segment ever carries annotation markup", () => {
+  // A riwaya without an annotated source must render the plain Quran text, not
+  // the raw `<rule …>` markup: that markup is a transport format and printing it
+  // inside a verse would be a text-integrity failure, not a missing colour.
+  for (const riwaya of ["hafs", "warsh"]) {
+    for (const word of REAL_WORDS) {
+      for (const segments of [
+        parseTajwid(word.text_uthmani_tajweed, riwaya),
+        parseTajwid(word.text_uthmani, riwaya),
+      ]) {
+        const rendered = segments.map((segment) => segment.text).join("");
+        assert.equal(
+          /<[a-z][^>]*>/i.test(rendered),
+          false,
+          `${riwaya}: rendered text must never contain markup`,
+        );
+      }
+    }
+  }
+});
+
+test("Warsh never colours, even when handed an annotated string", () => {
+  const annotated = "إِ<rule class=ikhafa>ن</rule>َّهُ";
+  const segments = parseTajwid(annotated, "warsh");
+  assert.deepEqual(segments.map((segment) => segment.ruleId), [null]);
+  assert.equal(segments.map((segment) => segment.text).join(""), "إِنَّهُ");
+});
 
 test("every class the provider emits resolves to a rule", () => {
   // The 18 classes measured across seven surates. If the provider ever emits a
