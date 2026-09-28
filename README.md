@@ -135,7 +135,8 @@ public/
 ├── icons/*.png           # PWA icons
 tests/
 └── e2e/                  # Scénarios Playwright
-docs/                     # ARCHITECTURE.md, ROADMAP.md, QUICK_START.md
+docs/                     # design system + security/privacy (ARCHITECTURE.md and
+                          # ROADMAP.md live at the repository root)
 ```
 
 ---
