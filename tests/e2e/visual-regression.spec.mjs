@@ -28,7 +28,8 @@ for (const theme of THEMES) {
       // Font metrics vary by one CSS pixel between Windows and Linux. Keep
       // the captured box aligned with the reviewed 102px reference so the
       // screenshot comparison measures styling rather than runner rounding.
-      style: ".hp-card--surah { height: 102px !important; }",
+      style:
+        ".hp-card--surah { box-sizing: border-box !important; height: 102px !important; min-height: 102px !important; max-height: 102px !important; }",
     });
   });
 }
