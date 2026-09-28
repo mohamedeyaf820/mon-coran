@@ -15,7 +15,7 @@ import "../styles/domains/prayers-page.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
-import { PRAYER_KEYS } from "../services/prayerTimesService";
+import { PRAYER_KEYS, localDayKey } from "../services/prayerTimesService";
 import { POST_ADHAN_DUAS } from "../data/adhanDuas";
 
 /**
@@ -70,7 +70,7 @@ export default function PrayersPage() {
 
   const togglePrayer = useCallback(
     async (prayerKey) => {
-      const dayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      const dayKey = localDayKey(now);
       const wasPrayed = log[dayKey]?.[prayerKey]?.p === true;
       const { markPrayer } = await import("../services/prayerLogService");
       markPrayer(dayKey, prayerKey, wasPrayed ? null : "prayed");
@@ -79,7 +79,7 @@ export default function PrayersPage() {
     [log, now, refreshLog],
   );
 
-  const todayEntries = log[`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`] || {};
+  const todayEntries = log[localDayKey(now)] || {};
   const timings = prayer.status === "ready" ? prayer.data.timings : null;
 
   const week = useMemo(() => {
@@ -90,7 +90,7 @@ export default function PrayersPage() {
     for (let i = 0; i < 7; i += 1) {
       const date = new Date(start);
       date.setDate(start.getDate() + i);
-      const entries = log[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] || {};
+      const entries = log[localDayKey(date)] || {};
       days.push({
         date,
         future: date > now,
@@ -107,7 +107,7 @@ export default function PrayersPage() {
     const days = [];
     for (let day = 1; day <= last.getDate(); day += 1) {
       const date = new Date(now.getFullYear(), now.getMonth(), day);
-      const entries = log[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] || {};
+      const entries = log[localDayKey(date)] || {};
       days.push({
         date,
         future: date > now,

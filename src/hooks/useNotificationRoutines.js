@@ -53,13 +53,26 @@ export function useNotificationRoutines({
           ...(prayerNotifications || {}),
         };
         const now = new Date();
+        // The planner asks about the same day for every item, so decode the key
+        // once per day instead of decrypting the whole log in the per-item loop.
+        const answersByDay = new Map();
+        const dayAnswers = (dayKey) => {
+          if (!answersByDay.has(dayKey)) {
+            const day = logModule.dayKeyToDate(dayKey);
+            answersByDay.set(dayKey, day ? logModule.getDayAnswers(day) : {});
+          }
+          return answersByDay.get(dayKey);
+        };
         const items = plannerModule.planDayNotifications({
           timings: data.timings,
           prefs,
           now,
           isNotified: logModule.hasNotified,
           shouldSkip: (dayKey, prayerKey, kind) => {
-            const answers = logModule.getDayAnswers(new Date(dayKeyToNow(dayKey)));
+            // The stored key carries a 0-based month; reading it back with the
+            // 1-based shape looked up the previous month's answers, so a prayer
+            // the reader had already marked still earned its reminders.
+            const answers = dayAnswers(dayKey);
             if (answers[prayerKey] === "prayed") return true;
             // A pre-nudged past its prayer time is useless; a "pas encore"
             // answer already produced its snooze nudge.
@@ -219,9 +232,4 @@ export function useNotificationRoutines({
       active = false;
     };
   }, [dailyVerseNotification, lang]);
-}
-
-function dayKeyToNow(dayKey) {
-  const [year, month, date] = String(dayKey).split("-").map(Number);
-  return new Date(year, month - 1, date, 12).getTime();
 }

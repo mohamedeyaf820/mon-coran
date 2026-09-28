@@ -1,9 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchTodayTimings, getNextPrayer } from "../services/prayerTimesService";
-
-function dayKeyOf(date) {
-  return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
-}
+import { fetchTodayTimings, getNextPrayer, localDayKey } from "../services/prayerTimesService";
 
 /**
  * Owns the prayer-times fetch lifecycle for the home surface: cache-first
@@ -14,7 +10,7 @@ export function usePrayerTimes({ enabled, location, method, offsets, now }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
-  const dayKey = dayKeyOf(now);
+  const dayKey = localDayKey(now);
   const locationReady = Boolean(location);
   const requestRef = useRef(0);
 
