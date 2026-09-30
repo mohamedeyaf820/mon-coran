@@ -1660,14 +1660,12 @@ html[data-theme="sepia"] .sidebar-link:hover {
     color: #3d2b10;
 }
 
-html[data-theme="sepia"] .app-root .hp-wrapper,
-html[data-theme="sepia"] .app-root .home-wrapper {
+html[data-theme="sepia"] .app-root .hp-wrapper {
     background: transparent;
 }
 
 html[data-theme="sepia"] .app-root .hp-grid > *,
-html[data-theme="sepia"] .app-root .surah-card,
-html[data-theme="sepia"] .app-root .home-card {
+html[data-theme="sepia"] .app-root .surah-card {
     border-color: rgba(139, 107, 62, 0.16);
     background: linear-gradient(
         180deg,
@@ -1676,8 +1674,7 @@ html[data-theme="sepia"] .app-root .home-card {
     );
 }
 
-html[data-theme="sepia"] .app-root .surah-card:hover,
-html[data-theme="sepia"] .app-root .home-card:hover {
+html[data-theme="sepia"] .app-root .surah-card:hover {
     border-color: rgba(181, 125, 42, 0.3);
     background: linear-gradient(
         180deg,

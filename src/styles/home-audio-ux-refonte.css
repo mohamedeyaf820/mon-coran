@@ -295,7 +295,6 @@ html.dark .home-content-section {
    :hover reste actif après le tap et la carte demeure levée. */
 @media (hover: hover) and (pointer: fine) {
   .hp-card:hover,
-  .home-reciter-card:hover,
   .reciter-card:hover,
   [data-reciter-card="true"]:hover {
     transform: translateY(-2px);
@@ -344,7 +343,6 @@ html.dark .home-content-toolbar {
   color: color-mix(in srgb, var(--theme-text-muted, #64748b) 92%, var(--theme-text, #111827));
 }
 
-.home-reciter-card,
 .reciter-card,
 [data-reciter-card="true"] {
   min-height: 184px;
@@ -383,8 +381,6 @@ html.dark .home-content-toolbar {
   margin-top: auto;
 }
 
-html[data-theme="dark"] .home-reciter-card,
-html.dark .home-reciter-card,
 html[data-theme="dark"] .reciter-card,
 html.dark .reciter-card,
 html[data-theme="dark"] [data-reciter-card="true"],
@@ -584,11 +580,6 @@ html.dark [data-reciter-card="true"] {
   outline-offset: 3px;
 }
 
-.app-root .home-audio-speed-button[aria-pressed="true"] {
-  background: var(--primary, #0b6235) !important;
-  color: var(--theme-text-inverse, #fff) !important;
-}
-
 .audio-player-modal button:focus-visible,
 .mp-audio-player button:focus-visible,
 .home-content-section button:focus-visible,
@@ -694,11 +685,6 @@ html.dark .audio-player-modal__surface {
   .hp-wrapper {
     width: min(100%, var(--home-shell-max));
     padding-block: 0.75rem calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.25rem);
-  }
-
-  .home-hero-actions > button {
-    width: 100%;
-    justify-content: center;
   }
 
   .home-content-toolbar {
@@ -857,10 +843,6 @@ html.dark .audio-player-modal__surface {
 
 .app-root > .mp-header .mp-header__more {
   display: inline-flex !important;
-}
-
-.home-hero-actions {
-  margin-top: clamp(1.05rem, 2vw, 1.45rem);
 }
 
 .home-content-section {
@@ -1566,126 +1548,16 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
   }
 }
 
-
-html body .app-root[data-view="home"] .home-top-cards-grid {
-  display: grid !important;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-  align-items: stretch !important;
-  gap: clamp(0.7rem, 1.2vw, 0.95rem);
-  width: min(100%, 1240px) !important;
-  margin: clamp(0.85rem, 1.6vw, 1.15rem) auto 0;
-}
-
-html body .app-root[data-view="home"] .home-top-cards-grid > * {
-  min-width: 0 !important;
-  height: 100% !important;
-  padding: clamp(0.9rem, 1.3vw, 1.1rem);
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--theme-border, var(--border)) 78%, transparent);
-  border-radius: 1.1rem;
-  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 96%, var(--primary) 4%) !important;
-  box-shadow: 0 10px 28px rgba(12, 32, 24, 0.07);
-}
-
-html body .app-root[data-view="home"] .home-prayer-list {
-  display: grid !important;
-  grid-template-columns: minmax(0, 1fr) !important;
-  align-content: start !important;
-  gap: 0.2rem;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item {
-  display: grid !important;
-  grid-template-columns: 1.75rem minmax(0, 1fr) auto !important;
-  min-width: 0 !important;
-  min-height: 2.55rem !important;
-  gap: 0.5rem;
-  padding: 0.35rem 0.45rem;
-  border-radius: 0.75rem;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item > :first-child {
-  width: 1.75rem !important;
-  height: 1.75rem !important;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item > span {
-  min-width: 0 !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap !important;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
-  border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.2);
-  background: rgba(var(--primary-rgb, 11, 98, 53), 0.075) !important;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] > span:last-child {
-  flex: none !important;
-  padding: 0.2rem 0.42rem;
-  font-size: 0.54rem !important;
-  letter-spacing: 0.04em;
-  animation: none;
-}
-
 @media (hover: hover) {
-  html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
-    border-color: rgba(var(--primary-rgb, 11, 98, 53), 0.22);
-    box-shadow: 0 14px 34px rgba(12, 32, 24, 0.1);
-    transform: translateY(-2px);
-  }
-}
-
-html[data-theme="dark"] body .app-root[data-view="home"] .home-top-cards-grid > *,
-html.dark body .app-root[data-view="home"] .home-top-cards-grid > *,
-html[data-theme="quran-night"] body .app-root[data-view="home"] .home-top-cards-grid > *,
-html[data-theme="oled"] body .app-root[data-view="home"] .home-top-cards-grid > * {
-  border-color: rgba(176, 201, 187, 0.14);
-  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-secondary)) 95%, var(--primary) 5%) !important;
-  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.24);
-}
-
-html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > * {
-  border-color: rgba(139, 107, 62, 0.17);
-  background: color-mix(in srgb, var(--theme-panel-bg-strong, var(--bg-primary)) 95%, #b57d2a 5%) !important;
-  box-shadow: 0 12px 30px rgba(72, 55, 35, 0.08);
 }
 
 @media (max-width: 1199px) {
-  html body .app-root[data-view="home"] .home-top-cards-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  html body .app-root[data-view="home"] .home-prayer-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
-    grid-column: 1 / -1 !important;
-  }
 }
 
 @media (max-width: 680px) {
-  html body .app-root[data-view="home"] .home-top-cards-grid {
-    grid-template-columns: minmax(0, 1fr) !important;
-    gap: 0.45rem;
-  }
-
-  html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    padding: 0.62rem;
-    border-radius: 0.78rem;
-  }
 }
 
 @media (max-width: 390px) {
-  html body .app-root[data-view="home"] .home-prayer-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
-    grid-column: auto !important;
-  }
 }
 
 @media (max-width: 380px) {

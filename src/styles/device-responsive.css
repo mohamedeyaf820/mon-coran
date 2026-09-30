@@ -1440,10 +1440,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     padding-inline: 0 !important;
   }
 }
-.home-mobile-quick-disclosure > .home-info-panel { display: block; }
 @media (max-width: 640px) {
   .home-mobile-quick-disclosure:not([open]) > .home-info-panel { display: none; }
-  .home-mobile-quick-disclosure[open] > .home-info-panel { margin-top:.55rem; }
 }
 
 /* Mobile reader header: preserve a clear path back home. */

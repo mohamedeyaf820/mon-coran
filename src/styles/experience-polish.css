@@ -1,150 +1,3 @@
-html body .app-root[data-view="home"] .home-quick-tabs {
-  min-height: 3.15rem !important;
-  padding: 0.35rem 0.45rem 0;
-  gap: 0.25rem;
-  border-color: color-mix(in srgb, var(--border) 72%, transparent);
-  background: color-mix(in srgb, var(--bg-secondary) 90%, var(--primary) 10%) !important;
-}
-
-html body .app-root[data-view="home"] .home-quick-tab {
-  min-height: 2.55rem !important;
-  padding: 0.55rem 0.8rem;
-  border: 0;
-  border-radius: 0.78rem 0.78rem 0 0;
-  color: var(--text-secondary) !important;
-  font-size: 0.76rem !important;
-  font-weight: 690 !important;
-}
-
-html body .app-root[data-view="home"] .home-quick-tab[aria-selected="true"] {
-  background: var(--bg-card) !important;
-  color: var(--primary) !important;
-  box-shadow: 0 -1px 0 color-mix(in srgb, var(--primary) 26%, transparent),
-    inset 0 2px var(--primary);
-}
-
-html body .app-root[data-view="home"] .home-quick-body {
-  max-height: 21rem !important;
-  gap: 0.42rem;
-  padding: 0.7rem;
-  background:
-    radial-gradient(circle at 100% 0, color-mix(in srgb, var(--primary) 7%, transparent), transparent 32%),
-    var(--bg-card) !important;
-}
-
-html body .app-root[data-view="home"] .home-suggestion-heading {
-  min-height: 2.2rem !important;
-  margin: 0 0 0.15rem;
-  padding: 0.45rem 0.7rem;
-  border: 1px solid color-mix(in srgb, var(--primary) 26%, var(--border));
-  border-radius: 0.72rem;
-  background: color-mix(in srgb, var(--bg-secondary) 88%, var(--primary) 12%) !important;
-  color: var(--primary) !important;
-  letter-spacing: 0.01em;
-}
-
-html body .app-root[data-view="home"] .home-quick-row {
-  display: grid !important;
-  width: 100% !important;
-  grid-template-columns: 2.35rem minmax(8rem, 1fr) minmax(5.25rem, auto) 1.8rem !important;
-  align-items: center !important;
-  justify-content: normal !important;
-  min-height: 3.45rem !important;
-  gap: 0.65rem;
-  padding: 0.42rem 0.55rem;
-  border: 1px solid transparent;
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--bg-secondary) 72%, transparent) !important;
-}
-
-html body .app-root[data-view="home"] .home-quick-row:hover,
-html body .app-root[data-view="home"] .home-quick-row:focus-visible {
-  border-color: color-mix(in srgb, var(--primary) 25%, var(--border));
-  background: color-mix(in srgb, var(--bg-secondary) 86%, var(--primary) 14%) !important;
-  box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 9%, transparent);
-  transform: translateX(2px);
-}
-
-html body .app-root[data-view="home"] .home-quick-row > span:first-child {
-  justify-self: center !important;
-  width: 2.25rem !important;
-  height: 2.25rem !important;
-  border-color: color-mix(in srgb, var(--primary) 34%, var(--border));
-  border-radius: 50%;
-  background: var(--bg-card) !important;
-  box-shadow: none;
-  font-variant-numeric: tabular-nums;
-}
-
-html body .app-root[data-view="home"] .home-quick-row strong {
-  color: var(--text-primary) !important;
-  font-size: 0.79rem !important;
-  line-height: 1.3 !important;
-  white-space: normal !important;
-}
-
-html body .app-root[data-view="home"] .home-quick-row > span:nth-child(3) {
-  width: 5.25rem;
-  justify-self: center;
-  overflow: visible;
-  color: color-mix(in srgb, var(--text-primary) 72%, var(--primary) 28%) !important;
-  font-size: 1.4rem !important;
-  text-align: end !important;
-}
-
-html body .app-root[data-view="home"] .home-quick-row > span:last-child {
-  justify-self: end;
-  width: 1.75rem !important;
-  height: 1.75rem !important;
-  background: color-mix(in srgb, var(--primary) 9%, transparent) !important;
-  color: var(--primary) !important;
-}
-
-
-html body .app-root[data-view="home"] .home-top-cards-grid {
-  container-type: inline-size;
-  gap: clamp(0.75rem, 1.3vw, 1rem);
-}
-
-html body .app-root[data-view="home"] .home-top-cards-grid > * {
-  position: relative;
-  isolation: isolate;
-  padding: clamp(0.9rem, 1.35vw, 1.15rem);
-  border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
-  border-radius: 1.15rem;
-  background:
-    linear-gradient(152deg, color-mix(in srgb, var(--bg-card) 97%, var(--primary) 3%), var(--bg-card)) !important;
-  box-shadow: 0 12px 32px color-mix(in srgb, var(--text-primary) 7%, transparent);
-}
-
-html body .app-root[data-view="home"] .home-top-cards-grid > *::after {
-  content: "";
-  position: absolute;
-  inset: 0.7rem auto 0.7rem 0;
-  z-index: -1;
-  width: 3px;
-  border-radius: 0 999px 999px 0;
-  background: linear-gradient(var(--primary), color-mix(in srgb, var(--primary) 38%, #d1a83b 62%));
-  opacity: 0.72;
-}
-
-html body .app-root[data-view="home"] .home-top-cards-grid > *:hover {
-  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
-  box-shadow: 0 18px 40px color-mix(in srgb, var(--primary) 11%, transparent);
-}
-
-html body .app-root[data-view="home"] .home-prayer-item {
-  min-height: clamp(2.1rem, 3vw, 2.35rem) !important;
-  border: 1px solid transparent;
-}
-
-html body .app-root[data-view="home"] .home-prayer-item[data-active="true"] {
-  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
-  background: color-mix(in srgb, var(--bg-secondary) 78%, var(--primary) 22%) !important;
-  box-shadow: inset 3px 0 var(--primary);
-}
-
-
 html body .app-root[data-view="home"] .hp-grid.hp-grid--reciters {
   container-type: inline-size;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 26rem), 1fr)) !important;
@@ -848,31 +701,11 @@ html body .app-root[data-view="duas"] .duas-page--platform .dua-open-btn-v5 svg 
   transform: none;
 }
 
-html[data-theme="sepia"] body .app-root[data-view="home"] .home-top-cards-grid > *,
 html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
   border-color: color-mix(in srgb, var(--border) 76%, #a9782d 24%);
 }
 
 @media (max-width: 760px) {
-  html body .app-root[data-view="home"] .home-quick-body {
-    max-height: none !important;
-  }
-
-  html body .app-root[data-view="home"] .home-quick-row {
-    grid-template-columns: 2.15rem minmax(0, 1fr) minmax(4.3rem, auto) 1.6rem !important;
-    min-height: 3.25rem !important;
-    gap: 0.48rem;
-    padding-inline: 0.4rem;
-  }
-
-  html body .app-root[data-view="home"] .home-quick-row > span:first-child {
-    width: 2rem !important;
-    height: 2rem !important;
-  }
-
-  html body .app-root[data-view="home"] .home-quick-row > span:nth-child(3) {
-    font-size: 1.2rem !important;
-  }
 
   html body .app-root[data-view="home"] .reciter-card {
     min-height: 5.1rem !important;
@@ -914,23 +747,9 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
 }
 
 @media (min-width: 520px) and (max-width: 760px) {
-  html body .app-root[data-view="home"] .home-top-cards-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-  }
-
-  html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    padding: 0.78rem;
-  }
 }
 
 @media (max-width: 430px) {
-  html body .app-root[data-view="home"] .home-quick-row {
-    grid-template-columns: 2rem minmax(0, 1fr) 4rem 1.5rem !important;
-  }
-
-  html body .app-root[data-view="home"] .home-quick-row strong {
-    font-size: 0.74rem !important;
-  }
 
   html body .app-root[data-view="home"] .reciter-card {
     grid-template-columns: minmax(0, 1fr) auto !important;
@@ -948,11 +767,6 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body .app-root[data-view="home"] .home-quick-row,
-  html body .app-root[data-view="home"] .home-top-cards-grid > * {
-    transition: none;
-    transform: none;
-  }
 }
 
 /* ── Verset en cours de lecture — animation subtile ─────────── */
@@ -1208,7 +1022,6 @@ html {
 /* All main scrollable containers: GPU-promoted scroll */
 .app-root,
 .main-content,
-.home-scroll,
 .reading-scroll,
 [class*="scroll-container"],
 [class*="scrollable"] {
