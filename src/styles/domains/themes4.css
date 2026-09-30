@@ -619,6 +619,7 @@
 /* Day themes own one stable semantic contract. Feature CSS may consume these
    variables, but must not redefine them when a lazy route is loaded. */
 :root[data-theme="light"] {
+    color-scheme: light;
     --theme-bg: #f7f9f8;
     --theme-bg-alt: #eef4f0;
     --theme-surface: #ffffff;
@@ -649,6 +650,7 @@
 }
 
 :root[data-theme="sepia"] {
+    color-scheme: light;
     --theme-bg: #f3e8cf;
     --theme-bg-alt: #ead9b8;
     --theme-surface: #fff6e3;
