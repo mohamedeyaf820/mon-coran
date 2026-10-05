@@ -46,6 +46,8 @@ test("A11y: les notifications utilisent la langue de l'interface", async ({ page
     );
   });
   await page.goto("/");
+  // The app mounts once the reading language chunk has loaded.
+  await page.locator("#main-content").waitFor();
   await page.evaluate(() => {
     window.dispatchEvent(
       new CustomEvent("quran-toast", {

@@ -4,6 +4,9 @@ import { initErrorAnalytics } from "./services/errorAnalytics.js";
 import { clearMushafRuntimeCaches } from "./services/runtimeCacheService.js";
 
 import App from "./App";
+import { ensureLocale } from "./i18n";
+import { getSettings } from "./services/storageService";
+import { getProtectionUiLanguage, isProtectedStorageLocked } from "./services/cryptoUtil";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { AppProvider } from "./context/AppContext";
 import PrivacyLockGate from "./components/PrivacyLockGate";
@@ -133,17 +136,25 @@ if (!rootElement) {
   document.body.replaceChildren(fallback);
 } else {
   initErrorAnalytics();
-  ReactDOM.createRoot(rootElement).render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <PrivacyLockGate>
-          <AppProvider>
-            <App />
-          </AppProvider>
-        </PrivacyLockGate>
-      </ErrorBoundary>
-    </React.StrictMode>,
-  );
+  // The reading language must be translatable before the first paint; French
+  // is bundled, English and Arabic load as small chunks.
+  const mountApp = () => {
+    ReactDOM.createRoot(rootElement).render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <PrivacyLockGate>
+            <AppProvider>
+              <App />
+            </AppProvider>
+          </PrivacyLockGate>
+        </ErrorBoundary>
+      </React.StrictMode>,
+    );
+  };
+  // Never read the settings while protected storage is locked: that path would
+  // treat the encrypted blob as corrupt. The lock screen has its own language.
+  const bootLang = isProtectedStorageLocked() ? getProtectionUiLanguage() : getSettings().lang;
+  ensureLocale(bootLang).catch(() => null).finally(mountApp);
   // All observers use buffered entries, so installing them after the first
   // paint preserves startup metrics without making their code part of the
   // critical JavaScript entry.

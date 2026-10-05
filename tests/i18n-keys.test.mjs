@@ -5,6 +5,9 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 
 import { t } from "../src/i18n/index.js";
+import { ensureLocale } from "../src/i18n/index.js";
+// English and Arabic are lazy chunks in the app; tests read every language.
+await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
 
 const SRC = fileURLToPath(new URL("../src", import.meta.url));
 

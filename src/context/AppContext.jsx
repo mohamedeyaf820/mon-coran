@@ -10,6 +10,7 @@ import React, {
   useSyncExternalStore,
 } from "react";
 import { getSettings, mergeSettings } from "../services/storageService";
+import { ensureLocale, getLocaleVersion } from "../i18n";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import {
   normalizeDayTheme,
@@ -844,15 +845,36 @@ export function AppProvider({ children }) {
     document.documentElement.lang = state.lang;
   }, [state.lang]);
 
+  // A language other than French is a lazily loaded chunk. Wait for it before
+  // switching (Settings), so the screen never flashes French copy; the effect
+  // below covers the paths that set the language without going through set().
   const set = useCallback(
-    (payload) => dispatch({ type: "SET", payload }),
+    (payload) => {
+      if (payload?.lang) {
+        ensureLocale(payload.lang).catch(() => null).finally(() => dispatch({ type: "SET", payload }));
+        return;
+      }
+      dispatch({ type: "SET", payload });
+    },
     [dispatch],
   );
 
+  const [localeTick, bumpLocale] = React.useReducer((tick) => tick + 1, 0);
+  useEffect(() => {
+    let active = true;
+    const before = getLocaleVersion();
+    ensureLocale(state.lang).then(() => {
+      if (active && getLocaleVersion() !== before) bumpLocale();
+    }).catch(() => null);
+    return () => {
+      active = false;
+    };
+  }, [state.lang]);
+
   const actionsValue = useMemo(() => ({ dispatch, set }), [dispatch, set]);
   const localeValue = useMemo(
-    () => ({ lang: state.lang, riwaya: state.riwaya }),
-    [state.lang, state.riwaya],
+    () => ({ lang: state.lang, riwaya: state.riwaya, localeTick }),
+    [state.lang, state.riwaya, localeTick],
   );
   const appValue = useMemo(
     () => ({ state, dispatch, set }),

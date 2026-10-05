@@ -5,6 +5,9 @@ import ar from "../src/i18n/ar.js";
 import en from "../src/i18n/en.js";
 import fr from "../src/i18n/fr.js";
 import { t } from "../src/i18n/index.js";
+import { ensureLocale } from "../src/i18n/index.js";
+// English and Arabic are lazy chunks in the app; tests read every language.
+await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
 
 function flattenLocale(value, prefix = "", output = new Map()) {
   for (const [key, child] of Object.entries(value)) {

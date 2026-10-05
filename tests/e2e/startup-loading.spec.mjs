@@ -78,7 +78,10 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // Raised 7 -> 9 with the 2026-09-26 ceiling commit: the e2e job had not run
   // since 2026-09-24 because the quality job failed earlier in the chain, so
   // this drift was inherited rather than introduced here.
-  expect(initialModulePreloads.length).toBeLessThanOrEqual(9);
+  // Raised 9 -> 11 with the language split: the French dictionary (the fallback
+  // of every key, 32.9 kB) and a 1.2 kB helper became shared chunks of the boot
+  // graph, while English and Arabic moved out of it. Entry JS fell 236 -> 143 kB.
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(11);
   expect(logoBody.byteLength).toBeLessThan(40 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));

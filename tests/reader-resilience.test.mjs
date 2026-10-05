@@ -18,6 +18,9 @@ import {
   isChunkLoadError,
 } from "../src/components/QuranDisplay/readerLoadError.js";
 import locales from "../src/i18n/index.js";
+import { ensureLocale } from "../src/i18n/index.js";
+// English and Arabic are lazy chunks in the app; tests read every language.
+await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
 
 const readSource = (relativePath) =>
   fs

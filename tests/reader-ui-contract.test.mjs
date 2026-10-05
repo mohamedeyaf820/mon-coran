@@ -706,7 +706,8 @@ test("tajweed colours words through a text-clipped gradient, never a sub-word ra
 
 test("tafsir sources are grouped by language with the reading-aware ones first", async () => {
   const sidebar = source("src/components/TafsirSidebar.jsx");
-  const { default: locales } = await import("../src/i18n/index.js");
+  const { default: locales, ensureLocale } = await import("../src/i18n/index.js");
+  await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
 
   assert.match(sidebar, /<optgroup/);
   assert.match(sidebar, /TAFSIR_OPTIONS\.filter\(\(o\) => o\.lang === code\)/);
