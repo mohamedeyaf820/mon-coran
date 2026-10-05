@@ -1,4 +1,4 @@
-import { getPerWordTajweedColors } from '../src/data/tajwidRules.js';
+import { getWarshTajwidSourceStatus } from '../src/services/warshTajweedService.js';
 import {
   WARSH_DATA_BASE_URL,
   WARSH_LEGACY_JSON_URL,
@@ -146,27 +146,6 @@ function validateAgainstLegacy(primaryByKey, legacyRows) {
   }
 }
 
-function validateTajweedMappings(primaryByKey) {
-  let taggedWords = 0;
-
-  for (const [key, text] of primaryByKey) {
-    const words = text.split(/\s+/u).filter(Boolean);
-    const colors = getPerWordTajweedColors(text);
-    if (!Array.isArray(colors) || colors.length !== words.length) {
-      throw new Error(
-        `Tajweed mapping length mismatch at ${key}: words=${words.length}, colors=${colors?.length || 0}`,
-      );
-    }
-    taggedWords += colors.filter(Boolean).length;
-  }
-
-  if (taggedWords === 0) {
-    throw new Error('No Tajweed rules were mapped on the Warsh text');
-  }
-
-  return taggedWords;
-}
-
 async function main() {
   const [primaryPayloads, legacyRows] = await Promise.all([
     fetchPrimarySurahs(),
@@ -174,12 +153,14 @@ async function main() {
   ]);
   const primaryByKey = validatePrimarySurahs(primaryPayloads);
   validateAgainstLegacy(primaryByKey, legacyRows);
-  const taggedWords = validateTajweedMappings(primaryByKey);
+  const source = getWarshTajwidSourceStatus();
 
   console.log(
-    `Warsh integrity check: surahs=${primaryPayloads.length}, ayahs=${primaryByKey.size}, tajweedTags=${taggedWords}`,
+    `Warsh integrity check: surahs=${primaryPayloads.length}, ayahs=${primaryByKey.size}, tajweedStatus=${source.status}`,
   );
-  console.log('OK: both Warsh sources agree and Tajweed maps the Warsh text.');
+  console.log('Warsh text sources agree; this does not validate Tajwid annotations.');
+  console.log(JSON.stringify(source));
+  if (process.argv.includes('--require-annotations') && !source.annotationAvailable) throw new Error(source.status);
 }
 
 await main();

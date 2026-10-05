@@ -1,10 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { createRequire } from "node:module";
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { dirname, join } from "node:path";
 
 import {
+  normalizeTajwidAnnotation,
   hasTajweedMarkup,
+  isAnnotationAlignedForPaint,
   parseTajweedAnnotation,
+  QURAN_COM_CLASS_MAP,
   ruleFromClassName,
   stripTajweedMarkup,
 } from "../src/utils/tajwidAnnotation.js";
@@ -14,6 +20,9 @@ const require = createRequire(import.meta.url);
 /** Real Quran.com word-by-word capture committed in this repo (15:7). */
 const fixture = require("../tests/fixtures/word-coherence-15-7.json");
 const REAL_WORDS = fixture.words.filter((word) => word.text_uthmani_tajweed);
+
+const SRC = join(dirname(fileURLToPath(import.meta.url)), "..");
+const THEMES_CSS = readFileSync(join(SRC, "src/styles/domains/themes4.css"), "utf8");
 
 /* ── Parser ─────────────────────────────────────────────────────────── */
 
@@ -43,6 +52,55 @@ test("text without markup returns null so the caller keeps its own source", () =
   assert.equal(parseTajweedAnnotation(""), null);
   assert.equal(hasTajweedMarkup("بِسْمِ"), false);
   assert.equal(hasTajweedMarkup("إِ<rule class=ikhafa>ن</rule>"), true);
+});
+
+test("the verse-level <tajweed> tag is annotated like the word-level <rule> tag", () => {
+  // Captured live from api.quran.com /quran/verses/uthmani_tajweed (112:1),
+  // ayah marker already stripped the way quranComAPI.js strips it. The two
+  // fields carry the same annotation under different tag names, and the verse
+  // field used to parse as one uncoloured run.
+  const annotated =
+    "قُلْ هُوَ <tajweed class=ham_wasl>ٱ</tajweed>للَّهُ أَحَ<tajweed class=qalaqah>د</tajweed>ٌ";
+  const segments = parseTajweedAnnotation(annotated);
+
+  assert.deepEqual(
+    segments.filter((segment) => segment.ruleId).map((segment) => segment.ruleId),
+    ["ham-wasl", "qalqala"],
+  );
+  assert.equal(
+    segments.map((segment) => segment.text).join(""),
+    stripTajweedMarkup(annotated),
+  );
+});
+
+test("every class the provider emits resolves to a colour a theme declares", () => {
+  // The silent failure this guards: a class resolving to a rule id no theme
+  // colours prints `var(--tajwid-<id>)`, which resolves to nothing. ham_wasl is
+  // the alef of every ٱللَّه, so it was invisible across the whole Quran.
+  for (const className of Object.keys(QURAN_COM_CLASS_MAP)) {
+    assert.ok(
+      THEMES_CSS.includes(`--tajwid-${QURAN_COM_CLASS_MAP[className]}:`),
+      `${className} resolves to "${QURAN_COM_CLASS_MAP[className]}", which no theme colours`,
+    );
+  }
+});
+
+test("a word whose annotation reorders its characters is never painted", () => {
+  // 2:9, captured live: both strings hold six characters and the same letters,
+  // but the dagger alef sits before the lam in one and after it in the other.
+  // Length equality must not be enough, or the lam would be painted with the
+  // dagger alef's rule.
+  assert.equal(isAnnotationAlignedForPaint("ٱٰلَّذِينَ", "ٱلَّٰذِينَ"), false);
+});
+
+test("a different sukun code point is rejected without changing either text", () => {
+  assert.equal(isAnnotationAlignedForPaint("قُلۡ", "قُلْ"), false);
+});
+
+test("a word of another length is never painted", () => {
+  assert.equal(isAnnotationAlignedForPaint("بِسْمِ", "بِسْمِا"), false);
+  assert.equal(isAnnotationAlignedForPaint("", ""), true);
+  assert.equal(isAnnotationAlignedForPaint("بسم", ""), false);
 });
 
 test("an unknown class is left uncoloured rather than guessed", () => {
@@ -94,23 +152,19 @@ test("QURAN_TEXT_INTEGRITY: parsing is idempotent and never mutates its input", 
   }
 });
 
-test("Tajwid OFF is a rendering choice, never a text choice", () => {
-  // With the toggle off the app renders `text_uthmani`; with it on it renders
-  // the same characters plus colour. The two editions differ only in the sukun
-  // codepoint the provider prints (U+06E1 in the tajweed edition, U+0652 in the
-  // canonical one) — the project's own normaliser already equates them, so no
-  // letter, harakah or Quranic sign may differ.
-  // U+06E1 (the tajweed edition's sukun) is the same sign as the canonical
-  // U+0652; the project's own normaliser already equates the two. No letter,
-  // harakah or Quranic sign may differ between the two modes.
-  const toCanonicalSukun = (value) => value.replace(/\u06E1/g, "\u0652");
+test("Tajwid ON/OFF preserves canonical text; edition differences move spans, never letters", () => {
+  let mapped = 0;
   for (const word of REAL_WORDS) {
-    assert.equal(
-      toCanonicalSukun(stripTajweedMarkup(word.text_uthmani_tajweed)),
-      word.text_uthmani,
-      `${word.text_uthmani}: the two modes must not disagree beyond the sukun glyph`,
-    );
+    const result = normalizeTajwidAnnotation(word.text_uthmani, word.text_uthmani_tajweed);
+    assert.equal(result.segments.map(segment => segment.text).join(""), word.text_uthmani, "QURAN_TEXT_INTEGRITY_FAILURE");
+    if (stripTajweedMarkup(word.text_uthmani_tajweed) !== word.text_uthmani) {
+      // Either the spans were carried onto the displayed spelling or the word
+      // was refused and reported; text is identical in both cases.
+      if (result.alignment === "mapped") mapped++;
+      else assert.equal(result.diagnostic?.code, "QURAN_TEXT_INTEGRITY_FAILURE");
+    }
   }
+  assert.ok(mapped > 0, "the real fixture must exercise edition differences");
 });
 
 /* ── Rule coverage of the observed provider taxonomy ─────────────────── */

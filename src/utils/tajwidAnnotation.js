@@ -1,167 +1,171 @@
-/**
- * Quran.com Tajweed annotation parser.
- *
- * The v4 API ships `text_uthmani_tajweed`: the canonical Uthmani text with
- * inline `<rule class="...">…</rule>` spans wrapped around the characters each
- * recitation rule applies to, e.g.
- *
- *   إِ<rule class=ikhafa>ن</rule>
- *   بِ<rule class=ham_wasl>ٱ</rule>لۡمَلَ<rule class=madda_obligatory_mottasel>ـٰٓ</rule>ئِكَةِ
- *
- * This module turns that markup into `{ text, ruleId }` segments. It is
- * deliberately DOM-free so the same parser runs in the browser, in a worker and
- * in Node tests — DOMParser previously hid the Quran text integrity path behind
- * an untestable browser-only function.
- *
- * Two rules govern this file and must not be relaxed:
- *
- *  1. **The Quran text is annotated, never rewritten.** Concatenating the
- *     segments must reproduce the markup-stripped source exactly. The parser
- *     only decides which rule owns which characters; it never adds, drops,
- *     reorders or substitutes a letter, harakah or Quranic sign.
- *  2. **A rule is only ever applied when the data says so.** Class names are
- *     resolved through a fixed table; an unknown class yields an uncoloured
- *     segment rather than a guess. Inventing a recitation rule from letters is
- *     what this module exists to stop.
- */
+/** Quran.com transport annotations. This module never rewrites Quran text. */
+import { alignSegmentsToText } from "./tajwidAlignment.js";
+// Transport markup only ever paints a Hafs verse. Warsh rules come from the
+// Dabt of the pinned Warsh edition (src/data/warshTajwidSigns.js), so an
+// annotation that claims a Warsh riwaya is refused here as well.
+export const ANNOTATED_RIWAYAS = Object.freeze(["hafs"]);
 
-const RULE_SPAN = /<rule\s+class\s*=\s*"?([a-z0-9_ -]+)"?\s*>([\s\S]*?)<\/rule>/gi;
-const ANY_TAG = /<\/?[a-z][^>]*>/gi;
-
-/**
- * Warsh has no verified annotated source.
- *
- * The project holds Warsh *text* (warshService + constants/warshSource.js) but
- * no per-character recitation annotation: the provider used here annotates Hafs
- * only, and the Warsh rules that predate this module were hand-written regexes
- * with no cited source. Painting Warsh from letters would be inventing a
- * recitation rule, so Warsh renders uncoloured until a real source is adopted.
- *
- * Until then this marker documents the gap in code, not just in a report.
- */
-export const WARSH_TAJWID_SOURCE_REQUIRED = true;
-
-/** Riwayas for which a verified annotated source exists. */
-export const ANNOTATED_RIWAYAS = ["hafs"];
-
-/**
- * Class name → project rule id.
- *
- * The table is intentionally complete rather than clever: every class the
- * provider can emit gets an entry, so a new upstream class surfaces as
- * `null` (no colour, no invented rule) instead of silently landing in the
- * wrong bucket.
- */
-export const QURAN_COM_CLASS_MAP = {
-  ham_wasl: "ham-wasl",
-  ikhafa: "ikhfa",
-  // The provider spells this class `ikhfa_shafawi`; the longer spelling is kept
-  // as an alias so a spelling drift cannot silently uncolour the rule.
-  ikhfa_shafawi: "ikhfa",
-  ikhafa_shafawi: "ikhfa",
-  iqlab: "iqlab",
-  qalqalah: "qalqala",
-  qalaqah: "qalqala",
-  ghunnah: "ghunna",
-  ghunna: "ghunna",
-  idgham: "idgham",
-  idgham_ghunnah: "idgham",
-  idgham_wo_ghunnah: "idgham",
-  idgham_without_ghunnah: "idgham",
-  idgham_shafawi: "idgham",
-  idgham_mutamathilayn: "idgham",
-  idgham_mutajanisayn: "idgham",
-  idgham_mutaqaribayn: "idgham",
+// A rule retains its meaning even when two rules share the same ink.
+export const QURAN_COM_CLASS_MAP = Object.freeze({
+  ham_wasl: "ham-wasl", slnt: "silent", silent: "silent",
+  ghunnah: "ghunna", ghunna: "ghunna", ikhafa: "ikhfa", ikhfa: "ikhfa",
+  ikhafa_shafawi: "ikhfa-shafawi", ikhfa_shafawi: "ikhfa-shafawi",
+  iqlab: "iqlab", qalaqah: "qalqala", qalqalah: "qalqala",
   laam_shamsiyah: "lam-shamsiyya",
-  slnt: "slnt",
-  silent: "silent",
-  madda_normal: "madd-normal",
-  madda_permissible: "madd-separated",
-  madda_obligatory: "madd-connected",
-  madda_obligatory_mottasel: "madd-connected",
-  madda_obligatory_monfasel: "madd-separated",
-  madda_necessary: "madd",
-  madd_lazim: "madd",
-  madd_muttasil: "madd-connected",
-  madd_munfasil: "madd-separated",
-};
+  idgham: "idgham", idgham_ghunnah: "idgham-ghunnah",
+  idgham_wo_ghunnah: "idgham-without-ghunnah",
+  idgham_without_ghunnah: "idgham-without-ghunnah",
+  idgham_shafawi: "idgham-shafawi",
+  idgham_mutajanisayn: "idgham-mutajanisayn",
+  idgham_mutaqaribayn: "idgham-mutaqaribayn",
+  madda_normal: "madd-normal", madda_permissible: "madd-permissible",
+  madda_obligatory: "madd-obligatory", madda_obligatory_mottasel: "madd-connected",
+  madda_obligatory_monfasel: "madd-obligatory-separated",
+  madda_necessary: "madd", madd_lazim: "madd",
+  madd_muttasil: "madd-connected", madd_munfasil: "madd-separated",
+});
 
-/** Resolve one upstream class attribute to a project rule id, or null. */
 export function ruleFromClassName(className) {
-  const classes = String(className || "").split(/\s+/).filter(Boolean);
-  for (const item of classes) {
-    const normalized = item
-      .replace(/^tajweed[-_]?/i, "")
-      .replace(/-/g, "_")
-      .toLowerCase();
-    if (QURAN_COM_CLASS_MAP[normalized]) return QURAN_COM_CLASS_MAP[normalized];
+  for (const value of String(className || "").split(/\s+/)) {
+    const key = value.replace(/^tajweed[-_]?/i, "").replace(/-/g, "_").toLowerCase();
+    if (Object.hasOwn(QURAN_COM_CLASS_MAP, key)) return QURAN_COM_CLASS_MAP[key];
   }
   return null;
 }
 
-/** True when the string carries annotation markup worth parsing. */
 export function hasTajweedMarkup(value) {
-  return typeof value === "string" && /<[a-z][\s\S]*>/i.test(value);
+  return typeof value === "string" && /<\/?[a-z]/i.test(value);
 }
 
-/** The source text with every annotation tag removed, characters untouched. */
+function decodeTransportEntities(value) {
+  return value.replace(/&(#x[0-9a-f]+|#\d+|amp|lt|gt|quot|apos|nbsp);/gi, (whole, entity) => {
+    const named = { amp: "&", lt: "<", gt: ">", quot: '"', apos: "'", nbsp: "\u00a0" };
+    if (entity[0] !== "#") return named[entity.toLowerCase()] ?? whole;
+    const point = entity[1].toLowerCase() === "x"
+      ? Number.parseInt(entity.slice(2), 16) : Number.parseInt(entity.slice(1), 10);
+    return point > 0 && point <= 0x10ffff && !(point >= 0xd800 && point <= 0xdfff)
+      ? String.fromCodePoint(point) : whole;
+  });
+}
+
+/** Remove transport tags only; never normalize Arabic, whitespace or signs. */
 export function stripTajweedMarkup(value) {
-  if (typeof value !== "string" || !value) return "";
-  return value.replace(ANY_TAG, "");
+  return decodeTransportEntities(String(value ?? "").replace(/<[^>]*(?:>|$)/g, ""));
 }
 
-/**
- * Parse annotated text into segments.
- *
- * Returns `null` when there is no markup, so the caller can decide what to do
- * (Warsh has no annotated source at all — see WARSH_TAJWID_SOURCE_REQUIRED)
- * instead of silently receiving uncoloured text.
- *
- * @param {string} annotated
- * @returns {Array<{text: string, ruleId: string|null}>|null}
- */
-export function parseTajweedAnnotation(annotated) {
-  if (!hasTajweedMarkup(annotated)) return null;
+function appendSegment(segments, text, ruleId) {
+  if (!text) return;
+  const previous = segments.at(-1);
+  if (previous?.ruleId === ruleId) previous.text += text;
+  else segments.push({ text, ruleId });
+}
 
-  const source = String(annotated);
+function readAnnotation(value) {
+  const source = String(value ?? "");
   const segments = [];
+  const stack = [];
   let cursor = 0;
-
-  RULE_SPAN.lastIndex = 0;
-  let match = RULE_SPAN.exec(source);
-  while (match) {
-    // Everything before the opening tag is uncoloured by definition.
-    if (match.index > cursor) {
-      const plain = source.slice(cursor, match.index);
-      if (plain) segments.push({ text: plain, ruleId: null });
+  let valid = true;
+  const tokenPattern = /<[^>]*(?:>|$)|[^<]+/g;
+  for (const token of source.matchAll(tokenPattern)) {
+    if (token.index !== cursor) valid = false;
+    cursor = token.index + token[0].length;
+    const part = token[0];
+    if (!part.startsWith("<")) {
+      appendSegment(segments, decodeTransportEntities(part), stack.at(-1)?.ruleId ?? null);
+      continue;
     }
-    const inner = match[2].replace(ANY_TAG, "");
-    if (inner) {
-      segments.push({ text: inner, ruleId: ruleFromClassName(match[1]) });
+    const closing = /^<\/(rule|tajweed|span)\s*>$/i.exec(part);
+    if (closing) {
+      if (stack.at(-1)?.tag !== closing[1].toLowerCase()) valid = false;
+      else stack.pop();
+      continue;
     }
-    cursor = match.index + match[0].length;
-    match = RULE_SPAN.exec(source);
+    // Other tags/attributes cannot execute, strip content or alter offsets.
+    const opening = /^<(rule|tajweed|span)\s+class\s*=\s*(?:"([\w\s-]*)"|'([\w\s-]*)'|([\w-]+))\s*>$/i.exec(part);
+    if (!opening) { valid = false; continue; }
+    const className = opening[2] ?? opening[3] ?? opening[4];
+    stack.push({ tag: opening[1].toLowerCase(), ruleId: ruleFromClassName(className) });
   }
-
-  if (cursor < source.length) {
-    const plain = source.slice(cursor);
-    if (plain) segments.push({ text: plain, ruleId: null });
-  }
-
-  return mergeAdjacent(segments);
+  if (cursor !== source.length || stack.length) valid = false;
+  const plain = stripTajweedMarkup(source);
+  if (segments.map((segment) => segment.text).join("") !== plain) valid = false;
+  return { plain, valid, segments: valid ? segments : [{ text: plain, ruleId: null }] };
 }
 
-/** Collapse neighbours that share a rule so the renderer emits fewer nodes. */
-function mergeAdjacent(segments) {
-  const out = [];
-  for (const segment of segments) {
-    if (!segment.text) continue;
-    const last = out[out.length - 1];
-    if (last && last.ruleId === segment.ruleId) {
-      out[out.length - 1] = { text: last.text + segment.text, ruleId: last.ruleId };
-    } else {
-      out.push({ text: segment.text, ruleId: segment.ruleId });
-    }
+/** Pure parser shared by words, verses, Node and every UI surface. */
+export function parseTajweedAnnotation(annotated) {
+  return hasTajweedMarkup(annotated) ? readAnnotation(annotated).segments : null;
+}
+
+/** Strict equality only. Edition differences go through alignSegmentsToText, which moves spans and never text. */
+export function isAnnotationAlignedForPaint(annotatedPlain, displayText) {
+  return String(annotatedPlain ?? "") === String(displayText ?? "");
+}
+
+/** A mismatch leaves the immutable source plain and emits an integrity diagnostic. */
+export function normalizeTajwidAnnotation(originalText, annotatedText, { riwaya = "hafs", source = "quran.com" } = {}) {
+  const text = String(originalText ?? "");
+  const result = { text, segments: [{ text, ruleId: null }], status: "plain", diagnostic: null };
+  if (!ANNOTATED_RIWAYAS.includes(riwaya) || source !== "quran.com") {
+    return { ...result, status: "unavailable" };
   }
-  return out;
+  if (annotatedText == null || annotatedText === "") return result;
+  const annotation = readAnnotation(annotatedText);
+  const status = hasTajweedMarkup(annotatedText) ? "annotated" : "plain";
+  if (annotation.valid && annotation.plain === text) {
+    return { ...result, segments: annotation.segments, status };
+  }
+  // Quran.com annotates its Uthmani edition; the reader paints another edition
+  // of the same words. Move the spans onto the painted characters instead of
+  // refusing the whole verse (see tajwidAlignment.js). The painted text itself
+  // is never rewritten: the aligned segments concatenate to exactly `text`.
+  const aligned = annotation.valid ? alignSegmentsToText(annotation.segments, text) : null;
+  if (aligned) {
+    // A word whose letters or signs cannot be matched stays plain and is
+    // reported; the other words of the verse keep their colours.
+    return {
+      ...result, segments: aligned.segments, status, alignment: "mapped",
+      diagnostic: aligned.failedWords
+        ? { code: "QURAN_TEXT_INTEGRITY_FAILURE", reason: "word-not-alignable", words: aligned.failedWords }
+        : null,
+    };
+  }
+  return { ...result, status: "invalid", diagnostic: {
+    code: "QURAN_TEXT_INTEGRITY_FAILURE",
+    reason: annotation.valid ? "annotation-text-mismatch" : "malformed-annotation",
+  } };
+}
+
+/** Strict audit/build assertion; runtime callers retain the original text. */
+export function assertTajwidIntegrity(result) {
+  if (result.diagnostic || result.segments.map(segment => segment.text).join("") !== result.text) {
+    throw new Error("QURAN_TEXT_INTEGRITY_FAILURE");
+  }
+  return result;
+}
+
+/** Append generated presentation furniture without reparsing or altering source rules. */
+export function withTajwidPresentationSuffix(source, displayText) {
+  const text = String(displayText ?? "");
+  if (!text.startsWith(source.text)) {
+    return { text, segments: [{ text, ruleId: null }], status: "invalid", diagnostic: {
+      code: "QURAN_TEXT_INTEGRITY_FAILURE", reason: "annotation-text-mismatch",
+    } };
+  }
+  const suffix = text.slice(source.text.length);
+  return { ...source, text, segments: suffix ? [...source.segments, { text: suffix, ruleId: null }] : source.segments };
+}
+
+/** A shaping-safe whole-word fallback is honest only for complete coverage. */
+export function getWholeWordTajwidRule(text, ranges = []) {
+  if (!text || !ranges.length) return null;
+  const ordered = [...ranges].sort((a, b) => a.start - b.start);
+  const ruleId = ordered[0].ruleId;
+  let cursor = 0;
+  for (const range of ordered) {
+    if (range.ruleId !== ruleId || range.start !== cursor || range.end <= cursor || range.end > text.length) return null;
+    cursor = range.end;
+  }
+  return cursor === text.length ? ruleId : null;
 }

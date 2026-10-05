@@ -1,0 +1,47 @@
+export const TAJWID_GUIDE_COPY = {
+  fr: {
+    warshArchive: "Warsh utilise les mêmes couleurs que Hafs pour les mêmes règles. Les annotations du fichier Warsh fourni sont appliquées aux passages correspondants ; ailleurs, les signes du mushaf restent utilisés. Ce fichier n’a pas été validé par un spécialiste. L’imāla, le taqlīl et le naql ne sont pas annotés.",
+    title: "Guide Tajwid", close: "Fermer", helper: "Les couleurs regroupent plusieurs règles. Les annotations proviennent de Quran.com ; une différence avec le texte affiché laisse le passage sans couleur.",
+    warsh: "Warsh utilise les mêmes couleurs que Hafs pour les mêmes règles. La coloration s’appuie sur les signes imprimés dans cette édition. Les règles propres à Warsh, comme l’imāla et le taqlīl, restent sans couleur en attendant une source validée.",
+    groups: [
+      ["Lettres non prononcées et assimilation", "Le gris regroupe des lettres non prononcées en liaison et certaines assimilations."],
+      ["Madd naturel", "Allongement naturel de deux temps."],
+      ["Madd permis", "Allongement dont la durée dépend de la règle et du contexte de lecture."],
+      ["Madd obligatoire", "Allongement signalé comme obligatoire par la source."],
+      ["Madd nécessaire", "Allongement de six temps."],
+      ["Nasalisation", "Le vert regroupe ghounna, ikhfāʾ, iqlāb et les assimilations avec nasalisation."],
+      ["Qalqala", "Rebond du son sur la lettre annotée."],
+      ["Tafkhīm", "Prononciation emphatique de la lettre annotée."],
+    ],
+  },
+  en: {
+    warshArchive: "Warsh uses the same colours as Hafs for the same rules. The supplied Warsh file annotates matching passages; elsewhere, the mushaf signs remain in use. This file has not been reviewed by a specialist. Imāla, taqlīl and naql are not annotated.",
+    title: "Tajweed guide", close: "Close", helper: "Colours group several rules. Annotations come from Quran.com; a difference from the displayed text leaves the passage uncoloured.",
+    warsh: "Warsh uses the same colours as Hafs for the same rules, based on the signs printed in this edition. Warsh-specific rules, such as imāla and taqlīl, stay uncoloured pending a validated source.",
+    groups: [
+      ["Silent letters and assimilation", "Grey groups letters unpronounced in connected reading and some assimilations."],
+      ["Natural madd", "Natural elongation of two beats."],
+      ["Permissible madd", "Elongation whose duration depends on the rule and reading context."],
+      ["Obligatory madd", "Elongation marked obligatory by the source."],
+      ["Necessary madd", "Elongation of six beats."],
+      ["Nasalisation", "Green groups ghunnah, ikhfa, iqlab and assimilations with nasalisation."],
+      ["Qalqalah", "A rebound of sound on the annotated letter."],
+      ["Tafkhīm", "Emphatic pronunciation of the annotated letter."],
+    ],
+  },
+  ar: {
+    warshArchive: "يستخدم ورش ألوان حفص نفسها للأحكام نفسها. تُطبّق علامات ملف ورش المرفق على المقاطع المطابقة، وتُستخدم علامات ضبط المصحف في غيرها. لم يراجع هذا الملف متخصص. لا يتضمن تلوين الإمالة والتقليل والنقل.",
+    title: "دليل التجويد", close: "إغلاق", helper: "يجمع اللون الواحد عدة أحكام. مصدر العلامات Quran.com؛ عند اختلافها عن النص المعروض يبقى المقطع دون تلوين.",
+    warsh: "يستخدم ورش ألوان حفص نفسها للأحكام نفسها، اعتمادًا على علامات الضبط المطبوعة في هذه النسخة. وتبقى الأحكام الخاصة بورش، كالإمالة والتقليل، دون تلوين إلى حين اعتماد مصدر موثّق.",
+    groups: [
+      ["الحروف غير المنطوقة والإدغام", "يجمع الرمادي الحروف غير المنطوقة عند الوصل وبعض أنواع الإدغام."],
+      ["المد الطبيعي", "مد بمقدار حركتين."],
+      ["المد الجائز", "مد يختلف مقداره بحسب الحكم وسياق القراءة."],
+      ["المد الواجب", "مد يصفه المصدر بأنه واجب."],
+      ["المد اللازم", "مد بمقدار ست حركات."],
+      ["الغنة", "يجمع الأخضر الغنة والإخفاء والإقلاب والإدغام المصحوب بالغنة."],
+      ["القلقلة", "ارتداد الصوت عند نطق الحرف المعلّم."],
+      ["التفخيم", "تفخيم الحرف المعلّم."],
+    ],
+  },
+};

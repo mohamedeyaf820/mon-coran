@@ -1,5 +1,10 @@
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react";
-import { getPerWordTajweedRanges, getRulesForRiwaya } from "../../data/tajwidRules";
+import { getRulesForRiwaya, TAJWID_RULE_DESCRIPTIONS } from "../../data/tajwidRules";
+import {
+  getWholeWordTajwidRule,
+  normalizeTajwidAnnotation,
+} from "../../utils/tajwidAnnotation";
+import { splitTajwidIntoWords } from "../../utils/tajwidWords";
 import { CLIP_PAINT_SUPPORTED, paintTajweedWord, clearTajweedWordPaint } from "../../utils/tajweedWordPaint";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
@@ -60,15 +65,21 @@ const FLOW_WORD_STYLE = Object.freeze({
 /**
  * Turn ayahs into flow segments. `getWords(ayah)` returns the printable word
  * list for the riwaya and face in use; rule ranges are local to each word.
+ *
+ * `getAnnotatedWords(ayah)` is the same list carrying the provider's Tajweed
+ * markup. It has to be a separate array from the printable one: the markup is
+ * what the parser reads, and the printable text is what the sheet must draw, so
+ * a single array would put `<tajweed class=…>` on the page.
  */
-export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
+export function buildFlowSegments(ayahs, { getWords, getAnnotatedWords, getTajwidSource, riwaya, showTajwid }) {
   const segments = [];
   let flow = null;
 
   ayahs.forEach((ayah) => {
     const surah = ayah.surah?.number;
     const ayahNum = ayah.numberInSurah;
-    const words = getWords(ayah) || [];
+    const canonicalSource = getTajwidSource?.(ayah);
+    const words = canonicalSource ? canonicalSource.words.map(word => word.text) : getWords(ayah) || [];
     if (words.length === 0) return;
 
     if (Number(ayahNum) === 1) {
@@ -82,10 +93,31 @@ export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
       flow = { kind: "flow", tokens: [] };
       segments.push(flow);
     }
-    const normalizedWords = words.map(normalizeArabicText);
-    const rules = showTajwid
-      ? getPerWordTajweedRanges(normalizedWords, riwaya)
-      : [];
+    const normalizedWords = riwaya === "hafs" ? words.map(String) : words.map(normalizeArabicText);
+    const rules = normalizedWords.map(() => []);
+    const diagnostics = normalizedWords.map(() => null);
+    const source = showTajwid ? canonicalSource : null;
+    if (source && source.words.length === normalizedWords.length && source.words.every((word, index) => word.text === normalizedWords[index])) {
+      source.words.forEach((word, index) => {
+        rules[index] = word.ranges;
+        diagnostics[index] = source.diagnostic?.code || null;
+      });
+    }
+    const annotated = showTajwid ? getAnnotatedWords?.(ayah) || [] : [];
+    if (annotated.length === normalizedWords.length) {
+      // Verified words only. Each annotation is aligned onto the printed word
+      // (tajwidAlignment.js moves the spans, never the text); a word whose
+      // letters cannot be matched — 2:9 orders the dagger alef differently
+      // from the source — is left plain rather than coloured onto the wrong
+      // letter, and the rest of the sheet keeps its colours.
+      normalizedWords.forEach((text, index) => {
+        const annotation = normalizeTajwidAnnotation(text, annotated[index], { riwaya });
+        diagnostics[index] = annotation.diagnostic?.code || null;
+        if (annotation.status === "annotated") {
+          rules[index] = splitTajwidIntoWords(annotation.segments).words[0]?.ranges || [];
+        }
+      });
+    }
     normalizedWords.forEach((text, idx) => {
       flow.tokens.push({
         charType: "word",
@@ -94,7 +126,10 @@ export function buildFlowSegments(ayahs, { getWords, riwaya, showTajwid }) {
         ayah: ayahNum,
         position: idx + 1,
         text,
+        separator: canonicalSource?.words[idx]?.separator || " ",
+        wordAudioIsAligned: canonicalSource?.wordAudioIsAligned ?? true,
         tajweedRanges: rules[idx] || [],
+        tajwidDiagnostic: diagnostics[idx],
       });
     });
     flow.tokens.push({
@@ -140,7 +175,7 @@ export default function MushafFlowPage({
     const key = lang === "ar" ? "nameAr" : lang === "en" ? "nameEn" : "nameFr";
     const map = new Map();
     for (const rule of getRulesForRiwaya(riwaya)) {
-      map.set(rule.id, { name: rule[key] || rule.nameEn || rule.id, desc: rule.description || "" });
+      map.set(rule.id, { name: rule[key] || rule.nameEn || rule.id, desc: TAJWID_RULE_DESCRIPTIONS[rule.id]?.desc?.[lang] || "" });
     }
     return map;
   }, [riwaya, lang]);
@@ -164,14 +199,14 @@ export default function MushafFlowPage({
         const key = `${token.globalAyah}:${token.position}`;
         const word = words.get(key);
         if (word?.firstChild?.data === token.text) {
-          painted.push([word, token.tajweedRanges, token.tajweedRanges[0]?.ruleId]);
+          painted.push([word, token.tajweedRanges, getWholeWordTajwidRule(token.text, token.tajweedRanges)]);
         }
       }
     }
     let frame = 0;
     // WebKit clips a text gradient to a few glyph fragments and leaves the
     // fill transparent, so there the flow words take their first rule's
-    // colour whole instead of band by band.
+    // colour whole only when a single source rule covers the entire word.
     const repaint = () =>
       painted.forEach(([word, ranges, ruleId]) => {
         if (CLIP_PAINT_SUPPORTED) paintTajweedWord(word, ranges);
@@ -339,6 +374,7 @@ export default function MushafFlowPage({
         data-ayah-global={token.globalAyah}
         data-word-position={token.position}
         data-tajweed-key={`${token.globalAyah}:${token.position}`}
+        data-tajwid-diagnostic={token.tajwidDiagnostic || undefined}
         {...(() => {
           const ruleId = showTajwid ? token.tajweedRanges?.[0]?.ruleId : null;
           const tip = ruleId ? ruleLabels.get(ruleId) : null;
@@ -353,19 +389,19 @@ export default function MushafFlowPage({
         role="button"
         tabIndex={0}
         onClick={() => {
-          if (riwaya === "warsh") onToggleActive?.(token.globalAyah);
+          if (riwaya === "warsh" || !token.wordAudioIsAligned) onToggleActive?.(token.globalAyah);
           else playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === " ") {
             event.preventDefault();
-            if (riwaya === "warsh") onToggleActive?.(token.globalAyah);
+            if (riwaya === "warsh" || !token.wordAudioIsAligned) onToggleActive?.(token.globalAyah);
             else playWordAudio(token.audioUrl || { surah: token.surah, ayah: token.ayah, position: token.position });
           }
         }}
         style={FLOW_WORD_STYLE}
       >
-        {normalizeArabicText(token.text)}
+        {token.text}
       </span>
     );
   };
@@ -413,7 +449,7 @@ export default function MushafFlowPage({
             <div key={`f${index}`} className="qcm-flow" data-flow-index={index}>
               {segment.tokens.flatMap((token, tokenIndex) => [
                 renderToken(token, tokenIndex),
-                " ",
+                token.separator || " ",
               ])}
             </div>
           );

@@ -1,8 +1,7 @@
 import React, { useMemo } from "react";
+import { splitTajwidIntoWords } from "../../utils/tajwidWords";
 import useKaraokeWordIndex from "../../hooks/useKaraokeWordIndex";
 import audioService from "../../services/audioService";
-import { normalizeFontId } from "../../data/fonts";
-import { getFontSignVariant } from "../../utils/quranUtils";
 import { useAppLocale } from "../../context/AppContext";
 import TajweedText, { getWaqfHelp } from "./TajweedText";
 import { t } from "../../i18n";
@@ -28,10 +27,11 @@ function CanonicalQuranText({
   if (riwaya === "warsh") {
     // Keep the canonical word and ayah-marker layout, but let a tap reach
     // the verse action. The available word audio clips are Hafs recordings.
-    const parts = String(text).split(/\s+/).filter(Boolean);
+    const parts = String(text).match(/\s+|\S+/gu) || [];
     return (
       <span className="quran-canonical-text" dir="rtl" lang="ar">
         {parts.map((word, index) => {
+          if (/^\s+$/u.test(word)) return <React.Fragment key={index}>{word}</React.Fragment>;
           const isMarker = isAyahMarkerToken(word);
           return (
             <React.Fragment key={index}>
@@ -43,7 +43,6 @@ function CanonicalQuranText({
               >
                 {word}
               </span>
-              {index < parts.length - 1 ? (isAyahMarkerToken(parts[index + 1]) ? "\u202F" : " ") : null}
             </React.Fragment>
           );
         })}
@@ -51,13 +50,14 @@ function CanonicalQuranText({
     );
   }
 
-  const parts = String(text).split(/\s+/).filter(Boolean);
+  const parts = String(text).match(/\s+|\S+/gu) || [];
   // `words` carries recitable words only, while `parts` also holds the ayah-end
   // marker, so the recitable count is the index that lines up with word data.
   let recitablePosition = 0;
   return (
     <span className="quran-canonical-text" dir="rtl" lang="ar">
       {parts.map((wordStr, index) => {
+        if (/^\s+$/u.test(wordStr)) return <React.Fragment key={index}>{wordStr}</React.Fragment>;
         const isMarker = isAyahMarkerToken(wordStr);
         if (!isMarker) recitablePosition += 1;
         const wordPos = recitablePosition;
@@ -90,7 +90,6 @@ function CanonicalQuranText({
             >
               {wordStr}
             </span>
-            {index < parts.length - 1 ? (isAyahMarkerToken(parts[index + 1]) ? "\u202F" : " ") : null}
           </React.Fragment>
         );
       })}
@@ -108,10 +107,8 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   calibration,
   words,
 }) {
-  const displayWords = useMemo(() => {
-    if (!text) return [];
-    return text.split(/\s+/).filter((word) => word.length > 0);
-  }, [text]);
+  const wordEntries = useMemo(() => splitTajwidIntoWords([{ text }]).words, [text]);
+  const displayWords = useMemo(() => wordEntries.map(word => word.text), [wordEntries]);
   const recitableWords = useMemo(
     () => displayWords.filter((word) => !isAyahMarkerToken(word)),
     [displayWords],
@@ -179,10 +176,9 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
               onClick={seekToWord}
               role={seekToWord ? "button" : undefined}
             >
-              {word}
+              {wordEntries[index].prefix || ""}{word}
             </span>
-            {index < displayWords.length - 1 &&
-              (isAyahMarkerToken(displayWords[index + 1]) ? "\u00A0" : " ")}
+            {wordEntries[index].separator || ""}
           </React.Fragment>
         );
       })}
@@ -196,6 +192,7 @@ export { HafsKaraokeText as KaraokeAyahText };
 function AyahTextRendererComponent({
   text,
   tajweedText,
+  tajwidSource,
   showTajwid,
   isPlaying,
   isFirstAyah,
@@ -257,13 +254,15 @@ function AyahTextRendererComponent({
   return (
     <TajweedText
       text={tajweedText}
+      originalText={text}
+      tajwidSource={tajwidSource}
+      wordAudioIsAligned={wordAudioIsAligned}
       enabled
       riwaya={riwaya}
       tajweedColors={tajweedColors}
       surahNum={surahNum}
       ayahNumber={ayahNumber}
       karaoke={isPlaying ? { isFirstAyah, calibration } : null}
-      signVariant={getFontSignVariant(normalizeFontId(fontFamily, riwaya))}
     />
   );
 }
@@ -272,6 +271,7 @@ function areAyahTextRendererEqual(prev, next) {
   return (
     prev.text === next.text &&
     prev.tajweedText === next.tajweedText &&
+    prev.tajwidSource === next.tajwidSource &&
     prev.showTajwid === next.showTajwid &&
     prev.isPlaying === next.isPlaying &&
     prev.isFirstAyah === next.isFirstAyah &&

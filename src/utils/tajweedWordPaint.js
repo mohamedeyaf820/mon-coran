@@ -29,14 +29,25 @@ const PERCENT = (value) => `${Math.round(value * 1000) / 10}%`;
 
 // WebKit makes the fill transparent but clips the gradient to a few glyph
 // fragments (verified on WebKit: painted words render near-invisible), so on
-// that engine words are coloured whole instead of band by band.
+// that engine callers paint a whole word only when one rule covers it fully.
 export const CLIP_PAINT_SUPPORTED = !isWebkitEngine();
 
-export function paintTajweedWord(word, ranges) {
+// Painting a word reads its geometry and then writes a style. Done word after
+// word, every read lands on a layout that the previous write just invalidated
+// (one forced reflow per word), and verses mounted by the virtual list each
+// forced their own reflow too: seconds of main-thread time on a long surah.
+// Requests are therefore queued and flushed in one microtask (still before the
+// next paint): every measurement of every word queued by that React commit runs
+// first, against a single clean layout, then every style write is applied.
+const pending = new Map();
+let flushQueued = false;
+let fontRepaintQueued = false;
+
+function measureStops(word, ranges) {
   const node = word?.firstChild;
-  if (node?.nodeType !== Node.TEXT_NODE || !ranges?.length) return;
+  if (node?.nodeType !== Node.TEXT_NODE || !ranges?.length) return null;
   const box = word.getBoundingClientRect();
-  if (!box.width) return;
+  if (!box.width) return null;
 
   const stripes = [];
   const range = document.createRange();
@@ -51,7 +62,7 @@ export function paintTajweedWord(word, ranges) {
     const right = Math.max(left, Math.min(100, ((ink.right - box.left) / box.width) * 100));
     if (right > left) stripes.push({ left, right, ruleId: rule.ruleId });
   }
-  if (!stripes.length) return;
+  if (!stripes.length) return null;
 
   stripes.sort((a, b) => a.left - b.left);
   const stops = [];
@@ -64,12 +75,44 @@ export function paintTajweedWord(word, ranges) {
     cursor = stripe.right;
   }
   stops.push(`${BASE_INK} ${PERCENT(cursor / 100)}`, `${BASE_INK} 100%`);
+  return `linear-gradient(to right, ${stops.join(", ")})`;
+}
 
-  word.style.setProperty("--tajweed-paint", `linear-gradient(to right, ${stops.join(", ")})`);
-  word.classList.add(PAINTED_CLASS);
+function flushPaints() {
+  flushQueued = false;
+  const jobs = [...pending];
+  pending.clear();
+  const measured = jobs.map(([word, ranges]) => [word, word.isConnected ? measureStops(word, ranges) : null]);
+  for (const [word, paint] of measured) {
+    if (!paint) continue;
+    word.style.setProperty("--tajweed-paint", paint);
+    word.classList.add(PAINTED_CLASS);
+  }
+
+  // The bands are percentages of the measured box, so a word measured on the
+  // fallback face keeps wrong bands once the Quran face swaps in. Measuring is
+  // what starts that load, so the status is read after it: when faces are still
+  // loading, repaint this batch once they settle. One check per batch, never
+  // one per word (reading document.fonts.ready forces a style pass each time).
+  if (!fontRepaintQueued && document.fonts?.status === "loading") {
+    fontRepaintQueued = true;
+    document.fonts.ready.then(() => {
+      fontRepaintQueued = false;
+      for (const [word, ranges] of jobs) if (word.isConnected) paintTajweedWord(word, ranges);
+    });
+  }
+}
+
+export function paintTajweedWord(word, ranges) {
+  if (!word) return;
+  pending.set(word, ranges);
+  if (flushQueued) return;
+  flushQueued = true;
+  queueMicrotask(flushPaints);
 }
 
 export function clearTajweedWordPaint(word) {
+  pending.delete(word);
   if (!word?.classList.contains(PAINTED_CLASS)) return;
   word.style.removeProperty("--tajweed-paint");
   word.classList.remove(PAINTED_CLASS);

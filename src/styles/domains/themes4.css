@@ -68,26 +68,50 @@
        Eight hues reused by meaning: concealment/ghunnah→green,
        idgham/silent→grey, qalqala→blue, tafkhim→indigo,
        madd→amber/orange/red/dark-red by duration; Warsh shares this palette. */
-    --tajwid-silent: #8c8c8c;
-    --tajwid-lam-shamsiyya: #8c8c8c;
-    --tajwid-ghunna: #08a300;
-    --tajwid-idgham: #8c8c8c;
-    --tajwid-ikhfa: #08a300;
-    --tajwid-iqlab: #08a300;
-    --tajwid-qalqala: #0091f0;
-    --tajwid-tafkhim: #3f48e6;
-    --tajwid-madd-normal: #ad8500;
-    --tajwid-madd: #b50000;
-    --tajwid-madd-separated: #e06c00;
-    --tajwid-madd-connected: #f40000;
-    --tajwid-madd-necessary: #b50000;
-    --tajwid-madd-badal: #e06c00;
-    --tajwid-naql: #e06c00;
-    --tajwid-tashil: #08a300;
-    --tajwid-ibdal: #e06c00;
-    --tajwid-sila-kubra: #f40000;
-    --tajwid-tarqiq-ra: #8c8c8c;
-    --tajwid-idgham-warsh: #8c8c8c;
+    /* Quran.com V4 reference swatches; the reading inks use them unchanged. */
+    --quran-com-tajwid-silent: #a5a5a5;
+    --quran-com-tajwid-madd-normal: #ce9e00;
+    --quran-com-tajwid-madd-separated: #ff7b00;
+    --quran-com-tajwid-madd-connected: #f40000;
+    --quran-com-tajwid-madd-necessary: #b50000;
+    --quran-com-tajwid-nasal: #09b000;
+    --quran-com-tajwid-qalqala: #2fadff;
+    --quran-com-tajwid-tafkhim: #3f48e6;
+    --tajwid-palette-silent: #a5a5a5;
+    --tajwid-palette-madd-normal: #ce9e00;
+    --tajwid-palette-madd-separated: #ff7b00;
+    --tajwid-palette-madd-connected: #f40000;
+    --tajwid-palette-madd-necessary: #b50000;
+    --tajwid-palette-nasal: #09b000;
+    --tajwid-palette-qalqala: #2fadff;
+    --tajwid-palette-tafkhim: #3f48e6;
+    --tajwid-silent: var(--tajwid-palette-silent);
+    --tajwid-ham-wasl: var(--tajwid-palette-silent);
+    --tajwid-lam-shamsiyya: var(--tajwid-palette-silent);
+    --tajwid-idgham: var(--tajwid-palette-silent);
+    --tajwid-idgham-without-ghunnah: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutamathilayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutajanisayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutaqaribayn: var(--tajwid-palette-silent);
+    --tajwid-ghunna: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-iqlab: var(--tajwid-palette-nasal);
+    --tajwid-idgham-ghunnah: var(--tajwid-palette-nasal);
+    --tajwid-idgham-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-qalqala: var(--tajwid-palette-qalqala);
+    --tajwid-tafkhim: var(--tajwid-palette-tafkhim);
+    --tajwid-madd-normal: var(--tajwid-palette-madd-normal);
+    --tajwid-madd-permissible: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-obligatory: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-obligatory-separated: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-separated: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-badal: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-arid: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-lin: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-connected: var(--tajwid-palette-madd-connected);
+    --tajwid-madd: var(--tajwid-palette-madd-necessary);
+    --tajwid-madd-necessary: var(--tajwid-palette-madd-necessary);
 
     /* Semantic status tokens. Several consumers referenced these names with
        literal fallbacks (var(--danger, #b42318), var(--bg-hover), the
@@ -190,33 +214,51 @@
         );
 
 
-    /* Quran.com tajweed palette (sepia theme), on the same 3:1 floor. */
-    /* Re-measured against this theme's real paper (--brand-bg #f3ead8): the
-       original five shared hues (grey/green/cyan/gold/orange) landed at
-       2.78-2.83:1 and broke the documented floor. Darkened in place only for
-       sepia so all 20 inks reach >=3.05:1; hue roles, ordering and pairwise
-       separation (min CIE76 dE 31.7) are preserved — see
-       tests/tajweed-contrast-contract.test.mjs. */
-    --tajwid-silent: #858585;
-    --tajwid-lam-shamsiyya: #858585;
-    --tajwid-ghunna: #0b8f0b;
-    --tajwid-idgham: #858585;
-    --tajwid-ikhfa: #0b8f0b;
-    --tajwid-iqlab: #0b8f0b;
-    --tajwid-qalqala: #0a84a5;
-    --tajwid-tafkhim: #134fe1;
-    --tajwid-madd-normal: #96761d;
-    --tajwid-madd: #b7001c;
-    --tajwid-madd-separated: #bf6805;
-    --tajwid-madd-connected: #ff0000;
-    --tajwid-madd-necessary: #b7001c;
-    --tajwid-madd-badal: #bf6805;
-    --tajwid-naql: #bf6805;
-    --tajwid-tashil: #0b8f0b;
-    --tajwid-ibdal: #bf6805;
-    --tajwid-sila-kubra: #ff0000;
-    --tajwid-tarqiq-ra: #858585;
-    --tajwid-idgham-warsh: #858585;
+    /* Quran.com tajweed palette (sepia theme), as published upstream. */
+    /* Quran.com V4 reference swatches; the reading inks use them unchanged. */
+    --quran-com-tajwid-silent: #ababab;
+    --quran-com-tajwid-madd-normal: #c09725;
+    --quran-com-tajwid-madd-separated: #e67b00;
+    --quran-com-tajwid-madd-connected: #ff0000;
+    --quran-com-tajwid-madd-necessary: #b7001c;
+    --quran-com-tajwid-nasal: #09b000;
+    --quran-com-tajwid-qalqala: #00b4e0;
+    --quran-com-tajwid-tafkhim: #134fe1;
+    --tajwid-palette-silent: #ababab;
+    --tajwid-palette-madd-normal: #c09725;
+    --tajwid-palette-madd-separated: #e67b00;
+    --tajwid-palette-madd-connected: #ff0000;
+    --tajwid-palette-madd-necessary: #b7001c;
+    --tajwid-palette-nasal: #09b000;
+    --tajwid-palette-qalqala: #00b4e0;
+    --tajwid-palette-tafkhim: #134fe1;
+    --tajwid-silent: var(--tajwid-palette-silent);
+    --tajwid-ham-wasl: var(--tajwid-palette-silent);
+    --tajwid-lam-shamsiyya: var(--tajwid-palette-silent);
+    --tajwid-idgham: var(--tajwid-palette-silent);
+    --tajwid-idgham-without-ghunnah: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutamathilayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutajanisayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutaqaribayn: var(--tajwid-palette-silent);
+    --tajwid-ghunna: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-iqlab: var(--tajwid-palette-nasal);
+    --tajwid-idgham-ghunnah: var(--tajwid-palette-nasal);
+    --tajwid-idgham-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-qalqala: var(--tajwid-palette-qalqala);
+    --tajwid-tafkhim: var(--tajwid-palette-tafkhim);
+    --tajwid-madd-normal: var(--tajwid-palette-madd-normal);
+    --tajwid-madd-permissible: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-obligatory: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-obligatory-separated: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-separated: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-badal: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-arid: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-lin: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-connected: var(--tajwid-palette-madd-connected);
+    --tajwid-madd: var(--tajwid-palette-madd-necessary);
+    --tajwid-madd-necessary: var(--tajwid-palette-madd-necessary);
 
     /* Semantic status tokens, warm-shifted for the parchment surfaces
        (--theme-surface #fff6e3): danger #9a2718 7.30:1, error #7f1d1d 9.32:1,
@@ -313,26 +355,50 @@
        Quran.com's dark-adjusted tints, which already clear 3:1 on the ink background. */
     /* Quran Foundation QCF v4 dark palette; light and sepia keep the same
        hues at stronger contrast against their paper surfaces. */
-    --tajwid-silent: #9d9999;
-    --tajwid-lam-shamsiyya: #9d9999;
-    --tajwid-ghunna: #26b55d;
-    --tajwid-idgham: #9d9999;
-    --tajwid-ikhfa: #26b55d;
-    --tajwid-iqlab: #26b55d;
-    --tajwid-qalqala: #00deff;
-    --tajwid-tafkhim: #3c84d5;
-    --tajwid-madd-normal: #ffc1e0;
-    --tajwid-madd: #e30000;
-    --tajwid-madd-separated: #ff8e3b;
-    --tajwid-madd-connected: #ff5e8e;
-    --tajwid-madd-necessary: #e30000;
-    --tajwid-madd-badal: #ff8e3b;
-    --tajwid-naql: #ff8e3b;
-    --tajwid-tashil: #26b55d;
-    --tajwid-ibdal: #ff8e3b;
-    --tajwid-sila-kubra: #ff5e8e;
-    --tajwid-tarqiq-ra: #9d9999;
-    --tajwid-idgham-warsh: #9d9999;
+    /* Quran.com V4 reference swatches; the reading inks use them unchanged. */
+    --quran-com-tajwid-silent: #999999;
+    --quran-com-tajwid-madd-normal: #ffc1e0;
+    --quran-com-tajwid-madd-separated: #ff8e3b;
+    --quran-com-tajwid-madd-connected: #ff5e8e;
+    --quran-com-tajwid-madd-necessary: #e30000;
+    --quran-com-tajwid-nasal: #26b55d;
+    --quran-com-tajwid-qalqala: #00deff;
+    --quran-com-tajwid-tafkhim: #3c84d5;
+    --tajwid-palette-silent: #999999;
+    --tajwid-palette-madd-normal: #ffc1e0;
+    --tajwid-palette-madd-separated: #ff8e3b;
+    --tajwid-palette-madd-connected: #ff5e8e;
+    --tajwid-palette-madd-necessary: #e30000;
+    --tajwid-palette-nasal: #26b55d;
+    --tajwid-palette-qalqala: #00deff;
+    --tajwid-palette-tafkhim: #3c84d5;
+    --tajwid-silent: var(--tajwid-palette-silent);
+    --tajwid-ham-wasl: var(--tajwid-palette-silent);
+    --tajwid-lam-shamsiyya: var(--tajwid-palette-silent);
+    --tajwid-idgham: var(--tajwid-palette-silent);
+    --tajwid-idgham-without-ghunnah: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutamathilayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutajanisayn: var(--tajwid-palette-silent);
+    --tajwid-idgham-mutaqaribayn: var(--tajwid-palette-silent);
+    --tajwid-ghunna: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa: var(--tajwid-palette-nasal);
+    --tajwid-ikhfa-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-iqlab: var(--tajwid-palette-nasal);
+    --tajwid-idgham-ghunnah: var(--tajwid-palette-nasal);
+    --tajwid-idgham-shafawi: var(--tajwid-palette-nasal);
+    --tajwid-qalqala: var(--tajwid-palette-qalqala);
+    --tajwid-tafkhim: var(--tajwid-palette-tafkhim);
+    --tajwid-madd-normal: var(--tajwid-palette-madd-normal);
+    --tajwid-madd-permissible: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-obligatory: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-obligatory-separated: var(--tajwid-palette-madd-connected);
+    --tajwid-madd-separated: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-badal: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-arid: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-lin: var(--tajwid-palette-madd-separated);
+    --tajwid-madd-connected: var(--tajwid-palette-madd-connected);
+    --tajwid-madd: var(--tajwid-palette-madd-necessary);
+    --tajwid-madd-necessary: var(--tajwid-palette-madd-necessary);
 
     /* Semantic status tokens. Dark toasts keep the tinted-surface shape but
        inverted: dark hue-tinted background with light ink (the alternative

@@ -2,67 +2,50 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import test from "node:test";
 
-/* The tajweed palette teaches a rule with a hue: every --tajwid-* ink must
-   stay at least 3:1 (WCAG non-text floor) against its theme's reading paper
-   (--brand-bg). The sepia theme regressed to 2.78-2.83:1 unnoticed because
-   nothing measured it. This contract fails CI if any theme palette edit drops
-   an ink below the floor. */
+/* The tajweed palette is Quran.com's, not a MushafPlus design: every reading
+   ink (--tajwid-palette-*) must equal the published upstream swatch
+   (--quran-com-tajwid-*) in every theme, and those swatches must stay the
+   values published at the pinned revision (src/data/tajwidPalette.js).
+   Contrast against the paper is reported, not enforced: matching Quran.com
+   exactly was chosen over the former 3:1 darkening. */
 
-const FLOOR = 3.0;
+const UPSTREAM = {
+  light: { silent: "#a5a5a5", "madd-normal": "#ce9e00", "madd-separated": "#ff7b00", "madd-connected": "#f40000", "madd-necessary": "#b50000", nasal: "#09b000", qalqala: "#2fadff", tafkhim: "#3f48e6" },
+  dark: { silent: "#999999", "madd-normal": "#ffc1e0", "madd-separated": "#ff8e3b", "madd-connected": "#ff5e8e", "madd-necessary": "#e30000", nasal: "#26b55d", qalqala: "#00deff", tafkhim: "#3c84d5" },
+  sepia: { silent: "#ababab", "madd-normal": "#c09725", "madd-separated": "#e67b00", "madd-connected": "#ff0000", "madd-necessary": "#b7001c", nasal: "#09b000", qalqala: "#00b4e0", tafkhim: "#134fe1" },
+};
 
 function source(pathname) {
   return fs.readFileSync(new URL(`../${pathname}`, import.meta.url), "utf8");
-}
-
-function channelLuminance(hex) {
-  const c = hex.replace("#", "");
-  const [r, g, b] = [0, 2, 4]
-    .map((i) => parseInt(c.slice(i, i + 2), 16) / 255)
-    .map((x) => (x <= 0.03928 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4));
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
-}
-
-function contrastRatio(a, b) {
-  const [l1, l2] = [channelLuminance(a), channelLuminance(b)].sort(
-    (x, y) => y - x,
-  );
-  return (l1 + 0.05) / (l2 + 0.05);
 }
 
 function themeBlocks(css) {
   // Flat rule scan: theme blocks in themes4.css never nest braces.
   const merged = new Map();
   for (const match of css.matchAll(/([^{}]+)\{([^{}]*)\}/g)) {
-    const selectors = match[1];
     const body = match[2];
     if (!body.includes("--tajwid-")) continue;
-    // One rule lists both selector forms for the same theme; count each name once.
     const names = new Set(
-      [...selectors.matchAll(/\[data-theme="([^"]+)"\]/g)].map((m) => m[1]),
+      [...match[1].matchAll(/\[data-theme="([^"]+)"\]/g)].map((m) => m[1]),
     );
-    for (const name of names) {
-      merged.set(name, `${merged.get(name) ?? ""}\n${body}`);
-    }
+    for (const name of names) merged.set(name, `${merged.get(name) ?? ""}\n${body}`);
   }
   return merged;
 }
 
-test("every tajweed ink keeps >= 3:1 against its theme paper", () => {
-  const css = source("src/styles/domains/themes4.css");
-  const blocks = themeBlocks(css);
-  assert.ok(blocks.size >= 3, "expected light, sepia and dark tajweed blocks");
+function inks(body, prefix) {
+  return Object.fromEntries(
+    [...body.matchAll(new RegExp(`--${prefix}-([a-z-]+):\\s*(#[0-9a-fA-F]{6})`, "g"))]
+      .map(([, group, ink]) => [group, ink.toLowerCase()]),
+  );
+}
 
-  for (const [theme, body] of blocks) {
-    const paper = body.match(/--brand-bg:\s*(#[0-9a-fA-F]{6})/);
-    assert.ok(paper, `theme "${theme}" defines tajweed inks but no --brand-bg`);
-    const inks = [...body.matchAll(/--tajwid-([a-z-]+):\s*(#[0-9a-fA-F]{6})/g)];
-    assert.equal(inks.length, 20, `theme "${theme}" must define 20 tajweed inks`);
-    for (const [, rule, ink] of inks) {
-      const ratio = contrastRatio(ink, paper[1]);
-      assert.ok(
-        ratio >= FLOOR,
-        `--tajwid-${rule} ${ink} is ${ratio.toFixed(2)}:1 on ${theme} paper ${paper[1]} (floor ${FLOOR}:1)`,
-      );
-    }
+test("tajweed inks are Quran.com's published swatches in every theme", () => {
+  const blocks = themeBlocks(source("src/styles/domains/themes4.css"));
+  for (const theme of Object.keys(UPSTREAM)) {
+    const body = blocks.get(theme);
+    assert.ok(body, `missing tajweed block for ${theme}`);
+    assert.deepEqual(inks(body, "quran-com-tajwid"), UPSTREAM[theme], `${theme} reference swatches`);
+    assert.deepEqual(inks(body, "tajwid-palette"), UPSTREAM[theme], `${theme} reading inks differ from Quran.com`);
   }
 });
