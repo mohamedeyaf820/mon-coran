@@ -652,11 +652,6 @@ button:active:not(:disabled),
     }
 }
 
-:focus-visible {
-    outline: 2px solid var(--primary, #0f766e);
-    outline-offset: 3px;
-}
-
 .app-root .qc-ayah-block:focus-visible,
 .app-root .qc-verse-card:focus-visible {
     outline: 2px solid var(--primary);

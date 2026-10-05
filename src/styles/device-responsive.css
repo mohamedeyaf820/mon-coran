@@ -1396,7 +1396,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-verse-by-verse-view {
     width: 100% !important;
     border-inline: 0;
-    border-radius: 0;
     box-shadow: none;
   }
 
@@ -1409,8 +1408,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-ayah-text-ar {
     /* The reader's device-aware size (--qd-font-size) is honoured up to the
        phone ceiling; the viewport scale is the fallback without it. */
-    font-size: min(var(--qd-font-size, 8.4vw), 34px) !important;
-    line-height: 1.86 !important;
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform

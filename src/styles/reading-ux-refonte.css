@@ -67,14 +67,8 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   contain-intrinsic-size: auto;
 }
 
-.app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card:hover {
-  background: rgba(var(--primary-rgb), 0.03) !important;
-}
-
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-active,
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card.is-playing {
-  background: rgba(var(--primary-rgb), 0.06) !important;
-  border-inline-start: 3px solid var(--primary) !important;
   padding-inline-start: calc(clamp(0.65rem, 1.4vw, 1rem) - 3px) !important;
 }
 
@@ -86,27 +80,13 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   margin-bottom: 0.3rem !important;
 }
 
-.app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
-  min-width: 2.6rem !important;
-  min-height: 2rem !important;
-  border-radius: 8px !important;
-  background: var(--bg-secondary, #f1f5f9) !important;
-  color: var(--text-muted) !important;
-  font-size: max(0.8rem, 13px) !important;
-  font-weight: 700 !important;
-}
-
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference:is(.is-active, .is-playing) {
   background: var(--primary) !important;
-  color: #fff !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar {
   color: var(--text-quran, var(--text-primary)) !important;
   font-size: var(--reader-arabic-size, var(--qd-reading-font-size, 42px)) !important;
-  line-height: 1.95 !important;
-  word-spacing: 0.04em !important;
-  letter-spacing: 0 !important;
   text-align: right !important;
   text-shadow: none !important;
   filter: none !important;
@@ -126,9 +106,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card p {
   max-width: 72ch;
-  color: var(--text-secondary) !important;
   font-size: clamp(0.93rem, 0.88rem + 0.2vw, 1.04rem) !important;
-  line-height: 1.82 !important;
 }
 
 .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot {
@@ -172,9 +150,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 
 .app-root[data-view="reading"] .quran-display--platform .qc-reading-view > div {
   border: 1px solid var(--reader-card-border) !important;
-  border-radius: 14px !important;
   background: var(--reader-card-bg) !important;
-  box-shadow: var(--reader-card-shadow) !important;
 }
 
 @media (max-width: 640px) {
@@ -231,10 +207,7 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 .app-root[data-view="reading"] .quran-display--platform
   :is(.qc-ayah-transliteration, .transliteration-text, .ayah-transliteration) {
   max-width: 72ch;
-  margin: 0.55rem 0 0.25rem !important;
-  padding: 0.08rem 0.2rem 0.08rem 0.8rem !important;
   border: 0 !important;
-  border-left: 2px solid color-mix(in srgb, var(--primary) 28%, var(--border)) !important;
   border-radius: 0 !important;
   background: transparent !important;
   color: color-mix(in srgb, var(--text-secondary) 88%, var(--primary) 12%) !important;
@@ -262,7 +235,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
 
   .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
     border-radius: 0 !important;
-    padding: 0.5rem 0.6rem !important;
     contain-intrinsic-size: 1px 200px;
   }
 
@@ -332,7 +304,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .rd-wrapper.qu
   min-height: 28px;
   padding: .25rem .55rem;
   border: 1px solid var(--border);
-  border-radius: 999px;
   background: color-mix(in srgb, var(--bg-card) 92%, transparent);
 }
 

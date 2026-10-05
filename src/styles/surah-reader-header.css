@@ -18,7 +18,6 @@
         color-mix(in srgb, var(--srh-surface) 95%, transparent);
     box-shadow: var(--srh-shadow), inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
     color: var(--text-primary);
-    backdrop-filter: blur(18px) saturate(125%);
     isolation: isolate;
 }
 
@@ -126,7 +125,6 @@
     color: var(--text-primary);
     font-size: clamp(1.18rem, 2.15vw, 1.55rem);
     font-weight: 800;
-    letter-spacing: -0.025em;
     line-height: 1.16;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -149,15 +147,11 @@
     display: inline-flex;
     min-height: 1.55rem;
     align-items: center;
-    padding: 0.18rem 0.55rem;
     border: 1px solid var(--srh-line);
-    border-radius: 999px;
     background: color-mix(in srgb, var(--srh-surface-soft) 84%, transparent);
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.62rem;
     font-weight: 800;
-    letter-spacing: 0.075em;
     line-height: 1;
     text-transform: uppercase;
     white-space: nowrap;
@@ -242,7 +236,6 @@
 
 .srh-play-btn:hover:not(:disabled) {
     box-shadow: 0 11px 24px color-mix(in srgb, var(--primary) 34%, transparent);
-    transform: translateY(-1px);
 }
 
 .srh-play-btn:active:not(:disabled) {
@@ -362,9 +355,7 @@
 
 .srh-pill--active {
     border-color: color-mix(in srgb, var(--primary) 18%, var(--border));
-    background: var(--bg-card);
     box-shadow: 0 3px 10px color-mix(in srgb, var(--text-primary) 7%, transparent);
-    color: var(--primary);
 }
 
 .srh-toggle--active {

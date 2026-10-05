@@ -166,10 +166,6 @@
     ) !important;
 }
 
-.settings-reciter-option {
-    min-height: 3.7rem;
-}
-
 .settings-reciter-option:hover,
 .settings-reciter-option:focus-visible {
     background: color-mix(
@@ -198,10 +194,6 @@
 
 .mp-audio-player {
     max-width: calc(100vw - 1rem);
-}
-
-.mp-audio-player--desktop {
-    width: min(21.5rem, calc(100vw - 1.5rem)) !important;
 }
 
 .mp-audio-player--desktop.is-minimized {
@@ -421,14 +413,6 @@ html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
     }
 }
 
-
-
-html,
-body {
-    max-width: 100% !important;
-    overflow-x: hidden;
-}
-
 html {
     scrollbar-gutter: stable !important;
 }
@@ -625,21 +609,12 @@ html {
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
-    .hp-grid {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
     .hp-grid--surah {
         grid-template-columns: repeat(3, 1fr) !important;
     }
 }
 
 @media (min-width: 1025px) {
-    .hp-grid {
-        grid-template-columns: repeat(3, 1fr) !important;
-    }
-    .hp-grid--surah {
-        grid-template-columns: repeat(4, 1fr) !important;
-    }
 }
 
 @media (max-width: 768px) {
@@ -884,8 +859,6 @@ html,
 body,
 #root,
 .app-root {
-    width: 100%;
-    max-width: 100%;
     overflow-x: hidden;
 }
 
@@ -898,7 +871,6 @@ html {
 .app-main-shell,
 .app-view-shell {
     min-width: 0 !important;
-    max-width: 100% !important;
 }
 
 .app-main-shell {
@@ -912,10 +884,6 @@ html {
 }
 
 @media (max-width: 1024px) {
-    .app-root .audio-player-modal {
-        align-items: flex-end !important;
-        padding: 0;
-    }
 
     .app-root .audio-player-modal__surface {
         width: 100dvw !important;
@@ -941,10 +909,8 @@ html {
         left: 0 !important;
         right: 0 !important;
         bottom: 0 !important;
-        width: 100dvw !important;
         max-width: 100dvw !important;
         margin: 0;
-        border-radius: 20px 20px 0 0;
     }
 
     .app-root .mp-audio-player--mobile:not(.mp-audio-player--dock) {

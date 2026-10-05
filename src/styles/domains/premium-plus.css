@@ -109,7 +109,6 @@
         color-mix(in srgb, var(--theme-panel-bg-strong) 97%, transparent 3%),
         color-mix(in srgb, var(--theme-panel-bg) 92%, transparent 8%)
     );
-    box-shadow: 0 10px 30px rgba(2, 8, 22, 0.06);
 }
 
 .app-root.premium-plus
@@ -145,7 +144,6 @@
     .quran-display--platform
     .qc-ayah-text-ar {
     color: var(--theme-arabic);
-    line-height: 2.06;
 }
 
 .app-root.premium-plus
@@ -301,70 +299,12 @@
     backdrop-filter: blur(14px);
 }
 
-[data-theme="light"] .app-root.premium-plus {
-    background:
-        radial-gradient(
-            circle at 14% -8%,
-            rgba(31, 143, 125, 0.2),
-            transparent 34%
-        ),
-        radial-gradient(
-            circle at 84% -6%,
-            rgba(var(--theme-primary-rgb), 0.12),
-            transparent 28%
-        ),
-        linear-gradient(
-            180deg,
-            color-mix(in srgb, var(--theme-bg) 97%, #ffffff 3%) 0%,
-            color-mix(in srgb, var(--theme-bg-alt) 95%, #f8f2e3 5%) 52%,
-            color-mix(in srgb, var(--theme-bg) 96%, #ffffff 4%) 100%
-        );
-}
-
 [data-theme="light"] .app-root.premium-plus::before {
-    opacity: 0.74;
-    filter: none;
     background: var(--theme-veil);
 }
 
 [data-theme="light"] .app-root.premium-plus::after {
-    opacity: 0.7;
     background: var(--theme-ornament);
-}
-
-[data-theme="light"] .app-root.premium-plus .app-main-shell::before {
-    background:
-        radial-gradient(
-            circle at 12% 8%,
-            rgba(31, 143, 125, 0.11),
-            transparent 24%
-        ),
-        radial-gradient(
-            circle at 86% 12%,
-            rgba(var(--theme-primary-rgb), 0.08),
-            transparent 22%
-        ),
-        linear-gradient(
-            60deg,
-            transparent 0 42%,
-            rgba(35, 49, 61, 0.03) 42.4%,
-            transparent 42.8% 57%,
-            rgba(35, 49, 61, 0.03) 57.4%,
-            transparent 57.8% 100%
-        );
-    opacity: 1;
-}
-
-[data-theme="light"] .app-root.premium-plus .audio-player-primary-btn {
-    border-color: color-mix(in srgb, var(--theme-primary) 62%, #ffffff 38%);
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--theme-primary) 86%, #ffffff 14%),
-        color-mix(in srgb, var(--theme-primary) 64%, #1b2e44 36%)
-    );
-    box-shadow:
-        0 12px 28px rgba(var(--theme-primary-rgb), 0.3),
-        0 1px 0 rgba(255, 255, 255, 0.12) inset;
 }
 
 [data-theme="light"] .app-root.premium-plus .mp-audio-player,
@@ -393,16 +333,6 @@
     box-shadow:
         0 22px 54px rgba(36, 49, 68, 0.2),
         inset 0 1px 0 rgba(255, 255, 255, 0.24);
-}
-
-[data-theme="light"] .app-root.premium-plus .audio-player-modal__backdrop {
-    background:
-        radial-gradient(
-            circle at top,
-            rgba(31, 143, 125, 0.12),
-            transparent 30%
-        ),
-        color-mix(in srgb, var(--theme-bg) 56%, #122032 44%);
 }
 
 [data-theme="sepia"] .app-root.premium-plus .audio-player-modal__backdrop {
@@ -539,14 +469,6 @@
     .quran-display--platform
     .mushaf-layout-toggle-bar {
     border-radius: var(--pp-radius-md);
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-actions-panel {
-    margin-top: 0.36rem;
-    padding-top: 0.36rem;
 }
 
 .app-root.premium-plus .ayah-actions {

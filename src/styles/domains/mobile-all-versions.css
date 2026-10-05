@@ -509,7 +509,6 @@
     }
 
     .app-root .mp-player-mobile-expanded {
-        max-height: min(56dvh, 420px);
         padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 1rem);
     }
 
@@ -871,10 +870,6 @@
 
     .app-root .sb-page-grid--pages {
         grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .app-root .mp-player-mobile-main-controls {
-        padding-inline: 0.3rem;
     }
 }
 

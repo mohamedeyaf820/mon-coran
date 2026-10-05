@@ -157,7 +157,6 @@
 }
 
 .settings-reciter-option {
-  min-height: 3.45rem;
   color: var(--text-primary);
 }
 
@@ -172,9 +171,6 @@
 
 .settings-reciter-avatar {
   display: inline-flex;
-  width: 2.35rem;
-  height: 2.35rem;
-  flex: 0 0 2.35rem;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -182,7 +178,6 @@
   border: 1px solid color-mix(in srgb, var(--primary, #0f766e) 26%, transparent);
   background: var(--avatar-bg, linear-gradient(135deg, #0f766e, #155e75));
   color: #fff;
-  font-size: 0.7rem;
   font-weight: 800;
   box-shadow: 0 10px 22px rgba(2, 8, 23, 0.14);
 }
