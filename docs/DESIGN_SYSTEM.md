@@ -12,7 +12,8 @@ Status: living internal guide.
 
 ## Layout Tokens
 
-- App shell: fixed header, scrollable main content, audio player reserved with `--player-h`.
+- App shell: fixed header on desktop; phone and tablet omit the global header and reserve no header height. Main content scrolls independently, with audio height reserved through `--player-h`.
+- Phone and tablet navigation: four fixed destinations plus an on-demand More menu reserve `--mobile-nav-h`; Hafs/Warsh selection, search, settings, surah directory, library and duas live in this menu. The audio dock sits above this band. On phone and tablet reading surfaces, the audio dock and navigation hide after 2.8 seconds of inactivity or during downward scrolling, including during playback. A tap in the reading area or keyboard navigation reveals the controls. Dialogs and keyboard focus in the controls keep them available; hiding does not stop audio or reset reading position.
 - Reading width: use viewport-aware max widths, then allow the Arabic block to breathe inside list and mushaf modes.
 - Mobile spacing: outer padding should stay between 12px and 16px; use horizontal scrolling toolbars instead of wrapping controls into tall stacks.
 - Tablet spacing: prefer two balanced columns only when each column can keep readable text and 44px controls.

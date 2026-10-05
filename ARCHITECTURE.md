@@ -53,33 +53,32 @@ Single `AppContext` (`src/context/AppContext.jsx`) using `useReducer` with a cus
 
 #### Background and lock-screen playback
 
-The recitation has to keep going with the screen off, and every rule below
-exists because a specific platform refuses it otherwise. Changing one of them
-breaks a case the others cannot cover.
+`audioService.js` keeps one main native media element for the lifetime of the
+page. React observes it; navigation and component cleanup do not stop it.
 
-- **One activation rule.** A `play()` with the page hidden is honoured only when
-  nothing has awaited since the event that granted the activation. The verse
-  boundary is the one event that always grants a fresh one, so the swap runs
-  synchronously inside the `ended` task (`audioHandoff.js`) and everything that
-  can wait — preloads, retries, notifications — runs *after* `play()`.
-- **Intent, not element state.** `_playbackIntent` records what the reader
-  asked for and survives an OS suspension, which clears `isPlaying` first.
-  `reportPausedState` publishes `paused` to the OS only for a genuine pause; a
-  background suspension keeps the session `playing`, because publishing
-  `paused` releases Android's audio-focus exemption and lets the tab be frozen
-  mid-recitation.
-- **Recovery is event-driven.** `visibilitychange`, `resume`, `online`, the
-  media error path and a bounded retry timer restart the pending verse; no
-  `requestAnimationFrame` or foreground timer is required, since those are
-  frozen while the page is hidden.
-- **One owner per concern.** Four `HTMLAudioElement`s exist: the engine's
-  element (the only one the `<audio>` UI and the lock screen describe),
-  `audioPreload.js`'s detached pool, `adhanService.js`'s adhan element and
-  `wordAudio.js`'s word player. Only the engine holds `navigator.mediaSession`
-  controls, bound by `useMediaSession` inside `AudioPlayer`; that component
-  stays mounted while `state.isPlaying || state.currentPlayingAyah`, and the
-  service is never re-constructed, so the lock screen cannot be left behind by
-  a route change.
+- **Native progression.** `ended` advances the playlist through the same
+  asynchronous loader as explicit playback. An `ended` event does not grant
+  user activation. Rejected autoplay is reported as an interruption.
+- **Actual media state.** `_playbackIntent` distinguishes a requested pause from
+  a detectable interruption; `isPlaying` and Media Session reflect the native
+  element. Visibility, `resume` and connection changes reconcile state without
+  restarting audio. Resuming an interrupted source requires a user/media action.
+- **Engine-owned controls.** `engineMediaSession.js` binds system actions and
+  metadata independently of React. `audioSession.js` feature-detects the native
+  playback category and observes native pause/playing events. Sources and
+  pending commands are guarded against stale asynchronous completions.
+- **Verified local sources.** `offlineAudioStore.js` validates readable complete
+  MPEG Layer III bodies in the stable `mushafplus-audio-v2` Cache Storage cache.
+  The engine uses local Blob URLs first, including without a service worker.
+  `downloadService.js` verifies actual files, repairs legacy progress metadata,
+  handles quotas/cancellation and preserves the cache across shell updates.
+- **Riwaya integrity.** Existing Hafs/Warsh file mappings remain authoritative.
+  The current catalogue uses per-file recitation. Legacy full-surah streams can
+  play, but have no estimated verse synchronization or verse seeking without
+  trustworthy timestamps. Quran.com per-verse word timings are separate.
+- **Distinct audio purposes.** Preload elements never play. Word pronunciation
+  and adhan retain their own elements; word playback claims focus and pauses
+  the main recitation. Only the main engine owns Media Session.
 - **Platform limits.** A full adhan cannot be started by an installed PWA that
   is closed or in the background: Web Push has no audio payload and autoplay
   policy forbids a page-less `play()`. The adhan is therefore a foreground
@@ -122,9 +121,9 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
   there is no spaced-repetition service
 - `audioService.js` owns the single `<audio>` element and the playlist. The
   background-playback pieces sit beside it to keep that file inside its screen
-  budget: `audioSession.js` (native audio session + MediaSession intent),
-  `audioHandoff.js` (the verse-boundary swap, which has to run inside the
-  `ended` task with nothing awaited before `play()`), `audioPreload.js`,
+  budget: `audioSession.js` (native playback observation),
+  `engineMediaSession.js` (system controls), `offlineAudioStore.js` (verified local
+  media), `audioHandoff.js` (native verse-boundary progression), `audioPreload.js`,
   `reciterLatency.js` and `audioEq.js`
 - `quranComStudyService.js` — Quran commentary/exegesis fetching and the tafsir
   source registry (`TAFSIR_RESOURCES`); `frenchTafsirService.js` serves the

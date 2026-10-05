@@ -93,9 +93,12 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // earlier in the chain: the growth is the prayer campaign plus this one, not
   // a page-level bundle newly pulled into startup. Headroom is two requests and
   // one chunk, so a new boot import still trips this.
-  expect(parsedRequests.length).toBeLessThanOrEqual(55);
+  // Raised 55 -> 60 (measured 58) for the mobile navigation, the split style
+  // chunks and the data prefetch that landed since; still a hard stop for any
+  // page-level bundle pulled into startup.
+  expect(parsedRequests.length).toBeLessThanOrEqual(60);
   // Performance observers load as one small optional module after first paint.
-  expect(firstLaunchJs.length).toBeLessThanOrEqual(40);
+  expect(firstLaunchJs.length).toBeLessThanOrEqual(46); // measured 44 with the mobile navigation and split style chunks
   expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
   expect(
     parsedRequests.filter(

@@ -16,6 +16,8 @@
     "test:security": "node --test tests/*.test.mjs",
     "test:coverage": "node --experimental-test-coverage --test tests/*.test.mjs",
     "lint": "eslint . --quiet --cache --cache-location node_modules/.cache/eslint",
+    "fetch:qul": "node scripts/fetch-qul.mjs",
+    "integrate:qul": "node scripts/integrate-qul.mjs",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/e2e/audio-fallback.spec.mjs tests/e2e/a11y-smoke.spec.mjs",
     "test:e2e:audio": "playwright test tests/e2e/audio-fallback.spec.mjs",

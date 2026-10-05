@@ -87,9 +87,6 @@ const WORD_FIELDS = [
   "audio_url",
   "char_type_name",
   "translation",
-  "transliteration",
-  "root",
-  "grammar",
 ].join(",");
 
 // Verified live: 131 is not in /resources/translations, and asking for it
@@ -327,7 +324,7 @@ function htmlToPlainText(value) {
 
 function stripVerseEndGlyphs(value) {
   return String(value || "")
-    .replace(/<span[^>]*(?:class|data-type)=["'][^"']*(?:end|ayah|verse)[^"']*["'][^>]*>.*?<\/span>/gi, "")
+    .replace(/<span\s+class\s*=\s*(?:"end"|'end'|end)\s*>[^<]*<\/span>/gi, "")
     // Only the proven end-of-ayah marker bases: U+06DD (end-of-ayah rosette)
     // and U+06DE. Arabic presentation forms (U+FC00-U+FCFF, U+FDF0-U+FDFF) are
     // deliberately NOT stripped - they carry reader-visible Quranic ligatures
