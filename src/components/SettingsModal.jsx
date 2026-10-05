@@ -1,3 +1,4 @@
+import { offlineText } from "../i18n/offline.js";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import "../styles/settings-enhanced.css";
 import * as Dialog from "@radix-ui/react-dialog";
@@ -60,11 +61,13 @@ import {
 } from "./settings/controls";
 // The prayer panel is one tab among five; its services (adhan, timings,
 // cities) must not weigh on the settings bundle unless the tab opens.
+const OfflineDownloadsSection = React.lazy(() => import("./settings/OfflineDownloadsSection"));
 const PrayerSettingsSection = React.lazy(() => import("./settings/PrayerSettingsSection"));
 
 const TABS = [  { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
   { id: "audio", icon: Volume2, labelKey: "settings.audio" },
+  { id: "offline", icon: CloudDownload, labelKey: "offline.title" },
   { id: "prayer", icon: CalendarCheck, labelKey: "settings.prayer" },
   { id: "privacy", icon: ShieldCheck, labelKey: "settings.privacy" },
 ];
@@ -237,9 +240,9 @@ export default function SettingsModal() {
   const handleTabKeyDown = (event) => {
     const currentIndex = TABS.findIndex((tab) => tab.id === activeTab);
     let nextIndex = -1;
-    if (event.key === "ArrowRight" || event.key === "ArrowDown") {
+    if (event.key === (lang === "ar" ? "ArrowLeft" : "ArrowRight") || event.key === "ArrowDown") {
       nextIndex = (currentIndex + 1) % TABS.length;
-    } else if (event.key === "ArrowLeft" || event.key === "ArrowUp") {
+    } else if (event.key === (lang === "ar" ? "ArrowRight" : "ArrowLeft") || event.key === "ArrowUp") {
       nextIndex = (currentIndex - 1 + TABS.length) % TABS.length;
     } else if (event.key === "Home") {
       nextIndex = 0;
@@ -253,6 +256,13 @@ export default function SettingsModal() {
       document.getElementById(`settings-tab-${nextTab}`)?.focus();
     }
   };
+
+  useEffect(() => {
+    document.getElementById(`settings-tab-${activeTab}`)?.scrollIntoView({
+      block: "nearest",
+      inline: "nearest",
+    });
+  }, [activeTab]);
 
   const handleTranslationToggle = (translationLang) => {
     const current = Array.isArray(translationLangs) ? translationLangs : ["fr"];
@@ -952,7 +962,7 @@ export default function SettingsModal() {
                   <span className="settings-tab-button__icon">
                     <Icon size={16} />
                   </span>
-                  <span className="settings-tab-button__label">{t(tab.labelKey, lang)}</span>
+                  <span className="settings-tab-button__label">{tab.id === "offline" ? offlineText("title", lang) : t(tab.labelKey, lang)}</span>
                 </button>
               );
             })}
@@ -967,6 +977,7 @@ export default function SettingsModal() {
               {activeTab === "general" ? renderGeneralTab() : null}
               {activeTab === "reading" ? renderReadingTab() : null}
               {activeTab === "audio" ? renderAudioTab() : null}
+              {activeTab === "offline" && <React.Suspense fallback={<p role="status">{offlineText("checking", lang)}</p>}><OfflineDownloadsSection lang={lang} /></React.Suspense>}
               {activeTab === "prayer" ? (
                 <React.Suspense fallback={null}>
                   <PrayerSettingsSection lang={lang} state={state} set={set} />

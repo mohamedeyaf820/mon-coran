@@ -13,6 +13,100 @@ test.describe.configure({ mode: "serial" });
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
+test("phone and tablet settings keep all six categories on one reachable strip", async ({ page }) => {
+  for (const viewport of [
+    { width: 280, height: 700 },
+    { width: 390, height: 844 },
+    { width: 820, height: 1180 },
+  ]) {
+    await openHome(page, viewport);
+    expect((await box(page, ".home-resume-panel"))?.height).toBeLessThan(420);
+    await openQuickMenu(page);
+    await shellTool(page, "settings").click();
+    const drawer = page.getByRole("dialog", { name: "Paramètres", exact: true });
+    const tabs = drawer.getByRole("tab");
+    await expect(tabs).toHaveCount(6);
+    const strip = await drawer.getByRole("tablist").boundingBox();
+    expect(strip.height).toBeLessThan(80);
+    for (const tab of await tabs.all()) {
+      await tab.click();
+      await expect(tab).toHaveAttribute("aria-selected", "true");
+      const bounds = await tab.boundingBox();
+      expect(bounds.width).toBeGreaterThanOrEqual(43.99);
+      expect(bounds.height).toBeGreaterThanOrEqual(43.99);
+      expect(bounds.y).toBeGreaterThanOrEqual(strip.y);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(strip.y + strip.height + 1);
+      expect(bounds.x).toBeGreaterThanOrEqual(strip.x - 2);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(strip.x + strip.width + 2);
+      expect(await tab.locator(".settings-tab-button__label").evaluate(node => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
+    }
+    await page.keyboard.press("Home");
+    await expect(tabs.first()).toBeFocused();
+    await expect(tabs.first()).toHaveAttribute("aria-selected", "true");
+    await page.keyboard.press("End");
+    await expect(tabs.last()).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(drawer).toBeHidden();
+  }
+});
+
+test("Arabic settings follow RTL arrow navigation and keep the selected tab visible", async ({ page }) => {
+  await openReader(page, { width: 390, height: 844 }, { lang: "ar" });
+  await openQuickMenu(page);
+  await shellTool(page, "settings").click();
+  const tabs = page.locator(".settings-drawer").getByRole("tab");
+  await tabs.first().focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(tabs.nth(1)).toBeFocused();
+  await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
+  await page.keyboard.press("End");
+  const last = await tabs.last().boundingBox();
+  expect(last.x).toBeGreaterThanOrEqual(0);
+  expect(last.x + last.width).toBeLessThanOrEqual(390);
+  await page.keyboard.press("ArrowRight");
+  await expect(tabs.nth(4)).toBeFocused();
+});
+
+test("landscape tablet settings show all three themes together", async ({ page }) => {
+  await openHome(page, { width: 1024, height: 768 });
+  await openQuickMenu(page);
+  await shellTool(page, "settings").click();
+  const themes = page.locator(".settings-theme-tile");
+  await expect(themes).toHaveCount(3);
+  const first = await themes.first().boundingBox();
+  for (const theme of await themes.all()) {
+    const bounds = await theme.boundingBox();
+    expect(Math.abs(bounds.y - first.y)).toBeLessThan(1);
+    expect(bounds.y + bounds.height).toBeLessThan(768);
+    expect(bounds.x + bounds.width).toBeLessThan(1024);
+  }
+  await page.locator(".settings-drawer").screenshot({
+    path: ".codex-artifacts/mobile-tablet/settings-tablet-landscape-final.png",
+  });
+});
+
+test("page reader integrates the Tajwid guide into its commands on phone and tablet", async ({ page }) => {
+  for (const viewport of [{ width: 390, height: 844 }, { width: 820, height: 1180 }]) {
+    await openReader(page, viewport, { riwaya: "warsh", showTajwid: true });
+    await page.goto("/page/6");
+    const toolbar = page.getByRole("toolbar");
+    const guide = toolbar.getByTestId("tajweed-legend");
+    await expect(guide).toBeVisible();
+    await expect(page.getByTestId("tajweed-legend")).toHaveCount(1);
+    for (const button of await toolbar.locator("button:visible").all()) {
+      const bounds = await button.boundingBox();
+      // Chromium can report a 44 px CSS target a fraction below 44 during layout.
+      expect(bounds.width).toBeGreaterThanOrEqual(43.99);
+      expect(bounds.height).toBeGreaterThanOrEqual(43.99);
+    }
+    await guide.click();
+    await expect(page.getByRole("dialog", { name: "Guide Tajwid", exact: true })).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(guide).toBeFocused();
+    expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+});
+
 async function seedReadingState(page, overrides = {}) {
   await page.addInitScript(({ key, overrides }) => {
     try {
@@ -52,7 +146,7 @@ async function openReader(page, viewport, overrides = {}) {
   });
   await page.setViewportSize(viewport);
   await page.goto("/surah/3");
-  await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
+  await expectShell(page);
   await expect(page.locator(".quran-display--platform").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
   // The polish stylesheet lands right after first paint; measure once it has
@@ -64,6 +158,7 @@ async function openReader(page, viewport, overrides = {}) {
     await expect
       .poll(async () => (await box(page, ".mp-header__bar"))?.height || 0)
       .toBeLessThanOrEqual(maxHeaderHeight);
+    await page.locator('#main-content').click({ position: { x: 4, y: 180 } });
   }
 }
 
@@ -89,7 +184,7 @@ async function openHome(page, viewport) {
   }, SETTINGS_KEY);
   await page.setViewportSize(viewport);
   await page.goto("/");
-  await expect(page.locator(".mp-header").first()).toBeVisible({ timeout: 30_000 });
+  await expectShell(page);
   await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".hp-card").first()).toBeAttached({ timeout: 30_000 });
   // The polish stylesheet lands right after first paint; measure once it has.
@@ -98,8 +193,8 @@ async function openHome(page, viewport) {
 
 async function openDuas(page, viewport) {
   await openHome(page, viewport);
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="duas"]').click();
+  await openQuickMenu(page);
+  await shellTool(page, "duas").click();
   await expect(page.locator(".app-view-duas").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".duas-page").first()).toBeVisible({ timeout: 30_000 });
 }
@@ -154,6 +249,11 @@ async function headerCenterDelta(page) {
 }
 
 async function openAudioPlayer(page) {
+  const root = page.locator(".app-root");
+  if ((await root.getAttribute("class"))?.includes("immersive-mode")) {
+    await page.keyboard.press("Escape");
+    await expect(root).not.toHaveClass(/immersive-mode/);
+  }
   const compactPlayer = page.getByTestId("audio-player-compact");
   if (await compactPlayer.isVisible().catch(() => false)) {
     await compactPlayer.locator(".mp-player-minimized-open").click();
@@ -168,8 +268,8 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 390, height: 844 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(40);
-  expect((await box(page, ".mp-header__more"))?.width || 0).toBeGreaterThanOrEqual(40);
+  expect((await box(page, '[data-destination="home"]'))?.width || 0).toBeGreaterThanOrEqual(40);
+  expect((await box(page, '[data-destination="more"]'))?.width || 0).toBeGreaterThanOrEqual(40);
   expect(await fontSizePx(page, ".home-resume-panel h1")).toBeLessThanOrEqual(34);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(12);
   expect(await fontSizePx(page, ".hp-card-meta")).toBeGreaterThanOrEqual(11);
@@ -177,7 +277,7 @@ test("home density: mobile and tablet text, icons and cards scale with viewport"
   await openHome(page, { width: 820, height: 920 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
-  expect((await box(page, ".mp-header__icon-btn"))?.width || 0).toBeGreaterThanOrEqual(42);
+  expect((await box(page, '[data-destination="home"]'))?.width || 0).toBeGreaterThanOrEqual(42);
   expect(await fontSizePx(page, ".hp-card-name")).toBeGreaterThanOrEqual(14);
 });
 
@@ -304,17 +404,9 @@ test("home audit breakpoints preserve hierarchy without horizontal overflow", as
 
   await openHome(page, { width: 320, height: 780 });
   const mobileHero = await box(page, ".home-resume-panel");
-  const mobileHeaderCenter = await box(page, ".mp-header__center");
-  const mobileHeaderSummary = await box(page, ".mp-header__home-summary");
   expect(mobileHero?.height || 0).toBeLessThanOrEqual(360);
-  expect(mobileHeaderSummary?.x || 0).toBeGreaterThanOrEqual(
-    (mobileHeaderCenter?.x || 0) - 1,
-  );
-  expect(
-    (mobileHeaderSummary?.x || 0) + (mobileHeaderSummary?.width || 0),
-  ).toBeLessThanOrEqual(
-    (mobileHeaderCenter?.x || 0) + (mobileHeaderCenter?.width || 0) + 1,
-  );
+  await expect(page.locator(".mp-header")).toBeHidden();
+  await expect(page.locator(".mobile-navigation")).toBeVisible();
   const firstCards = await page.locator(".hp-list .hp-card").evaluateAll((nodes) =>
     nodes.slice(0, 2).map((node) => {
       const rect = node.getBoundingClientRect();
@@ -325,13 +417,18 @@ test("home audit breakpoints preserve hierarchy without horizontal overflow", as
   expect(Math.abs(firstCards[0].x - firstCards[1].x)).toBeLessThanOrEqual(1);
   expect(firstCards[1].y).toBeGreaterThan(firstCards[0].y);
 
-  const displayOptions = page.locator(".home-content-toolbar details");
-  await displayOptions.locator("summary").click();
-  await expect(displayOptions.locator(".home-sort-menu")).toBeVisible();
-  await expect(displayOptions.getByRole("combobox", { name: "Trier les sourates" })).toBeVisible();
+  await expect(page.locator(".home-content-toolbar details")).toHaveCount(0);
+  await expect(page.locator(".home-content-toolbar .home-sort-menu")).toHaveCount(0);
+  await page.locator('.home-content-toolbar').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: '.codex-artifacts/home-without-display-options-mobile.png', animations: 'disabled' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await expect(page.locator('.mp-header')).toBeVisible();
+  await expect(page.locator('.home-content-toolbar details')).toHaveCount(0);
+  await page.locator('.home-content-toolbar').scrollIntoViewIfNeeded();
+  await page.screenshot({ path: '.codex-artifacts/home-without-display-options-desktop.png', animations: 'disabled' });
 });
 
-test("reader header stays stable and visually centered across breakpoints", async ({ page }) => {
+test("reader shell hides the mobile header and centers desktop controls", async ({ page }) => {
   for (const viewport of [
     { width: 320, height: 780 },
     { width: 390, height: 844 },
@@ -339,6 +436,7 @@ test("reader header stays stable and visually centered across breakpoints", asyn
     { width: 1280, height: 900 },
   ]) {
     await openReader(page, viewport);
+    if (viewport.width <= 1024) { await expect(page.locator(".mp-header")).toBeHidden(); continue; }
     const delta = await headerCenterDelta(page);
     if (viewport.width <= 360) {
       // Below 360px the reader trades optical centring for a legible name: the
@@ -365,15 +463,15 @@ test("reader header stays stable and visually centered across breakpoints", asyn
 
     if (viewport.width <= 390) {
       const maxLegendHeight = viewport.width <= 320 ? 120 : 140;
-      expect((await box(page, ".tajweed-legend"))?.height || 0).toBeLessThanOrEqual(maxLegendHeight);
+      expect((await box(page, ".tajwid-guide"))?.height || 0).toBeLessThanOrEqual(maxLegendHeight);
       expect((await box(page, ".srh-root"))?.height || 0).toBeLessThanOrEqual(170);
     }
   }
 });
 
-test("reader header keeps the Arabic title and search affordance legible", async ({ page }) => {
+test("reader Arabic identity and desktop search stay legible", async ({ page }) => {
   await openReader(page, { width: 320, height: 780 });
-  const compactArabicTitleSize = await page.locator(".mp-header__title-sub").first().evaluate((node) =>
+  const compactArabicTitleSize = await page.locator(".srh-arabic").first().evaluate((node) =>
     Number.parseFloat(getComputedStyle(node).fontSize),
   );
   expect(compactArabicTitleSize).toBeGreaterThanOrEqual(22);
@@ -470,7 +568,7 @@ test("reader typography and action glyphs follow the connected device scale", as
   expect(samples[2]).toBeGreaterThan(samples[1]);
 
   await openReader(page, { width: 1128, height: 800 }, { showTajwid: true });
-  expect((await box(page, ".tajweed-legend"))?.height || 0).toBeLessThanOrEqual(115);
+  expect((await box(page, ".tajwid-guide"))?.height || 0).toBeLessThanOrEqual(115);
 });
 
 test("mobile QCF4 Mushaf mode reveals the complete reader command bar on demand", async ({ page }) => {
@@ -536,8 +634,8 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   expect(identitySizeAt22).toBeGreaterThanOrEqual(27);
   expect(identitySizeAt22).toBeLessThanOrEqual(33);
 
-  const navigation = await box(page, ".mp-header__nav");
-  expect(navigation?.width || 0).toBeLessThanOrEqual(225);
+  await expect(page.locator(".mp-header")).toBeHidden();
+  await expect(page.locator(".mobile-navigation")).toBeVisible();
 
   // The player is a full-width bar docked at the bottom edge (quran.com
   // pattern): it never floats inset from the viewport sides.
@@ -628,17 +726,17 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
 
   const legend = page.getByTestId("tajweed-legend");
   await expect(legend).toBeVisible();
-  await expect(legend).not.toHaveAttribute("open");
-  await expect(legend.locator(".tajweed-legend__rules")).toBeHidden();
+  await expect(legend).toHaveAttribute("aria-expanded", "false");
   const collapsedLegendBox = await legend.boundingBox();
   expect(collapsedLegendBox?.height || 0).toBeLessThanOrEqual(56);
-
-  await legend.evaluate((node) => { node.open = true; });
-  await expect(legend).toHaveAttribute("open");
-  await expect(legend.locator(".tajweed-legend__rules")).toBeVisible();
-  const legendBox = await legend.boundingBox();
-  expect(legendBox?.width || 0).toBeLessThanOrEqual(1280);
-  expect(legendBox?.height || 0).toBeLessThanOrEqual(150);
+  expect(collapsedLegendBox?.height || 0).toBeGreaterThanOrEqual(44);
+  await legend.click();
+  const guide = page.getByRole("dialog", { name: "Guide Tajwid" });
+  await expect(guide).toBeVisible();
+  await expect(guide.locator("[data-visual-group]")).toHaveCount(8);
+  await page.keyboard.press("Escape");
+  await expect(guide).toBeHidden();
+  await expect(legend).toBeFocused();
 
   // The fixture colours the whole first word of 53:4 (ghunnah). Hovering it
   // must explain the rule. With the Highlight API the word stays one text
@@ -679,13 +777,13 @@ test("Tajweed guide stays compact and explains coloured rules on hover", async (
     await page.mouse.move(cx, cy, { steps: 6 });
     await target.dispatchEvent("pointermove", { clientX: cx, clientY: cy, bubbles: true });
     const shown = await tooltip
-      .filter({ hasText: /Ghunnah/i })
+      .filter({ hasText: /Ghounna|Ghunnah/i })
       .waitFor({ state: "visible", timeout: 4000 })
       .then(() => true)
       .catch(() => false);
     if (shown) break;
   }
-  await expect(tooltip).toContainText(/Ghunnah/i, { timeout: 15_000 });
+  await expect(tooltip).toContainText(/Ghounna|Ghunnah/i, { timeout: 15_000 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -722,9 +820,9 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   const header = await box(page, ".mp-header__bar");
   const toolbar = await box(page, ".srh-root");
   const audioDock = await box(page, ".mp-audio-player--mobile");
-  const firstAction = await box(page, ".mp-header__icon-btn");
-  const settingsButton = await box(page, ".mp-header__more");
-  const moreButton = await box(page, ".mp-header__more");
+  const firstAction = await box(page, '[data-destination="home"]');
+  const settingsButton = await box(page, '[data-destination="more"]');
+  const moreButton = await box(page, '[data-destination="more"]');
   const typographyTrigger = await box(page, ".srh-typography-trigger");
   const verseReference = await box(page, ".qc-list-card__reference");
   const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
@@ -737,7 +835,7 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(audioDock?.height || 0).toBeLessThanOrEqual(160);
   expect(firstAction?.width || 0).toBeGreaterThanOrEqual(43.9);
   expect(firstAction?.height || 0).toBeGreaterThanOrEqual(43.9);
-  expect(firstAction?.width || 0).toBeLessThanOrEqual(44.1);
+  await expect(page.locator(".mp-header")).toBeHidden();
   expect(settingsButton?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(moreButton?.width || 0).toBeGreaterThanOrEqual(39.9);
   expect(typographyTrigger?.width || 0).toBeGreaterThanOrEqual(39.9);
@@ -773,74 +871,34 @@ test("mobile density: header, reading toolbar and audio player fit without horiz
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
-test("mobile reader header keeps Home visible and exposes only contextual quick actions", async ({ page }) => {
+test("mobile shell keeps Home and supporting commands accessible without a header", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
-
-  const homeLogo = page.getByTestId("mobile-home-logo");
-  await expect(homeLogo).toBeVisible();
-  await expect(page.locator(".mp-header__riwaya-toggle")).toBeHidden();
-
-  await page.locator(".mp-header__more").click();
-  const menu = page.locator(".mp-header-menu");
-  await expect(menu).toBeVisible();
-  const mobileSearch = menu.locator('.mp-header-menu__item[data-key="search"]');
-  await expect(mobileSearch).toBeVisible();
-  await expect(menu.locator('.mp-header-menu__item[data-key="theme"]')).toBeVisible();
-  await expect(menu.locator('.mp-header-menu__item[data-key="settings"]')).toBeVisible();
-  await expect(menu.locator('.mp-header-menu__item[data-key="duas"]')).toBeVisible();
-  await expect(menu.locator('[data-key="about"], [data-key="privacy"], [data-key="sources"], [data-key="help"]')).toHaveCount(0);
-
-  await expect(page.getByTestId("header-mobile-riwaya")).toBeVisible();
-  await expect(page.getByTestId("header-reader-layout-list")).toHaveAttribute("aria-pressed", "true");
-  await expect(page.getByTestId("header-reader-font-increase")).toBeVisible();
-  await expect(menu.locator("output")).toHaveText("34px");
-  await page.getByTestId("header-reader-font-increase").click();
-  await expect(menu.locator("output")).toHaveText("36px");
-
-  await page.getByTestId("header-reader-layout-mushaf").click();
-  await expect(page.getByTestId("header-reader-layout-mushaf")).toHaveAttribute("aria-pressed", "true");
-  const mobileSearchIcon = await box(page, '.mp-header-menu__item[data-key="search"] .mp-header-menu__item-icon');
-  // 30px icons land on sub-pixel boundaries (30.125) on some runners.
-  expect(mobileSearchIcon?.width || 0).toBeLessThanOrEqual(30.5);
-  await mobileSearch.click();
-  await expect(page.getByRole("dialog", { name: /Recherche|Search|بحث/i })).toBeVisible();
+  await expect(page.locator(".mp-header")).toBeHidden();
+  await openQuickMenu(page);
+  for (const key of ["search", "settings", "duas", "library", "directory"]) await expect(shellTool(page, key)).toBeVisible();
+  await shellTool(page, "search").click();
+  await expect(page.locator(".search-pro")).toBeVisible();
   await page.keyboard.press("Escape");
-  await homeLogo.click();
+  await page.locator('[data-destination="home"]').click();
   await expect(page.locator(".app-view-home")).toBeVisible();
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
 test("tiny phone keeps the quick menu and compact player calm and dismissible", async ({ page }) => {
   await openReader(page, { width: 319, height: 698 });
-
-  const compactPlayer = page.getByTestId("audio-player-compact");
-  await expect(compactPlayer).toBeVisible();
-  const compactPlayerBox = await compactPlayer.boundingBox();
-  expect(compactPlayerBox?.width || 0).toBeLessThanOrEqual(319);
-  expect(compactPlayerBox?.height || 0).toBeLessThanOrEqual(76);
-
-  await page.locator(".mp-header__more").click();
-  const menu = page.locator(".mp-header-menu");
+  const player = await page.getByTestId("audio-player-compact").boundingBox();
+  expect(player.width).toBeLessThanOrEqual(319);
+  expect(player.height).toBeLessThanOrEqual(76);
+  await openQuickMenu(page);
+  const menu = page.locator(".mobile-navigation-menu");
   await expect(menu).toBeVisible();
-  await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
-  // The 44px floor animates in via the control's all-property transition;
-  // measure only once the 180ms transition and 200ms entry have settled.
-  await page.waitForTimeout(350);
-
-  const menuBox = await menu.boundingBox();
-  const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
-  expect(menuBox?.width || 0).toBeLessThanOrEqual(315);
-  // The 44px touch floor (WCAG 2.5.5) replaces the former sub-305px height
-  // budget on tiny phones; the menu stacks its controls instead of shrinking.
-  // 445px: the tracker page added a fifth quick entry (Mes prières), one row
-  // taller than the four-item menu this budget was drawn around. The outside
-  // click below still lands past the menu's bottom edge.
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(446);
-  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
-
-  await page.mouse.click(4, 520);
+  expect((await menu.boundingBox()).width).toBeLessThanOrEqual(315);
+  for (const button of await menu.getByRole("button").all()) {
+    await expect.poll(async () => (await button.boundingBox()).height).toBeGreaterThanOrEqual(43.99);
+  }
+  await page.keyboard.press("Escape");
   await expect(menu).toBeHidden();
+  await expect(page.locator('[data-destination="more"]')).toBeFocused();
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -848,34 +906,14 @@ test("general pages use a compact quick-command palette on narrow phones", async
   await openHome(page, { width: 423, height: 698 });
   await page.goto("/about");
   await expect(page.getByRole("heading", { name: /compagnon de lecture/i })).toBeVisible();
-  // A new navigation reloads the polish stylesheet right after first paint.
-  await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached({ timeout: 30_000 });
-
-  await page.locator(".mp-header__more").click();
-  const menu = page.locator(".mp-header-menu");
+  await openQuickMenu(page);
+  const menu = page.locator(".mobile-navigation-menu");
   await expect(menu).toBeVisible();
-  await expect(menu.locator(".mp-header-menu__header-text")).toHaveCount(0);
-  await expect(menu.locator(".mp-header-menu__item-description")).toBeHidden();
-  // Let the menu entry animation and the controls' 180ms transition settle
-  // before measuring the 44px touch floor.
-  await page.waitForTimeout(350);
-
-  const menuBox = await menu.boundingBox();
-  const closeBox = await menu.locator(".mp-header-menu__close").boundingBox();
-  const searchBox = await menu.locator('[data-key="search"]').boundingBox();
-  const searchIconBox = await menu.locator('[data-key="search"] .mp-header-menu__item-icon').boundingBox();
-  expect(menuBox?.width || 0).toBeLessThanOrEqual(300);
-  // The compact palette still stacks few rows; only the 44px touch floor
-  // (WCAG 2.5.5) now bounds its height, not the former 205px budget.
-  // 280px: the fifth entry (Mes prières) adds exactly one 44px row.
-  expect(menuBox?.height || 0).toBeLessThanOrEqual(280);
-  expect(closeBox?.width || 0).toBeGreaterThanOrEqual(44);
-  expect(closeBox?.height || 0).toBeGreaterThanOrEqual(44);
-  expect(searchBox?.height || 0).toBeLessThanOrEqual(49.5);
-  expect(searchIconBox?.width || 0).toBeLessThanOrEqual(24);
-  expect(searchIconBox?.height || 0).toBeLessThanOrEqual(24);
-
-  await page.mouse.click(5, 500);
+  const bounds = await menu.boundingBox();
+  expect(bounds.width).toBeLessThanOrEqual(300);
+  expect(bounds.height).toBeLessThanOrEqual(360);
+  await expect(menu.locator('[data-riwaya-choice]')).toHaveCount(2);
+  await page.mouse.click(5, 100);
   await expect(menu).toBeHidden();
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
@@ -893,7 +931,12 @@ test("compact player is a full-width bottom bar on tablet and desktop", async ({
     expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
     expect(playerBox?.width || 0).toBeGreaterThanOrEqual(viewport.width - 2);
     expect(playerBox?.height || 0).toBeLessThanOrEqual(96);
-    expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeLessThanOrEqual(2);
+    const navigation = await box(page, ".mobile-navigation");
+    if (viewport.width <= 1024) {
+      expect((playerBox?.y || 0) + (playerBox?.height || 0)).toBeLessThanOrEqual(navigation.y);
+    } else {
+      expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeLessThanOrEqual(2);
+    }
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
   }
 });
@@ -903,7 +946,7 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
 
   const header = await box(page, ".mp-header__bar");
   const homeLogo = await box(page, "[data-testid=mobile-home-logo]");
-  const surahArrows = await page.locator(".mp-header__nav-arrow").all();
+  const surahArrows = await page.locator(".mobile-navigation__item").all();
   const verseReference = await box(page, ".qc-list-card__reference");
   const versePlay = await box(page, ".qc-list-card__start .ayah-action--play");
   const verseBookmark = await box(page, ".qc-list-card__start .ayah-action--bookmark");
@@ -913,7 +956,7 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
 
   expect(header?.height || 0).toBeLessThanOrEqual(56);
   expect(homeLogo).toBeNull();
-  expect(surahArrows).toHaveLength(2);
+  expect(surahArrows).toHaveLength(5);
   for (const arrow of surahArrows) {
     const arrowBox = await arrow.boundingBox();
     expect(arrowBox?.width || 0).toBeGreaterThanOrEqual(44);
@@ -938,7 +981,7 @@ test("tiny mobile density keeps the reader usable at 280px", async ({ page }) =>
 test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport", async ({ page }) => {
   await openReader(page, { width: 390, height: 844 });
 
-  await page.locator(".mp-header__icon-btn").first().click();
+  await openQuickMenu(page); await shellTool(page, "directory").click();
   const sidebar = page.locator(".sb-wrapper").first();
   await expect(sidebar).toBeVisible();
   const sidebarBox = await sidebar.boundingBox();
@@ -953,7 +996,7 @@ test("mobile surfaces: sidebar, settings drawer and audio modal fit the viewport
   await page.locator('.sb-wrapper button[aria-label="Fermer"]').first().click();
   await expect(sidebar).not.toHaveClass(/open/);
 
-  await page.locator(".mp-header__more").first().click();
+  await openQuickMenu(page);
   await page.getByRole("button", { name: /Paramètres|Settings|الإعدادات/i }).last().click();
   const settingsDrawer = page.locator(".settings-drawer").first();
   await expect(settingsDrawer).toBeVisible();
@@ -990,7 +1033,7 @@ test("tablet density: header controls and audio options modal remain compact", a
 
   const header = await box(page, ".mp-header__bar");
   const toolbar = await box(page, ".srh-root");
-  const settingsButton = await box(page, ".mp-header__more");
+  const settingsButton = await box(page, '[data-destination="more"]');
   const fontControls = await box(page, ".srh-root .arabic-font-controls--compact");
   await openAudioPlayer(page);
   const audioOptionsButton = await box(page, ".mp-player-options-trigger");
@@ -1005,6 +1048,10 @@ test("tablet density: header controls and audio options modal remain compact", a
 
   const optionsTrigger = page.locator(".mp-player-options-trigger").first();
   if (await optionsTrigger.isVisible().catch(() => false)) {
+    const navigationBounds = await page.locator(".mobile-navigation").boundingBox();
+    const optionsBounds = await optionsTrigger.boundingBox();
+    expect(optionsBounds.y + optionsBounds.height).toBeLessThanOrEqual(navigationBounds.y + 1);
+    await page.screenshot({ path: ".codex-artifacts/mobile-navigation/expanded-player-820-fr.png", animations: "disabled" });
     await optionsTrigger.click();
     const modal = page.locator(".audio-player-modal__surface--settings").first();
     await expect(modal).toBeVisible();
@@ -1042,8 +1089,8 @@ test("small phone: verse actions and search stay usable inside the viewport", as
     expect(action.height).toBeLessThanOrEqual(44.1);
   }
 
-  await page.locator(".mp-header__more").click();
-  const searchBtn = page.locator('.mp-header-menu [data-key="search"]');
+  await openQuickMenu(page);
+  const searchBtn = shellTool(page, "search");
   await expect(searchBtn).toBeVisible();
   await searchBtn.click();
 
@@ -1208,7 +1255,7 @@ test("short landscape: reader search remains fully reachable", async ({ page }) 
   const viewport = { width: 844, height: 390 };
   await openReader(page, viewport);
 
-  await page.locator(".mp-header__search").first().click();
+  await openQuickMenu(page); await shellTool(page, "search").click();
   const overlay = page.locator(".search-pro-overlay").first();
   const searchSurface = page.locator(".search-pro").first();
   await expect(searchSurface).toBeVisible();
@@ -1222,3 +1269,17 @@ test("short landscape: reader search remains fully reachable", async ({ page }) 
   expect((searchBox?.y || 0) + (searchBox?.height || 0)).toBeLessThanOrEqual(viewport.height + 1);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
+
+async function expectShell(page) {
+  const header = page.locator(".mp-header").first();
+  if (page.viewportSize().width <= 1024) {
+    await expect(page.locator(".mobile-navigation")).toBeVisible({ timeout: 30000 });
+    await expect(header).toBeHidden();
+  } else await expect(header).toBeVisible({ timeout: 30000 });
+}
+async function openQuickMenu(page) {
+  await page.locator(page.viewportSize().width <= 1024 ? '[data-destination="more"]' : '.mp-header__more').first().click();
+}
+function shellTool(page, key) {
+  return page.locator(`[data-tool="${key}"], .mp-header-menu__item[data-key="${key}"]`).filter({ visible: true });
+}

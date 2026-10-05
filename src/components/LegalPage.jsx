@@ -265,8 +265,8 @@ export default function LegalPage({ page = "privacy" }) {
 
   const scrollMainTop = () => {
     const main = document.querySelector("#main-content");
-    if (main) main.scrollTo({ top: 0, behavior: "smooth" });
-    else window.scrollTo({ top: 0, behavior: "smooth" });
+    if (main) main.scrollTo({ top: 0, behavior: "instant" });
+    else window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const navigate = (nextPage) => {

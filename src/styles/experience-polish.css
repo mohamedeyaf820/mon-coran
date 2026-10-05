@@ -428,105 +428,6 @@ html body .rc-error {
   }
 }
 
-
-html body .app-root[data-view="reading"] .tajweed-legend {
-  display: block;
-  width: max-content !important;
-  max-width: min(100%, 980px);
-  margin: 0 auto 0.5rem;
-  padding: 0.18rem 0.42rem;
-  overflow: hidden;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, var(--primary) 28%);
-  border-radius: 999px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
-  box-shadow: inset 2px 0 var(--primary);
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend[open] {
-  width: 100% !important;
-  border-radius: 1rem;
-  padding: 0.38rem 0.48rem;
-  box-shadow: inset 3px 0 var(--primary), 0 8px 26px color-mix(in srgb, #081c15 7%, transparent);
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend__intro {
-  display: list-item;
-  min-width: 0;
-  min-height: 1.85rem;
-  padding: 0.34rem 0.4rem;
-  cursor: pointer;
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend__intro::marker {
-  color: var(--primary);
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend__eyebrow {
-  color: var(--primary);
-  font-size: 0.7rem;
-  font-weight: 840;
-  letter-spacing: 0.09em;
-  line-height: 1.25;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend__helper {
-  margin-inline-start: 0.65rem;
-  max-width: 15rem;
-  color: var(--text-muted);
-  font-size: 0.63rem;
-  line-height: 1.45;
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend__rules {
-  display: grid;
-  min-width: 0;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.38rem;
-  margin-top: 0.28rem;
-  padding-top: 0.42rem;
-  border-top: 1px solid var(--border);
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend:not([open]) > .tajweed-legend__rules {
-  display: none;
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend-item {
-  display: inline-flex;
-  min-width: 0;
-  min-height: 2.05rem;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.34rem 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--border) 82%, transparent);
-  border-radius: 0.68rem;
-  background: color-mix(in srgb, var(--bg-secondary) 76%, transparent);
-  color: var(--text-secondary);
-  font-size: 0.66rem;
-  font-weight: 700;
-  line-height: 1.25;
-  transition: border-color 160ms ease, background-color 160ms ease, color 160ms ease, transform 160ms ease;
-}
-
-html body .app-root[data-view="reading"] .tajweed-legend-item:hover {
-  transform: translateY(-1px);
-  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
-  background: color-mix(in srgb, var(--primary) 5%, var(--bg-card));
-  color: var(--text-primary);
-}
-
-html body .app-root[data-view="reading"] .tajweed-dot {
-  width: 0.66rem;
-  height: 0.66rem;
-  flex: 0 0 auto;
-  border: 1px solid color-mix(in srgb, #000 12%, transparent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-card) 88%, transparent);
-}
-
 html body .app-root[data-view="reading"] .tajwid-rule-segment {
   border-radius: 0.14em;
   cursor: help;
@@ -540,61 +441,6 @@ html body .app-root[data-view="reading"] .tajwid-rule-segment[data-state="instan
   box-shadow: inset 0 -0.07em color-mix(in srgb, currentColor 42%, transparent);
 }
 
-@media (max-width: 880px) {
-  html body .app-root[data-view="reading"] .tajweed-legend__helper {
-    max-width: none;
-  }
-}
-
-@media (max-width: 640px) {
-  html body .app-root[data-view="reading"] .tajweed-legend {
-    margin: 0.3rem auto 0.4rem;
-    padding: 0.3rem 0.38rem;
-    border-radius: 0.8rem;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-legend__intro {
-    min-height: 2rem;
-    padding: 0.42rem 0.35rem;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-legend__eyebrow {
-    font-size: 0.62rem;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-legend__helper {
-    display: none;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-legend__rules {
-    grid-auto-columns: minmax(7.25rem, 39vw);
-    grid-auto-flow: column;
-    grid-template-columns: none;
-    grid-template-rows: repeat(2, minmax(1.8rem, auto));
-    gap: 0.28rem;
-    overflow-x: auto;
-    padding: 0.03rem 0 0.18rem;
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-legend-item {
-    min-height: 1.8rem;
-    gap: 0.3rem;
-    padding-inline: 0.36rem;
-    overflow: hidden;
-    scroll-snap-align: start;
-    font-size: 0.57rem;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  html body .app-root[data-view="reading"] .tajweed-dot {
-    width: 0.52rem;
-    height: 0.52rem;
-  }
-}
-
 @media (hover: none) {
   html body .app-root[data-view="reading"] .tajwid-rule-segment {
     cursor: inherit;
@@ -602,7 +448,6 @@ html body .app-root[data-view="reading"] .tajwid-rule-segment[data-state="instan
 }
 
 @media (prefers-reduced-motion: reduce) {
-  html body .app-root[data-view="reading"] .tajweed-legend-item,
   html body .app-root[data-view="reading"] .tajwid-rule-segment {
     transition: none;
   }
@@ -746,9 +591,6 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   }
 }
 
-@media (min-width: 520px) and (max-width: 760px) {
-}
-
 @media (max-width: 430px) {
 
   html body .app-root[data-view="home"] .reciter-card {
@@ -764,9 +606,6 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
   html body .app-root[data-view="home"] .reciter-card__listen span {
     display: none !important;
   }
-}
-
-@media (prefers-reduced-motion: reduce) {
 }
 
 /* ── Verset en cours de lecture — animation subtile ─────────── */
@@ -1014,11 +853,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .reader-mode-n
    ─ These are safe, non-visual changes that target compositing.
    ═══════════════════════════════════════════════════════════════ */
 
-/* Smooth scrolling globally with GPU acceleration hint */
-html {
-  scroll-behavior: smooth;
-}
-
 /* All main scrollable containers: GPU-promoted scroll */
 .app-root,
 .main-content,
@@ -1027,11 +861,6 @@ html {
 [class*="scrollable"] {
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-}
-
-/* Reading viewport: smooth scroll + GPU layer */
-html body .app-root[data-view="reading"] .quran-display--platform {
-  scroll-behavior: smooth;
 }
 
 /* Prevent layout thrashing on animated elements by pre-declaring will-change */

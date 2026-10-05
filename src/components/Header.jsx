@@ -490,16 +490,16 @@ export default function Header({ immersiveHidden = false }) {
         {/* ── LEFT: hamburger + brand ─────────────────────── */}
         <div className="mp-header__brand-row">
           <button
-            className={cn("mp-header__icon-btn", sidebarOpen && "is-active")}
+            className={cn(
+              "mp-header__icon-btn mp-header__icon-btn--desktop",
+              sidebarOpen && "is-active",
+            )}
             type="button"
             onClick={() => dispatch({ type: "TOGGLE_SIDEBAR" })}
             aria-label={headerLabels.menu}
             aria-expanded={sidebarOpen}
             aria-controls="sidebar"
           >
-            {/* The header is inert while the sidebar is open, so this button
-                cannot close it — the drawer owns the only working close. Keep
-                the hamburger here instead of a second, dead cross. */}
             <Menu size={18} strokeWidth={2.2} />
           </button>
 
@@ -910,7 +910,6 @@ export default function Header({ immersiveHidden = false }) {
               <div className="mp-header-menu__section">
                 {quickItems.filter((item) => item.key !== "search").map(renderQuickItem)}
               </div>
-
             </PopoverContent>
           </Popover>
         </div>

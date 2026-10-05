@@ -114,19 +114,6 @@
 
 /* --- Tajwid guide: a quiet disclosure line ------------------------------- */
 
-#root .app-root[data-view="reading"] .tajweed-legend__eyebrow {
-  color: var(--text-secondary) !important;
-  font-size: 0.8rem !important;
-  font-weight: 600 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
-}
-
-#root .app-root[data-view="reading"] .tajweed-legend__helper {
-  max-width: none !important;
-  font-size: 0.78rem !important;
-}
-
 /* --- Verse rows: quiet metadata, ghost actions, one separator ----------- */
 
 html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card.qc-list-card {
@@ -455,14 +442,12 @@ html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list
   font-weight: 600 !important;
 }
 
-#root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger):hover,
-#root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger):focus-visible {
+#root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger):hover, #root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger, .reader-fullscreen-trigger):focus-visible {
   background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07)) !important;
   color: var(--text-primary) !important;
 }
 
-#root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger)[aria-pressed="true"],
-#root .app-root[data-view="reading"] .reader-typography-trigger[aria-expanded="true"] {
+#root .app-root[data-view="reading"] :is(.reader-toolbar-btn--translation, .reader-toolbar-btn--tajweed, .reader-typography-trigger)[aria-pressed="true"], #root .app-root[data-view="reading"] .reader-typography-trigger[aria-expanded="true"] {
   background: var(--reader-active, rgba(var(--primary-rgb), 0.12)) !important;
   color: var(--primary) !important;
 }

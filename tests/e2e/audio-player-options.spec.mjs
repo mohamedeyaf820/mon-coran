@@ -14,6 +14,13 @@ async function openReader(page) {
 }
 
 async function ensureWarsh(page) {
+  const mobileMore = page.locator('.mobile-navigation [data-destination="more"]');
+  if (await mobileMore.waitFor({ state: "visible", timeout: 5_000 }).then(() => true).catch(() => false)) {
+    await mobileMore.click();
+    await page.locator('.mobile-navigation-menu [data-riwaya-choice="warsh"]').click();
+    await expect(page.locator(".app-root")).toHaveAttribute("data-riwaya", "warsh");
+    return;
+  }
   await page.locator(".mp-header").waitFor({ state: "visible" });
   const toggle = page.locator(".mp-header__riwaya-toggle:visible").first();
   const hasVisibleToggle = await toggle
@@ -173,9 +180,10 @@ test.describe("mobile", () => {
     await page.goto("/");
     await ensureWarsh(page);
 
-    const recitationsTab = page.getByRole("tab").nth(2);
-    await recitationsTab.click();
-    await expect(recitationsTab).toHaveAttribute("aria-selected", "true");
+    // Phones switch to the audio library from the bottom navigation.
+    const audioDestination = page.locator('.mobile-navigation [data-destination="audio"]');
+    await audioDestination.click();
+    await expect(audioDestination).toHaveAttribute("aria-current", "page");
 
     const reciterButton = page.getByRole("button", {
       name: "Ibrahim Al-Dosari (Warsh)",

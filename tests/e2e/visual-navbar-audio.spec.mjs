@@ -96,7 +96,8 @@ test.describe("mobile", () => {
     await seedTheme(page);
     await openReader(page);
 
-    const header = page.locator(".mp-header").first();
+    // Phones use the bottom navigation instead of the header.
+    const header = page.locator(".mobile-navigation").first();
     await expect(header).toBeVisible();
     await header.screenshot({
       path: path.join(OUTPUT_DIR, "mobile-navbar.png"),

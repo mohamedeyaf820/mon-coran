@@ -41,7 +41,7 @@ import {
 import {
   Play, Pause, Bookmark, BookmarkCheck, Copy, Check, Share2,
   PenSquare, Ellipsis, List, BookOpen,
-  X, Zap, Layers, TriangleAlert, Music,
+  X, Zap, TriangleAlert, Music,
 } from "lucide-react";
 
 const SHEET_FOCUSABLE_SELECTOR = [

@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'Le Saint Coran', loading: 'Chargement...', skipToContent: 'Aller au contenu principal', keyboardShortcuts: 'Raccourcis clavier', keyboardShortcutsHint: 'Raccourcis clavier (?)' },
   nav: {
+    more: 'Plus',
     readingNavigation: 'Navigation de lecture',
     menu: 'Menu', home: 'Accueil', search: 'Rechercher', bookmarks: 'Favoris',
     duas: 'Invocations', prayers: 'Mes prières', settings: 'Paramètres', theme: 'Thème', scrollTop: 'Haut de page',

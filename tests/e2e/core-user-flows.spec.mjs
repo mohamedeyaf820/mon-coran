@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -33,8 +34,7 @@ async function openSettings(page) {
   if (await directButton.isVisible().catch(() => false)) {
     await directButton.click();
   } else {
-    await page.locator(".mp-header__more").first().click();
-    await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+    await openQuickMenuItem(page, "settings");
   }
   await expect(page.locator(".settings-drawer")).toBeVisible();
 }
@@ -170,10 +170,8 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.locator(".home-session-card, .home-daily-verse-card")).toHaveCount(0);
   await expect(page.locator(".home-today-suggestion")).toHaveCount(5);
   await expect(page.getByLabel("Rechercher une sourate…")).toBeVisible();
-  await page.locator(".home-content-toolbar details > summary").click();
-  await expect(page.getByLabel("Trier les sourates")).toBeVisible();
-  await expect(page.getByRole("button", { name: "Grille" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Liste", exact: true })).toBeVisible();
+  // Sorting and view switching were retired: one clear list, no extra controls.
+  await expect(page.locator(".home-content-toolbar details")).toHaveCount(0);
 
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
   await expect(page.getByRole("tab", { name: /Récitations/ })).toBeVisible();
@@ -185,10 +183,10 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.getByText(/Murattal : posé/)).toBeVisible();
   await expect(page.locator(".home-content-section input[type='range']")).toHaveCount(0);
 
-  await expect(page.locator(".mp-footer-v2__nav")).toBeHidden();
+  await expect(page.locator(".mobile-navigation")).toBeHidden();
   await page.setViewportSize({ width: 390, height: 844 });
-  await expect(page.locator(".mp-footer-v2__nav")).toBeVisible();
-  await expect(page.locator(".mp-footer-v2__nav-btn")).toHaveCount(4);
+  await expect(page.locator(".mobile-navigation")).toBeVisible();
+  await expect(page.locator(".mobile-navigation__item")).toHaveCount(5);
   await expect(page.getByRole("button", { name: "Bibliothèque" })).toHaveCount(0);
 });
 
@@ -232,8 +230,7 @@ test("a bookmark taken in the reader is reachable from the header", async ({
     page.getByRole("button", { name: "Retirer le favori" }).first(),
   ).toBeVisible();
 
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="library"]').click();
+  await openQuickMenuItem(page, "library");
   const library = page.locator(".library-modal");
   await expect(library).toBeVisible();
   await expect(library.locator(".library-row__ref")).toHaveText(["1:1"]);

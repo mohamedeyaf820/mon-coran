@@ -619,8 +619,7 @@
         min-width: 0;
     }
 
-    .srh-typography-panel :is(.afc-font-group, .afc-size-group),
-    .srh-typography-panel .afc-select {
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group), .srh-typography-panel .afc-select {
         width: 100%;
         min-width: 0;
         max-width: none;
@@ -946,29 +945,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-head
     -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend {
-    order: 0;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0.28rem 0.75rem !important;
-    overflow: hidden;
-    border: 0 !important;
-    border-bottom: 1px solid var(--reader-header-line) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
-    padding: 0.38rem 0.75rem 0.5rem !important;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
-    min-height: 2rem;
-    padding: 0.3rem 0.25rem;
-}
-
 html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .srh-root {
     position: relative;
     top: auto;
@@ -997,21 +973,6 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
         margin-bottom: 0.45rem !important;
         border-radius: 0.95rem;
         box-shadow: 0 8px 22px color-mix(in srgb, var(--text-primary) 7%, transparent);
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend,
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
-        padding: 0.18rem 0.45rem !important;
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
-        min-height: 1.85rem;
-        padding: 0.24rem 0.18rem;
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__eyebrow {
-        font-size: 0.6rem;
-        letter-spacing: 0.075em;
     }
 }
 

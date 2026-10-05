@@ -108,6 +108,22 @@ const TAFSIR_OPTIONS = [
     qiraat: true,
   },
   {
+    // Al-Wasit by Tantawi was already routable in quranComStudyService but was
+    // never listed here, so no reader could actually select it. It carries no
+    // `qiraat` flag on purpose: that badge is an explicit claim that the text
+    // cites the reciters and readings, and it has not been measured for Wasit.
+    // Flagging it unverified would overstate the source to the reader.
+    key: "ar-wasit",
+    id: 93,
+    name: "Al-Wasit (Tantawi)",
+    lang: "ar",
+    langBadge: "AR",
+    labelFr: "Al-Wasit (Tantawi)",
+    labelEn: "Al-Wasit (Tantawi)",
+    labelAr: "الوسيط",
+  },
+
+  {
     key: "en-maarif",
     id: 168,
     name: "Ma'arif al-Qur'an",

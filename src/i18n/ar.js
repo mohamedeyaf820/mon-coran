@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'المصحف الشريف', loading: 'جاري التحميل...', skipToContent: 'الانتقال إلى المحتوى الرئيسي', keyboardShortcuts: 'اختصارات لوحة المفاتيح', keyboardShortcutsHint: 'اختصارات لوحة المفاتيح (؟)' },
   nav: {
+    more: 'المزيد',
     readingNavigation: 'تنقل القراءة',
     menu: 'القائمة', home: 'الرئيسية', search: 'البحث', bookmarks: 'العلامات',
     duas: 'الأدعية', prayers: 'صلواتي', settings: 'الإعدادات', theme: 'تبديل السمة', scrollTop: 'العودة للأعلى',

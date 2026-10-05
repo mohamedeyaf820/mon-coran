@@ -56,11 +56,14 @@ test("Warsh Mushaf word selects its ayah", async ({ page }) => {
   await expect(word).toHaveClass(/qcm-word--active/);
 });
 
-test("compact header keeps both surah arrows and navigation", async ({ page }) => {
+test("compact reader keeps both surah arrows and navigation", async ({ page }) => {
+  // Below 1025px the header is replaced by the bottom navigation; the previous
+  // and next surah controls live at the end of the surah.
   await openSurah(page, { riwaya: "hafs" });
-  const arrows = page.locator(".mp-header__nav-arrow");
+  const arrows = page.locator(".reader-mode-nav button");
   await expect(arrows).toHaveCount(2);
   for (const arrow of await arrows.all()) {
+    await arrow.scrollIntoViewIfNeeded();
     await expect(arrow).toBeVisible();
     const box = await arrow.boundingBox();
     expect(box.width).toBeGreaterThanOrEqual(44);

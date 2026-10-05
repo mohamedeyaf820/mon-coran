@@ -808,26 +808,6 @@ body {
     --mushaf-frame-outer: rgba(200, 152, 14, 0.12);
     --mushaf-frame-inner: rgba(200, 152, 14, 0.06);
 
-    --tajwid-silent: #999999;
-    --tajwid-lam-shamsiyya: #999999;
-    --tajwid-madd-normal: #ffc1e0;
-    --tajwid-madd: #e30000;
-    --tajwid-madd-separated: #ff8e3b;
-    --tajwid-madd-connected: #ff5e8e;
-    --tajwid-madd-necessary: #e30000;
-    --tajwid-madd-badal: #ff8e3b;
-    --tajwid-ghunna: #26b55d;
-    --tajwid-idgham: #999999;
-    --tajwid-ikhfa: #26b55d;
-    --tajwid-iqlab: #26b55d;
-    --tajwid-qalqala: #00deff;
-    --tajwid-tafkhim: #3c84d5;
-    --tajwid-naql: #ff8e3b;
-    --tajwid-tashil: #26b55d;
-    --tajwid-ibdal: #ff8e3b;
-    --tajwid-sila-kubra: #ff5e8e;
-    --tajwid-tarqiq-ra: #999999;
-    --tajwid-idgham-warsh: #999999;
 
     --emerald-subtle: rgba(196, 219, 208, 0.12);
     --reading-surface-soft: #151719;
@@ -862,7 +842,6 @@ body {
 [data-theme="premium-beige"] .app-main,
 
 html {
-    scroll-behavior: smooth;
     height: 100%;
     transition:
         background-color 0.25s ease,
@@ -7224,7 +7203,6 @@ input:focus-visible {
 [data-theme="oled"] .sidebar-inner,
 [data-theme="oled"] .modal-content,
 [data-theme="oled"] .panel,
-
 [data-theme="sepia"] .app-main {
     background: var(--parchment-1);
 }
@@ -9960,7 +9938,6 @@ button:focus:not(:focus-visible) {
 [data-theme="light"],
 [data-theme="sepia"],
 [data-theme="dark"],
-
 [data-theme="light"] {
     --theme-bg: #f8fafc;
     --theme-bg-alt: #eff4f8;
@@ -13678,7 +13655,6 @@ body {
 
 [data-theme="dark"] .hdr-v7,
 [data-theme="quran-night"] .hdr-v7,
-
 .sb-wrapper {
     position: fixed;
     top: 0;
@@ -13713,7 +13689,6 @@ body {
 
 [data-theme="dark"] .sb-wrapper.open,
 [data-theme="quran-night"] .sb-wrapper.open,
-
 .sb-header {
     padding: 1.25rem 1.25rem 1rem;
     border-bottom: 1px solid var(--border);
@@ -13875,7 +13850,6 @@ body {
 [data-theme="quran-night"] .sb-tab.active,
 [data-theme="quran-night"] .sb-tab-trigger.active,
 [data-theme="oled"] .sb-tab.active,
-
 .sb-search {
     position: relative;
 }
@@ -15954,42 +15928,10 @@ body {
     box-shadow: none;
 }
 
-.tajweed-legend {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    justify-content: center;
-    padding: 0.5rem 0.75rem;
-    margin: 0.25rem 0 0.75rem;
-    font-family: var(--font-ui);
-    font-size: 0.67rem;
-    color: var(--text-secondary);
-    background: var(--bg-secondary);
-    border: 1px solid var(--border-light);
-    border-radius: var(--r-md);
-    animation: fadeIn var(--t-mid);
-}
-
 .play-surah-bar {
     display: flex;
     justify-content: center;
     margin-bottom: 1rem;
-}
-
-.tajweed-legend-item {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    white-space: nowrap;
-    font-weight: 500;
-}
-
-.tajweed-dot {
-    width: 9px;
-    height: 9px;
-    border-radius: 50%;
-    flex-shrink: 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
 }
 
 .surah-ayahs-list {
@@ -16956,7 +16898,6 @@ body {
 [data-perf="low"] .edition-badge,
 [data-perf="low"] .bismillah,
 [data-perf="low"] .ayah-block,
-[data-perf="low"] .tajweed-legend,
 [data-perf="low"] .scroll-top-btn {
     animation: none !important;
     transition: none !important;
@@ -17224,8 +17165,7 @@ body {
     .scroll-top-btn,
     .play-surah-bar,
     .quran-nav,
-    .chunk-nav-bar,
-    .tajweed-legend {
+    .chunk-nav-bar {
         display: none !important;
     }
 
@@ -18612,13 +18552,11 @@ body {
 
 .app-root.focus-reading .surah-header-frame,
 .app-root.focus-reading .btn-play-surah,
-.app-root.focus-reading .tajweed-legend,
 .app-root.focus-reading .edition-badge {
     box-shadow: none;
 }
 
 .app-root.focus-reading .btn-play-surah,
-.app-root.focus-reading .tajweed-legend,
 .app-root.focus-reading .edition-badge,
 .app-root.focus-reading .mushaf-layout-switcher,
 .app-root.focus-reading .page-header-bar,
@@ -18647,7 +18585,6 @@ body {
 
 @media (min-width: 901px) {
     .app-root.focus-reading .play-surah-bar,
-    .app-root.focus-reading .tajweed-legend,
     .app-root.focus-reading .mushaf-layout-switcher,
     .app-root.focus-reading .page-header-bar,
     .app-root.focus-reading .quran-nav,

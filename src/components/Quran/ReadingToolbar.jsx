@@ -19,6 +19,7 @@ import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
+import TajweedLegend from "./TajweedLegend";
 
 function toolbarLabels(lang) {
   return {
@@ -47,6 +48,7 @@ export default function ReadingToolbar({
   const { set } = useAppActions();
   const {
     lang,
+    riwaya,
     mushafLayout,
     showTajwid,
     showTranslation,
@@ -55,6 +57,7 @@ export default function ReadingToolbar({
   } = useAppSelector(
     (s) => ({
       lang: s.lang,
+      riwaya: s.riwaya,
       mushafLayout: s.mushafLayout,
       showTajwid: s.showTajwid,
       showTranslation: s.showTranslation,
@@ -220,6 +223,7 @@ export default function ReadingToolbar({
 
       {/* ── Right side: Fullscreen, Typography, Audio ── */}
       <div className="qc-reader-toolbar__utilities flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <TajweedLegend lang={lang} riwaya={riwaya} compactTrigger />
         {onOpenFullscreen ? (
           <button
             type="button"

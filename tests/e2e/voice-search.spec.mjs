@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 test.beforeEach(async ({ page }) => {
   await installQuranNetworkFixtures(page);
@@ -50,12 +51,7 @@ async function openSearch(page) {
     return;
   }
 
-  const moreButton = page.locator(".mp-header__more");
-  await expect(moreButton).toBeVisible({ timeout: 15_000 });
-  await moreButton.click();
-  const menuSearch = page.locator('.mp-header-menu__item[data-key="search"]');
-  await expect(menuSearch).toBeVisible();
-  await menuSearch.click();
+  await openQuickMenuItem(page, "search");
 }
 
 test("voice search transcribes speech into the Quran search field", async ({

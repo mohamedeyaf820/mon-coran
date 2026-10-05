@@ -124,7 +124,6 @@ import {
 } from "./Home/homeConstants";
 import HeroSection from "./Home/HeroSection";
 import ContentSection from "./Home/ContentSection";
-import PrayerTimesCard from "./Home/PrayerTimesCard";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
 
 

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 const PASSPHRASE = "ma phrase secrete robuste 2026";
 const NEXT_PASSPHRASE = "ma nouvelle phrase robuste 2026";
@@ -10,8 +11,7 @@ async function openSettings(page) {
     return;
   }
 
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+  await openQuickMenuItem(page, "settings");
 }
 
 async function openAdvancedProtection(page) {

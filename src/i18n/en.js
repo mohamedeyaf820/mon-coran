@@ -1,6 +1,7 @@
 export default {
   app: { name: 'MushafPlus', subtitle: 'The Noble Quran', loading: 'Loading...', skipToContent: 'Skip to main content', keyboardShortcuts: 'Keyboard shortcuts', keyboardShortcutsHint: 'Keyboard shortcuts (?)' },
   nav: {
+    more: 'More',
     readingNavigation: 'Reading navigation',
     menu: 'Menu', home: 'Home', search: 'Search', bookmarks: 'Bookmarks',
     duas: 'Supplications', prayers: 'My prayers', settings: 'Settings', theme: 'Toggle theme', scrollTop: 'Back to top',

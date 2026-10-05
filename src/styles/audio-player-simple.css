@@ -144,7 +144,7 @@ html body > .audio-player-modal.audio-player-modal--simple .audio-reciter-option
 
 .app-root .audio-player-simple.mp-audio-player--desktop {
   right: 1.25rem !important;
-  bottom: 1.25rem !important;
+  bottom: calc(var(--mobile-nav-h, 0px) + 1.25rem) !important;
   left: auto !important;
   top: auto !important;
   width: min(23rem, calc(100vw - 2rem)) !important;
@@ -156,7 +156,7 @@ html body > .audio-player-modal.audio-player-modal--simple .audio-reciter-option
 
 html body .app-root .audio-player-simple.mp-audio-player--desktop[data-positioned="true"] {
   right: 1.25rem !important;
-  bottom: 1.25rem !important;
+  bottom: calc(var(--mobile-nav-h, 0px) + 1.25rem) !important;
   left: auto !important;
   top: auto !important;
   transform: none;
@@ -178,7 +178,7 @@ html body .app-root .audio-player-simple.mp-audio-player--desktop[data-dragging=
 
 .app-root .audio-player-simple.mp-audio-player--mobile {
   right: .75rem !important;
-  bottom: max(.4rem, env(safe-area-inset-bottom)) !important;
+  bottom: calc(var(--mobile-nav-h, 0px) + max(.4rem, env(safe-area-inset-bottom))) !important;
   left: .75rem !important;
   top: auto !important;
   width: auto !important;
@@ -189,7 +189,7 @@ html body .app-root .audio-player-simple.mp-audio-player--desktop[data-dragging=
 
 html body .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock {
   right: 0 !important;
-  bottom: 0 !important;
+  bottom: var(--mobile-nav-h, 0px) !important;
   left: 0 !important;
   width: 100% !important;
   max-height: 160px !important;
@@ -1022,7 +1022,7 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
 @media (min-width: 600px) and (max-width: 1024px) {
   .app-root .audio-player-simple.simple-player--compact {
     right: 1rem !important;
-    bottom: max(.75rem, env(safe-area-inset-bottom)) !important;
+    bottom: calc(var(--mobile-nav-h, 0px) + max(.75rem, env(safe-area-inset-bottom))) !important;
     left: auto !important;
     width: min(27rem, calc(100vw - 2rem)) !important;
     box-sizing: border-box !important;

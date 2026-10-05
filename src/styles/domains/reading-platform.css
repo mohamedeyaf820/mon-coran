@@ -2310,11 +2310,6 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
 }
 
 @media (max-width: 768px) {
-    .app-root .quran-display-scroll {
-        scroll-behavior: smooth;
-    }
-
-
     .app-root .basmala {
         font-size: 1.4rem !important;
         margin: 1rem 0;

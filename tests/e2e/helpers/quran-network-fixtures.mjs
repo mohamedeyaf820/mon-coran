@@ -1,4 +1,5 @@
 import SURAHS from "../../../src/data/surahs.js";
+import { readFileSync } from "node:fs";
 import { getWarshSurahAyahCount } from "../../../src/constants/warshSource.js";
 
 const SURAH_COUNTS = new Map(
@@ -99,7 +100,7 @@ function quranComVersesForUrl(url, options) {
   if (pageMatch) {
     const page = Number(pageMatch[1]);
     return Array.from({ length: 24 }, (_, index) =>
-      mockQuranComVerse(2, index + 1, page, 1, options),
+      mockQuranComVerse(options?.pageSurah || 2, index + 1, page, 1, options),
     );
   }
 
@@ -114,7 +115,11 @@ function quranComVersesForUrl(url, options) {
   return [mockQuranComVerse(1, 1, 1, 1, options)];
 }
 
-function mockWarshVerses(surah, { withWaqfSigns = false } = {}) {
+function mockWarshVerses(surah, { withWaqfSigns = false, withWarshDabt = false } = {}) {
+  if (withWarshDabt) {
+    return JSON.parse(readFileSync(new URL("../../../public/data/warsh-page-source.json", import.meta.url), "utf8"))
+      .filter(row => Number(row.sura_no) === Number(surah));
+  }
   const count = getWarshSurahAyahCount(surah) || verseCount(surah);
   return Array.from({ length: count }, (_, index) => ({
     sura_no: Number(surah),
