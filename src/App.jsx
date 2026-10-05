@@ -383,6 +383,10 @@ export default function App() {
   const immersiveScrollTop = useRef(0);
   const immersiveRevealUntil = useRef(0);
   const immersiveReserved = useRef(0);
+  // Read by the scroll handler below, which is bound once per chrome mode: a
+  // closure over state.isPlaying would keep the value from when it was bound.
+  const playbackActiveRef = useRef(false);
+  playbackActiveRef.current = Boolean(state.isPlaying || state.currentPlayingAyah);
   const mainScrollRef = useRef(null);
 
   useEffect(() => {
@@ -570,7 +574,7 @@ export default function App() {
 
       if (nextTop < 40 || delta < -14) {
         showChrome();
-      } else if (delta > 28 && nextTop > 160 && !state.isPlaying && !state.currentPlayingAyah) {
+      } else if (delta > 28 && nextTop > 160 && !playbackActiveRef.current) {
         clearTimeout(immersiveTimer.current);
         setImmersiveHidden(true);
       }
@@ -916,6 +920,7 @@ export default function App() {
     state.riwaya,
     state.showDuas,
     state.showHome,
+    state.showPrayers,
   ]);
 
   return (
