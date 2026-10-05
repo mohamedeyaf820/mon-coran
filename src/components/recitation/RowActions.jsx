@@ -1,3 +1,4 @@
+import { offlineText } from "../../i18n/offline.js";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Check, Download, LoaderCircle, Play, Share2, X } from "lucide-react";
 import { toast } from "../../lib/utils";
@@ -91,6 +92,7 @@ export default function RowActions({
         : null,
     [canDownload, reciter?.id, riwaya, surah?.n],
   );
+  const [online, setOnline] = useState(navigator.onLine);
   const [entry, setEntry] = useState(readEntry);
   const [verifiedOffline, setVerifiedOffline] = useState(false);
   const verifiedSignatureRef = useRef(null);
@@ -129,6 +131,9 @@ export default function RowActions({
       }
     };
     refresh();
+    const connection = () => { setOnline(navigator.onLine); refresh(true); };
+    window.addEventListener("online", connection);
+    window.addEventListener("offline", connection);
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     const refreshOnPageShow = () => refresh(true);
     window.addEventListener("pageshow", refreshOnPageShow);
@@ -138,6 +143,8 @@ export default function RowActions({
     document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       mounted = false;
+      window.removeEventListener("online", connection);
+      window.removeEventListener("offline", connection);
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
       window.removeEventListener("pageshow", refreshOnPageShow);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
@@ -210,7 +217,8 @@ export default function RowActions({
         className="recitation-action-btn recitation-action-btn--primary"
         type="button"
         onClick={onPlay}
-        title={contextualLabel(labels.listen)}
+        disabled={!online && !isOffline}
+        title={contextualLabel(!online && !isOffline ? offlineText("missing", lang) : labels.listen)}
         aria-label={contextualLabel(labels.listen)}
       >
         <Play className="recitation-icon recitation-icon--sm" size={15} fill="currentColor" aria-hidden="true" />

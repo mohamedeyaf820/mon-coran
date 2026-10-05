@@ -3,8 +3,11 @@
  * Stores progress by riwaya + reciter + surah so multiple readers can coexist.
  */
 
-import { AudioService } from "./audioService.js";
+import * as AudioService from "./audioUrlBuilder.js";
+import { inspectAudioResponse, OFFLINE_AUDIO_CACHE_NAME } from "./offlineAudioStore.js";
+export { OFFLINE_AUDIO_CACHE_NAME } from "./offlineAudioStore.js";
 import SURAHS from "../data/surahs.js";
+import { getReciter } from "../data/reciters.js";
 import {
   buildAudioPlaylistForSurah,
   buildSurahAudioPlaylist,
@@ -27,7 +30,6 @@ import {
 } from "./storageQuotaService.js";
 import { startPerformanceTimer } from "./performanceMetrics.js";
 
-export const OFFLINE_AUDIO_CACHE_NAME = "mushafplus-audio-v2";
 const PROGRESS_KEY = "mushaf_offline_progress_v2";
 export const OFFLINE_DOWNLOADS_CHANGED_EVENT = "mushafplus-offline-downloads-changed";
 export const OFFLINE_FULL_QURAN_PROGRESS_EVENT = "mushafplus-full-quran-download-progress";
@@ -218,7 +220,12 @@ function getCachedAudioUrls() {
       if (typeof caches === "undefined") return null;
       try {
         const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
-        return new Set((await cache.keys()).map((request) => request.url));
+        const valid = new Map();
+        for (const request of await cache.keys()) {
+          const checked = await inspectAudioResponse(await cache.match(request));
+          if (checked) valid.set(request.url, checked.bytes);
+        }
+        return valid;
       } catch {
         return null;
       }
@@ -244,7 +251,7 @@ async function verifySurahWithInventory(normalized, cachedUrls, { persist = true
     const candidates = getTrustedAudioUrlCandidates({ item, normalized });
     return count + Number(candidates.some((url) => cachedUrls.has(url)));
   }, 0);
-  if (present === items.length) return entry;
+  if (present === items.length && entry.validationVersion === 1) return entry;
 
   // The browser can remove cached media independently of our progress record.
   // Only replace a completed entry; an active download owns its own progress.
@@ -256,7 +263,8 @@ async function verifySurahWithInventory(normalized, cachedUrls, { persist = true
   if (latest?.status !== "done") return latest;
   const repaired = {
     ...latest,
-    status: "partial",
+    status: present === items.length ? "done" : "partial",
+    validationVersion: 1,
     total: items.length,
     downloaded: present,
     failedCount: items.length - present,
@@ -314,6 +322,34 @@ export function getOfflineAudioEntries() {
   return Object.values(loadProgress())
     .filter((entry) => entry && typeof entry === "object")
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+}
+
+export async function getVerifiedOfflineAudioEntries() {
+  const inventory = await getCachedAudioUrls();
+  const result = [];
+  for (const entry of getOfflineAudioEntries()) {
+    const reciter = getReciter(entry.reciterId, entry.riwaya) || (entry.reciterCdn ? {
+      id: entry.reciterId, cdn: entry.reciterCdn, cdnType: entry.cdnType,
+    } : null);
+    const surahMeta = SURAHS.find(surah => surah.n === entry.surahNum);
+    if (!reciter || !surahMeta || !inventory) { result.push({ ...entry, verified: false }); continue; }
+    const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya: entry.riwaya });
+    const items = await buildDownloadAudioItems(normalized);
+    let downloaded = 0;
+    let bytes = 0;
+    for (const item of items) {
+      for (const url of getTrustedAudioUrlCandidates({ item, normalized })) {
+        if (!inventory.has(url)) continue;
+        downloaded++; bytes += inventory.get(url); break;
+      }
+    }
+    const checked = { ...entry, downloaded, bytes, total: items.length,
+      status: downloaded === items.length ? "done" : "partial", validationVersion: 1,
+      verified: true, reciterCdn: reciter.cdn, cdnType: reciter.cdnType };
+    if (!activeDownloads.has(entry.key) && (entry.bytes !== bytes || entry.status !== checked.status || entry.downloaded !== downloaded || entry.validationVersion !== 1)) saveProgressEntry(entry.key, checked);
+    result.push(checked);
+  }
+  return result;
 }
 
 export function isOfflineDownloadActive(key) {
@@ -430,6 +466,8 @@ export async function downloadSurahForReciter(
   if (activeDownloads.has(normalized.key)) return "partial";
 
   const controller = new AbortController();
+  let settleDownload;
+  controller.settled = new Promise(resolve => { settleDownload = resolve; });
   if (parentSignal?.aborted) return "cancelled";
   const abortFromParent = () => controller.abort();
   parentSignal?.addEventListener?.("abort", abortFromParent, { once: true });
@@ -463,6 +501,8 @@ export async function downloadSurahForReciter(
       status: "partial",
       surahNum: normalized.surahNum,
       reciterId: normalized.reciterId,
+      reciterCdn: normalized.reciterCdn,
+      cdnType: normalized.cdnType,
       reciterName: reciter?.nameFr || reciter?.nameEn || reciter?.name || normalized.reciterId,
       riwaya: normalized.riwaya,
       total,
@@ -478,62 +518,34 @@ export async function downloadSurahForReciter(
         ? 1
         : 3;
 
+    let bytes = 0;
+    let storageFull = false;
     const downloadOne = async (item) => {
       const urlCandidates = getTrustedAudioUrlCandidates({ item, normalized });
-      let existing = null;
       for (const url of urlCandidates) {
-        existing = await cache.match(url, { ignoreVary: true });
-        if (existing) break;
+        const checked = await inspectAudioResponse(await cache.match(url, { ignoreVary: true }));
+        if (checked) { bytes += checked.bytes; return true; }
       }
-      let downloaded = Boolean(existing);
-      if (!existing) {
-        for (const url of urlCandidates) {
-          try {
-            // Prefer a readable response: Safari needs byte ranges when
-            // seeking offline. Keep opaque fallback for CDNs without CORS.
-            const response = await fetch(url, { signal: controller.signal })
-              .catch((error) => {
-                if (controller.signal.aborted) throw error;
-                return fetch(url, { mode: "no-cors", signal: controller.signal });
-              });
-            if (response.ok || response.type === "opaque") {
-              await cache.put(url, response.clone());
-              downloaded = true;
-              break;
-            }
-          } catch {
-            // Try the next URL candidate, then continue with the rest of the surah.
-          }
-        }
-      } else if (AudioService.isSurahStreamCdn(normalized.cdnType)) {
-        for (const url of urlCandidates) {
-          const hasCandidate = await cache.match(url);
-          if (!hasCandidate) {
-            try {
-              const response = await fetch(url, {
-                mode: "no-cors",
-                signal: controller.signal,
-              });
-              if (response.ok || response.type === "opaque") {
-                await cache.put(url, response.clone());
-              }
-            } catch {
-              // The primary cached URL is enough for offline status.
-            }
-          }
+      for (const url of urlCandidates) {
+        if (controller.signal.aborted || storageFull) return false;
+        try {
+          // Opaque responses cannot prove completeness or serve Safari ranges.
+          const response = await fetch(url, { signal: controller.signal });
+          const checked = await inspectAudioResponse(response);
+          if (!checked) continue;
+          if (controller.signal.aborted) return false;
+          await cache.put(url, new Response(checked.blob, { headers: {
+            "Content-Type": "audio/mpeg", "Content-Length": String(checked.bytes),
+          } }));
+          const stored = await inspectAudioResponse(await cache.match(url));
+          if (!stored) continue;
+          bytes += stored.bytes;
+          return true;
+        } catch (error) {
+          if (error?.name === "QuotaExceededError") { storageFull = true; return false; }
         }
       }
-
-      if (!downloaded && urlCandidates.length > 1) {
-        for (const url of urlCandidates) {
-          const retryExisting = await cache.match(url);
-          if (retryExisting) {
-            downloaded = true;
-            break;
-          }
-        }
-      }
-      return downloaded;
+      return false;
     };
 
     let nextIndex = 0;
@@ -553,15 +565,17 @@ export async function downloadSurahForReciter(
         if (downloaded) successCount += 1;
         else failedCount += 1;
         done += 1;
-        onProgress?.(done, total, {
+        onProgress?.(successCount, total, {
           ...normalized,
           successCount,
+          bytes,
           failedCount,
         });
         if (done % 10 === 0) {
           saveProgressEntry(normalized.key, {
             ...initialEntry,
             status: "partial",
+            bytes,
             downloaded: successCount,
             failedCount,
             updatedAt: Date.now(),
@@ -597,12 +611,14 @@ export async function downloadSurahForReciter(
     const completedEntry = {
       ...initialEntry,
       status,
+      bytes,
+      validationVersion: 1,
       downloaded: successCount,
       failedCount,
       updatedAt: Date.now(),
     };
     saveProgressEntry(normalized.key, completedEntry);
-    return status;
+    return storageFull ? "storage-full" : status;
   } catch (error) {
     const cancelled = controller.signal.aborted;
     if (!cancelled) {
@@ -631,6 +647,7 @@ export async function downloadSurahForReciter(
   } finally {
     finishMetric();
     activeDownloads.delete(normalized.key);
+    settleDownload();
     parentSignal?.removeEventListener?.("abort", abortFromParent);
   }
 }
@@ -786,6 +803,7 @@ export async function removeFullQuranCacheForReciter({
 }) {
   if (!reciter?.id) return false;
   cancelFullQuranDownload(reciter.id, riwaya);
+  await Promise.all([...activeDownloads.entries()].filter(([key]) => key.startsWith(`${riwaya}:${reciter.id}:`)).map(([, controller]) => controller.settled));
 
   if ("caches" in window) {
     try {
@@ -834,6 +852,9 @@ export async function removeSurahCacheForReciter({
 }) {
   if (!("caches" in window)) return;
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  const active = activeDownloads.get(normalized.key);
+  active?.abort();
+  await active?.settled;
   const keepSharedBasmala = Object.values(loadProgress()).some(
     (entry) => entry?.reciterId === normalized.reciterId &&
       entry?.riwaya === normalized.riwaya &&
@@ -842,7 +863,7 @@ export async function removeSurahCacheForReciter({
       hasBasmalaPreroll(normalized.cdnType, Number(entry?.surahNum)),
   );
 
-  try {
+  {
     const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
     const audioItems = await buildDownloadAudioItems(normalized);
     for (const item of audioItems) {
@@ -852,7 +873,7 @@ export async function removeSurahCacheForReciter({
         await cache.delete(url);
       }
     }
-  } catch {}
+  }
 
   const progress = loadProgress();
   delete progress[normalized.key];
@@ -861,15 +882,11 @@ export async function removeSurahCacheForReciter({
 
 export async function clearAllOfflineAudio() {
   activeFullQuranDownloads.forEach((controller) => controller.abort());
-  activeFullQuranDownloads.clear();
-  activeDownloads.forEach((controller) => controller.abort());
-  activeDownloads.clear();
+  const active = [...activeDownloads.values()];
+  active.forEach(controller => controller.abort());
+  await Promise.all(active.map(controller => controller.settled));
   if (typeof caches !== "undefined") {
-    try {
-      await caches.delete(OFFLINE_AUDIO_CACHE_NAME);
-    } catch {
-      // The progress registry is still cleared when Cache API cleanup fails.
-    }
+    await caches.delete(OFFLINE_AUDIO_CACHE_NAME);
   }
   try {
     localStorage.removeItem(PROGRESS_KEY);
@@ -887,13 +904,12 @@ export async function getCacheSize() {
     const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
     const keys = await cache.keys();
     let totalBytes = 0;
-    for (const request of keys.slice(0, 20)) {
+    for (const request of keys) {
       const response = await cache.match(request);
-      const blob = await response?.blob();
-      if (blob) totalBytes += blob.size;
+      if (response && response.type !== "opaque") totalBytes += (await response.blob()).size;
     }
-    const avgPerFile = keys.length > 0 ? totalBytes / Math.min(20, keys.length) : 0;
-    return Math.round(((avgPerFile * keys.length) / 1_048_576) * 10) / 10;
+    return Math.round((totalBytes / 1_048_576) * 100) / 100;
+
   } catch {
     return 0;
   }

@@ -1,3 +1,4 @@
+import { readFileSync as readAudioFixture } from "node:fs";
 import assert from "node:assert/strict";
 import test from "node:test";
 
@@ -33,13 +34,13 @@ globalThis.CustomEvent = class {
 globalThis.location = { href: "https://mushafplus.test/" };
 globalThis.caches = {
   open: async () => ({
-    match: async (key) => cachedResponses.get(String(key)),
+    match: async (key) => cachedResponses.get(String(key?.url || key))?.clone(),
     keys: async () => [...cachedResponses.keys()].map((url) => ({ url })),
-    put: async (key, response) => cachedResponses.set(String(key), response),
+    put: async (key, response) => cachedResponses.set(String(key?.url || key), response.clone()),
     delete: async (key) => cachedResponses.delete(String(key)),
   }),
 };
-globalThis.fetch = async () => new Response(new Uint8Array([73, 68, 51]), {
+globalThis.fetch = async () => new Response(readAudioFixture(new URL("./fixtures/silent-2s.mp3", import.meta.url)), {
   status: 200,
   headers: { "Content-Type": "audio/mpeg" },
 });
@@ -68,6 +69,8 @@ const {
   removeSurahCacheForReciter,
   verifyFullQuranDownloadForReciter,
   verifySurahDownloadForReciter,
+  getVerifiedOfflineAudioEntries,
+  clearAllOfflineAudio,
 } = await import("../src/services/downloadService.js");
 const { default: SURAHS } = await import("../src/data/surahs.js");
 const { getReciter } = await import("../src/data/reciters.js");
@@ -218,4 +221,81 @@ test("a lost connection parks the surah instead of failing every verse", async (
   } finally {
     delete navigator.onLine;
   }
+});
+
+test("legacy metadata is verified against files and revoked after eviction", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = getReciter("muhammad_ayyoub", "hafs");
+  const surahMeta = SURAHS[0];
+  await downloadSurahForReciter({ surahMeta, reciter });
+  const entries = JSON.parse(localStorage.getItem("mushaf_offline_progress_v2"));
+  delete entries["hafs:muhammad_ayyoub:1"].validationVersion;
+  localStorage.setItem("mushaf_offline_progress_v2", JSON.stringify(entries));
+  const [migrated] = await getVerifiedOfflineAudioEntries();
+  assert.equal(migrated.status, "done");
+  assert.equal(migrated.validationVersion, 1);
+  assert.equal(migrated.downloaded, 7);
+  cachedResponses.delete([...cachedResponses.keys()][0]);
+  const [evicted] = await getVerifiedOfflineAudioEntries();
+  assert.equal(evicted.status, "partial");
+  assert.equal(evicted.downloaded, 6);
+});
+
+test("failed cache deletion preserves the user's registry and reports failure", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const reciter = getReciter("muhammad_ayyoub", "hafs");
+  const surahMeta = SURAHS[0];
+  await downloadSurahForReciter({ surahMeta, reciter });
+  const saved = localStorage.getItem("mushaf_offline_progress_v2");
+  const original = caches.open;
+  caches.open = async () => { throw new DOMException("Storage denied", "SecurityError"); };
+  try {
+    await assert.rejects(removeSurahCacheForReciter({ surahMeta, reciter }), { name: "SecurityError" });
+    assert.equal(localStorage.getItem("mushaf_offline_progress_v2"), saved);
+  } finally { caches.open = original; }
+  caches.delete = async () => { throw new DOMException("Storage denied", "SecurityError"); };
+  try {
+    await assert.rejects(clearAllOfflineAudio(), { name: "SecurityError" });
+    assert.equal(localStorage.getItem("mushaf_offline_progress_v2"), saved);
+  } finally { delete caches.delete; }
+});
+
+test("a real quota error never marks attempted files as downloaded", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const original = caches.open;
+  caches.open = async (...args) => ({
+    ...await original(...args),
+    put: async () => { throw new DOMException("Full", "QuotaExceededError"); },
+  });
+  try {
+    const status = await downloadSurahForReciter({ surahMeta: SURAHS[0], reciter: getReciter("muhammad_ayyoub", "hafs") });
+    assert.equal(status, "storage-full");
+    const [entry] = await getVerifiedOfflineAudioEntries();
+    assert.equal(entry.downloaded, 0);
+    assert.notEqual(entry.status, "done");
+  } finally { caches.open = original; }
+});
+
+test("deleting an active download waits for cancellation and cannot recreate files", async () => {
+  storedValues.clear();
+  cachedResponses.clear();
+  const original = globalThis.fetch;
+  let began;
+  const started = new Promise(resolve => { began = resolve; });
+  globalThis.fetch = async (_url, { signal }) => new Promise((_resolve, reject) => {
+    began();
+    signal.addEventListener("abort", () => reject(new DOMException("Cancelled", "AbortError")), { once: true });
+  });
+  const options = { surahMeta: SURAHS[0], reciter: getReciter("muhammad_ayyoub", "hafs") };
+  try {
+    const downloading = downloadSurahForReciter(options);
+    await started;
+    await removeSurahCacheForReciter(options);
+    assert.equal(await downloading, "cancelled");
+    assert.equal(cachedResponses.size, 0);
+    assert.deepEqual(await getVerifiedOfflineAudioEntries(), []);
+  } finally { globalThis.fetch = original; }
 });

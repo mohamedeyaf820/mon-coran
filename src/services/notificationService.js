@@ -82,7 +82,7 @@ export async function showAppNotification(
 }
 
 function todayKey(now = new Date()) {
-  return `${now.getFullYear()}-${now.getMonth() + 1}-${now.getDate()}`;
+  return `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
 }
 
 /** Verse-of-the-day reminder, at most once per calendar day. */
@@ -167,3 +167,5 @@ export function prayerDatesFromTimings(timings, keys, day = new Date()) {
   }
   return dates;
 }
+
+

@@ -119,12 +119,16 @@ async function adhanBlob(sourceId) {
 
 let currentAudio = null;
 let currentObjectUrl = "";
+let playbackCommand = 0;
 
 function getAudioElement() {
   if (currentAudio) return currentAudio;
   if (typeof Audio === "undefined") return null;
   currentAudio = new Audio();
   currentAudio.preload = "auto";
+  if (typeof window !== "undefined") window.addEventListener?.("mushafplus-playback-claim", (event) => {
+    if (event.detail?.owner !== "adhan") stopAdhan();
+  });
   currentAudio.setAttribute("playsinline", "");
   currentAudio.addEventListener("ended", () => {
     if (currentObjectUrl) {
@@ -136,6 +140,7 @@ function getAudioElement() {
 }
 
 export function stopAdhan() {
+  playbackCommand++;
   if (currentAudio) {
     currentAudio.pause();
     currentAudio.currentTime = 0;
@@ -152,6 +157,8 @@ export async function playAdhan(sourceId, volume = 1) {
   const audio = getAudioElement();
   if (!source || !audio) return false;
   stopAdhan();
+  const command = playbackCommand;
+  if (typeof window !== "undefined") window.dispatchEvent?.(new CustomEvent("mushafplus-playback-claim", { detail: { owner: "adhan" } }));
   audio.volume = Math.max(0, Math.min(1, volume));
   // Keep the first play() in the click/timer task. On iOS a fetch or any other
   // await before play() spends the user activation; on an installed PWA the
@@ -159,12 +166,14 @@ export async function playAdhan(sourceId, volume = 1) {
   if (audio.src !== source.url) audio.src = source.url;
   try {
     await audio.play();
-    return true;
+    return command === playbackCommand;
   } catch {
+    if (command !== playbackCommand) return false;
     // A page that is not yet controlled by the service worker can still use a
     // downloaded response directly. This fallback is also useful after a
     // transient CDN failure; the persistent element keeps any prior unlock.
     const blob = await adhanBlob(source.id);
+    if (command !== playbackCommand) return false;
     if (!blob) {
       stopAdhan();
       return false;
@@ -173,9 +182,9 @@ export async function playAdhan(sourceId, volume = 1) {
     audio.src = currentObjectUrl;
     try {
       await audio.play();
-      return true;
+      return command === playbackCommand;
     } catch {
-      stopAdhan();
+      if (command === playbackCommand) stopAdhan();
       return false;
     }
   }
