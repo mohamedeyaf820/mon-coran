@@ -35,6 +35,28 @@
     backdrop-filter: blur(14px) saturate(140%);
     box-shadow: 0 -6px 20px -12px rgba(0, 0, 0, 0.22);
   }
+  /* Bottom bar: a sheet with rounded top corners, a soft shadow instead of a
+     hard rule, and an active destination that reads at a glance (filled pill,
+     heavier icon stroke, bold label). Inactive ones stay quiet. */
+  html body .app-root .mobile-navigation {
+    border-top: 0;
+    border-radius: 22px 22px 0 0;
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+    box-shadow:
+      0 -1px 0 color-mix(in srgb, var(--border) 80%, transparent),
+      0 -14px 32px -14px rgba(0, 0, 0, 0.32);
+    gap: 2px;
+  }
+  html body .app-root .mobile-navigation__item { gap: 2px; }
+  html body .app-root .mobile-navigation__icon { width: 64px; height: 32px; }
+  html body .app-root .mobile-navigation__item:not([aria-current="page"]):not([aria-expanded="true"]) { color: var(--text-secondary); }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__icon {
+    background: color-mix(in srgb, var(--primary) 22%, var(--bg-card));
+  }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__icon svg { stroke-width: 2.3; }
+  html body .app-root .mobile-navigation__label { font-size: 11.5px; letter-spacing: 0.01em; }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__label { font-weight: 800; color: var(--primary); }
+
   /* Bottom bar stepped away on a page that is not the reader (see `navAway` in
      App.jsx): it slides down in place and hands its band back to the content
      and to the player dock. The bar keeps its own height so it can slide. */
