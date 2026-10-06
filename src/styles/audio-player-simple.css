@@ -1294,3 +1294,20 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
     min-height: 4.25rem !important;
   }
 }
+
+/* The compact player names the surah in the same calligraphy as the rest of the
+   app: a small cartouche after the title instead of plain Arabic text. */
+.app-root .audio-player-simple .simple-player__compact-ar-badge.simple-player__compact-ar-badge--glyph {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  min-height: 1.75rem;
+  padding: 0 0.7rem !important;
+  border: 1px solid color-mix(in srgb, var(--theme-primary, var(--primary)) 26%, transparent);
+  background: color-mix(in srgb, var(--theme-primary, var(--primary)) 12%, transparent) !important;
+  font-family: "surahnames", var(--font-quran, serif) !important;
+  font-size: 1.25rem !important;
+  line-height: 1 !important;
+  direction: ltr !important;
+  white-space: nowrap;
+}

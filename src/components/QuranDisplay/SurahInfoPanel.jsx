@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getSurah } from "../../data/surahs";
+import { getSurah, getSurahLigature } from "../../data/surahs";
 import { useApp } from "../../context/AppContext";
 import { fetchQuranComSurahInfo } from "../../services/quranComAPI";
 
@@ -29,6 +29,9 @@ export default function SurahInfoPanel({ surahNum, lang: langProp }) {
 
   if (!s) return null;
 
+  // The name is drawn with the same calligraphic face as everywhere else in the
+  // app (a ligature font keyed on the surah number); plain text is the fallback.
+  const ligature = getSurahLigature(surahNum);
   const displayName = lang === "ar" ? s.ar : lang === "fr" ? s.fr || s.en : s.en;
   const dossierBlocks = editorialInfo?.text?.split("\n\n").filter(Boolean) || [];
 
@@ -43,7 +46,13 @@ export default function SurahInfoPanel({ surahNum, lang: langProp }) {
           <strong className="sip-header__name">{displayName}</strong>
           <span className="sip-header__desc">{s.en}</span>
         </span>
-        <span className="sip-header__arabic" dir="rtl" lang="ar" translate="no">{s.ar}</span>
+        {ligature ? (
+          <span className="sip-header__arabic sip-header__arabic--glyph font-surah-names" dir="ltr" lang="en" translate="no" role="img" aria-label={s.ar}>
+            <span aria-hidden="true">{ligature}</span>
+          </span>
+        ) : (
+          <span className="sip-header__arabic" dir="rtl" lang="ar" translate="no">{s.ar}</span>
+        )}
       </header>
 
       <article className={`sip-overview${expanded ? " sip-overview--expanded" : ""}`} aria-live="polite">
