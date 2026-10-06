@@ -13,8 +13,16 @@ les lettres des mots en conservant les caractères et signes du corpus local.
 Les plages sont projetées sur les offsets UTF-16 du texte effectivement affiché.
 Une différence de vocalisation ou de notation ne réécrit jamais le texte.
 
-5 773 versets sont alignés, avec 55 496 mots annotés ; 441 versets non alignés
-conservent la coloration des signes du mushaf. Des formulations répétées avec
+6 207 versets sont alignés, avec 62 489 mots annotés ; 7 versets non alignés
+conservent la coloration des signes du mushaf.
+
+Correction du 6 octobre 2026 : 434 versets, ceux qui s’ouvrent sur le marqueur
+de début de rub (۞, U+06DE), étaient écartés (5 773 alignés, 55 496 mots). Ce
+signe est un mot du texte imprimé sans lettre : l’archive n’en a pas et le
+raccord exigeait une correspondance mot à mot. Il reste désormais hors du
+raccord et garde une liste de plages vide ; `registerWarshArchive` l’écarte
+aussi du côté de l'exécution. Test : `warsh-user-archive` (versets d'ouverture
+de rub). Des formulations répétées avec
 des annotations contradictoires sont également refusées au rendu. Le pack
 local est vérifié par SHA-256, chargé uniquement pour Warsh et conservé dans
 IndexedDB pour les visites hors ligne. En cas d’absence ou de corruption,
@@ -23,7 +31,10 @@ la lecture reste disponible avec les signes du mushaf.
 Les vues sourate, page, liste, plein écran et mot utilisent le même moteur.
 Les 20 règles du fichier partagent les groupes de couleur Hafs ; les madd
 badal, arid et lin restent des règles distinctes avec le groupe madd permis.
-La légende FR/EN/AR précise la provenance et l’absence de revue spécialisée.
+La légende FR/EN/AR explique chaque groupe de couleur (règles incluses) et cite
+la source des couleurs, Quran.com. Les limites de l'archive (non revue par un
+spécialiste, sans imāla, taqlīl ni naql) figurent dans le registre de la page
+Sources.
 Les règles absentes du fichier, dont imala, taqlil et naql, ne sont pas inventées.
 
 L'audit des 114 fichiers de sourates trouve 6 236 clés de verset uniques et

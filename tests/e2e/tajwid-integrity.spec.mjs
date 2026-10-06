@@ -150,6 +150,10 @@ test("English guide remains readable and restores keyboard focus", async ({ page
   const guide = page.getByRole("dialog");
   await expect(guide).toContainText("Natural madd");
   await expect(guide.locator("[data-visual-group]")).toHaveCount(8);
+  // The guide names where the colours come from, and links to it.
+  const source = guide.locator('[data-tajwid-colour-source="quran.com"]');
+  await expect(source).toContainText("Quran.com");
+  await expect(source.getByRole("link", { name: "Quran.com" })).toHaveAttribute("href", "https://quran.com");
   await page.keyboard.press("Escape");
   await expect(trigger).toBeFocused();
 });

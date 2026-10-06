@@ -3,10 +3,12 @@
 ## Archive utilisateur du 3 octobre 2026
 
 Le ZIP `quran_warsh_tajweed_complet.zip` est intégré à la demande de
-l’utilisateur : 5 773 versets alignés sur le corpus Warsh Madinah, 441 versets
+l’utilisateur : 6 207 versets alignés sur le corpus Warsh Madinah (5 773 avant la correction
+des versets qui s’ouvrent sur le marqueur de rub), 7 versets
 conservant les signes du mushaf. Le texte affiché n’est pas remplacé. Les
-règles individuelles partagent la palette Hafs et la légende indique la
-provenance du fichier ainsi que l’absence de validation spécialisée.
+règles individuelles partagent la palette Hafs et la légende explique
+chaque groupe de couleur et cite la source des couleurs (Quran.com) ; la
+provenance du fichier et ses limites sont dans le registre de la page Sources.
 Voir [l’audit de l’archive](WARSH_TAJWEED_USER_ARCHIVE_AUDIT.md).
 
 ## Première mise à jour du 3 octobre 2026 — signes Warsh (avant intégration du ZIP)

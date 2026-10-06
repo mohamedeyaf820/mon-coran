@@ -43,11 +43,18 @@ for (const verse of corpus) {
       if (archiveWordKey(match[0])) sources.push({ text: match[0], ranges });
     }
   }
-  const targetKeys = targets.map(archiveWordKey);
+  // Standalone signs (the rub al-hizb marker) are tokens of the printed verse but
+  // have no letters, hence no key: the archive has no word for them. They stay out
+  // of the match and keep an empty range list, so the verses that open a rub are
+  // aligned like the others.
+  const usableTargets = targets.map((target, i) => ({ target, i })).filter(({ target }) => archiveWordKey(target));
+  const targetKeys = usableTargets.map(({ target }) => archiveWordKey(target));
   const matches = sources.map((_, i) => i).filter(i => targetKeys.every((key, j) => key === archiveWordKey(sources[i + j]?.text || '')));
   if (matches.length !== 1) { skipped.push(`${verse.sura_no}:${verse.aya_no}`); continue; }
+  const sourceIndexOf = new Map(usableTargets.map(({ i }, j) => [i, matches[0] + j]));
   const ranges = targets.map((target, i) => {
-    const from = sources[matches[0] + i];
+    if (!sourceIndexOf.has(i)) return [];
+    const from = sources[sourceIndexOf.get(i)];
     const projected = from.ranges.map(range => projectArchiveRange(from.text, target, range)).filter(Boolean);
     // Font/diacritic equivalents may expand two ranges onto one cluster.
     // The first source rule owns that cluster; ranges stay disjoint.

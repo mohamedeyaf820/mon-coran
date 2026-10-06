@@ -24,6 +24,22 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     url: "https://alquran.cloud/api",
   },
   {
+    id: "quran-com-tajwid-palette",
+    category: "annotation",
+    name: "Quran.com — couleurs et règles de tajwid",
+    usage: "Palette des huit groupes de couleur du tajwid (Hafs et Warsh) et annotation des règles Hafs (champ text_uthmani_tajweed de l’API v4).",
+    rights: "Palette publiée dans le code ouvert de Quran.com; l’annotation Hafs reste soumise aux conditions de l’API Quran Foundation.",
+    url: "https://github.com/quran/quran.com-frontend-next",
+  },
+  {
+    id: "warsh-tajweed-archive",
+    category: "annotation",
+    name: "Annotations de tajwid Warsh — archive fournie au projet",
+    usage: "Règles Warsh repérées sur le texte épinglé : madd, ghunna, ikhfāʾ, iqlāb, qalqala, tafkhīm et assimilations. L’imāla, le taqlīl et le naql n’y figurent pas.",
+    rights: "Archive fournie par le propriétaire du projet, produite avec le moteur ahkam_tajweed (MIT/Apache). Non revue par un spécialiste de Warsh : à utiliser comme aide de lecture.",
+    url: "https://github.com/M97Chahboun/ahkam_tajweed",
+  },
+  {
     id: "warsh-text",
     category: "text",
     name: "Warsh Quran Audio — jeu de données Warsh",

@@ -4,7 +4,7 @@ import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Sheet } from "../ui/sheet";
 import { CircleHelp } from "lucide-react";
-import { TAJWID_VISUAL_GROUPS, TAJWID_RULE_GROUPS } from "../../data/tajwidPalette";
+import { TAJWID_VISUAL_GROUPS, TAJWID_RULE_GROUPS, QURAN_COM_TAJWID_SOURCE } from "../../data/tajwidPalette";
 import { WARSH_TAJWID_RULE_IDS } from "../../data/warshTajwidSigns";
 import { WARSH_ARCHIVE_RULE_IDS } from "../../data/warshArchiveManifest";
 import { getWarshTajwidSourceStatus } from "../../services/warshTajweedService";
@@ -49,6 +49,11 @@ function TajweedLegend({ lang = "fr", riwaya = "hafs", compactTrigger = false })
           );
         })}
       </dl>
+      <p className="tajwid-guide__source" data-tajwid-colour-source="quran.com">
+        {copy.sourcePrefix}{" "}
+        <a href={QURAN_COM_TAJWID_SOURCE.siteUrl} target="_blank" rel="noopener noreferrer">{copy.sourceName}</a>
+        {copy.sourceSuffix}
+      </p>
     </div>
   );
   const trigger = (

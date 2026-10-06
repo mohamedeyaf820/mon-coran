@@ -8,6 +8,8 @@ const repository = "https://github.com/quran/quran.com-frontend-next";
 const sourceRoot = `${repository}/blob/${revision}`;
 
 export const QURAN_COM_TAJWID_SOURCE = Object.freeze({
+  // The page a reader can open; the pinned repository paths below are for audits.
+  siteUrl: "https://quran.com",
   repository,
   revision,
   checkedAt: "2026-10-01",
