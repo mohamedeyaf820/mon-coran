@@ -9,14 +9,14 @@
 Hafs & Warsh · Tajwid aux couleurs de Quran.com · 54 récitateurs · hors-ligne · français, anglais, arabe (RTL natif)
 
 [![Tests](https://github.com/mohamedeyaf820/mon-coran/actions/workflows/tests.yml/badge.svg)](https://github.com/mohamedeyaf820/mon-coran/actions/workflows/tests.yml)
-[![Netlify](https://api.netlify.com/api/v1/badges/06596f97-416f-44f2-b601-900e4c6f7f2f/deploy-status)](https://mushafplus.netlify.app)
-[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)](https://mushafplus.netlify.app)
+[![Vercel](https://img.shields.io/badge/Vercel-en%20ligne-000000?logo=vercel&logoColor=white)](https://mon-coran.vercel.app)
+[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)](https://mon-coran.vercel.app)
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Version](https://img.shields.io/badge/version-1.1.0-0f6a43)](https://github.com/mohamedeyaf820/mon-coran/releases)
 
-**[Ouvrir l'application](https://mushafplus.netlify.app)** ·
+**[Ouvrir l'application](https://mon-coran.vercel.app)** ·
 **[Fonctionnalités](#-fonctionnalités)** ·
 **[Démarrer](#-démarrer-en-2-minutes)** ·
 **[Architecture](#-architecture)** ·
@@ -48,25 +48,43 @@ MushafPlus is a free, static Progressive Web App for reading and listening to th
 
 ## 📸 Aperçu
 
-<table>
-  <tr>
-    <td width="50%"><img src="docs/images/reader-mushaf-desktop.webp" alt="Sourate Al-Baqara en mode mushaf, Tajwid en couleurs"><br><sub><b>Mode mushaf</b> — page encadrée, Tajwid aux couleurs de Quran.com</sub></td>
-    <td width="50%"><img src="docs/images/reader-list-desktop.webp" alt="Mode liste avec translittération et traduction"><br><sub><b>Mode liste</b> — texte arabe, translittération et traduction côte à côte</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/images/reader-mushaf-dark.webp" alt="Page 50 en thème sombre"><br><sub><b>Thème sombre</b> — « Nuit de Médine », contrastes pensés pour la lecture longue</sub></td>
-    <td width="50%"><img src="docs/images/reader-warsh.webp" alt="Sourate Al-Imran en riwaya Warsh"><br><sub><b>Warsh</b> — police et règles de Tajwid propres à la riwaya</sub></td>
-  </tr>
-  <tr>
-    <td width="50%"><img src="docs/images/home-desktop.webp" alt="Page d'accueil : reprise de lecture, verset du jour, sourates"><br><sub><b>Accueil</b> — reprise exacte de la dernière position, verset du jour</sub></td>
-    <td width="50%"><img src="docs/images/settings-desktop.webp" alt="Réglages : langue, thèmes, mode nuit automatique"><br><sub><b>Réglages</b> — langue, trois thèmes, mode nuit, audio, confidentialité</sub></td>
-  </tr>
-</table>
+Une seule application, trois formats : l'interface s'adapte au téléphone (barre de navigation du bas), à la tablette (portrait et paysage) et à l'ordinateur (en-tête complet).
+
+### 📱 Téléphone
 
 <p align="center">
-  <img src="docs/images/mobile.webp" alt="MushafPlus sur téléphone : accueil, lecture, arabe RTL, récitateurs, menu en mode sombre" width="100%">
-  <br><sub>Sur téléphone : barre de navigation du bas, lecture RTL native, menu « Plus » (riwaya, recherche, bibliothèque, invocations, réglages).</sub>
+  <img src="docs/images/devices-phone.webp" alt="MushafPlus sur téléphone : accueil, mushaf avec Tajwid, liste avec traduction, 54 récitateurs, menu en mode sombre" width="100%">
 </p>
+<p align="center">
+  <img src="docs/images/devices-phone-2.webp" alt="MushafPlus sur téléphone : arabe RTL en sépia, recherche, réglages, bascule Hafs / Warsh" width="85%">
+</p>
+
+### 📲 Tablette
+
+<p align="center">
+  <img src="docs/images/devices-tablet.webp" alt="MushafPlus sur tablette : mushaf en portrait, bibliothèque de récitateurs, lecture en paysage et thème sombre" width="100%">
+</p>
+
+### 🖥️ Ordinateur
+
+<p align="center">
+  <img src="docs/images/devices-desktop.webp" alt="MushafPlus sur ordinateur : liste, mushaf en thème sombre, Warsh" width="100%">
+</p>
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/images/desktop-reader-mushaf.webp" alt="Sourate Al-Baqara en mode mushaf, Tajwid en couleurs"><br><sub><b>Mode mushaf</b> — page encadrée, Tajwid aux couleurs de Quran.com</sub></td>
+    <td width="50%"><img src="docs/images/desktop-reader-mushaf-dark.webp" alt="Page 50 en thème sombre"><br><sub><b>Thème sombre</b> — « Nuit de Médine », pensé pour la lecture longue</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/desktop-reader-warsh.webp" alt="Sourate Al-Imran en riwaya Warsh"><br><sub><b>Warsh</b> — police et règles de Tajwid propres à la riwaya</sub></td>
+    <td width="50%"><img src="docs/images/desktop-audio.webp" alt="Bibliothèque audio : récitateurs, radio, styles"><br><sub><b>Audio</b> — 54 récitateurs, radio, filtres de style</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/desktop-home.webp" alt="Accueil : reprise de lecture, verset du jour, sourates"><br><sub><b>Accueil</b> — reprise exacte de la dernière position, verset du jour</sub></td>
+    <td width="50%"><img src="docs/images/desktop-settings.webp" alt="Réglages : langue, thèmes, mode nuit automatique"><br><sub><b>Réglages</b> — langue, trois thèmes, mode nuit, audio, confidentialité</sub></td>
+  </tr>
+</table>
 
 ---
 

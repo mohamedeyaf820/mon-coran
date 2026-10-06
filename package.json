@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.1.0",
   "description": "Lecture du Coran en Hafs et Warsh : Tajwid aux couleurs de Quran.com, 54 récitateurs, hors-ligne, FR/EN/AR (RTL). PWA statique, sans compte.",
-  "homepage": "https://mushafplus.netlify.app",
+  "homepage": "https://mon-coran.vercel.app",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/mohamedeyaf820/mon-coran.git"

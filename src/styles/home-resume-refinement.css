@@ -67,3 +67,10 @@
     font-size: clamp(1.4rem, 6vw, 1.8rem);
   }
 }
+
+/* The reciter card is a <button>, whose UA default centres text: the name sat
+   centred above a start-aligned subtitle. */
+.reciter-card__main,
+.reciter-card__main .reciter-card__name {
+  text-align: start;
+}

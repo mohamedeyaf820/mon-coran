@@ -11,6 +11,8 @@ fs.mkdirSync(OUT, { recursive: true });
 
 const DESKTOP = { width: 1360, height: 860 };
 const PHONE = { width: 390, height: 844 };
+const TABLET = { width: 820, height: 1180 }; // portrait: bottom navigation layout
+const TABLET_WIDE = { width: 1180, height: 820 }; // landscape: desktop header
 const base = { skipSplashAnimation: true, lang: "fr", riwaya: "hafs", theme: "light", showTajwid: true, fontFamily: "qpc-hafs" };
 
 const SHOTS = [
@@ -24,6 +26,16 @@ const SHOTS = [
   { name: "reader-arabic-mobile", url: "/surah/112", viewport: PHONE, settings: { showHome: false, lang: "ar", displayMode: "surah", mushafLayout: "list", theme: "sepia" }, mobile: true, reveal: true },
   { name: "audio-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true, openAudio: true },
   { name: "menu-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "dark" }, mobile: true, reveal: true, openMore: true },
+  { name: "reader-mushaf-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }, mobile: true, reveal: true },
+  { name: "search-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true, reveal: true, mobileTool: "search" },
+  { name: "settings-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true, reveal: true, mobileTool: "settings" },
+  { name: "home-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true },
+  { name: "reader-mushaf-tablet", url: "/surah/2", viewport: TABLET, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }, mobile: true, reveal: true },
+  { name: "reader-list-tablet", url: "/surah/2", viewport: TABLET, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "sepia" }, mobile: true, reveal: true },
+  { name: "audio-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true, openAudio: true },
+  { name: "reader-tablet-wide-dark", url: "/surah/3", viewport: TABLET_WIDE, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf", theme: "dark" }, mobile: true },
+  { name: "reader-tablet-wide", url: "/surah/2", viewport: TABLET_WIDE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true },
+  { name: "audio-desktop", url: "/", viewport: DESKTOP, settings: { showHome: true }, openAudioTab: true },
   { name: "search-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSearch: true },
   { name: "settings-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSettings: true },
 ];
@@ -44,6 +56,15 @@ for (const shot of SHOTS) {
     if (shot.openAudio) {
       await page.locator('.mobile-navigation [data-destination="audio"]').click({ timeout: 4000 });
       await page.waitForTimeout(2500);
+    }
+    if (shot.openAudioTab) {
+      await page.getByRole("tab", { name: "Audio", exact: true }).click({ timeout: 4000 });
+      await page.waitForTimeout(2500);
+    }
+    if (shot.mobileTool) {
+      await page.locator('.mobile-navigation [data-destination="more"]').click({ timeout: 4000 });
+      await page.locator(`.mobile-navigation-menu [data-tool="${shot.mobileTool}"]`).click({ timeout: 4000 });
+      await page.waitForTimeout(1500);
     }
     if (shot.openMore) await page.locator('.mobile-navigation [data-destination="more"]').click({ timeout: 4000 });
     if (shot.openSearch) await page.locator(".mp-header__search").first().click({ timeout: 4000 });
