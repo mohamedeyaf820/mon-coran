@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { getRecitersByRiwaya } from "../../src/data/reciters.js";
+import { revealReadingChrome } from "./helpers/quick-menu.mjs";
 
 const WARSH_RECITER_COUNT = getRecitersByRiwaya("warsh").length;
 
@@ -14,6 +15,7 @@ async function openReader(page) {
 }
 
 async function ensureWarsh(page) {
+  await revealReadingChrome(page);
   const mobileMore = page.locator('.mobile-navigation [data-destination="more"]');
   if (await mobileMore.waitFor({ state: "visible", timeout: 5_000 }).then(() => true).catch(() => false)) {
     await mobileMore.click();

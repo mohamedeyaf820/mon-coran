@@ -111,7 +111,9 @@ test("E2E: la lecture Warsh conserve ses couleurs et un seul marqueur d'ayah", a
   await page.locator(".mp-player-play-btn").evaluate((button) => button.click());
 
   const playingVerse = page.locator(".cpv-verse--playing").first();
-  await expect(playingVerse).toBeVisible();
+  // Starting the recitation loads a media file and takes the audio engine's own
+  // load budget (12 s) on a loaded machine: wait longer than that.
+  await expect(playingVerse).toBeVisible({ timeout: 30_000 });
   await expect.poll(() => playingVerse.locator(".warsh-unicode-word.is-tajweed-painted").count()).toBeGreaterThan(0);
   const playingAyah = await playingVerse.getAttribute('data-ayah-number');
   expect(await playingVerse.locator('.qc-ayah-text-ar').textContent()).toBe(canonicalTexts[playingAyah]);

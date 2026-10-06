@@ -1,5 +1,6 @@
 import { test, expect } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { revealReadingChrome } from "./helpers/quick-menu.mjs";
 
 // Service workers persist across BrowserContexts in the same browser process.
 // Block them here so one test's SW state cannot interfere with another's.
@@ -1271,6 +1272,7 @@ test("short landscape: reader search remains fully reachable", async ({ page }) 
 });
 
 async function expectShell(page) {
+  await revealReadingChrome(page);
   const header = page.locator(".mp-header").first();
   if (page.viewportSize().width <= 1024) {
     await expect(page.locator(".mobile-navigation")).toBeVisible({ timeout: 30000 });
