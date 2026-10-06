@@ -139,13 +139,16 @@ test("settings keep essential controls visible and advanced tools contextual", a
   await expect(page.locator("#settings-audio-speed")).toBeVisible();
   await expect(page.locator("#settings-audio-volume")).toBeVisible();
   await expect(page.locator("#settings-reciter-search")).toBeVisible();
-  const troubleshooting = page.locator(".settings-advanced-disclosure");
-  await expect(troubleshooting).not.toHaveAttribute("open", "");
-  await troubleshooting.locator("summary").click();
-  await expect(page.getByRole("button", { name: /Vider le cache/i })).toBeVisible();
+  await expect(page.locator(".sp-current")).toBeVisible();
 
-  await page.getByRole("tab", { name: "Confidentialité" }).click();
-  await expect(page.getByRole("heading", { name: "Données et confidentialité" })).toBeVisible();
+  // Downloads, storage, backup and erasure live together under Data; the
+  // advanced protection stays folded until asked for.
+  await page.getByRole("tab", { name: "Données", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Téléchargements / Hors connexion" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Sauvegarde et restauration" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /Vider le cache/i })).toBeVisible();
+  const protection = page.locator(".settings-advanced-disclosure");
+  await expect(protection).not.toHaveAttribute("open", "");
   await expect(page.getByText("Protection locale avancée", { exact: true })).toBeVisible();
   await expect(page.getByTestId("delete-local-data")).toBeVisible();
 
@@ -187,7 +190,7 @@ test("home presents one reading journey and one unified audio library", async ({
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator(".mobile-navigation")).toBeVisible();
   await expect(page.locator(".mobile-navigation__item")).toHaveCount(5);
-  await expect(page.getByRole("button", { name: "Bibliothèque" })).toHaveCount(0);
+  await expect(page.locator(".mobile-navigation").getByRole("button", { name: "Bibliothèque" })).toHaveCount(0);
 });
 
 test("bookmarking a verse survives a page reload", async ({ page }) => {

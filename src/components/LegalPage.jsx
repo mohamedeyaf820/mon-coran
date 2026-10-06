@@ -30,6 +30,15 @@ const PAGE_ICONS = {
   sources: Database,
 };
 const TRUST_ICONS = [BookOpenText, ShieldCheck];
+// One glyph per "at a glance" tile, in the order the copy lists them.
+const HIGHLIGHT_ICONS = {
+  about: [BookOpenText, Sparkles, CircleUserRound],
+  privacy: [ShieldCheck, Database, FileCheck2],
+  legal: [CircleUserRound, Scale, Database],
+  sources: [Database, RefreshCw, FileCheck2],
+};
+// Register order: the text of the Quran first, then what accompanies it.
+const CATEGORY_ORDER = ["text", "api", "translation", "transliteration", "tafsir", "audio", "font", "image", "annotation"];
 
 const REPORT_COPY = {
   fr: {
@@ -88,6 +97,11 @@ const COPY = {
       title: "Un compagnon de lecture sobre, utile et vérifiable",
       intro: "MushafPlus est une application coranique indépendante consacrée à la lecture, à l’écoute et à l’étude du Coran, sans compte obligatoire.",
       trust: ["Hafs & Warsh", "Récitations & tajwid"],
+      highlights: [
+        ["Hafs et Warsh", "Deux riwayas, chacune avec son texte et ses récitations."],
+        ["Lire, écouter, étudier", "Mushaf ou flux continu, récitations verset par verset, tajwid, traductions et tafsir."],
+        ["Sans compte", "Favoris, notes et réglages restent sur votre appareil."],
+      ],
       sections: [
         ["Notre intention", "Rassembler dans une interface calme les fonctions essentielles à une lecture régulière : textes Hafs et Warsh, traductions, récitations, Tajwid, favoris et notes."],
         ["Dans l’application", "Lecture en page Mushaf ou en flux continu, deux riwayas, traductions, récitations verset par verset, recherche, favoris, notes, listes de lecture et outils de mémorisation."],
@@ -101,12 +115,30 @@ const COPY = {
       title: "Vos données de lecture restent d’abord sur votre appareil",
       intro: "MushafPlus fonctionne sans compte et sans profil public. Les données personnelles de lecture sont stockées localement dans votre navigateur.",
       trust: ["Sans compte", "Aucun traceur"],
+      highlights: [
+        ["Sans compte ni traceur", "Aucune mesure d’audience, aucune publicité."],
+        ["Données sur votre appareil", "Réglages, favoris et notes restent dans votre navigateur."],
+        ["Vous gardez la main", "Export, protection par phrase secrète, suppression complète."],
+      ],
+      dataMap: {
+        title: "Ce qui est enregistré, et où",
+        intro: "Tout ce que MushafPlus conserve se trouve sur cet appareil. Rien n’est copié sur un serveur du projet.",
+        columns: ["Donnée", "Emplacement", "Ce que vous pouvez faire"],
+        rows: [
+          ["Réglages et position de lecture", "localStorage", "Exporter, protéger, tout supprimer"],
+          ["Favoris, notes et listes d’écoute", "IndexedDB", "Exporter en JSON, tout supprimer"],
+          ["Textes et traductions déjà lus", "IndexedDB (cache)", "Vider le cache"],
+          ["Récitations téléchargées", "Cache Storage", "Supprimer les téléchargements"],
+          ["Position pour les horaires de prière", "Réglages (arrondie à environ 10 m)", "Tout supprimer"],
+        ],
+        manage: "Gérer mes données",
+      },
       sections: [
-        ["Ce qui est conservé", "Préférences, dernière position, favoris et notes sont enregistrés dans localStorage ou IndexedDB. Une protection locale par phrase secrète peut être activée."],
+        ["Ce qui est conservé", "Préférences, dernière position, favoris et notes sont enregistrés dans localStorage ou IndexedDB. Les récitations téléchargées sont conservées dans le stockage du navigateur. Une protection locale par phrase secrète peut être activée."],
         ["Aucun compte, aucun traceur", "MushafPlus n’utilise aucun service de mesure d’audience, régie publicitaire ou traceur tiers, et n’envoie aucune statistique d’usage vers un serveur."],
-        ["Services externes", "Le texte, les traductions et les récitations peuvent provenir d’API ou de CDN tiers. Ces fournisseurs reçoivent les informations réseau indispensables à une requête web, notamment l’adresse IP."],
-        ["Autorisations", "Le microphone n’est demandé qu’au lancement volontaire de la recherche vocale. MushafPlus ne conserve aucun enregistrement vocal."],
-        ["Vos données, vos contrôles", "Vous pouvez exporter favoris, notes, listes et réglages au format JSON, ou effacer définitivement toutes les données locales depuis l’application. Aucune synchronisation cloud automatique n’est effectuée."],
+        ["Services externes", "Le texte, les traductions, les tafsirs et les récitations peuvent provenir d’API ou de CDN tiers. Ces fournisseurs reçoivent les informations réseau indispensables à une requête web, notamment l’adresse IP. Pour les horaires de prière, les coordonnées choisies (votre position ou une ville), arrondies à environ 10 m, sont envoyées au service Aladhan."],
+        ["Autorisations", "Le microphone n’est demandé qu’au lancement volontaire de la recherche vocale, et aucun enregistrement vocal n’est conservé. La position n’est demandée que lorsque vous la demandez dans l’onglet Prière des réglages. Les notifications ne s’activent que sur votre demande."],
+        ["Vos données, vos contrôles", "Dans les réglages, onglet Données, vous pouvez exporter favoris, notes, listes et réglages au format JSON, ou effacer définitivement toutes les données locales. Aucune synchronisation cloud automatique n’est effectuée."],
         ["Durée de conservation", "Les données restent sur l’appareil jusqu’à ce que vous les supprimiez ou vidiez le stockage du navigateur. Le cache hors ligne se renouvelle à chaque mise à jour."],
       ],
     },
@@ -114,6 +146,11 @@ const COPY = {
       title: "Informations de publication et cadre d’utilisation",
       intro: "Cette page identifie clairement le projet, son hébergement et les limites d’un service éducatif qui agrège des contenus tiers.",
       trust: ["Projet indépendant", "Usage personnel"],
+      highlights: [
+        ["Projet indépendant", "Code et signalements publics sur GitHub."],
+        ["Usage personnel", "Gratuit, pour la lecture et l’étude."],
+        ["Contenus tiers", "Chaque texte, traduction et récitation reste soumis à ses droits."],
+      ],
       sections: [
         ["Éditeur et contact", `${siteConfig.brandName} est un projet indépendant porté par ${siteConfig.projectOwner}. Les demandes, corrections et signalements sont reçus publiquement via GitHub Issues.`],
         ["Hébergement et disponibilité", `L’adresse canonique configurée est ${new URL(siteConfig.siteUrl).hostname}. Les versions de production et d’aperçu sont distribuées sur une infrastructure Vercel ; l’hébergeur traite les journaux techniques nécessaires à la sécurité et à la disponibilité du service.`],
@@ -127,8 +164,13 @@ const COPY = {
       title: "Des sources nommées, consultables et attribuées",
       intro: "Chaque famille de contenu est reliée à son fournisseur. Une source de secours compatible peut être utilisée si le service principal est indisponible.",
       trust: ["Texte & traduction", "Récitations"],
+      highlights: [
+        ["Chaque fournisseur est nommé", "Texte, traductions, récitations, polices et tafsir sont attribués."],
+        ["Sources de secours", "Un miroir compatible prend le relais si le service principal est indisponible."],
+        ["Conditions affichées", "Les droits et conditions connus figurent pour chaque source."],
+      ],
       sections: [
-        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte."],
+        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte. Le tafsir français Al-Mukhtasar (Centre Tafsir pour les études coraniques) est chargé depuis QuranEnc.com : la sourate lue y est demandée, puis conservée sur l’appareil ; les autres tafsirs viennent de Quran.com."],
         ["Traductions", "Les traductions française (Montada 2017) et anglaise (Pickthall 1930) sont rattachées à leur édition et présentées comme des sens approximatifs, non comme une exégèse."],
         ["Récitations", "EveryAyah, le CDN audio de Quran.com et QuranPedia (Warsh) fournissent les récitations verset par verset, selon le récitateur et la riwaya. QuranicAudio sert de miroir de secours."],
         ["Warsh", "Le texte Unicode Warsh et les catalogues audio sont traités séparément de Hafs. Les profils indiquent la riwaya et la provenance afin d’éviter un mélange de récitations."],
@@ -167,6 +209,31 @@ const CHROME_COPY = {
     original: "Lire la version française d’origine",
     originalHint: "Cette page est affichée dans sa langue d’origine, faute de traduction chargée.",
     contact: "Nous contacter",
+    toc: "Sur cette page",
+    glance: "En bref",
+    updated: "Mise à jour le",
+    version: "Version",
+    help: "Une erreur ou une information manque ? Aidez-nous à améliorer le projet.",
+    openSource: "Ouvrir la source",
+    facts: {
+      title: "Identité du service",
+      publisher: "Éditeur",
+      contact: "Contact",
+      hosting: "Hébergement",
+      address: "Adresse",
+      release: "Version",
+    },
+    categories: {
+      text: "Texte coranique",
+      api: "Services de données",
+      translation: "Traductions",
+      transliteration: "Translittération",
+      tafsir: "Tafsir",
+      audio: "Récitations",
+      font: "Polices",
+      image: "Images et portraits",
+      annotation: "Annotations de tajwid",
+    },
   },
   en: {
     back: "Back to home",
@@ -179,6 +246,31 @@ const CHROME_COPY = {
     original: "Read the original French version",
     originalHint: "This page is shown in its original language because the translation could not be loaded.",
     contact: "Contact us",
+    toc: "On this page",
+    glance: "At a glance",
+    updated: "Updated",
+    version: "Version",
+    help: "Found an error or missing information? Help improve the project.",
+    openSource: "Open the source",
+    facts: {
+      title: "Service identity",
+      publisher: "Publisher",
+      contact: "Contact",
+      hosting: "Hosting",
+      address: "Address",
+      release: "Version",
+    },
+    categories: {
+      text: "Quran text",
+      api: "Data services",
+      translation: "Translations",
+      transliteration: "Transliteration",
+      tafsir: "Tafsir",
+      audio: "Recitations",
+      font: "Fonts",
+      image: "Images and portraits",
+      annotation: "Tajweed annotations",
+    },
   },
   ar: {
     back: "العودة إلى الرئيسية",
@@ -191,6 +283,31 @@ const CHROME_COPY = {
     original: "قراءة النسخة الفرنسية الأصلية",
     originalHint: "تُعرض هذه الصفحة بلغتها الأصلية لأن الترجمة لم تُحمَّل.",
     contact: "تواصل معنا",
+    toc: "في هذه الصفحة",
+    glance: "باختصار",
+    updated: "آخر تحديث",
+    version: "الإصدار",
+    help: "وجدت خطأً أو نقصاً؟ ساعدنا على تحسين المشروع.",
+    openSource: "فتح المصدر",
+    facts: {
+      title: "هوية الخدمة",
+      publisher: "الناشر",
+      contact: "التواصل",
+      hosting: "الاستضافة",
+      address: "العنوان",
+      release: "الإصدار",
+    },
+    categories: {
+      text: "النص القرآني",
+      api: "خدمات البيانات",
+      translation: "الترجمات",
+      transliteration: "النقل الحرفي",
+      tafsir: "التفسير",
+      audio: "التلاوات",
+      font: "الخطوط",
+      image: "الصور",
+      annotation: "علامات التجويد",
+    },
   },
 };
 
@@ -204,6 +321,109 @@ function hasCompleteLocaleCopy(localeCopy) {
           localeCopy[key]?.intro &&
           localeCopy.tabs?.[key],
       ),
+  );
+}
+
+function formatReleaseDate(lang) {
+  const date = new Date(siteConfig.lastUpdated);
+  if (Number.isNaN(date.getTime())) return siteConfig.lastUpdated;
+  try {
+    return date.toLocaleDateString(lang, { day: "numeric", month: "long", year: "numeric" });
+  } catch {
+    return siteConfig.lastUpdated;
+  }
+}
+
+// What the privacy page promises, laid out as a table: which data, where it
+// lives, what the reader can do with it. A stale cached dataset without it
+// simply shows the prose sections.
+function DataMap({ map, onManage }) {
+  if (!Array.isArray(map?.rows) || !map.rows.length) return null;
+  return (
+    <section className="legal-page__datamap" aria-labelledby="legal-datamap-title">
+      <div className="legal-page__block-heading">
+        <h2 id="legal-datamap-title">{map.title}</h2>
+        <p>{map.intro}</p>
+      </div>
+      <div className="legal-page__table-wrap">
+        <table>
+          <thead>
+            <tr>{map.columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr>
+          </thead>
+          <tbody>
+            {map.rows.map(([what, where, control]) => (
+              <tr key={what}>
+                <th scope="row">{what}</th>
+                <td data-label={map.columns[1]}><code>{where}</code></td>
+                <td data-label={map.columns[2]}>{control}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {map.manage ? (
+        <button type="button" className="legal-page__cta" onClick={onManage}>
+          <ShieldCheck size={16} aria-hidden="true" />
+          {map.manage}
+        </button>
+      ) : null}
+    </section>
+  );
+}
+
+function Facts({ labels, lang }) {
+  const host = new URL(siteConfig.siteUrl).hostname;
+  const rows = [
+    [labels.publisher, siteConfig.projectOwner],
+    [labels.contact, <a key="contact" href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer">GitHub Issues</a>],
+    [labels.hosting, "Vercel"],
+    [labels.address, <bdi key="host" dir="ltr">{host}</bdi>],
+    [labels.release, <bdi key="release" dir="ltr">v{siteConfig.version} · {formatReleaseDate(lang)}</bdi>],
+  ];
+  return (
+    <section className="legal-page__facts" aria-labelledby="legal-facts-title">
+      <h2 id="legal-facts-title">{labels.title}</h2>
+      <dl>
+        {rows.map(([term, value]) => (
+          <div key={term}><dt>{term}</dt><dd>{value}</dd></div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+// The third-party register, grouped by what the content is for. The data lives
+// in contentAttributions.js; only the grouping and labels are presentation.
+function SourceRegister({ content, shell }) {
+  const groups = CATEGORY_ORDER
+    .map((category) => ({ category, items: CONTENT_ATTRIBUTIONS.filter((item) => item.category === category) }))
+    .filter((group) => group.items.length);
+  return (
+    <section className="legal-page__attributions" aria-labelledby="attributions-title">
+      <div className="legal-page__block-heading">
+        <p><Database size={15} aria-hidden="true" /> {content.register}</p>
+        <h2 id="attributions-title">{content.registerIntro}</h2>
+      </div>
+      {groups.map(({ category, items }) => (
+        <div key={category} className="legal-page__source-group">
+          <h3>{shell.categories[category] || category} <span>{items.length}</span></h3>
+          <ul>
+            {items.map((item) => (
+              <li key={item.id} className="legal-page__attribution-item">
+                <div>
+                  <h4>{item.name}</h4>
+                  <p>{item.usage}</p>
+                  <small>{item.rights}</small>
+                </div>
+                <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`${shell.openSource} — ${item.name}`}>
+                  <ExternalLink size={16} aria-hidden="true" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
   );
 }
 
@@ -278,6 +498,14 @@ export default function LegalPage({ page = "privacy" }) {
     set({ legalPage: null, showHome: true, showDuas: false });
     scrollMainTop();
   };
+
+  const jumpTo = (event, id) => {
+    event.preventDefault();
+    const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById(id)?.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "start" });
+  };
+
+  const manageData = () => set({ settingsActiveTab: "privacy", settingsOpen: true });
 
   const openReport = () => {
     setReport((current) => ({
@@ -394,11 +622,12 @@ export default function LegalPage({ page = "privacy" }) {
         </button>
         <div className="legal-page__hero-layout">
           <div className="legal-page__hero-heading">
-            <div className="legal-page__hero-mark" aria-hidden="true">
-              <span><ActiveIcon size={22} /></span>
-              <i />
+            <div className="legal-page__eyebrow-row">
+              <div className="legal-page__hero-mark" aria-hidden="true">
+                <span><ActiveIcon size={18} /></span>
+              </div>
+              <p className="legal-page__eyebrow">{locale.eyebrow}</p>
             </div>
-            <p className="legal-page__eyebrow">{locale.eyebrow}</p>
             <h1>{content.title}</h1>
           </div>
           <div className="legal-page__hero-summary">
@@ -410,7 +639,7 @@ export default function LegalPage({ page = "privacy" }) {
                   <span key={label}><TrustIcon size={14} aria-hidden="true" /> {label}</span>
                 );
               })}
-              <span><FileCheck2 size={14} aria-hidden="true" /> v{siteConfig.version}</span>
+              <span><FileCheck2 size={14} aria-hidden="true" /> <bdi dir="ltr">v{siteConfig.version}</bdi> · {shell.updated} {formatReleaseDate(lang)}</span>
             </div>
           </div>
         </div>
@@ -428,44 +657,65 @@ export default function LegalPage({ page = "privacy" }) {
         })}
       </nav>
 
-      <div className="legal-page__grid">
-        {content.sections.map(([title, body], index) => (
-          <section key={title} className="legal-page__card">
-            <span className="legal-page__card-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-            <div>
-              <h2>{title}</h2>
-              <p>{body}</p>
-            </div>
-          </section>
-        ))}
-      </div>
-
-      {activePage === "sources" ? (
-        <section className="legal-page__attributions" aria-labelledby="attributions-title">
-          <div className="legal-page__attributions-heading">
-            <p><Database size={15} aria-hidden="true" /> {content.register}</p>
-            <h2 id="attributions-title">{content.registerIntro}</h2>
-          </div>
-          <div className="legal-page__attribution-list">
-            {CONTENT_ATTRIBUTIONS.map((item) => (
-              <article key={item.id} className="legal-page__attribution-item">
-                <span>{item.category}</span>
-                <div><h3>{item.name}</h3><p>{item.usage}</p><small>{item.rights}</small></div>
-                <a href={item.url} target="_blank" rel="noreferrer" aria-label={`${item.name} — source`}><ExternalLink size={16} aria-hidden="true" /></a>
-              </article>
-            ))}
-          </div>
+      {Array.isArray(content.highlights) && content.highlights.length ? (
+        <section className="legal-page__glance" aria-label={shell.glance}>
+          <ul>
+            {content.highlights.map(([title, body], index) => {
+              const GlanceIcon = HIGHLIGHT_ICONS[activePage]?.[index] || Sparkles;
+              return (
+                <li key={title}>
+                  <span aria-hidden="true"><GlanceIcon size={18} /></span>
+                  <div><strong>{title}</strong><p>{body}</p></div>
+                </li>
+              );
+            })}
+          </ul>
         </section>
       ) : null}
+
+      <div className="legal-page__layout">
+        <aside className="legal-page__toc">
+          <nav aria-label={shell.toc}>
+            <p>{shell.toc}</p>
+            <ol>
+              {content.sections.map(([title], index) => (
+                <li key={title}>
+                  <a href={`#${activePage}-${index + 1}`} onClick={(event) => jumpTo(event, `${activePage}-${index + 1}`)}>
+                    <span aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+                    {title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </nav>
+        </aside>
+
+        <div className="legal-page__body">
+          {activePage === "privacy" ? <DataMap map={content.dataMap} onManage={manageData} /> : null}
+          {activePage === "legal" ? <Facts labels={shell.facts} lang={lang} /> : null}
+
+          {content.sections.map(([title, body], index) => (
+            <section key={title} id={`${activePage}-${index + 1}`} className="legal-page__section" aria-labelledby={`${activePage}-${index + 1}-title`}>
+              <span className="legal-page__section-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h2 id={`${activePage}-${index + 1}-title`}>{title}</h2>
+                <p>{body}</p>
+              </div>
+            </section>
+          ))}
+
+          {activePage === "sources" ? <SourceRegister content={content} shell={shell} /> : null}
+        </div>
+      </div>
 
       <footer className="legal-page__actions">
         <div>
           <Sparkles size={17} aria-hidden="true" />
-          <p id="legal-actions-title">{lang === "ar" ? "هل وجدت خطأ أو نقصاً؟ ساعدنا على تحسين المشروع." : lang === "en" ? "Found an error or missing information? Help improve the project." : "Une erreur ou une information manque ? Aidez-nous à améliorer le projet."}</p>
+          <p id="legal-actions-title">{shell.help}</p>
         </div>
         <nav aria-labelledby="legal-actions-title">
-          <a href={siteConfig.repositoryUrl} target="_blank" rel="noopener noreferrer"><Github size={16} />{locale.actions.project}</a>
-          <a href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer"><Send size={16} />{shell.contact}</a>
+          <a href={siteConfig.repositoryUrl} target="_blank" rel="noopener noreferrer"><Github size={16} aria-hidden="true" />{locale.actions.project}</a>
+          <a href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer"><Send size={16} aria-hidden="true" />{shell.contact}</a>
           <a
             className="is-primary"
             href={`${siteConfig.repositoryUrl.replace(/\/$/, "")}/issues`}
@@ -478,10 +728,10 @@ export default function LegalPage({ page = "privacy" }) {
               openReport();
             }}
           >
-            <FileCheck2 size={16} />
+            <FileCheck2 size={16} aria-hidden="true" />
             {locale.actions.correction}
           </a>
-          <button type="button" onClick={goHome}><Globe2 size={16} />{locale.actions.home}</button>
+          <button type="button" onClick={goHome}><Globe2 size={16} aria-hidden="true" />{locale.actions.home}</button>
         </nav>
       </footer>
 

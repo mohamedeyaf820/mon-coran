@@ -1,37 +1,25 @@
 import { offlineText } from "../i18n/offline.js";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import "../styles/settings-enhanced.css";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   BookOpen,
-  Check,
-  CloudDownload,
+  CalendarCheck,
+  Database,
   Download,
   Info,
-  Palette,
-  Search,
-  ShieldCheck,
   LockKeyhole,
+  Palette,
+  ShieldCheck,
   Trash2,
   Upload,
   Volume2,
   X,
-  CalendarCheck,
 } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
-import { getRecitersByRiwaya, getReciterVisual } from "../data/reciters";
-import { THEMES as UI_THEMES } from "../data/themes";
-import ThemePreview from "./settings/ThemePreview";
-import {
-  getFontOptionsForRiwaya,
-  getAyahMarkerFontFamily,
-  getNativeAyahMarker,
-  normalizeFontId,
-} from "../data/fonts";
-import { ensureFontLoaded } from "../services/fontLoader";
 import { downloadExport, importFromFile } from "../services/exportService";
-import { clearCache, TRANSLATION_CHOICES } from "../services/quranAPI";
+import { clearCache } from "../services/quranAPI";
 import { clearAllLocalAppData } from "../services/localDataService";
 import { confirmAction } from "../services/interactionService";
 import { toast } from "../lib/utils";
@@ -45,115 +33,33 @@ import {
   enableProtectedMode,
   lockProtectedModeNow,
 } from "../services/privacyProtectionService";
-import {
-  ARABIC_FONT_SIZE_MAX,
-  ARABIC_FONT_SIZE_MIN,
-} from "../utils/arabicTypography";
-import {
-  ensureNotificationPermission,
-  getNotificationPermission,
-} from "../services/notificationService";
-import {
-  Section,
-  SwitchRow,
-  SliderRow,
-  Segmented,
-} from "./settings/controls";
-// The prayer panel is one tab among five; its services (adhan, timings,
-// cities) must not weigh on the settings bundle unless the tab opens.
+import { Section } from "./settings/controls";
+import GeneralTab from "./settings/GeneralTab";
+import ReadingTab from "./settings/ReadingTab";
+import AudioTab from "./settings/AudioTab";
+// The prayer panel and the downloads list are heavy (adhan, timings, cities,
+// storage probes): they load only when their tab opens.
 const OfflineDownloadsSection = React.lazy(() => import("./settings/OfflineDownloadsSection"));
 const PrayerSettingsSection = React.lazy(() => import("./settings/PrayerSettingsSection"));
 
-const TABS = [  { id: "general", icon: Palette, labelKey: "settings.general" },
+// Downloads and storage live under "data": that is where a reader looks for
+// what is kept on the device, next to export and erasure.
+const TABS = [
+  { id: "general", icon: Palette, labelKey: "settings.general" },
   { id: "reading", icon: BookOpen, labelKey: "settings.display" },
   { id: "audio", icon: Volume2, labelKey: "settings.audio" },
-  { id: "offline", icon: CloudDownload, labelKey: "offline.title" },
   { id: "prayer", icon: CalendarCheck, labelKey: "settings.prayer" },
-  { id: "privacy", icon: ShieldCheck, labelKey: "settings.privacy" },
+  { id: "privacy", icon: Database, labelKey: "settings.data" },
 ];
-function localText(lang, fr, en, ar) {
-  if (lang === "ar") return ar || en || fr;
-  if (lang === "en") return en || fr;
-  return fr;
-}
-function SettingsReciterAvatar({ reciter }) {
-  const [imgError, setImgError] = React.useState(false);
-  const visual = getReciterVisual(reciter);
-  if (visual.type === "photo" && !imgError) {
-    return (
-      <span className="settings-reciter-avatar settings-reciter-avatar--photo">
-        <img
-          src={visual.photo}
-          alt=""
-          className="reciter-photo"
-          style={{ objectPosition: visual.focalPoint }}
-          loading="lazy"
-          onError={() => setImgError(true)}
-        />
-      </span>
-    );
-  }
-  return (
-    <span
-      className="settings-reciter-avatar"
-      style={{ "--avatar-bg": visual.avatar.color }}
-      aria-hidden="true"
-    >
-      {visual.avatar.initials}
-    </span>
-  );
-}
 
 export default function SettingsModal() {
   const { state, dispatch, set } = useApp();
-  const {
-    autoNightMode,
-    audioSpeed = 1,
-    fontFamily,
-    fontFamilyByRiwaya,
-    lang,
-    nightEnd,
-    nightStart,
-    quranFontSize,
-    quranTranslationFontSize = 18,
-    reciter,
-    riwaya,
-    currentJuz,
-    currentPage,
-    currentSurah,
-    displayMode,
-    showHome,
-    showDuas,
-    legalPage,
-    warshStrictMode,
-    showTajwid,
-    showTranslation,
-    showTransliteration,
-    theme,
-    translationLangs = ["fr"],
-    volume = 1,
-    dailyVerseNotification,
-  } = state;
-
-  const [notificationPermission, setNotificationPermission] = useState(
-    getNotificationPermission,
-  );
-  const [notificationAsked, setNotificationAsked] = useState(false);
-
-  const toggleDailyVerseNotification = async (checked) => {
-    if (!checked) {
-      set({ dailyVerseNotification: false });
-      return;
-    }
-    const result = await ensureNotificationPermission();
-    setNotificationPermission(result);
-    setNotificationAsked(true);
-    set({ dailyVerseNotification: result === "granted" });
-  };
+  const { lang } = state;
 
   const [cacheBusy, setCacheBusy] = useState(false);
-  const [activeTab, setActiveTab] = useState(state.settingsActiveTab || "general");
-  const [reciterSearch, setReciterSearch] = useState("");
+  const [activeTab, setActiveTab] = useState(
+    TABS.some((tab) => tab.id === state.settingsActiveTab) ? state.settingsActiveTab : "general",
+  );
   const [privacyConfigured, setPrivacyConfigured] = useState(() =>
     hasEncryptionPassphraseConfigured(),
   );
@@ -165,77 +71,11 @@ export default function SettingsModal() {
     confirm: "",
     disable: "",
   });
-  const firstInputRef = useRef(null);
-  const activeRiwaya = riwaya || "hafs";
-
-  const availableFontOptions = getFontOptionsForRiwaya(activeRiwaya);
-  const selectedFontFamily = availableFontOptions.some((font) => font.id === fontFamily)
-    ? fontFamily
-    : availableFontOptions[0]?.id || "qpc-hafs";
-  const selectedMarkerPreview = getNativeAyahMarker(
-    1,
-    selectedFontFamily,
-    activeRiwaya,
-  );
-  // Shape the preview with the family that will actually draw it: Amiri Quran
-  // and Noto Naskh have no composing rosette, so their digits are drawn by
-  // QPC Hafs in the reader too. Matches ArabicFontControls in the toolbar.
-  const selectedMarkerFontFamily = getAyahMarkerFontFamily(
-    selectedFontFamily,
-    activeRiwaya,
-  );
-
-  const recitersList = useMemo(
-    () => getRecitersByRiwaya(activeRiwaya),
-    [activeRiwaya],
-  );
-  const filteredReciters = useMemo(() => {
-    const query = reciterSearch.trim().toLowerCase();
-    if (!query) return recitersList;
-    return recitersList.filter((item) =>
-      [item.name, item.nameFr, item.nameEn, item.style, ...(item.searchAliases || [])]
-        .filter(Boolean)
-        .some((value) => String(value).toLowerCase().includes(query)),
-    );
-  }, [reciterSearch, recitersList]);
 
   const title = t("settings.title", lang);
   // Escape fires onEscapeKeyDown and then Radix's own dismiss (onOpenChange), so
   // a toggle here flipped the panel closed and straight back open again.
   const close = () => dispatch({ type: "SET", payload: { settingsOpen: false } });
-
-  const handleRiwayaChange = async (nextRiwaya) => {
-    const targetRiwaya = nextRiwaya === "warsh" ? "warsh" : "hafs";
-    if (targetRiwaya === activeRiwaya) return;
-    const targetFont = normalizeFontId(
-      fontFamilyByRiwaya?.[targetRiwaya] || fontFamily,
-      targetRiwaya,
-    );
-    const tasks = [ensureFontLoaded(targetFont).catch(() => null)];
-    if (!showHome && !showDuas && !legalPage) {
-      tasks.push(
-        import("./QuranDisplay/useQuranDisplayData")
-          .then(({ preloadQuranDisplayData }) =>
-            preloadQuranDisplayData({
-              currentJuz,
-              currentPage,
-              currentSurah,
-              displayMode,
-              lang,
-              riwaya: targetRiwaya,
-              warshStrictMode,
-            }),
-          )
-          .catch(() => null),
-      );
-    }
-    await Promise.allSettled(tasks);
-    set({ riwaya: targetRiwaya });
-  };
-
-  useEffect(() => {
-    ensureFontLoaded(selectedFontFamily).catch(() => {});
-  }, [selectedFontFamily]);
 
   const handleTabKeyDown = (event) => {
     const currentIndex = TABS.findIndex((tab) => tab.id === activeTab);
@@ -263,14 +103,6 @@ export default function SettingsModal() {
       inline: "nearest",
     });
   }, [activeTab]);
-
-  const handleTranslationToggle = (translationLang) => {
-    const current = Array.isArray(translationLangs) ? translationLangs : ["fr"];
-    const next = current.includes(translationLang)
-      ? current.filter((item) => item !== translationLang)
-      : [...current, translationLang].slice(0, 3);
-    set({ translationLangs: next.length ? next : ["fr"] });
-  };
 
   const handleClearCache = async () => {
     if (cacheBusy) return;
@@ -401,346 +233,24 @@ export default function SettingsModal() {
     }
   };
 
-  const renderGeneralTab = () => (
+  const renderDataTab = () => (
     <div className="settings-panel-stack">
-      <Section title={t("settings.appLanguage", lang)}>
-        <Segmented
-          ariaLabel={t("settings.appLanguage", lang)}
-          value={lang}
-          onChange={(nextLang) => set({ lang: nextLang })}
-          options={[
-            { id: "fr", label: "Français" },
-            { id: "en", label: "English" },
-            { id: "ar", label: "العربية" },
-          ]}
-        />
-      </Section>
+      <React.Suspense fallback={<p role="status">{offlineText("checking", lang)}</p>}>
+        <OfflineDownloadsSection lang={lang} />
+      </React.Suspense>
 
-      <Section title={t("settings.visualTheme", lang)}>
-        <div className="settings-theme-grid" role="group" aria-label={t("settings.visualTheme", lang)}>
-          {UI_THEMES.map((item) => {
-            const label = localText(lang, item.fr, item.en, item.ar);
-            const description = localText(
-              lang,
-              item.descriptionFr,
-              item.descriptionEn,
-              item.descriptionAr,
-            );
-            const isActive = theme === item.id;
-            const periodLabel =
-              item.period === "night"
-                ? t("settings.periodNight", lang)
-                : t("settings.periodDay", lang);
-            return (
-              <button
-                type="button"
-                key={item.id}
-                className="settings-theme-tile"
-                data-active={isActive}
-                onClick={() => set({ theme: item.id })}
-                aria-pressed={isActive}
-                aria-label={`${label}. ${description}`}
-              >
-                <span
-                  className="settings-theme-tile__visual"
-                  style={{
-                    "--theme-bg": item.palette?.bg || "var(--bg-primary)",
-                    "--theme-primary": item.palette?.primary || "var(--primary)",
-                    "--theme-text": item.palette?.text || "var(--text-primary)",
-                  }}
-                >
-                  <ThemePreview themeId={item.id} />
-                  {isActive ? (
-                    <span
-                      className="settings-theme-tile__check"
-                      aria-hidden="true"
-                    >
-                      <Check size={13} />
-                    </span>
-                  ) : null}
-                </span>
-                <span className="settings-theme-tile__copy">
-                  <span className="settings-theme-tile__heading">
-                    <strong>{label}</strong>
-                    <span className="settings-theme-tile__period">{periodLabel}</span>
-                  </span>
-                  <small>{description}</small>
-                </span>
-              </button>
-            );
-          })}
+      <Section title={t("settings.storageSection", lang)}>
+        <div className="settings-cache-note">
+          <Info size={16} aria-hidden="true" />
+          <span>{t("settings.storageHint", lang)}</span>
         </div>
+        <button type="button" className="settings-danger-button" onClick={handleClearCache} disabled={cacheBusy} aria-busy={cacheBusy}>
+          <Trash2 size={16} aria-hidden="true" />
+          <span>{t("settings.clearCache", lang)}</span>
+        </button>
       </Section>
 
-      <Section title={t("settings.autoNightMode", lang)}>
-        <SwitchRow
-          id="settings-auto-night"
-          checked={autoNightMode}
-          onChange={(checked) => set({ autoNightMode: checked })}
-          label={t("settings.autoNightMode", lang)}
-          description={t("settings.autoNightHint", lang)}
-        />
-        {autoNightMode ? (
-          <div className="settings-panel-stack">
-            <div className="settings-time-grid">
-              <label>
-                <span>{t("settings.start", lang)}</span>
-                <input
-                  ref={firstInputRef}
-                  type="time"
-                  value={nightStart || "20:00"}
-                  onChange={(event) => set({ nightStart: event.target.value })}
-                />
-              </label>
-              <label>
-                <span>{t("settings.end", lang)}</span>
-                <input
-                  type="time"
-                  value={nightEnd || "06:00"}
-                  onChange={(event) => set({ nightEnd: event.target.value })}
-                />
-              </label>
-            </div>
-          </div>
-        ) : null}
-      </Section>
-
-      <Section title={t("settings.notifications", lang)}>
-        {notificationPermission === "unsupported" ? (
-          <p className="settings-notification-note">
-            {t("settings.notificationsUnsupported", lang)}
-          </p>
-        ) : (
-          <>
-            <SwitchRow
-              id="settings-daily-verse-notification"
-              checked={dailyVerseNotification}
-              onChange={toggleDailyVerseNotification}
-              label={t("settings.dailyVerseNotification", lang)}
-              description={t("settings.dailyVerseNotificationHint", lang)}
-            />
-            {notificationPermission === "denied" ||
-            (notificationAsked && notificationPermission !== "granted") ? (
-              <p className="settings-notification-note is-warning" role="alert">
-                {t("settings.notificationsBlocked", lang)}
-              </p>
-            ) : null}
-            <p className="settings-notification-note">
-              {t("settings.prayerSettingsHint", lang)}
-            </p>
-          </>
-        )}
-      </Section>
-
-    </div>
-  );
-
-  const renderReadingTab = () => (
-    <div className="settings-panel-stack">
-      <Section title={t("settings.riwayaDefault", lang)}>
-        <Segmented
-          ariaLabel="Riwaya"
-          value={activeRiwaya}
-          onChange={handleRiwayaChange}
-          options={[
-            { id: "hafs", label: "Hafs" },
-            { id: "warsh", label: "Warsh" },
-          ]}
-        />
-      </Section>
-
-      <Section title={t("settings.arabicFontFamily", lang)}>
-        <div className="settings-font-picker">
-          <label className="sr-only" htmlFor="settings-font-family">
-            {t("settings.arabicFontFamily", lang)}
-          </label>
-          <span
-            className="settings-font-marker-preview native-ayah-marker"
-            dir="rtl"
-            aria-hidden="true"
-            style={{ fontFamily: selectedMarkerFontFamily }}
-          >
-            {selectedMarkerPreview}
-          </span>
-          <select
-            id="settings-font-family"
-            value={selectedFontFamily}
-            onChange={(event) => set({ fontFamily: event.target.value })}
-            className="settings-select"
-          >
-            {availableFontOptions.map((font) => (
-              <option key={font.id} value={font.id}>
-                {font.label} - {t(font.hintKey, lang)}
-              </option>
-            ))}
-          </select>
-        </div>
-      </Section>
-
-      <Section title={t("settings.textSizes", lang)}>
-        <SliderRow
-          id="settings-font-size-quran"
-          label={t("settings.arabicFontSize", lang)}
-          min={ARABIC_FONT_SIZE_MIN}
-          max={ARABIC_FONT_SIZE_MAX}
-          value={quranFontSize}
-          onChange={(value) => set({ quranFontSize: value })}
-        />
-        <SliderRow
-          id="settings-font-size-translation"
-          label={t("settings.translationFontSize", lang)}
-          min={14}
-          max={28}
-          value={quranTranslationFontSize}
-          suffix="px"
-          onChange={(value) => set({ quranTranslationFontSize: value })}
-        />
-      </Section>
-
-      <Section title={t("settings.translationLang", lang)}>
-        <div className="settings-chip-grid" role="group" aria-label={t("settings.translationLang", lang)}>
-          {TRANSLATION_CHOICES.map((item) => {
-            const isActive = translationLangs.includes(item.id);
-            return (
-              <button
-                type="button"
-                key={item.id}
-                className="settings-chip"
-                data-active={isActive}
-                onClick={() => handleTranslationToggle(item.id)}
-                aria-pressed={isActive}
-              >
-                {item.labelKey ? t(item.labelKey, lang) : item.label}
-              </button>
-            );
-          })}
-        </div>
-        {translationLangs.some((id) =>
-          TRANSLATION_CHOICES.find((item) => item.id === id)?.riwaya === "warsh",
-        ) && (
-          <p className="settings-hint">{t("settings.translationWarshHint", lang)}</p>
-        )}
-      </Section>
-
-      <Section title={t("settings.readingHelpers", lang)}>
-        <SwitchRow
-          id="settings-show-tajwid"
-          checked={showTajwid}
-          onChange={(checked) => set({ showTajwid: checked })}
-          label={t("settings.tajweedColors", lang)}
-          description={t("settings.tajweedDesc", lang)}
-        />
-        <SwitchRow
-          id="settings-show-translation"
-          checked={showTranslation}
-          onChange={(checked) => set({ showTranslation: checked })}
-          label={t("settings.showTranslationsDetail", lang)}
-          description={t("settings.showTranslationsDesc", lang)}
-        />
-        <SwitchRow
-          id="settings-show-transliteration"
-          checked={showTransliteration}
-          onChange={(checked) => set({ showTransliteration: checked })}
-          label={t("settings.showTransliteration", lang)}
-          description={t("settings.showTransliterationDesc", lang)}
-        />
-      </Section>
-    </div>
-  );
-
-  const renderAudioTab = () => (
-    <div className="settings-panel-stack">
-      <Section title={t("settings.audioPlayback", lang)}>
-        <SliderRow
-          id="settings-audio-speed"
-          label={t("audio.speed", lang)}
-          min={0.5}
-          max={2}
-          step={0.25}
-          value={audioSpeed}
-          suffix="×"
-          onChange={(value) => set({ audioSpeed: value })}
-        />
-        <SliderRow
-          id="settings-audio-volume"
-          label={t("audio.volume", lang)}
-          min={0}
-          max={100}
-          value={Math.round(volume * 100)}
-          suffix="%"
-          onChange={(value) => set({ volume: value / 100 })}
-        />
-      </Section>
-
-      <Section title={t("settings.selectReciter", lang)}>
-        <div className="settings-search">
-          <label className="sr-only" htmlFor="settings-reciter-search">
-            {t("settings.searchReciters", lang)}
-          </label>
-          <Search size={16} aria-hidden="true" />
-          <input
-            id="settings-reciter-search"
-            type="search"
-            placeholder={t("settings.searchReciters", lang)}
-            value={reciterSearch}
-            onChange={(event) => setReciterSearch(event.target.value)}
-          />
-        </div>
-
-        <div className="settings-reciter-list">
-          {filteredReciters.length ? (
-            <div className="settings-reciter-grid">
-              {filteredReciters.map((item) => {
-                const isActive = item.id === reciter;
-                return (
-                  <button
-                    type="button"
-                    key={item.id}
-                    className="settings-reciter-option"
-                    data-active={isActive}
-                    onClick={() => set({ reciter: item.id })}
-                    aria-pressed={isActive}
-                  >
-                    <SettingsReciterAvatar reciter={item} />
-                    <span className="settings-reciter-option__text">
-                      <span>
-                        {lang === "fr"
-                          ? item.nameFr || item.name
-                          : lang === "en"
-                            ? item.nameEn || item.name
-                            : item.name}
-                      </span>
-                      <small>{item.style || "murattal"}</small>
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <p className="settings-empty">{t("settings.noReciterFound", lang)}</p>
-          )}
-        </div>
-      </Section>
-
-      <details className="settings-advanced-disclosure">
-        <summary>{t("settings.troubleshooting", lang)}</summary>
-        <Section title={t("settings.clearCache", lang)}>
-          <div className="settings-cache-note">
-            <Info size={16} />
-            <span>{t("settings.cacheInfo", lang)}</span>
-          </div>
-          <button type="button" className="settings-danger-button" onClick={handleClearCache} disabled={cacheBusy} aria-busy={cacheBusy}>
-            <Trash2 size={16} />
-            <span>{t("settings.clearCache", lang)}</span>
-          </button>
-        </Section>
-      </details>
-    </div>
-  );
-
-  const renderPrivacyTab = () => (
-    <div className="settings-panel-stack">
-      <Section title={t("settings.dataPrivacy", lang)}>
+      <Section title={t("settings.backupSection", lang)}>
         <div className="settings-cache-note">
           <Info size={16} aria-hidden="true" />
           <span>{t("settings.backupRestoreHint", lang)}</span>
@@ -962,7 +472,7 @@ export default function SettingsModal() {
                   <span className="settings-tab-button__icon">
                     <Icon size={16} />
                   </span>
-                  <span className="settings-tab-button__label">{tab.id === "offline" ? offlineText("title", lang) : t(tab.labelKey, lang)}</span>
+                  <span className="settings-tab-button__label">{t(tab.labelKey, lang)}</span>
                 </button>
               );
             })}
@@ -974,16 +484,15 @@ export default function SettingsModal() {
               role="tabpanel"
               aria-labelledby={`settings-tab-${activeTab}`}
             >
-              {activeTab === "general" ? renderGeneralTab() : null}
-              {activeTab === "reading" ? renderReadingTab() : null}
-              {activeTab === "audio" ? renderAudioTab() : null}
-              {activeTab === "offline" && <React.Suspense fallback={<p role="status">{offlineText("checking", lang)}</p>}><OfflineDownloadsSection lang={lang} /></React.Suspense>}
+              {activeTab === "general" ? <GeneralTab /> : null}
+              {activeTab === "reading" ? <ReadingTab /> : null}
+              {activeTab === "audio" ? <AudioTab onOpenData={() => setActiveTab("privacy")} /> : null}
               {activeTab === "prayer" ? (
                 <React.Suspense fallback={null}>
                   <PrayerSettingsSection lang={lang} state={state} set={set} />
                 </React.Suspense>
               ) : null}
-              {activeTab === "privacy" ? renderPrivacyTab() : null}
+              {activeTab === "privacy" ? renderDataTab() : null}
             </div>
           </div>
         </Dialog.Content>

@@ -1,0 +1,146 @@
+/* ==========================================================================
+   Reader — refinement of the surah header and the verse rows
+
+   Loaded after reader-calm.css (see readerStyles.js). The calm pass made the
+   chrome so quiet that the surah header read as loose text and the verse
+   number as plain text. This keeps the single reading surface and the quiet
+   palette, and gives back structure:
+
+   - the header is one panel with its calligraphy, title block and actions on
+     separate tracks (the calligraphy used to spill over the title);
+   - the verse number is a tappable chip, the actions a tidy row;
+   - the translation hangs from an accent rule under the Arabic.
+
+   Selectors carry #root like the layers before so the order is the only thing
+   that decides.
+   ========================================================================== */
+
+/* ── Surah header, from 641px: calligraphy | title block | actions ──────── */
+
+@media (min-width: 641px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-identity {
+    min-height: 0 !important;
+    margin: 0.6rem clamp(0.5rem, 2vw, 1rem) 0.35rem !important;
+    padding: clamp(0.8rem, 1.6vw, 1.1rem) clamp(1rem, 2.2vw, 1.5rem) !important;
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+    border-radius: 20px !important;
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--primary) 9%, var(--bg-card)),
+      var(--bg-card) 70%
+    ) !important;
+  }
+
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-identity__disclosure {
+    grid-template-columns: max-content minmax(0, 1fr) auto !important;
+    gap: clamp(0.9rem, 2.4vw, 1.6rem) !important;
+  }
+
+  /* The calligraphy is wider than the track it used to be given. */
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-arabic {
+    width: auto !important;
+    min-width: 0 !important;
+    padding-inline: 0.2rem;
+  }
+
+  /* Title, then the transliterated name, then "Mecquoise · 11 versets". */
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-meta {
+    display: grid !important;
+    gap: 0.15rem;
+    min-width: 0;
+  }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-meta__top { display: contents !important; }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-title { order: 1; margin: 0 !important; }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-sub {
+    order: 2;
+    margin: 0 !important;
+    color: var(--text-secondary) !important;
+    font-size: 0.86rem !important;
+    font-style: italic;
+  }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-badges { order: 3; margin-top: 0.1rem; }
+
+  /* Two real buttons: one filled, one outlined, both full touch targets. */
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-actions { gap: 0.5rem !important; }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-actions :is(.srh-play-btn, .srh-info-btn) {
+    min-height: 44px !important;
+    border-radius: 999px !important;
+    padding-inline: 1.1rem !important;
+    font-size: 0.86rem !important;
+    font-weight: 700 !important;
+  }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-actions .srh-info-btn {
+    border: 1px solid var(--border) !important;
+    color: var(--text-primary) !important;
+  }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-actions .srh-info-btn:hover,
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-actions .srh-info-btn:focus-visible {
+    border-color: var(--primary) !important;
+    color: var(--primary) !important;
+  }
+}
+
+/* ── Surah header on a phone: the same panel, with a round play button ──── */
+
+@media (max-width: 640px) {
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-mobile-bar {
+    margin: 0.5rem 0.5rem 0.25rem !important;
+    border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border)) !important;
+    border-radius: 18px !important;
+  }
+  html body #root .app-root[data-view="reading"] .quran-display--platform .srh-mobile-bar .srh-play-btn { border-radius: 999px !important; }
+}
+
+/* ── Verse rows ───────────────────────────────────────────────────────── */
+
+/* The verse number says "tap me": a chip, in the accent colour. */
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference {
+  min-width: 2.75rem;
+  padding-inline: 0.9rem !important;
+  border: 1px solid color-mix(in srgb, var(--primary) 30%, transparent) !important;
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--primary) 9%, transparent) !important;
+  color: var(--primary) !important;
+  font-weight: 800 !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference:hover,
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference:focus-visible,
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__reference.qc-list-card__reference[aria-expanded="true"] {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 18%, transparent) !important;
+}
+
+/* Listening is the verse's main action; the others stay ghost. */
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.ayah-action--play {
+  border-radius: 999px !important;
+  background: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+  color: var(--primary) !important;
+}
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button.ayah-action--play:hover {
+  background: color-mix(in srgb, var(--primary) 20%, transparent) !important;
+}
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot .ayah-actions button {
+  color: var(--text-secondary) !important;
+}
+
+/* Air between the action row and the text it belongs to. */
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__foot { margin-bottom: 0.35rem !important; }
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-text-ar { padding-block: 0.15rem 0.35rem; }
+
+/* Transliteration: a quiet italic line. */
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card .qc-ayah-transliteration {
+  color: var(--text-muted) !important;
+  font-style: italic;
+  letter-spacing: 0.01em;
+}
+
+/* Translation: hung from an accent rule so it reads as the answer to the Arabic. */
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot:not(.is-loading) {
+  margin-top: 0.4rem !important;
+  padding-inline-start: 0.9rem;
+  border-inline-start: 2px solid color-mix(in srgb, var(--primary) 45%, transparent);
+}
+html body #root .app-root[data-view="reading"] .quran-display--platform .qc-list-card__translation-slot:not(.is-loading) p {
+  color: color-mix(in srgb, var(--text-primary) 88%, var(--text-secondary)) !important;
+}

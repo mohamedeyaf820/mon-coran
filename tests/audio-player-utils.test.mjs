@@ -61,7 +61,7 @@ test("audio player exposes only compact and expanded positions", () => {
 });
 
 test("audio defaults stay in settings while advanced controls adapt inside the player", () => {
-  const settings = source("src/components/SettingsModal.jsx");
+  const settings = source("src/components/settings/AudioTab.jsx");
   const playback = source("src/components/audioPlayer/PlaybackSettingsPanel.jsx");
   const storage = source("src/services/storageService.js");
   assert.match(settings, /settings-audio-speed/);

@@ -40,7 +40,8 @@ test("WCAG: action sheets expose dialog semantics and focus management", () => {
 
 test("WCAG: forms, tabs and audio status keep programmatic names", () => {
   const header = source("src/components/Header.jsx");
-  const settings = source("src/components/SettingsModal.jsx");
+  // Each settings tab owns its form controls.
+  const settings = source("src/components/settings/ReadingTab.jsx") + source("src/components/settings/AudioTab.jsx");
   // The segmented/tab-row primitives moved to the shared controls module when
   // the prayer panel joined the settings tabs; the contract follows the code.
   const controls = source("src/components/settings/controls.jsx");

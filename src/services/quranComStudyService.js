@@ -14,9 +14,9 @@ const STUDY_FETCH_TIMEOUT = 8000;
 const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
-  // Vendored, offline French commentary (see frenchTafsirService.js). `local`
-  // marks it as served from public/data rather than the Quran.com resource index,
-  // so getVerseTafsir routes it away from the HTTP path and the per-verse cache.
+  // French commentary served by frenchTafsirService.js from the QuranEnc.com API.
+  // `local` marks it as not a Quran.com resource, so getVerseTafsir routes it away
+  // from the Quran.com HTTP path and the per-verse localStorage cache.
   [FRENCH_TAFSIR_EDITION_ID]: {
     id: 259,
     name: "Al-Mukhtasar (French)",
@@ -87,11 +87,10 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
-  // The French reader's default is `fr-mokhtasar` (declared at the top): a
-  // vendored, offline Al-Mukhtasar commentary. It is not a Quran.com resource —
+  // The French reader's default is `fr-mokhtasar` (declared at the top): the
+  // Al-Mukhtasar commentary from QuranEnc.com. It is not a Quran.com resource —
   // Quran.com's index has no French tafsir at all, and the id 816 this app once
-  // advertised answers 503 on every verse — so it is served from local assets
-  // instead of a dead HTTP request.
+  // advertised answers 503 on every verse — so it has its own service.
 };
 
 function normalizeText(text) {
@@ -306,7 +305,7 @@ export async function getVerseTafsir({
   for (const key of candidates) {
     const resource = TAFSIR_RESOURCES[key];
     if (!resource) continue;
-    // The vendored French edition caches itself in IndexedDB; the Quran.com
+    // The French edition caches whole surahs in IndexedDB; the Quran.com
     // per-verse localStorage cache must not shadow or duplicate it.
     if (!resource.local) {
       const cachedText = readCachedTafsir(resource.id, verseKey);

@@ -628,6 +628,43 @@ export default function App() {
     };
   }, [blockingModalOpen, immersiveActive, sidebarOpen, compactReadingChrome]);
 
+  // Home, prayers, duas and the information pages keep their header, but the
+  // bottom bar follows the same gesture as the reader: it steps away while the
+  // page is scrolled down, and a tap on the page (or the keyboard) brings it
+  // back. Only phones and tablets have the bar; at the top of a page it stays.
+  const [navAway, setNavAway] = useState(false);
+  const navViewKey = `${showHome}|${showDuas}|${showPrayers}|${legalPage}|${routeNotFound}|${state.homeSection}`;
+  useEffect(() => {
+    setNavAway(false);
+    if (immersiveActive || !compactReadingChrome || blockingModalOpen) return undefined;
+    const scrollContainer = mainScrollRef.current;
+    if (!scrollContainer) return undefined;
+    let lastTop = scrollContainer.scrollTop;
+    let downTravel = 0;
+    const show = () => { downTravel = 0; setNavAway(false); };
+    const handleScroll = () => {
+      const top = scrollContainer.scrollTop;
+      const delta = top - lastTop;
+      lastTop = top;
+      if (top < 40) { show(); return; }
+      downTravel = delta > 0 ? downTravel + delta : 0;
+      if (downTravel > 48) setNavAway(true);
+    };
+    // A tap that ends a text selection is not a request for the bar.
+    const handleTap = () => { if (!window.getSelection()?.toString()) show(); };
+    const handleKey = (event) => {
+      if (["Tab", "Escape", "Home", "PageUp", "ArrowUp"].includes(event.key)) show();
+    };
+    scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    scrollContainer.addEventListener("click", handleTap);
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      scrollContainer.removeEventListener("scroll", handleScroll);
+      scrollContainer.removeEventListener("click", handleTap);
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [navViewKey, immersiveActive, compactReadingChrome, blockingModalOpen]);
+
   // A new reading target (surah, page, juz, mode) starts at the top: the
   // position remembered for the immersive chrome belongs to the previous
   // content and must not be restored over the new one.
@@ -936,7 +973,7 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${navAway ? "nav-away" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-dir={lang === "ar" ? "rtl" : "ltr"}
@@ -1110,7 +1147,7 @@ export default function App() {
         )}
 
         <ErrorBoundary silent name="mobile-navigation">
-          <Suspense fallback={null}><MobileNavigation hidden={compactReadingChrome && immersiveHidden} /></Suspense>
+          <Suspense fallback={null}><MobileNavigation hidden={compactReadingChrome && (immersiveHidden || navAway)} /></Suspense>
         </ErrorBoundary>
 
         {/* Reader only: Home, Duas, Prayers and the legal pages have no free top
