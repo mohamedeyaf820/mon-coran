@@ -36,7 +36,7 @@ for (const width of [320, 390, 768, 1280]) {
 test("privacy lays out what is stored and opens the data settings", async ({ page }) => {
   await open(page, "/privacy");
   await expect(page.locator(".legal-page__glance li")).toHaveCount(3);
-  await expect(page.locator(".legal-page__datamap tbody tr")).toHaveCount(5);
+  await expect(page.locator(".legal-page__datamap tbody tr")).toHaveCount(6);
   await expect(page.locator(".legal-page__datamap")).toContainText("Cache Storage");
   // Location is disclosed: where it goes and that it is only asked on request.
   await expect(page.locator("#privacy-3")).toContainText("Aladhan");
@@ -76,7 +76,7 @@ test("the contents list jumps to a section on a wide screen and is absent on a p
 test("Arabic information pages read right to left without overflow", async ({ page }) => {
   await open(page, "/privacy", { lang: "ar" });
   await expect(page.locator(".legal-page")).toBeVisible({ timeout: 30_000 });
-  await expect(page.locator(".legal-page__datamap tbody tr")).toHaveCount(5, { timeout: 15_000 });
+  await expect(page.locator(".legal-page__datamap tbody tr")).toHaveCount(6, { timeout: 15_000 });
   expect(await page.locator(".app-root").getAttribute("data-dir")).toBe("rtl");
   expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
 });

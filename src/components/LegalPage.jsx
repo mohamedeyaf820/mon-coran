@@ -38,7 +38,7 @@ const HIGHLIGHT_ICONS = {
   sources: [Database, RefreshCw, FileCheck2],
 };
 // Register order: the text of the Quran first, then what accompanies it.
-const CATEGORY_ORDER = ["text", "api", "translation", "transliteration", "tafsir", "audio", "font", "image", "annotation"];
+const CATEGORY_ORDER = ["text", "api", "translation", "transliteration", "tafsir", "duas", "audio", "font", "image", "annotation"];
 
 const REPORT_COPY = {
   fr: {
@@ -104,11 +104,11 @@ const COPY = {
       ],
       sections: [
         ["Notre intention", "Rassembler dans une interface calme les fonctions essentielles à une lecture régulière : textes Hafs et Warsh, traductions, récitations, Tajwid, favoris et notes."],
-        ["Dans l’application", "Lecture en page Mushaf ou en flux continu, deux riwayas, traductions, récitations verset par verset, recherche, favoris, notes, listes de lecture et outils de mémorisation."],
+        ["Dans l’application", "Lecture en page Mushaf ou en flux continu, deux riwayas (Hafs et Warsh), traductions, tafsir, récitations verset par verset avec téléchargement hors connexion, tajwid en couleurs, recherche, favoris, notes, listes de lecture, outils de mémorisation, horaires de prière avec adhan et invocations tirées de Hisn al-Muslim."],
         ["Nos principes", "Respect du texte, clarté des sources, confidentialité locale, accessibilité et amélioration continue. Les fonctions pédagogiques complètent la lecture ; elles ne remplacent pas un enseignant qualifié."],
         ["Hors ligne", "MushafPlus s’installe comme application web et continue de fonctionner hors ligne une fois les textes et récitations mis en cache sur l’appareil."],
         ["Responsable du projet", `${siteConfig.projectOwner} dirige le projet ${siteConfig.brandName}. Le code, l’historique des changements et les signalements sont accessibles depuis le dépôt public.`],
-        ["Corrections et version", `Version ${siteConfig.version}, mise à jour le ${siteConfig.lastUpdated}. Toute erreur signalée est vérifiée, documentée puis intégrée dans une version ultérieure.`],
+        ["Corrections et version", "Version {version}, mise à jour le {date}. Toute erreur signalée est vérifiée, documentée puis intégrée dans une version ultérieure."],
       ],
     },
     privacy: {
@@ -126,6 +126,7 @@ const COPY = {
         columns: ["Donnée", "Emplacement", "Ce que vous pouvez faire"],
         rows: [
           ["Réglages et position de lecture", "localStorage", "Exporter, protéger, tout supprimer"],
+          ["Journal d’erreurs et mesures de performance", "localStorage", "Tout supprimer"],
           ["Favoris, notes et listes d’écoute", "IndexedDB", "Exporter en JSON, tout supprimer"],
           ["Textes et traductions déjà lus", "IndexedDB (cache)", "Vider le cache"],
           ["Récitations téléchargées", "Cache Storage", "Supprimer les téléchargements"],
@@ -134,9 +135,9 @@ const COPY = {
         manage: "Gérer mes données",
       },
       sections: [
-        ["Ce qui est conservé", "Préférences, dernière position, favoris et notes sont enregistrés dans localStorage ou IndexedDB. Les récitations téléchargées sont conservées dans le stockage du navigateur. Une protection locale par phrase secrète peut être activée."],
+        ["Ce qui est conservé", "Préférences, dernière position, favoris et notes sont enregistrés dans localStorage ou IndexedDB. Les récitations téléchargées sont conservées dans le stockage du navigateur. Un journal local des erreurs et des mesures de performance reste lui aussi sur l’appareil et n’est jamais envoyé. Une protection locale par phrase secrète peut être activée."],
         ["Aucun compte, aucun traceur", "MushafPlus n’utilise aucun service de mesure d’audience, régie publicitaire ou traceur tiers, et n’envoie aucune statistique d’usage vers un serveur."],
-        ["Services externes", "Le texte, les traductions, les tafsirs et les récitations peuvent provenir d’API ou de CDN tiers. Ces fournisseurs reçoivent les informations réseau indispensables à une requête web, notamment l’adresse IP. Pour les horaires de prière, les coordonnées choisies (votre position ou une ville), arrondies à environ 10 m, sont envoyées au service Aladhan."],
+        ["Services externes", "Le texte, les traductions, les tafsirs, les récitations et les horaires de prière proviennent de services tiers nommés dans Sources (Quran.com, AlQuran Cloud, QuranEnc, EveryAyah, Quranpedia, MP3Quran, Aladhan…). Ils reçoivent les informations réseau indispensables à une requête web, notamment l’adresse IP. Pour les horaires de prière, les coordonnées choisies (votre position ou une ville), arrondies à environ 10 m, sont envoyées au service Aladhan. Un signalement d’erreur n’est transmis à GitHub que lorsque vous le publiez vous-même."],
         ["Autorisations", "Le microphone n’est demandé qu’au lancement volontaire de la recherche vocale, et aucun enregistrement vocal n’est conservé. La position n’est demandée que lorsque vous la demandez dans l’onglet Prière des réglages. Les notifications ne s’activent que sur votre demande."],
         ["Vos données, vos contrôles", "Dans les réglages, onglet Données, vous pouvez exporter favoris, notes, listes et réglages au format JSON, ou effacer définitivement toutes les données locales. Aucune synchronisation cloud automatique n’est effectuée."],
         ["Durée de conservation", "Les données restent sur l’appareil jusqu’à ce que vous les supprimiez ou vidiez le stockage du navigateur. Le cache hors ligne se renouvelle à chaque mise à jour."],
@@ -153,10 +154,10 @@ const COPY = {
       ],
       sections: [
         ["Éditeur et contact", `${siteConfig.brandName} est un projet indépendant porté par ${siteConfig.projectOwner}. Les demandes, corrections et signalements sont reçus publiquement via GitHub Issues.`],
-        ["Hébergement et disponibilité", `L’adresse canonique configurée est ${new URL(siteConfig.siteUrl).hostname}. Les versions de production et d’aperçu sont distribuées sur une infrastructure Vercel ; l’hébergeur traite les journaux techniques nécessaires à la sécurité et à la disponibilité du service.`],
+        ["Hébergement et disponibilité", `L’adresse canonique configurée est ${new URL(siteConfig.siteUrl).hostname}. L’application est déployée sur Vercel ; des versions d’aperçu destinées au développement sont aussi publiées sur Netlify. Les hébergeurs traitent les journaux techniques nécessaires à la sécurité et à la disponibilité du service.`],
         ["Conditions d’utilisation", "L’application est mise à disposition gratuitement pour un usage personnel de lecture et d’étude. Vous vous engagez à respecter les droits des fournisseurs de contenus et à ne réutiliser aucun texte, traduction ou récitation en violation de leur licence."],
         ["Responsabilité", "L’application fournit des outils de lecture et d’étude. Elle ne remplace pas une édition certifiée du Mushaf, l’accompagnement d’un enseignant qualifié ni un avis religieux, médical ou juridique."],
-        ["Propriété intellectuelle", "Les textes, traductions, polices, photographies et récitations tiers restent soumis aux droits de leurs auteurs et fournisseurs. MushafPlus ne revendique aucun droit sur ces contenus."],
+        ["Propriété intellectuelle", "Les textes, traductions, polices, photographies et récitations tiers restent soumis aux droits de leurs auteurs et fournisseurs. MushafPlus ne revendique aucun droit sur ces contenus. Le code source est consultable sur GitHub ; le dépôt ne déclare pas de licence, consultez-le avant toute réutilisation."],
         ["Garantie et évolution", "Le service est fourni « en l’état », à partir de sources tierces pouvant évoluer. Cette page peut être mise à jour ; sa version suit celle de l’application."],
       ],
     },
@@ -170,9 +171,9 @@ const COPY = {
         ["Conditions affichées", "Les droits et conditions connus figurent pour chaque source."],
       ],
       sections: [
-        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte. Le tafsir français Al-Mukhtasar (Centre Tafsir pour les études coraniques) est chargé depuis QuranEnc.com : la sourate lue y est demandée, puis conservée sur l’appareil ; les autres tafsirs viennent de Quran.com."],
-        ["Traductions", "Les traductions française (Montada 2017) et anglaise (Pickthall 1930) sont rattachées à leur édition et présentées comme des sens approximatifs, non comme une exégèse."],
-        ["Récitations", "EveryAyah, le CDN audio de Quran.com et QuranPedia (Warsh) fournissent les récitations verset par verset, selon le récitateur et la riwaya. QuranicAudio sert de miroir de secours."],
+        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte. Le texte Warsh vient de jeux de données publics sur GitHub, épinglés à une version précise et vérifiés avant usage. Le tafsir français Al-Mukhtasar (Centre Tafsir pour les études coraniques) est chargé depuis QuranEnc.com : la sourate lue y est demandée, puis conservée sur l’appareil ; les autres tafsirs viennent de Quran.com."],
+        ["Traductions", "En lecture Hafs, le français est celui de la Montada Islamic Foundation et l’anglais celui de Saheeh International (via Quran.com). En lecture Warsh, le français est celui de la Montada (2017) et l’anglais celui de Pickthall (1930). L’espagnol (Cortes), l’allemand (Abu Rida), le turc (Diyanet) et l’ourdou (Junagarhi) viennent d’AlQuran Cloud. Chaque traduction est rattachée à son édition et présentée comme un sens approximatif, non comme une exégèse."],
+        ["Récitations", "EveryAyah, le CDN audio de Quran.com et QuranPedia (Warsh) fournissent les récitations verset par verset, selon le récitateur et la riwaya ; MP3Quran fournit quelques récitations de sourates entières. QuranicAudio sert de miroir de secours."],
         ["Warsh", "Le texte Unicode Warsh et les catalogues audio sont traités séparément de Hafs. Les profils indiquent la riwaya et la provenance afin d’éviter un mélange de récitations."],
         ["Polices et portraits", "Les polices coraniques et portraits restent attribués à leurs fournisseurs. Un avatar neutre est affiché lorsque la photographie n’est pas disponible ou vérifiée."],
         ["Vérification et signalement", "Chaque source est testée et documentée, et une bascule automatique vers un miroir compatible opère en cas d’indisponibilité. Une erreur d’attribution peut être signalée, vérifiée puis corrigée."],
@@ -222,6 +223,7 @@ const CHROME_COPY = {
       hosting: "Hébergement",
       address: "Adresse",
       release: "Version",
+      hostingValue: "Vercel (production), Netlify (aperçus)",
     },
     categories: {
       text: "Texte coranique",
@@ -233,6 +235,7 @@ const CHROME_COPY = {
       font: "Polices",
       image: "Images et portraits",
       annotation: "Annotations de tajwid",
+      duas: "Invocations",
     },
   },
   en: {
@@ -259,6 +262,7 @@ const CHROME_COPY = {
       hosting: "Hosting",
       address: "Address",
       release: "Version",
+      hostingValue: "Vercel (production), Netlify (previews)",
     },
     categories: {
       text: "Quran text",
@@ -270,6 +274,7 @@ const CHROME_COPY = {
       font: "Fonts",
       image: "Images and portraits",
       annotation: "Tajweed annotations",
+      duas: "Supplications",
     },
   },
   ar: {
@@ -296,6 +301,7 @@ const CHROME_COPY = {
       hosting: "الاستضافة",
       address: "العنوان",
       release: "الإصدار",
+      hostingValue: "Vercel (الإنتاج)، Netlify (المعاينات)",
     },
     categories: {
       text: "النص القرآني",
@@ -307,6 +313,7 @@ const CHROME_COPY = {
       font: "الخطوط",
       image: "الصور",
       annotation: "علامات التجويد",
+      duas: "الأدعية",
     },
   },
 };
@@ -323,6 +330,9 @@ function hasCompleteLocaleCopy(localeCopy) {
       ),
   );
 }
+
+// Version and date are filled in at render, so no translated copy can go stale.
+const fillRelease = (text, lang) => String(text).replace("{version}", siteConfig.version).replace("{date}", formatReleaseDate(lang));
 
 function formatReleaseDate(lang) {
   const date = new Date(siteConfig.lastUpdated);
@@ -376,7 +386,7 @@ function Facts({ labels, lang }) {
   const rows = [
     [labels.publisher, siteConfig.projectOwner],
     [labels.contact, <a key="contact" href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer">GitHub Issues</a>],
-    [labels.hosting, "Vercel"],
+    [labels.hosting, labels.hostingValue],
     [labels.address, <bdi key="host" dir="ltr">{host}</bdi>],
     [labels.release, <bdi key="release" dir="ltr">v{siteConfig.version} · {formatReleaseDate(lang)}</bdi>],
   ];
@@ -696,11 +706,11 @@ export default function LegalPage({ page = "privacy" }) {
 
           {content.sections.map(([title, body], index) => (
             <section key={title} id={`${activePage}-${index + 1}`} className="legal-page__section" aria-labelledby={`${activePage}-${index + 1}-title`}>
-              <span className="legal-page__section-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-              <div>
+              <header className="legal-page__section-head">
+                <span className="legal-page__section-index" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                 <h2 id={`${activePage}-${index + 1}-title`}>{title}</h2>
-                <p>{body}</p>
-              </div>
+              </header>
+              <p>{fillRelease(body, lang)}</p>
             </section>
           ))}
 
