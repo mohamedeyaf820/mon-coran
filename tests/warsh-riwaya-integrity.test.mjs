@@ -351,7 +351,7 @@ test("Quran.com stripping keeps presentation-form ligatures as content", async (
   globalThis.fetch = async () => ({
     ok: true,
     status: 200,
-    json: async () => ({
+    text: async () => JSON.stringify({
       verse: {
         id: 6236,
         chapter_id: 112,
