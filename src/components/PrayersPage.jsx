@@ -30,6 +30,7 @@ export default function PrayersPage() {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const [now, setNow] = useState(() => new Date());
   const [view, setView] = useState("day");
+  const panelRendered = Boolean(state.prayerLocation) && (view === "day" || Boolean(state.prayerTrackingEnabled));
   const [log, setLog] = useState({});
   const prayer = usePrayerTimes({
     enabled: Boolean(state.prayerLocation),
@@ -150,6 +151,8 @@ export default function PrayersPage() {
         </button>
       </section>
 
+      {/* Only the selected tab owns a panel, and only once the page has what it
+          needs to draw one: a reference to an absent id is invalid ARIA. */}
       <div className="prayers-view-switch" role="tablist" aria-label={t("prayers.switchAria", lang)}>
         {[
           { id: "day", icon: Clock },
@@ -162,7 +165,7 @@ export default function PrayersPage() {
             type="button"
             role="tab"
             aria-selected={view === id}
-            aria-controls={`prayers-panel-${id}`}
+            aria-controls={view === id && panelRendered ? `prayers-panel-${id}` : undefined}
             tabIndex={view === id ? 0 : -1}
             className={`prayers-view-btn${view === id ? " is-active" : ""}`}
             onClick={() => setView(id)}

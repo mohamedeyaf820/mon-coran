@@ -541,6 +541,9 @@
     --icon-muted: var(--theme-text-muted);
     --primary: var(--theme-primary);
     --primary-rgb: var(--theme-primary-rgb);
+    /* The brand colour used as small TEXT on a tinted surface. Equal to --primary
+       except on the dark theme, where the fill green is 4.1:1 on the card. */
+    --primary-ink: var(--theme-primary-ink, var(--theme-primary));
     /* Ink that sits on a --primary fill. Several components referenced these
        names but no theme ever defined them, so the CSS `var(--primary-fg, #fff)`
        fallback silently overrode every theme's own choice (dark ink on the
@@ -761,6 +764,7 @@
     --theme-text-muted: #9ca69e;
     --theme-text-inverse: #07100c;
     --theme-primary: #2f9f6b;
+    --theme-primary-ink: #43bd86;
     --theme-primary-rgb: 47, 159, 107;
     --primary-dark: #247c55;
     --primary-light: rgba(47, 159, 107, 0.14);

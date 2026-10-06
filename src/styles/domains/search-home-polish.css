@@ -342,7 +342,7 @@
     border-radius: 999px;
     padding: 0.06rem 0.34rem;
     background: rgba(var(--theme-primary-rgb, 16, 185, 129), 0.14);
-    color: var(--theme-primary, #10b981);
+    color: var(--primary-ink, var(--theme-primary, #10b981));
     font-size: 0.62rem;
     font-weight: 800;
     letter-spacing: 0.02em;

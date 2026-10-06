@@ -77,7 +77,7 @@ export default function Footer() {
   const verseAttribution = t("footer.verseAttribution", lang);
 
   return (
-    <footer className="mp-footer-v2" role="contentinfo">
+    <footer className="mp-footer-v2">
       <div className="mp-footer-v2__shell">
         <div
           className="mp-footer-v2__verse"

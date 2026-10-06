@@ -443,6 +443,19 @@ body > .audio-player-modal .audio-reciter-options__search .audio-reciter-options
   display: none !important;
 }
 
+/* Pointer devices: the rail keeps its 0.34rem paint but its box grows to the
+   24px minimum of WCAG 2.5.8. The transparent border is outside the background
+   (background-clip) and cancelled by the negative margin, so nothing moves.
+   The compact and phone states already extend their hit area elsewhere. */
+@media (min-width: 1025px) {
+  .app-root .audio-player-simple .simple-player__progress {
+    box-sizing: content-box;
+    border-block: 11px solid transparent;
+    margin-block: -11px;
+    background-clip: padding-box !important;
+  }
+}
+
 .app-root .audio-player-simple .simple-player__progress-track {
   fill: var(--simple-player-line) !important;
   opacity: .62;

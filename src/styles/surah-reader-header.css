@@ -231,7 +231,7 @@
     border: 1px solid color-mix(in srgb, var(--primary) 82%, #fff 18%);
     background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 88%, #fff 12%), var(--primary));
     box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 26%, transparent);
-    color: #fff;
+    color: var(--primary-fg, #fff);
 }
 
 .srh-play-btn:hover:not(:disabled) {

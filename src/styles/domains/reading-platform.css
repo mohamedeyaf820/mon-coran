@@ -3043,7 +3043,7 @@ html body .app-root .native-ayah-marker::after {
     gap: 0.45rem;
 }
 
-.quran-display--platform .reader-context-card h2 {
+.quran-display--platform .reader-context-card h1 {
     margin: 0;
     color: var(--text-primary);
     font-size: 0.9rem;
@@ -3051,13 +3051,13 @@ html body .app-root .native-ayah-marker::after {
     line-height: 1.25;
 }
 
-.quran-display--platform .reader-context-card h2 strong {
+.quran-display--platform .reader-context-card h1 strong {
     color: var(--primary);
     font-size: 1.04rem;
     font-weight: 820;
 }
 
-.quran-display--platform .reader-context-card h2 span,
+.quran-display--platform .reader-context-card h1 span,
 .quran-display--platform .reader-context-card p {
     color: var(--text-muted);
 }
@@ -3202,11 +3202,11 @@ html body .app-root .native-ayah-marker::after {
         font-size: 0.56rem;
     }
 
-    .quran-display--platform .reader-context-card h2 {
+    .quran-display--platform .reader-context-card h1 {
         font-size: 0.8rem;
     }
 
-    .quran-display--platform .reader-context-card h2 strong {
+    .quran-display--platform .reader-context-card h1 strong {
         font-size: 0.94rem;
     }
 
@@ -3410,14 +3410,14 @@ html body .app-root .native-ayah-marker::after {
     gap: 0.44rem;
 }
 
-.quran-display--platform .reader-control-deck .reader-context-card h2 {
+.quran-display--platform .reader-control-deck .reader-context-card h1 {
     margin: 0;
     font-size: 0.8rem;
     font-weight: 600;
     white-space: nowrap;
 }
 
-.quran-display--platform .reader-control-deck .reader-context-card h2 strong {
+.quran-display--platform .reader-control-deck .reader-context-card h1 strong {
     font-size: 0.95rem;
     font-weight: 700;
     color: var(--primary);

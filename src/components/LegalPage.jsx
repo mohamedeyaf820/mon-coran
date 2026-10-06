@@ -461,9 +461,9 @@ export default function LegalPage({ page = "privacy" }) {
       <footer className="legal-page__actions">
         <div>
           <Sparkles size={17} aria-hidden="true" />
-          <p>{lang === "ar" ? "هل وجدت خطأ أو نقصاً؟ ساعدنا على تحسين المشروع." : lang === "en" ? "Found an error or missing information? Help improve the project." : "Une erreur ou une information manque ? Aidez-nous à améliorer le projet."}</p>
+          <p id="legal-actions-title">{lang === "ar" ? "هل وجدت خطأ أو نقصاً؟ ساعدنا على تحسين المشروع." : lang === "en" ? "Found an error or missing information? Help improve the project." : "Une erreur ou une information manque ? Aidez-nous à améliorer le projet."}</p>
         </div>
-        <nav aria-label={locale.eyebrow}>
+        <nav aria-labelledby="legal-actions-title">
           <a href={siteConfig.repositoryUrl} target="_blank" rel="noopener noreferrer"><Github size={16} />{locale.actions.project}</a>
           <a href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer"><Send size={16} />{shell.contact}</a>
           <a

@@ -98,7 +98,7 @@
 
 .prayers-view-btn.is-active {
     background: var(--primary);
-    color: #fff;
+    color: var(--primary-fg, #fff);
 }
 
 /* ── Empty states ─────────────────────────────────────────────────────── */
@@ -137,7 +137,7 @@
     border-radius: 0.8rem;
     border: none;
     background: var(--primary);
-    color: #fff;
+    color: var(--primary-fg, #fff);
     font-size: 0.85rem;
     cursor: pointer;
 }

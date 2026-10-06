@@ -149,7 +149,7 @@ export default function ReadingToolbar({
             className={cn(
               "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               mushafIsOn
-                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary-ink,var(--primary))] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
             onClick={setMushafLayout}
@@ -164,7 +164,7 @@ export default function ReadingToolbar({
             className={cn(
               "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               !mushafIsOn
-                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary-ink,var(--primary))] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
             onClick={setListLayout}
@@ -250,6 +250,7 @@ export default function ReadingToolbar({
             onClick={() => set({ readerTypographyOpen: !showTypography })}
             aria-expanded={showTypography}
             aria-controls="reader-toolbar-typography-panel"
+            aria-label={labels.text}
           >
             <SlidersHorizontal size={13} aria-hidden="true" />
             <span>{labels.text}</span>
