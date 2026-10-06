@@ -69,7 +69,9 @@ async function main() {
     console.warn("[perf-audit] Warning: CSS bundle is still above 500 kB.");
   }
 
-  const probes = await Promise.all([
+  // The probes reach four third-party hosts and never decide the exit code. They
+  // used to run in every deployment build; they are now opt-in (PERF_PROBES=1).
+  const probes = process.env.PERF_PROBES !== "1" ? [] : await Promise.all([
     probe("https://api.alquran.cloud/v1/meta", "API metadata"),
     probe("https://audio.qurancdn.com/Alafasy/mp3/001001.mp3", "Quran.com audio CDN", {
       method: "HEAD",
@@ -85,6 +87,7 @@ async function main() {
   ]);
 
   console.log("\n[perf-audit] Network probes");
+  if (!probes.length) console.log("- skipped (set PERF_PROBES=1 to run them)");
   for (const result of probes) {
     if (result.elapsedMs == null) {
       console.log(`- ${result.label}: ${result.status} (${result.error})`);

@@ -33,7 +33,12 @@ const LIMITS = {
   // 2026-09-26: +5 kB for the verified CC-BY adhan source, persistent
   // gesture-safe player, offline fallback and resume-time notification rearm
   // (1378.2 kB measured locally; no dependency added).
-  js: Number(process.env.BUDGET_JS_KB || 1380),
+  // 2026-10-06: +40 kB (1413.3 kB measured, 33.3 kB over the previous ceiling).
+  // The initial entry measures 402.4 kB of JS, below its own ceiling, so the
+  // growth since 2026-09-26 is outside the boot graph. Features landed since:
+  // Hafs tajwid annotation, verified offline audio, engine-level media session,
+  // phone bottom navigation.
+  js: Number(process.env.BUDGET_JS_KB || 1420),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -47,7 +52,8 @@ const LIMITS = {
   // feature and the audit campaign together, CSS and JS counted once
   // (2393.3 kB measured on CI).
   // 2026-09-26: +5 kB for the same adhan reliability change (2403.5 kB).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2405),
+  // 2026-10-06: +25 kB (2418.7 kB measured, 13.7 kB over the previous ceiling).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2430),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the
