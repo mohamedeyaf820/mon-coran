@@ -38,7 +38,10 @@ const LIMITS = {
   // growth since 2026-09-26 is outside the boot graph. Features landed since:
   // Hafs tajwid annotation, verified offline audio, engine-level media session,
   // phone bottom navigation.
-  js: Number(process.env.BUDGET_JS_KB || 1420),
+  // 2026-10-06 (later): 1419.3 kB measured, +10 kB of headroom. The quota-aware
+  // page cache, the legacy-key lookup, the problem report of the error screen and
+  // the shell boundaries; the initial entry measures 406.2 kB of JS.
+  js: Number(process.env.BUDGET_JS_KB || 1430),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -53,7 +56,8 @@ const LIMITS = {
   // (2393.3 kB measured on CI).
   // 2026-09-26: +5 kB for the same adhan reliability change (2403.5 kB).
   // 2026-10-06: +25 kB (2418.7 kB measured, 13.7 kB over the previous ceiling).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2430),
+  // 2026-10-06 (later): 2426.5 kB measured (+10 kB of headroom).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2440),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the
