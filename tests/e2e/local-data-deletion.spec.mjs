@@ -43,7 +43,7 @@ test("privacy control deletes settings, notes, bookmarks and caches", async ({ p
   });
 
   await openSettings(page);
-  await page.getByRole("tab", { name: "Confidentialité" }).click();
+  await page.getByRole("tab", { name: "Données", exact: true }).click();
   await page.getByTestId("delete-local-data").click();
   await expect(page.getByText("Supprimer toutes les données ?")).toBeVisible();
   await Promise.all([

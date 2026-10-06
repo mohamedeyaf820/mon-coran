@@ -1,0 +1,155 @@
+/* Settings panels: the pieces added on top of settings-enhanced.css.
+   Prefix `sp-`; colours and radii stay on the shared tokens. */
+
+/* ── Audio: the reciter in use ─────────────────────────────────────── */
+.sp-current {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--primary) 7%, var(--bg-card));
+}
+.sp-current .settings-reciter-avatar { flex: none; width: 3rem; height: 3rem; }
+.sp-current__text { display: grid; min-width: 0; gap: 0.1rem; }
+.sp-current__text small {
+  color: var(--text-muted);
+  font-size: max(0.68rem, 11px);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.sp-current__text strong { overflow: hidden; font-size: 1rem; text-overflow: ellipsis; white-space: nowrap; }
+.sp-current__text span { color: var(--text-secondary); font-size: 0.8rem; }
+
+/* ── Audio: where downloads live ───────────────────────────────────── */
+.sp-pointer {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.6rem 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px dashed color-mix(in srgb, var(--border) 70%, var(--primary) 30%);
+  border-radius: 14px;
+  color: var(--text-secondary);
+}
+.sp-pointer svg { color: var(--primary); }
+.sp-pointer p { margin: 0; font-size: 0.82rem; line-height: 1.5; }
+.sp-pointer button { grid-column: 1 / -1; justify-self: start; }
+
+/* ── Display: live preview of the reading text ─────────────────────── */
+.sp-preview {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: clamp(0.85rem, 3vw, 1.25rem);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-primary);
+  text-align: center;
+}
+.sp-preview__arabic {
+  margin: 0;
+  color: var(--text-primary);
+  line-height: 1.95;
+  overflow-wrap: anywhere;
+  text-wrap: balance;
+}
+.sp-preview__translation {
+  margin: 0;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* A short explanatory line under a control. */
+/* The drawer styles any paragraph directly under a "section" element as a
+   heading (uppercase, bold); these two are plain notes, so they say so. */
+.sp-hint,
+.settings-drawer .settings-section__body > p.sp-hint,
+.settings-drawer .settings-section__body > p.sp-version {
+  margin: 0;
+  color: var(--text-muted) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0 !important;
+  line-height: 1.45;
+  text-transform: none !important;
+}
+
+/* ── General: links to the information pages ───────────────────────── */
+.sp-links {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+.sp-links .settings-action-button { justify-content: flex-start; gap: 0.5rem; }
+
+/* ── Data: downloads, with the space they take ─────────────────────── */
+.sp-storage {
+  display: grid;
+  gap: 0.5rem;
+}
+.sp-storage__meter {
+  height: 0.5rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+}
+.sp-storage__meter > span {
+  display: block;
+  height: 100%;
+  min-width: 2px;
+  border-radius: inherit;
+  background: var(--primary);
+}
+.sp-storage__legend { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.25rem 1rem; margin: 0; color: var(--text-secondary); font-size: 0.8rem; }
+.sp-status {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0;
+  padding: 0.25rem 0.65rem;
+  border-radius: 999px;
+  background: var(--bg-secondary);
+  color: var(--text-secondary);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.sp-status::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--primary);
+  content: "";
+}
+.sp-status[data-online="false"]::before { background: var(--text-muted); }
+
+.sp-download {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 0.75rem 0.85rem;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--bg-primary);
+}
+.sp-download__main { display: grid; min-width: 0; gap: 0.15rem; }
+.sp-download__main strong { font-size: 0.92rem; }
+.sp-download__main span { color: var(--text-secondary); font-size: 0.8rem; line-height: 1.4; }
+.sp-download__state { color: var(--primary) !important; font-weight: 700; }
+.sp-download__state[data-state="partial"],
+.sp-download__state[data-state="unverified"] { color: var(--text-muted) !important; }
+.sp-download .sp-download__remove { min-width: 44px; padding-inline: 0.75rem; }
+.sp-download .sp-download__remove span { display: none; }
+
+@media (min-width: 480px) {
+  .sp-download .sp-download__remove span { display: inline; }
+}
+
+@media (max-width: 420px) {
+  .sp-links { grid-template-columns: 1fr; }
+}

@@ -25,8 +25,9 @@ for (const lang of ["fr", "en", "ar"]) {
       }));
     }, { clip, cacheName });
     await openQuickMenuItem(page, "settings");
-    const title = { fr: "Téléchargements / Hors connexion", en: "Downloads / Offline", ar: "التنزيلات / دون اتصال" }[lang];
-    await page.getByRole("tab", { name: title }).click();
+    // Downloads live in the Data tab, next to storage, export and erasure.
+    const tab = { fr: "Données", en: "Data", ar: "البيانات" }[lang];
+    await page.getByRole("tab", { name: tab, exact: true }).click();
     const section = page.getByTestId("offline-downloads");
     await expect(section).toHaveAttribute("aria-busy", "false");
     await expect(section).toContainText("Muhammad Ayyoub");

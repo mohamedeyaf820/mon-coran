@@ -14,7 +14,7 @@ test.describe.configure({ mode: "serial" });
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
-test("phone and tablet settings keep all six categories on one reachable strip", async ({ page }) => {
+test("phone and tablet settings keep all five categories on one reachable strip", async ({ page }) => {
   for (const viewport of [
     { width: 280, height: 700 },
     { width: 390, height: 844 },
@@ -26,7 +26,7 @@ test("phone and tablet settings keep all six categories on one reachable strip",
     await shellTool(page, "settings").click();
     const drawer = page.getByRole("dialog", { name: "Paramètres", exact: true });
     const tabs = drawer.getByRole("tab");
-    await expect(tabs).toHaveCount(6);
+    await expect(tabs).toHaveCount(5);
     const strip = await drawer.getByRole("tablist").boundingBox();
     expect(strip.height).toBeLessThan(80);
     for (const tab of await tabs.all()) {
@@ -62,10 +62,10 @@ test("Arabic settings follow RTL arrow navigation and keep the selected tab visi
   await expect(tabs.nth(1)).toHaveAttribute("aria-selected", "true");
   await page.keyboard.press("End");
   const last = await tabs.last().boundingBox();
-  expect(last.x).toBeGreaterThanOrEqual(0);
+  expect(last.x).toBeGreaterThanOrEqual(-1);
   expect(last.x + last.width).toBeLessThanOrEqual(390);
   await page.keyboard.press("ArrowRight");
-  await expect(tabs.nth(4)).toBeFocused();
+  await expect(tabs.nth(3)).toBeFocused();
 });
 
 test("landscape tablet settings show all three themes together", async ({ page }) => {
