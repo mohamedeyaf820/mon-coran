@@ -165,7 +165,7 @@ export default function RowActions({
 
   const handleShare = useCallback(async () => {
     const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
-    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mushafplus.netlify.app";
+    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mon-coran.vercel.app";
     const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&surah=${surah?.n || 1}&play=1`;
     if (typeof navigator !== "undefined" && navigator.share) {
       try { await navigator.share({ url, title: `${contextualLabel(labels.listen)} — MushafPlus` }); return; } catch {}
