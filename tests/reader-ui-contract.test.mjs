@@ -724,7 +724,6 @@ test("tafsir sources are grouped by language with the reading-aware ones first",
     "qiraatBadge",
     "warshHint",
     "shownInFrench",
-    "offlineSourceBadge",
     "frenchAttribution",
     "reportError",
   ]) {

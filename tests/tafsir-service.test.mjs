@@ -98,20 +98,32 @@ test("tafsir: falls back when the selected resource fails", async () => {
   }
 });
 
-test("tafsir: serves the French edition from the vendored, digest-pinned asset", async () => {
-  const restore = mockTafsirFetch(async (url) => {
-    const match = /data\/tafsir-fr-mokhtasar\/([^?]+)\.json/.exec(url);
-    assert.ok(match, `expected a French tafsir asset request, got ${url}`);
-    const file = path.join("public", "data", "tafsir-fr-mokhtasar", `${match[1]}.json`);
-    const bytes = await readFile(file);
-    return {
-      ok: true,
-      async arrayBuffer() {
-        return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength);
-      },
-    };
-  });
+const QURANENC_URL = /^https:\/\/quranenc\.com\/api\/v1\/translation\/sura\/french_mokhtasar\/(\d+)$/;
 
+async function quranEncFixture(surah) {
+  const name = `quranenc-french-mokhtasar-${String(surah).padStart(3, "0")}.json`;
+  return JSON.parse(await readFile(path.join("tests", "fixtures", name), "utf8"));
+}
+
+// Answers the QuranEnc surah endpoint with real captured responses (sura 1 and
+// 114) or with a payload built by `override(surah, payload)`.
+function mockQuranEnc({ override } = {}) {
+  const calls = [];
+  const restore = mockTafsirFetch(async (url) => {
+    const match = QURANENC_URL.exec(url);
+    assert.ok(match, `expected a QuranEnc French tafsir request, got ${url}`);
+    const surah = Number(match[1]);
+    calls.push(surah);
+    const payload = override ? override(surah, await quranEncFixture(surah)) : await quranEncFixture(surah);
+    return { ok: true, async json() { return payload; } };
+  });
+  return { calls, restore };
+}
+
+test("tafsir: serves the French edition from the QuranEnc API and reuses the surah", async () => {
+  const { clearFrenchTafsirCache } = await import("../src/services/frenchTafsirService.js");
+  await clearFrenchTafsirCache();
+  const { calls, restore } = mockQuranEnc();
   try {
     const result = await getVerseTafsir({
       surah: 114,
@@ -123,11 +135,85 @@ test("tafsir: serves the French edition from the vendored, digest-pinned asset",
     assert.equal(result.language, "fr");
     assert.equal(result.note, null, "a French reader on the French source gets no language warning");
     assert.ok(typeof result.text === "string" && result.text.length > 10);
-    assert.ok(!result.text.includes("`"), "vendored text carries no markdown backticks");
+    assert.ok(!result.text.includes("`"), "displayed text carries no markdown backticks");
+
+    // A second verse of the same surah is answered without another request.
+    await getVerseTafsir({ surah: 114, ayah: 2, lang: "fr", tafsirId: FRENCH_TAFSIR_EDITION_ID });
+    assert.deepEqual(calls, [114]);
   } finally {
     restore();
   }
 });
+
+test("tafsir: refuses an incomplete or empty French surah instead of showing half a corpus", async () => {
+  const { clearFrenchTafsirCache, getFrenchTafsirVerse } = await import(
+    "../src/services/frenchTafsirService.js"
+  );
+  await clearFrenchTafsirCache();
+
+  const missingVerse = mockQuranEnc({
+    override: (_surah, payload) => ({ result: payload.result.slice(0, -1) }),
+  });
+  try {
+    await assert.rejects(() => getFrenchTafsirVerse({ surah: 1, ayah: 1 }), /Incomplete French tafsir/);
+  } finally {
+    missingVerse.restore();
+  }
+
+  const emptyVerse = mockQuranEnc({
+    override: (_surah, payload) => ({
+      result: payload.result.map((row, i) => (i === 3 ? { ...row, translation: "  " } : row)),
+    }),
+  });
+  try {
+    await assert.rejects(() => getFrenchTafsirVerse({ surah: 1, ayah: 1 }), /Invalid French tafsir row/);
+  } finally {
+    emptyVerse.restore();
+  }
+});
+
+test("tafsir: a French surah the API cannot deliver falls back to another source", async () => {
+  const { clearFrenchTafsirCache } = await import("../src/services/frenchTafsirService.js");
+  await clearFrenchTafsirCache();
+  const restore = mockTafsirFetch(async (url) => {
+    if (url.includes("quranenc.com")) return { ok: false, status: 503 };
+    return { ok: true, async json() { return { tafsir: { text: "<p>Fallback tafsir</p>" } }; } };
+  });
+  try {
+    const result = await getVerseTafsir({
+      surah: 1,
+      ayah: 1,
+      lang: "fr",
+      tafsirId: FRENCH_TAFSIR_EDITION_ID,
+    });
+    assert.equal(result.tafsirId, "en-kathir");
+    assert.match(result.note, /Aucun commentaire français/);
+  } finally {
+    restore();
+  }
+});
+
+test("tafsir: the French edition is attributed to its publisher and to QuranEnc", async () => {
+  const { getFrenchTafsirAttribution } = await import("../src/services/frenchTafsirService.js");
+  const info = await getFrenchTafsirAttribution();
+  assert.equal(info.source.owner, "quranenc.com");
+  assert.equal(info.source.slug, "french_mokhtasar");
+  assert.ok(info.source.version, "the edition version is recorded");
+  assert.match(info.attribution, /QuranEnc\.com/);
+  assert.match(info.attribution, /Tafsir Center for Quranic Studies/);
+  assert.doesNotMatch(info.attribution, /Awqaf/i);
+});
+
+test("tafsir: the display cleanup removes markdown artifacts and nothing else", async () => {
+  const { toDisplayText } = await import("../src/services/frenchTafsirService.js");
+  assert.equal(
+    toDisplayText("à savoir:\n- `Allâhu, La Divinité.  - `Ar-Raḥmânu, Celui.  \n"),
+    "à savoir:\nAllâhu, La Divinité. - Ar-Raḥmânu, Celui.",
+  );
+  assert.equal(toDisplayText(null), "");
+  assert.equal(toDisplayText("Texte sans artefact."), "Texte sans artefact.");
+});
+
 
 const PREFIX = "mushafplus:tafsir:v2:";
 const MAX = 240;

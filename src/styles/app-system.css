@@ -68,11 +68,11 @@ html body .app-root {
   margin-inline: auto;
 }
 
-.app-root :is(.home-content-zone, .home-hero-shell, .legal-page__hero, .legal-page__tabs, .legal-page__grid, .duas-hero, .duas-library, .recitation-library, .reciter-detail__layout) {
+.app-root :is(.home-content-zone, .home-hero-shell, .duas-hero, .duas-library, .recitation-library, .reciter-detail__layout) {
   min-width: 0;
 }
 
-.app-root :is(.home-hero-shell, .duas-hero, .duas-library, .legal-page__hero, .legal-page__attributions) {
+.app-root :is(.home-hero-shell, .duas-hero, .duas-library) {
   border-radius: var(--mp-radius-lg);
 }
 
@@ -131,7 +131,7 @@ html body .app-root {
 
 @media (hover: hover) and (pointer: fine) {
 
-  .app-root :is(.home-radio-card, .reciter-card, .recitation-row, .legal-page__card, .dua-card, .modal-item-card):hover {
+  .app-root :is(.home-radio-card, .reciter-card, .recitation-row, .dua-card, .modal-item-card):hover {
     transform: translateY(-2px);
     border-color: color-mix(in srgb, var(--primary) 36%, var(--theme-border));
     box-shadow: 0 16px 34px color-mix(in srgb, #000 10%, transparent);
@@ -172,7 +172,7 @@ html body .app-root {
     padding-inline: var(--mp-page-gutter);
   }
 
-  .app-root :is(.home-hero-shell, .duas-hero, .legal-page__hero) {
+  .app-root :is(.home-hero-shell, .duas-hero) {
     padding: clamp(0.9rem, 4vw, 1.25rem);
   }
 
@@ -1354,12 +1354,6 @@ html[data-theme="dark"] .app-root[data-view="home"] .home-style-filter.is-active
   .app-root[data-view="home"][data-dir="rtl"] .home-style-filters {
     -webkit-mask-image: linear-gradient(to left, #000 0 calc(100% - 2rem), transparent 100%);
     mask-image: linear-gradient(to left, #000 0 calc(100% - 2rem), transparent 100%);
-  }
-}
-
-@media (min-width: 769px) {
-  .app-root .mp-footer-v2__nav {
-    display: none;
   }
 }
 

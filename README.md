@@ -40,7 +40,7 @@ MushafPlus is a free, static Progressive Web App for reading and listening to th
 | 📖 **Deux riwayat** | Hafs et Warsh, chacun avec ses polices, sa numérotation de versets et ses règles de Tajwid propres. |
 | 🎨 **Tajwid fidèle** | Les règles et les couleurs de Quran.com, appliquées à **chaque police Hafs**, avec une garantie d'intégrité : la couleur ne modifie jamais une lettre. |
 | 🎧 **Récitations** | 54 récitateurs (46 Hafs, 8 Warsh), lecture verset par verset ou sourate continue, suivi mot à mot, téléchargement hors-ligne validé. |
-| 📴 **Hors-ligne** | PWA installable, service worker, texte et audio en cache, tafsir français embarqué. |
+| 📴 **Hors-ligne** | PWA installable, service worker, texte et audio en cache, tafsir français relisible hors ligne après une première lecture. |
 | 🔒 **Privé par conception** | Aucun compte, aucune synchronisation cloud. Verrouillage optionnel par phrase secrète (PBKDF2 600 000 itérations + AES). |
 | 🌍 **Trilingue** | Français, anglais, arabe avec bascule RTL native — pas de miroir approximatif. |
 
@@ -113,7 +113,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 - Contrôles écran verrouillé (Media Session) et lecteur persistant entre les écrans.
 
 ### 📚 Étudier et suivre
-- **Tafsir** (français embarqué, hors-ligne) et sources Quran.com, traductions et translittération.
+- **Tafsir** (français Al-Mukhtasar via QuranEnc.com, conservé sur l’appareil après lecture) et sources Quran.com, traductions et translittération.
 - **Favoris, notes, listes** ; export / import JSON.
 - **Partage d'un verset en image** (formats et réseaux, PNG réel).
 - **Horaires de prière**, adhan optionnel, suivi des prières, invocations (du'as).
@@ -186,7 +186,7 @@ src/
 ├── services/                 # API Quran.com, audio, téléchargements, stockage, crypto
 ├── utils/                    # alignement Tajwid, peinture, mots, Basmala
 └── styles/                   # Tailwind 4 + feuilles par domaine
-public/                       # manifest, polices, données Warsh, tafsir, sw.js
+public/                       # manifest, polices, données Warsh, sw.js
 tests/ · tests/e2e/           # unitaires (Node) · scénarios Playwright
 scripts/                      # audits, build SEO/budgets, captures du README
 ```

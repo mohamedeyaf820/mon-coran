@@ -24,6 +24,14 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     url: "https://alquran.cloud/api",
   },
   {
+    id: "french-tafsir-mukhtasar",
+    category: "tafsir",
+    name: "« Al-Mukhtasar fi at-Tafsir » — Centre Tafsir pour les études coraniques, via QuranEnc.com",
+    usage: "Tafsir français affiché dans le panneau de commentaire, chargé sourate par sourate depuis l’API de QuranEnc.com puis conservé sur l’appareil pour une relecture hors ligne.",
+    rights: "QuranEnc.com autorise la republication avec attribution à QuranEnc.com, indication de la version et sans modification du texte; l’éditeur d’origine n’a pas donné d’autorisation distincte à ce projet.",
+    url: "https://quranenc.com/en/browse/french_mokhtasar",
+  },
+  {
     id: "quran-com-tajwid-palette",
     category: "annotation",
     name: "Quran.com — couleurs et règles de tajwid",

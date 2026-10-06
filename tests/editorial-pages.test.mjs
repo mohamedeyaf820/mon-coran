@@ -17,7 +17,10 @@ test("editorial hub exposes the five published destinations and real actions", a
 test("privacy and source copy match the implemented local-first behavior", async () => {
   const page = await read("src/components/LegalPage.jsx");
   assert.match(page, /localStorage ou IndexedDB/);
-  assert.doesNotMatch(page, /horaires de prière|géolocalisation/);
+  // The prayer-times feature sends a rounded position to Aladhan; the privacy
+  // page has to say so, and that the position is only asked for on request.
+  assert.match(page, /service Aladhan/);
+  assert.match(page, /La position n’est demandée que lorsque vous la demandez/);
   assert.match(page, /Aucune synchronisation cloud automatique/);
   assert.match(page, /Quran Foundation \/ Quran\.com/);
   assert.match(page, /EveryAyah, le CDN audio de Quran\.com et QuranPedia/);

@@ -41,7 +41,12 @@ const LIMITS = {
   // 2026-10-06 (later): 1419.3 kB measured, +10 kB of headroom. The quota-aware
   // page cache, the legacy-key lookup, the problem report of the error screen and
   // the shell boundaries; the initial entry measures 406.2 kB of JS.
-  js: Number(process.env.BUDGET_JS_KB || 1430),
+  // 2026-10-06 (information pages): 1444.0 kB measured, +16 kB of headroom. The
+  // four information pages gained a summary, a contents list, the privacy data
+  // table and the grouped sources register (the chunk is lazy, 33.7 kB); the
+  // footer gained its link groups; the settings tabs were split into files and
+  // gained the live preview and the downloads list. None of it is in the boot graph.
+  js: Number(process.env.BUDGET_JS_KB || 1460),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -57,7 +62,8 @@ const LIMITS = {
   // 2026-09-26: +5 kB for the same adhan reliability change (2403.5 kB).
   // 2026-10-06: +25 kB (2418.7 kB measured, 13.7 kB over the previous ceiling).
   // 2026-10-06 (later): 2426.5 kB measured (+10 kB of headroom).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2440),
+  // 2026-10-06 (information pages): 2459.7 kB measured, +25 kB of headroom.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2485),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

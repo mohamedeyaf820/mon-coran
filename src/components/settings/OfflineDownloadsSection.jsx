@@ -4,6 +4,7 @@ import { Trash2 } from "lucide-react";
 import { getSurah } from "../../data/surahs";
 import { getReciter } from "../../data/reciters";
 import { Section } from "./controls";
+import "../../styles/settings-panels.css";
 import { Button } from "../ui/button";
 import { confirmAction } from "../../services/interactionService";
 import { getStorageSnapshot } from "../../services/storageQuotaService";
@@ -63,24 +64,34 @@ export default function OfflineDownloadsSection({ lang }) {
     } catch { failed = true; }
     finally { pending.current = false; await refresh(); if (failed && mounted.current) setError(true); }
   };
+  const percent = storage?.supported && storage.quota ? Math.min(100, Math.max(1, (storage.usage / storage.quota) * 100)) : 0;
   return <Section title={offlineText("title", lang)}>
     <div className="settings-panel-stack" data-testid="offline-downloads" aria-busy={busy}>
-      <p role="status">{offlineText(online ? "online" : "offline", lang)} · {offlineText("used", lang)}: <bdi>{size.toLocaleString(lang)} MB</bdi></p>
-      {storage?.supported && <p>{offlineText("storage", lang)}: <bdi>{(storage.usage / 1048576).toLocaleString(lang, { maximumFractionDigits: 1 })} / {(storage.quota / 1048576).toLocaleString(lang, { maximumFractionDigits: 1 })} MB</bdi></p>}
+      <p className="sp-status" role="status" data-online={online}>{offlineText(online ? "online" : "offline", lang)}</p>
+      <div className="sp-storage">
+        {storage?.supported && <div className="sp-storage__meter" aria-hidden="true"><span style={{ width: `${percent}%` }} /></div>}
+        <p className="sp-storage__legend">
+          <span>{offlineText("used", lang)}: <bdi>{size.toLocaleString(lang)} MB</bdi></span>
+          {storage?.supported && <span>{offlineText("storage", lang)}: <bdi>{(storage.usage / 1048576).toLocaleString(lang, { maximumFractionDigits: 1 })} / {(storage.quota / 1048576).toLocaleString(lang, { maximumFractionDigits: 1 })} MB</bdi></span>}
+        </p>
+      </div>
       <p className="settings-cache-note">{offlineText(persisted ? "persistent" : "eviction", lang)}</p>
       {busy && <p role="status">{offlineText("checking", lang)}</p>}
       {error && <p role="alert">{offlineText("error", lang)}</p>}
-      {!busy && !entries.length && <p>{offlineText("empty", lang)}</p>}
+      {!busy && !entries.length && <p className="settings-empty">{offlineText("empty", lang)}</p>}
       {entries.map(entry => {
         const surah = getSurah(entry.surahNum);
         const name = lang === "ar" ? surah?.ar : lang === "en" ? surah?.en : surah?.fr;
-        return <div key={entry.key} className="settings-panel-stack">
-          <strong>{name || entry.surahNum}</strong>
-          <span>{entry.reciterName || entry.reciterId} · <bdi>{entry.riwaya === "warsh" ? "Warsh" : "Hafs"}</bdi></span>
-          <span>{offlineText(!entry.verified ? "unverified" : entry.status === "done" ? "done" : "partial", lang)}</span>
-          <span><bdi>{entry.downloaded || 0}/{entry.total || 0}</bdi> {offlineText("files", lang)} · <bdi>{((entry.bytes || 0) / 1048576).toLocaleString(lang, { maximumFractionDigits: 2 })} MB</bdi></span>
-          <Button type="button" className="min-h-11 whitespace-normal" variant="outline" disabled={busy || (!entry.reciterCdn && !getReciter(entry.reciterId, entry.riwaya))} onClick={() => remove(entry)} aria-label={`${offlineText("remove", lang)} ${name || entry.surahNum} — ${entry.reciterName || entry.reciterId}`}>
-            <Trash2 size={16} aria-hidden="true" />{offlineText("remove", lang)}
+        const state = !entry.verified ? "unverified" : entry.status === "done" ? "done" : "partial";
+        return <div key={entry.key} className="sp-download">
+          <div className="sp-download__main">
+            <strong>{name || entry.surahNum}</strong>
+            <span>{entry.reciterName || entry.reciterId} · <bdi>{entry.riwaya === "warsh" ? "Warsh" : "Hafs"}</bdi></span>
+            <span className="sp-download__state" data-state={state}>{offlineText(state, lang)}</span>
+            <span><bdi>{entry.downloaded || 0}/{entry.total || 0}</bdi> {offlineText("files", lang)} · <bdi>{((entry.bytes || 0) / 1048576).toLocaleString(lang, { maximumFractionDigits: 2 })} MB</bdi></span>
+          </div>
+          <Button type="button" className="sp-download__remove min-h-11 whitespace-normal" variant="outline" disabled={busy || (!entry.reciterCdn && !getReciter(entry.reciterId, entry.riwaya))} onClick={() => remove(entry)} aria-label={`${offlineText("remove", lang)} ${name || entry.surahNum} — ${entry.reciterName || entry.reciterId}`}>
+            <Trash2 size={16} aria-hidden="true" /><span>{offlineText("remove", lang)}</span>
           </Button>
         </div>;
       })}
