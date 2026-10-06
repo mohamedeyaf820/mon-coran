@@ -24,7 +24,7 @@ async function openAdvancedProtection(page) {
 async function seedLegacyPrivateRecords(page) {
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 3);
+      const request = indexedDB.open("mushafplus");
       request.onupgradeneeded = () => {
         const nextDb = request.result;
         if (!nextDb.objectStoreNames.contains("notes")) {
@@ -64,7 +64,7 @@ async function seedLegacyPrivateRecords(page) {
 async function readRawPrivateRecords(page) {
   return page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 3);
+      const request = indexedDB.open("mushafplus");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });
