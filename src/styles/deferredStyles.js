@@ -11,4 +11,6 @@ import "./device-responsive.css";
 import "./home-resume-refinement.css";
 // The resume card: next reading as the centre, one big action.
 import "./home-hero-refine.css";
+// The Explore section: a plain heading, a tidy toolbar, rows that keep their room.
+import "./home-content-refine.css";
 

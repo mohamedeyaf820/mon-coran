@@ -1,0 +1,128 @@
+/* ==========================================================================
+   Home — the "Explore" section (heading, tabs, search, surah rows)
+
+   Fixes what the layers before left rough:
+   - the heading sat in its own solid box, text flush to the box edge, over a
+     section that has another background: it is now plain text on the section;
+   - the "new" dot of the Audio tab floated at the corner of the tab strip;
+   - the number badge of a surah row is a rotated square whose corners spilled
+     into the card edge and the next column;
+   - the tabs and the search field now hold their full width on a phone, and
+     the toolbar stays one tidy panel from 240px to a wide screen.
+   Loaded after home-hero-refine.css (see deferredStyles.js).
+   ========================================================================== */
+
+/* ── Heading: text on the section, no box ───────────────────────────────── */
+/* An older rule styles the first child of the section as a card (it expected
+   the toolbar there); the heading is that child now, hence the long selector. */
+html body .app-root[data-view="home"] .home-collection-heading,
+html body .app-root[data-view="home"] .home-content-zone > section > .home-collection-heading:first-child,
+html[data-theme="dark"] body .app-root[data-view="home"] .home-content-zone > section > .home-collection-heading:first-child {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.25rem 0.35rem 0 !important;
+}
+
+html body .app-root[data-view="home"] .home-collection-heading__copy {
+  align-items: center !important;
+  gap: 0.5rem 1rem !important;
+}
+
+html body .app-root[data-view="home"] .home-collection-heading__copy h1,
+html body .app-root[data-view="home"] .home-collection-heading__copy h2 {
+  margin: 0 !important;
+  font-size: clamp(1.35rem, 2.6vw, 1.85rem) !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.02em !important;
+}
+
+html body .app-root[data-view="home"] .home-collection-heading__copy p {
+  margin: 0.3rem 0 0 !important;
+  max-width: 44rem;
+  font-size: 0.9rem !important;
+  line-height: 1.5 !important;
+}
+
+html body .app-root[data-view="home"] .home-collection-heading__eyebrow {
+  flex: none;
+  margin-inline-start: auto;
+}
+
+@media (max-width: 560px) {
+  html body .app-root[data-view="home"] .home-collection-heading__eyebrow { margin-inline-start: 0; }
+}
+
+/* ── Toolbar: one panel, tabs and search at full width on a phone ───────── */
+html body .app-root[data-view="home"] .home-content-toolbar {
+  gap: 0.6rem !important;
+  padding: 0.6rem !important;
+}
+
+html body .app-root[data-view="home"] .home-content-toolbar > [role="tablist"] {
+  width: 100%;
+  min-width: 0;
+}
+
+@media (max-width: 767px) {
+  html body .app-root[data-view="home"] .home-content-toolbar > [role="tablist"] > [role="tab"] {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    padding-inline: 0.5rem;
+  }
+}
+
+@media (max-width: 340px) {
+  /* The narrowest phones keep the label and drop the icon: three tabs, one row. */
+  html body .app-root[data-view="home"] .home-content-toolbar [role="tab"] > svg { display: none; }
+}
+
+/* The Audio tab's "new" marker, inline after its label. */
+.home-tab-dot {
+  position: relative;
+  display: inline-block;
+  flex: none;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--primary);
+}
+.home-tab-dot__ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.6;
+  animation: home-tab-dot-ping 1.6s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+@keyframes home-tab-dot-ping {
+  75%, 100% { transform: scale(2.4); opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-tab-dot__ping { animation: none; opacity: 0; }
+}
+
+/* ── Surah rows: the number badge keeps its room ────────────────────────── */
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+  padding-inline-start: 1.2rem;
+}
+html body .app-root[data-view="home"] .hp-grid--surah .hp-card-num {
+  margin-inline: 0.45rem 0.3rem;
+}
+
+@media (max-width: 400px) {
+  /* On a very narrow screen the Arabic name and the play button share the
+     row with the title: give the title the room and shrink the name column. */
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card--surah {
+    grid-template-columns: auto minmax(0, 1fr) minmax(4.5rem, 5.5rem) 42px !important;
+    gap: 0.5rem;
+    padding-inline: 0.85rem 0.7rem;
+  }
+  html body .app-root[data-view="home"] .hp-grid--surah .hp-card-ar {
+    min-width: 4.5rem !important;
+    padding-inline-start: 0.5rem;
+    font-size: clamp(1.4rem, 7vw, 1.7rem) !important;
+  }
+}
