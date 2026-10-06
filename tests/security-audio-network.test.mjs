@@ -1,3 +1,4 @@
+import { readFileSync as readAudioFixture } from "node:fs";
 /**
  * Security/network/observability contracts (audit wave 1B):
  * - the downloader enforces the player's audio URL allow-list (no fetch, no cache.put),
@@ -47,15 +48,15 @@ globalThis.CustomEvent = class {
 globalThis.location = { href: "https://mushafplus.test/" };
 globalThis.caches = {
   open: async () => ({
-    match: async (key) => cachedResponses.get(String(key)),
+    match: async (key) => cachedResponses.get(String(key?.url || key))?.clone(),
     keys: async () => [...cachedResponses.keys()].map((url) => ({ url })),
-    put: async (key, response) => cachedResponses.set(String(key), response),
+    put: async (key, response) => cachedResponses.set(String(key?.url || key), response.clone()),
     delete: async (key) => cachedResponses.delete(String(key)),
   }),
 };
 globalThis.fetch = async (url) => {
   fetchLog.push(String(url));
-  return new Response(new Uint8Array([73, 68, 51]), {
+  return new Response(readAudioFixture(new URL("./fixtures/silent-2s.mp3", import.meta.url)), {
     status: 200,
     headers: { "Content-Type": "audio/mpeg" },
   });

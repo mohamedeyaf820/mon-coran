@@ -39,6 +39,16 @@ export function shouldAvoidBackgroundWork(navigatorObject) {
   );
 }
 
+// Below this downlink a speculative multi-hundred-kilobyte download competes
+// with what the reader actually asked for. An unreported downlink is trusted.
+const SPECULATIVE_PREFETCH_MIN_DOWNLINK_MBPS = 3;
+
+export function shouldSkipSpeculativePrefetch(navigatorObject) {
+  if (shouldAvoidBackgroundWork(navigatorObject)) return true;
+  const { downlink } = getNetworkProfile(navigatorObject);
+  return downlink !== null && downlink < SPECULATIVE_PREFETCH_MIN_DOWNLINK_MBPS;
+}
+
 export function getAdaptiveAudioPreloadCount(navigatorObject) {
   const profile = getNetworkProfile(navigatorObject);
   if (

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://mushafplus.netlify.app/sitemap.xml
+Sitemap: https://mon-coran.vercel.app/sitemap.xml

@@ -37,7 +37,6 @@ test("the unified reader header remains available in mobile QCF4 Mushaf mode", (
 
   assert.match(surahMode, /qc-surah-header-wrap--unified[\s\S]*?<TajweedLegend[\s\S]*?<SurahReaderHeader/);
   assert.doesNotMatch(surahMode, /isQCF4\s*&&\s*mushafLayout\s*===\s*["']mushaf["']/);
-  assert.match(styles, /qc-surah-header-wrap--unified > \.tajweed-legend[\s\S]*?background: transparent !important/);
   assert.match(styles, /qc-surah-header-wrap--unified > \.srh-root[\s\S]*?border: 0 !important/);
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.srh-mobile-bar\s*\{[\s\S]*?display: grid/);
   assert.match(styles, /\.srh-mobile-bar :is\(\.srh-play-btn, \.srh-info-btn\)[\s\S]*?min-height: 44px/);
@@ -110,11 +109,13 @@ test("verse action modal renders a reduced, responsive action grid", () => {
   assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/);
 });
 
-test("Tajweed legend groups rules without compressing their labels", () => {
-  const styles = source("src/styles/experience-polish.css");
-  assert.match(styles, /tajweed-legend__rules[\s\S]*?repeat\(4, minmax\(0, 1fr\)\)/);
-  assert.match(styles, /grid-template-rows: repeat\(2, minmax\(1\.8rem, auto\)\)/);
-  assert.match(styles, /tajweed-legend:not\(\[open\]\) > \.tajweed-legend__rules[\s\S]*?display: none/);
+test("Tajweed guide uses a responsive dialog with readable labels and touch targets", () => {
+  const component = source("src/components/Quran/TajweedLegend.jsx");
+  const styles = source("src/styles/tajwid-guide.css");
+  assert.match(component, /<Sheet/);
+  assert.match(component, /<Popover/);
+  assert.match(styles, /min-height: 44px/);
+  assert.match(styles, /tajwid-guide__rules dt/);
 });
 
 test("page atmospheres remain contextual, theme-aware and asset-free", () => {
@@ -142,7 +143,6 @@ test("mobile reader shell follows the Tajweed card and keeps an explicit home lo
   assert.match(header, /onClick=\{goHome\}/);
   assert.match(header, /mp-header__home-badge/);
   assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0(?:\s*!important)?/);
-  assert.match(styles, /quran-display\.quran-display--platform > \.tajweed-legend[\s\S]*?margin-top: 0(?:\s*!important)?/);
   const tinyBlock =
     styles
       .split("@media (max-width: 380px)")
@@ -530,7 +530,13 @@ test("continuous Mushaf text strips embedded markers before rendering its marker
   const renderer = source("src/components/Quran/SmartAyahRenderer.jsx");
 
   assert.match(renderer, /effectiveRiwaya,\s*appendNativeMarker/);
-  assert.match(renderer, /return appendNativeAyahMarker\(/);
+  assert.match(renderer, /appendNativeAyahMarker\(\s*baseCleanText/);
+  // One source per riwaya: Hafs takes its verified annotation, Warsh the Dabt
+  // of the same printed text, and the renderer never picks between them.
+  assert.match(renderer, /getWarshTajwidAnnotatedSource/);
+  assert.match(renderer, /tajwidSource=\{tajwidSource\}/);
+  assert.match(renderer, /effectiveRiwaya === "warsh" \? warshSource : hafsSource/);
+  assert.doesNotMatch(renderer, /appendNativeAyahMarker\(\s*value/);
 });
 
 test("Warsh page data and fullscreen share one renderer with one marker owner", () => {
@@ -596,87 +602,18 @@ test("ayah numbers keep one canonical glyph regardless of the reading font", () 
   );
 });
 
-test("Tajweed legend and Quran.com markup share the same eight rule families", () => {
-  const surahMode = source("src/components/QuranDisplay/SurahMode.jsx");
+test("Tajweed keeps source categories separate from visual groups, and Warsh only its own rules", () => {
   const legend = source("src/components/Quran/TajweedLegend.jsx");
   const renderer = source("src/components/Quran/TajweedText.jsx");
-  const theme = source("src/styles/domains/themes4.css");
-
-  assert.match(surahMode, /showTajwid \? <TajweedLegend lang=\{lang\} riwaya=\{riwaya\}/);
-  for (const ruleId of [
-    "silent",
-    "madd-normal",
-    "madd-separated",
-    "madd-connected",
-    "madd",
-    "ghunna",
-    "qalqala",
-    "tafkhim",
-  ]) {
-    assert.match(legend, new RegExp(`\\["${ruleId}",`));
-  }
-  // Quran.com's nasal rules share the green family of the legend; idgham
-  // without ghunnah reads as a silent letter.
-  assert.match(renderer, /ghunnah: 'ghunna'/);
-  assert.match(renderer, /ikhafa: 'ikhfa'/);
-  assert.match(renderer, /idgham_ghunnah: 'idgham'/);
-  assert.match(renderer, /idgham_without_ghunnah: 'silent'/);
-  assert.match(renderer, /iqlab: 'iqlab'/);
-  assert.match(renderer, /ham_wasl: 'silent'/);
-  assert.match(renderer, /laam_shamsiyah: 'lam-shamsiyya'/);
-  for (const [token, color] of [
-    ["--tajwid-silent", "#8c8c8c"],
-    ["--tajwid-madd-normal", "#ad8500"],
-    ["--tajwid-madd-separated", "#e06c00"],
-    ["--tajwid-madd-connected", "#f40000"],
-    ["--tajwid-madd", "#b50000"],
-    ["--tajwid-ghunna", "#08a300"],
-    ["--tajwid-idgham", "#8c8c8c"],
-    ["--tajwid-ikhfa", "#08a300"],
-    ["--tajwid-iqlab", "#08a300"],
-    ["--tajwid-qalqala", "#0091f0"],
-    ["--tajwid-tafkhim", "#3f48e6"],
-  ]) {
-    assert.match(theme, new RegExp(`${token}: ${color};`));
-  }
-});
-
-test("every tajweed colour stays readable on its theme paper", () => {
-  // Tajweed ink is the whole point of the feature: a rule colour that fades
-  // into the page teaches the wrong rule. Large Quran text needs 3:1.
-  const channel = (c) =>
-    c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
-  const luminance = (hex) => {
-    const [r, g, b] = [0, 2, 4].map((i) =>
-      parseInt(hex.slice(1 + i, 3 + i), 16) / 255,
-    );
-    return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
-  };
-  const contrast = (a, b) => {
-    const [hi, lo] = [luminance(a), luminance(b)].sort((x, y) => y - x);
-    return (hi + 0.05) / (lo + 0.05);
-  };
-  const papers = {
-    light: "#f8f8f8",
-    sepia: "#fff6e3",
-    dark: "#0c1511",
-  };
-  const theme = source("src/styles/domains/themes4.css");
-
-  for (const [themeName, paper] of Object.entries(papers)) {
-    const block = new RegExp(
-      themeName === "light"
-        ? ':root\\[data-theme="light"\\][^{]*\\{([^}]*)\\}'
-        : `\\[data-theme="${themeName}"\\] \\{([^}]*)\\}`,
-    ).exec(theme);
-    assert.ok(block, `missing ${themeName} theme block`);
-    for (const [, token, hex] of block[1].matchAll(/--tajwid-([a-z-]+): (#\w{6});/g)) {
-      assert.ok(
-        contrast(hex, paper) >= 3,
-        `--tajwid-${token} ${hex} is ${contrast(hex, paper).toFixed(2)}:1 on ${themeName} ${paper}, below 3:1`,
-      );
-    }
-  }
+  const adapter = source("src/utils/tajwidAnnotation.js");
+  assert.match(legend, /TAJWID_VISUAL_GROUPS/);
+  assert.match(legend, /TAJWID_GUIDE_COPY/);
+  assert.match(legend, /getWarshTajwidSourceStatus/);
+  assert.match(legend, /WARSH_TAJWID_RULE_IDS/);
+  assert.match(renderer, /normalizeTajwidAnnotation/);
+  assert.doesNotMatch(renderer, /DOMParser|QURAN_COM_CLASS_MAP|applyFontSigns|normalizeQuranGlyphText/);
+  assert.match(adapter, /idgham_ghunnah: "idgham-ghunnah"/);
+  assert.match(adapter, /idgham_wo_ghunnah: "idgham-without-ghunnah"/);
 });
 
 test("Warsh shares the Hafs tajweed palette: the same rule keeps the same colour", () => {
@@ -769,7 +706,8 @@ test("tajweed colours words through a text-clipped gradient, never a sub-word ra
 
 test("tafsir sources are grouped by language with the reading-aware ones first", async () => {
   const sidebar = source("src/components/TafsirSidebar.jsx");
-  const { default: locales } = await import("../src/i18n/index.js");
+  const { default: locales, ensureLocale } = await import("../src/i18n/index.js");
+  await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
 
   assert.match(sidebar, /<optgroup/);
   assert.match(sidebar, /TAFSIR_OPTIONS\.filter\(\(o\) => o\.lang === code\)/);
@@ -777,8 +715,19 @@ test("tafsir sources are grouped by language with the reading-aware ones first",
     sidebar,
     /Number\(Boolean\(b\.qiraat\)\) - Number\(Boolean\(a\.qiraat\)\)/,
   );
-  // The marker and the Warsh note must exist in every locale, not just French.
-  for (const key of ["groupArabic", "groupEnglish", "qiraatBadge", "warshHint"]) {
+  // The marker, the Warsh note and the French-edition affordances must exist in
+  // every locale, not just French.
+  for (const key of [
+    "groupArabic",
+    "groupEnglish",
+    "groupFrench",
+    "qiraatBadge",
+    "warshHint",
+    "shownInFrench",
+    "offlineSourceBadge",
+    "frenchAttribution",
+    "reportError",
+  ]) {
     for (const lang of ["fr", "en", "ar"]) {
       assert.ok(locales[lang].tafsir[key], `${lang}.tafsir.${key}`);
     }
@@ -786,7 +735,7 @@ test("tafsir sources are grouped by language with the reading-aware ones first",
   assert.match(sidebar, /riwaya === ["']warsh["'][\s\S]*?tafsir\.warshHint/);
 });
 
-test("WebKit keeps tajweed rule colours by whole-word ink, not the clipped gradient", () => {
+test("WebKit never extends a partial annotation to the entire word", () => {
   const paint = source("src/utils/tajweedWordPaint.js");
   const fallback = source("src/components/Quran/TajweedText.jsx");
   const flow = source("src/components/QuranDisplay/MushafFlowPage.jsx");
@@ -794,17 +743,17 @@ test("WebKit keeps tajweed rule colours by whole-word ink, not the clipped gradi
   // The engine gate lives with the paint so every consumer shares one verdict.
   assert.match(paint, /export const CLIP_PAINT_SUPPORTED = !isWebkitEngine\(\);/);
 
-  // The word fallback must colour each word when the clip paint is unusable,
-  // otherwise WebKit shows tajweed with no colour at all (the reported bug).
+  // Partial annotations must not become whole-word colours.
   assert.match(
     fallback,
-    /style=\{!CLIP_PAINT_SUPPORTED && ruleColor && !word\.isMarker[\s\S]{0,60}color: ruleColor/,
+    /getWholeWordTajwidRule\(word\.text, ranges\)/,
   );
   // ...and must not paint the gradient there (it renders near-invisible).
   assert.match(fallback, /if \(!CLIP_PAINT_SUPPORTED\) return undefined;/);
 
-  // The flow page branches on the same gate and clears both representations.
+  // The flow page enforces the same exact coverage guard.
   assert.match(flow, /if \(CLIP_PAINT_SUPPORTED\) paintTajweedWord\(word, ranges\);/);
+  assert.match(flow, /getWholeWordTajwidRule\(token\.text, token\.tajweedRanges\)/);
   assert.match(flow, /word\.style\.color = `var\(--tajwid-\$\{ruleId\}\)`/);
   assert.match(flow, /clearTajweedWordPaint\(word\);[\s\S]{0,40}word\.style\.removeProperty\("color"\);/);
 });

@@ -6,7 +6,7 @@
 import { openDB } from 'idb';
 
 const DB_NAME = 'mushafplus';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 export const APP_DB_NAME = DB_NAME;
 
 let dbPromise = null;
@@ -32,7 +32,7 @@ function observeTransaction(transaction) {
 export function getDB() {
     if (!dbPromise) {
         dbPromise = openDB(DB_NAME, DB_VERSION, {
-            upgrade(db, oldVersion) {
+            upgrade(db, oldVersion, _newVersion, transaction) {
                 // v1: basic stores
                 if (oldVersion < 1) {
                     if (!db.objectStoreNames.contains('cache')) {
@@ -55,6 +55,17 @@ export function getDB() {
                 if (oldVersion < 3) {
                     if (db.objectStoreNames.contains('wird')) db.deleteObjectStore('wird');
                     if (db.objectStoreNames.contains('history')) db.deleteObjectStore('history');
+                }
+                // v4: index the cache metadata. Pruning used to open every cached
+                // payload (hundreds of kilobytes each) just to read its timestamp.
+                if (oldVersion < 4) {
+                    // A database left without its cache store (an interrupted first
+                    // upgrade) gets it back here instead of aborting the upgrade.
+                    const cache = db.objectStoreNames.contains('cache')
+                        ? transaction.objectStore('cache')
+                        : db.createObjectStore('cache', { keyPath: 'key' });
+                    if (!cache.indexNames.contains('ts')) cache.createIndex('ts', 'ts');
+                    if (!cache.indexNames.contains('expiryAt')) cache.createIndex('expiryAt', 'expiryAt');
                 }
             },
         }).catch((error) => {
@@ -156,6 +167,54 @@ export async function dbGetAll(storeName, { strict = false } = {}) {
 }
 
 /**
+ * Deletes expired records of a prefix and returns the others, oldest information
+ * read from the key-only indexes: no cached payload is deserialised.
+ */
+async function collectRetainedFromIndexes(store, prefix, now, maxAgeMs) {
+    const expiredKeys = new Set();
+    let expiring = await store.index('expiryAt').openKeyCursor(IDBKeyRange.upperBound(now));
+    while (expiring) {
+        if (String(expiring.primaryKey).startsWith(prefix)) expiredKeys.add(expiring.primaryKey);
+        expiring = await expiring.continue();
+    }
+
+    const retained = [];
+    let cursor = await store.index('ts').openKeyCursor();
+    while (cursor) {
+        const key = cursor.primaryKey;
+        if (String(key).startsWith(prefix) && !expiredKeys.has(key)) {
+            const timestamp = Number(cursor.key || 0);
+            if (timestamp > 0 && now - timestamp > maxAgeMs) expiredKeys.add(key);
+            else retained.push({ key, timestamp });
+        }
+        cursor = await cursor.continue();
+    }
+
+    expiredKeys.forEach((key) => store.delete(key));
+    return retained;
+}
+
+/** Fallback for a connection that predates the v4 indexes: reads every value. */
+async function collectRetainedByScan(store, prefix, now, maxAgeMs) {
+    const retained = [];
+    let cursor = await store.openCursor();
+    while (cursor) {
+        const key = String(cursor.key || '');
+        if (key.startsWith(prefix)) {
+            const timestamp = Number(cursor.value?.ts || 0);
+            const expiryAt = Number(cursor.value?.expiryAt || 0);
+            const expired =
+                (expiryAt > 0 && expiryAt <= now) ||
+                (timestamp > 0 && now - timestamp > maxAgeMs);
+            if (expired) await cursor.delete();
+            else retained.push({ key: cursor.key, timestamp });
+        }
+        cursor = await cursor.continue();
+    }
+    return retained;
+}
+
+/**
  * Remove expired records and keep only the newest records for one cache prefix.
  * Maintenance is throttled so navigation never pays this cost repeatedly.
  */
@@ -173,21 +232,9 @@ export async function dbPruneByPrefix(
         const db = await getDB();
         const transaction = db.transaction(storeName, 'readwrite');
         const store = transaction.objectStore(storeName);
-        const retained = [];
-        let cursor = await store.openCursor();
-        while (cursor) {
-            const key = String(cursor.key || '');
-            if (key.startsWith(prefix)) {
-                const timestamp = Number(cursor.value?.ts || 0);
-                const expiryAt = Number(cursor.value?.expiryAt || 0);
-                const expired =
-                    (expiryAt > 0 && expiryAt <= now) ||
-                    (timestamp > 0 && now - timestamp > maxAgeMs);
-                if (expired) await cursor.delete();
-                else retained.push({ key: cursor.key, timestamp });
-            }
-            cursor = await cursor.continue();
-        }
+        const retained = store.indexNames.contains('ts') && store.indexNames.contains('expiryAt')
+            ? await collectRetainedFromIndexes(store, prefix, now, maxAgeMs)
+            : await collectRetainedByScan(store, prefix, now, maxAgeMs);
 
         retained
             .sort((a, b) => b.timestamp - a.timestamp)

@@ -279,6 +279,9 @@ export default function SurahReaderHeader({
 
       {/* Mobile-only compact action row (identity hidden on ≤640px) */}
       <div className="srh-mobile-bar">
+        {/* The visible h1 lives in .srh-identity, which is display:none on phones:
+            this bar sits in the same place only where that block is hidden. */}
+        <h1 className="sr-only">{surahNum}. {translatedName}</h1>
         <button
           type="button"
           className="srh-mobile-bar__disclosure"

@@ -41,7 +41,7 @@ import {
 import {
   Play, Pause, Bookmark, BookmarkCheck, Copy, Check, Share2,
   PenSquare, Ellipsis, List, BookOpen,
-  X, Zap, Layers, TriangleAlert, Music,
+  X, Zap, TriangleAlert, Music,
 } from "lucide-react";
 
 const SHEET_FOCUSABLE_SELECTOR = [
@@ -103,14 +103,13 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     riwaya,
     warshStrictMode,
     displayMode,
-    showTranslation,
   } = preferences;
 
   const [bookmarked, setBookmarked] = useState(false);
   const [showNote, setShowNote] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
   const [playlists, setPlaylists] = useState([]);
-  const [playlistAdded, setPlaylistAdded] = useState(false);
+  const [, setPlaylistAdded] = useState(false);
   const [noteText, setNoteText] = useState("");
   const [hasNote, setHasNote] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -391,14 +390,6 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
         t("toast.unableToPlay", lang),
       );
     });
-  };
-
-  const showTranslationForAyah = () => {
-    set({ showTranslation: true });
-    emitToast(
-      "info",
-      t("toast.translationShown", lang),
-    );
   };
 
   const copyVerseText = async (value, successMessage) => {

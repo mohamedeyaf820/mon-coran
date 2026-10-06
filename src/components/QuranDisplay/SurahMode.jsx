@@ -55,7 +55,7 @@ function SurahMode({
     >
       {/* Unified surah identity + controls header */}
       <div className={`qc-surah-header-wrap qc-surah-header-wrap--unified animate-in${showTajwid ? " has-tajwid-guide" : ""}`}>
-        {showTajwid ? <TajweedLegend lang={lang} riwaya={riwaya} /> : null}
+        <TajweedLegend lang={lang} riwaya={riwaya} />
         <SurahReaderHeader
           surahNum={currentSurah}
           onPlaySurah={onPlaySurah}

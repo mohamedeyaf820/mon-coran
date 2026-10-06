@@ -1,11 +1,11 @@
 import { expect, test } from "@playwright/test";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 async function openSettings(page) {
   const direct = page.locator(".mp-header__settings").first();
   if (await direct.isVisible().catch(() => false)) await direct.click();
   else {
-    await page.locator(".mp-header__more").first().click();
-    await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+    await openQuickMenuItem(page, "settings");
   }
 }
 

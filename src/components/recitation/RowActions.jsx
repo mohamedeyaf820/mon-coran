@@ -1,3 +1,4 @@
+import { offlineText } from "../../i18n/offline.js";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BookOpen, Check, Download, LoaderCircle, Play, Share2, X } from "lucide-react";
 import { toast } from "../../lib/utils";
@@ -82,8 +83,10 @@ export default function RowActions({
 }) {
   const labels = labelsFor(lang);
   const canDownload = Boolean(surah?.n && reciter?.id && reciter?.cdn);
-  const contextualLabel = (action) =>
-    surahLabel ? `${action} — ${surahLabel}` : action;
+  const contextualLabel = useCallback(
+    (action) => (surahLabel ? `${action} — ${surahLabel}` : action),
+    [surahLabel],
+  );
   const readEntry = useCallback(
     () =>
       canDownload
@@ -91,6 +94,7 @@ export default function RowActions({
         : null,
     [canDownload, reciter?.id, riwaya, surah?.n],
   );
+  const [online, setOnline] = useState(navigator.onLine);
   const [entry, setEntry] = useState(readEntry);
   const [verifiedOffline, setVerifiedOffline] = useState(false);
   const verifiedSignatureRef = useRef(null);
@@ -129,6 +133,9 @@ export default function RowActions({
       }
     };
     refresh();
+    const connection = () => { setOnline(navigator.onLine); refresh(true); };
+    window.addEventListener("online", connection);
+    window.addEventListener("offline", connection);
     window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
     const refreshOnPageShow = () => refresh(true);
     window.addEventListener("pageshow", refreshOnPageShow);
@@ -138,6 +145,8 @@ export default function RowActions({
     document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       mounted = false;
+      window.removeEventListener("online", connection);
+      window.removeEventListener("offline", connection);
       window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
       window.removeEventListener("pageshow", refreshOnPageShow);
       document.removeEventListener("visibilitychange", refreshWhenVisible);
@@ -158,7 +167,7 @@ export default function RowActions({
 
   const handleShare = useCallback(async () => {
     const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
-    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mushafplus.netlify.app";
+    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mon-coran.vercel.app";
     const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&surah=${surah?.n || 1}&play=1`;
     if (typeof navigator !== "undefined" && navigator.share) {
       try { await navigator.share({ url, title: `${contextualLabel(labels.listen)} — MushafPlus` }); return; } catch {}
@@ -210,7 +219,8 @@ export default function RowActions({
         className="recitation-action-btn recitation-action-btn--primary"
         type="button"
         onClick={onPlay}
-        title={contextualLabel(labels.listen)}
+        disabled={!online && !isOffline}
+        title={contextualLabel(!online && !isOffline ? offlineText("missing", lang) : labels.listen)}
         aria-label={contextualLabel(labels.listen)}
       >
         <Play className="recitation-icon recitation-icon--sm" size={15} fill="currentColor" aria-hidden="true" />

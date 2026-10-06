@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -46,8 +47,7 @@ test("la recherche unifiée reste simple sur un très petit écran", async ({ pa
   await page.goto("/surah/63", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".qc-list-card").first()).toBeVisible({ timeout: 30_000 });
 
-  await page.locator(".mp-header__more").click();
-  await page.locator('.mp-header-menu__item[data-key="search"]').click();
+  await openQuickMenuItem(page, "search");
 
   const dialog = page.getByRole("dialog", { name: /Recherche|Search|بحث/i });
   await expect(dialog).toBeVisible({ timeout: 15_000 });
@@ -438,11 +438,13 @@ test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", as
   await expect(firstAyah.locator(".native-ayah-marker")).toHaveCount(1);
 
   await expect(page.locator(".mp-header__search")).toBeHidden();
-  await expect(page.locator(".mp-header__more")).toBeVisible();
-  await page.locator(".mp-header__more").click();
-  const quickMenu = page.locator(".mp-header-menu");
-  await expect(quickMenu.locator('.mp-header-menu__item[data-key="search"]')).toBeVisible();
-  await expect(quickMenu.locator(".mp-header-menu__header-text")).toHaveCount(0);
+  const mobileMore = page.locator('.mobile-navigation [data-destination="more"]');
+  // Reading chrome auto-hides; a tap on the margin brings the navigation back.
+  await page.locator("#main-content").click({ position: { x: 4, y: 180 } });
+  await expect(mobileMore).toBeVisible();
+  await mobileMore.click();
+  const quickMenu = page.locator(".mobile-navigation-menu");
+  await expect(quickMenu.locator('[data-tool="search"]')).toBeVisible();
   const quickMenuBox = await quickMenu.boundingBox();
   expect(quickMenuBox?.width || 0).toBeLessThanOrEqual(315);
   // Rows carry 44px touch targets, so the sheet is bounded by the viewport,

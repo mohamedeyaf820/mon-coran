@@ -1,14 +1,42 @@
 /* i18n - lightweight translation system */
-import ar from './ar.js';
 import fr from './fr.js';
-import en from './en.js';
 import ux from './ux.js';
 
+// French is the fallback of every missing key, so it ships with the entry.
+// English and Arabic are separate chunks, loaded when they are the reading
+// language (see ensureLocale): the entry no longer carries ~70 kB of copy the
+// reader never sees.
 const LOCALES_MAP = {
-  ar: { ...ar, ux: ux.ar },
   fr: { ...fr, ux: ux.fr },
-  en: { ...en, ux: ux.en },
 };
+
+const LOCALE_LOADERS = {
+  en: () => import('./en.js'),
+  ar: () => import('./ar.js'),
+};
+const pendingLocales = new Map();
+let localeVersion = 0;
+const localeListeners = new Set();
+
+/** Resolve once `lang` is translatable. Unknown or already loaded languages resolve at once. */
+export function ensureLocale(lang) {
+  if (LOCALES_MAP[lang] || !LOCALE_LOADERS[lang]) return Promise.resolve();
+  if (!pendingLocales.has(lang)) {
+    pendingLocales.set(lang, LOCALE_LOADERS[lang]().then((module) => {
+      LOCALES_MAP[lang] = { ...module.default, ux: ux[lang] };
+      localeVersion += 1;
+      localeListeners.forEach((listener) => listener());
+    }).finally(() => pendingLocales.delete(lang)));
+  }
+  return pendingLocales.get(lang);
+}
+
+/** For useSyncExternalStore: lets a screen re-render when a late locale arrives. */
+export const subscribeLocales = (listener) => {
+  localeListeners.add(listener);
+  return () => localeListeners.delete(listener);
+};
+export const getLocaleVersion = () => localeVersion;
 
 /**
  * Global translation function.

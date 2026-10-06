@@ -19,12 +19,12 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
   const accessibleArabicTitle = surahMeta?.ar ? `سورة ${surahMeta.ar}` : "سورة";
 
   return (
-    <div className="cpv-surah-header-container flex items-center justify-center w-full my-8 select-none pointer-events-none">
-      <div className="cpv-surah-header-divider flex items-center justify-center w-full gap-4 px-2">
+    <div className="cpv-surah-header-container flex items-center justify-center w-full my-1 select-none pointer-events-none">
+      <div className="cpv-surah-header-divider flex items-center justify-center w-full gap-2 px-1">
         <div className="cpv-divider-line h-px flex-grow bg-gradient-to-r from-transparent via-[#c8a84b]/40 to-[#c8a84b]/70" />
         <TitleFlourish />
 
-        <div className="cpv-surah-title-box border rounded-lg px-8 py-3 shadow-lg flex flex-col items-center justify-center min-w-[220px]">
+        <div className="cpv-surah-title-box border rounded-sm px-6 py-1 shadow-sm flex items-center justify-center min-w-[200px]">
           <span
             className="cpv-surah-name-ar"
             dir="rtl"
@@ -41,7 +41,7 @@ export function CleanPageSurahHeader({ lang, surahMeta }) {
               {surahLigature}
             </span>
           </span>
-          <span className="cpv-surah-name-tr text-[9.5px] font-semibold tracking-[0.14em] uppercase mt-0.5">
+          <span className="cpv-surah-name-tr text-[9px] font-semibold tracking-[0.14em] uppercase hidden">
             {displayName}
           </span>
         </div>

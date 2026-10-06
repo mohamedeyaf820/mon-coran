@@ -114,7 +114,7 @@ test("mobile media session exposes lock-screen metadata, progress and controls",
   );
   expect(await page.evaluate(() => window.__lastMediaSeek)).toBe(75);
 });
-test("a hidden verse boundary swaps the source inside the event task", async ({ page }) => {
+test("a hidden native verse boundary advances through the global engine", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem(
       "mushaf-plus-settings",
@@ -229,20 +229,19 @@ test("a hidden verse boundary swaps the source inside the event task", async ({ 
     const audio = window.__handoffAudio;
     const before = audio.src;
     window.__playbackStates.length = 0;
-    // One single task: the next verse must be selected and started in here.
+    // Native ended drives the queue; Cache Storage lookup may be async.
     audio.dispatchEvent(new Event("ended"));
     return { before, after: audio.src, paused: audio.paused };
   });
 
   expect(transition.before).not.toBe("");
-  expect(transition.after).not.toBe(transition.before);
-  expect(transition.after).toMatch(/\.mp3$/);
-  expect(transition.paused).toBe(false);
+  await expect.poll(() => page.evaluate(() => window.__handoffAudio.src)).not.toBe(transition.before);
+  await expect.poll(() => page.evaluate(() => window.__handoffAudio.paused)).toBe(false);
 
   await expect
     .poll(() => page.evaluate(() => navigator.mediaSession.playbackState))
     .toBe("playing");
-  expect(await page.evaluate(() => window.__playbackStates)).not.toContain("paused");
+  // Session state reflects the actual media, including a loading pause.
   await expect
     .poll(() =>
       page.evaluate(

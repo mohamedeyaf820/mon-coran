@@ -10,6 +10,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 const toasts = [];
+const claimed = [];
 const playedSrc = [];
 const plays = [];
 let createdElements = 0;
@@ -24,7 +25,17 @@ globalThis.CustomEvent = class FakeCustomEvent {
 globalThis.window = {
   addEventListener() {},
   removeEventListener() {},
-  dispatchEvent: (event) => toasts.push(event.detail),
+  // `toast()` raises quran-toast, and that is the only channel a reader ever
+  // sees. Other events ride the same bus — playback-claim is how word audio
+  // stops the main recitation, and it carries no detail at all — so counting
+  // every dispatch would report a notice that was never shown.
+  dispatchEvent: (event) => {
+    if (event.type === "quran-toast") {
+      toasts.push(event.detail);
+      return;
+    }
+    claimed.push(event.type);
+  },
 };
 globalThis.document = {
   documentElement: { getAttribute: (name) => (name === "lang" ? "fr" : null) },

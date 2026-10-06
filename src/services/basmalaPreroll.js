@@ -53,29 +53,9 @@ export function createBasmalaPreroll(service) {
         // element to the verse instead.
         if (!(Number.isFinite(seconds) && seconds > 24)) {
           await new Promise((resolve) => {
-            let timer = null;
-            const startedAt = Date.now();
-            const deadline = startedAt + (seconds > 0 ? seconds : 8) * 1000 + 3000;
-            const done = () => {
-              clearTimeout(timer);
-              settle = null;
-              resolve();
-            };
-            settle = done;
-            // Two ways the pre-roll must let go, because a surah may not be
-            // held hostage by its opening file: the stream stops reporting
-            // `ended` (a stalled or mocked element), or it never starts moving.
-            const poll = () => {
-              if (Date.now() > deadline) return done();
-              if (
-                Number(service.audio.currentTime) <= 0.05 &&
-                Date.now() - startedAt > 2500
-              ) {
-                return done();
-              }
-              timer = setTimeout(poll, 500);
-            };
-            timer = setTimeout(poll, 500);
+            // Native ended/error or an explicit command settles the pre-roll.
+            // Timers cannot prove a verse ended when background JS is frozen.
+            settle = () => { settle = null; resolve(); };
           });
         }
       } catch {

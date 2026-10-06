@@ -66,7 +66,7 @@ export default function useQuranDisplayScroll({
 
   const resolvePlayingAyahElement = useCallback(
     (playingAyah) => findPlayingAyahElement(contentRef.current || document, playingAyah, displayMode),
-    [displayMode],
+    [contentRef, displayMode],
   );
 
   useEffect(() => {
@@ -286,8 +286,9 @@ export default function useQuranDisplayScroll({
       });
       scrollers.forEach((node) => {
         if (!node || node.scrollTop <= 0) return;
-        // Long smooth scrolls take seconds and can trigger more page loads.
-        node.scrollTo({ top: 0, behavior: node.scrollTop > 2400 ? "instant" : "smooth" });
+        // Navigation resets land instantly: a smooth flight takes
+        // seconds and can trigger more page loads mid-scroll.
+        node.scrollTo({ top: 0, behavior: "instant" });
       });
       if (window.scrollY > 0 && documentScroller?.scrollTop > 0) {
         window.scrollTo({ top: 0, behavior: "instant" });

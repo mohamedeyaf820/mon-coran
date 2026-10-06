@@ -163,7 +163,13 @@ function formatDateKey(date) {
   return `${String(date.getDate()).padStart(2, "0")}-${String(date.getMonth() + 1).padStart(2, "0")}-${date.getFullYear()}`;
 }
 
-function localDayKey(date) {
+/**
+ * Day key shared with `prayerLogService.localDayKey`: `YYYY-M-D` with a 0-based
+ * month. Holds the times cache to one day and is the encoder the tracker page
+ * and the home strip use, so a key written anywhere in the app is readable by
+ * the routines that match it against the reader's log.
+ */
+export function localDayKey(date) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
 }
 

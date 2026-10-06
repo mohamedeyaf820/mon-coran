@@ -1,433 +1,65 @@
-/**
- * Tajwid rules – regex patterns and colour mapping
- * These patterns work on fully-vowelled (mutashakkil) Uthmani text.
- *
- * IMPORTANT: The AlQuran Cloud "quran-uthmani" edition uses:
- *   - U+06E1 (ۡ small high dotless head of khaa) as sukun
- *   - U+0652 (regular sukun) is rarely used
- *   - U+0670 (ٰ superscript alef) for dagger alef
- *   - U+0671 (ٱ alef wasla) for the definite article
- *
- * Each rule:
- *  - id: unique key matching CSS variable  --tajwid-{id}
- *  - nameAr / nameEn / nameFr: display labels
- *  - color: fallback hex colour (also defined in index.css)
- *  - patterns: array of RegExp that match relevant segments in Arabic text
- */
+/** Source categories retain their meaning independently of their visual group. */
+import { TAJWID_RULE_GROUPS } from "./tajwidPalette.js";
+import { WARSH_TAJWID_RULE_IDS } from "./warshTajwidSigns.js";
+import { WARSH_ARCHIVE_RULE_IDS } from "./warshArchiveManifest.js";
 
-// Sukun in Uthmani can be U+0652 or U+06E1
-import { normalizeQuranGlyphText } from "../utils/quranUtils.js";
-
-const SK = "\\u0652\\u06E1";
-
-// ══════════════════════════════════════════════════════════════
-// HAFS TAJWEED RULES (default)
-// ══════════════════════════════════════════════════════════════
-const TAJWID_RULES = [
-  {
-    id: "ghunna",
-    nameAr: "غنّة",
-    nameEn: "Ghunna/ikhfa'",
-    nameFr: "Ghounna/ikhfa'",
-    color: "#08a300",
-    description: "Nasalisation (ghunna)",
-    patterns: [
-      // Shadda on noon or meem (ghunna)
-      /([نم])\u0651/g,
-    ],
-  },
-  {
-    id: "ikhfa",
-    nameAr: "إخفاء",
-    nameEn: "Ghunna/ikhfa'",
-    nameFr: "Ghounna/ikhfa'",
-    color: "#08a300",
-    description: "Dissimulation du noon sakin ou tanwin",
-    patterns: [
-      // Tanwin followed by ikhfa letters
-      /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
-      // Noon sakin (sukun) + ikhfa letters
-      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, "g"),
-    ],
-  },
-  {
-    id: "qalqala",
-    nameAr: "قلقلة",
-    nameEn: "Qalqala (echo)",
-    nameFr: "Qalqala (écho)",
-    color: "#0091f0",
-    description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
-    patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
-  },
-  {
-    id: "idgham",
-    nameAr: "إدغام",
-    nameEn: "Idgham",
-    nameFr: "Idgham",
-    color: "#8c8c8c",
-    description: "Assimilation du noun sakin ou tanwin dans ي ر م ل و ن",
-    patterns: [
-      // Tanwin + yarmaloon letters
-      /[\u064B\u064C\u064D][\s\u200C]*[يرملون]/g,
-      // Noon sakin + yarmaloon letters
-      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, "g"),
-    ],
-  },
-  {
-    id: "iqlab",
-    nameAr: "إقلاب",
-    nameEn: "Iqlab",
-    nameFr: "Iqlab",
-    color: "#08a300",
-    description: "Conversion du noon sakin ou tanwin en meem devant ب",
-    patterns: [
-      /[\u064B\u064C\u064D][\s\u200C]*ب/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, "g"),
-    ],
-  },
-  {
-    id: "madd-normal",
-    nameAr: "مدّ طبيعي",
-    nameEn: "Normal madd (2)",
-    nameFr: "Madd normal (2)",
-    color: "#ad8500",
-    description: "Madd tabii — prolongation de 2 temps",
-    patterns: [
-      // Fatha + alef (includes Uthmani superscript alef U+0670)
-      /[\u064E][\u0627\u0670]/g,
-      // Damma + waw not followed by sukun
-      new RegExp(`[\\u064F]و(?![${SK}])`, "g"),
-      // Kasra + yaa not followed by sukun
-      new RegExp(`[\\u0650]ي(?![${SK}])`, "g"),
-    ],
-  },
-  {
-    id: "madd-separated",
-    nameAr: "مدّ منفصل",
-    nameEn: "Separated madd (2/4/6)",
-    nameFr: "Madd séparé (2/4/6)",
-    color: "#e06c00",
-    description: "Madd munfasil — hamza suivi de lettre de madd entre 2 mots",
-    patterns: [/[\u0627وي][\s][ءأإ]/g],
-  },
-  {
-    id: "madd-connected",
-    nameAr: "مدّ متصل",
-    nameEn: "Connected madd (4/5)",
-    nameFr: "Madd connecté (4/5)",
-    color: "#f40000",
-    description: "Madd muttasil — hamza après lettre de madd dans le même mot",
-    patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
-  },
-  {
-    id: "madd",
-    nameAr: "مدّ لازم",
-    nameEn: "Necessary madd (6)",
-    nameFr: "Madd nécessaire (6)",
-    color: "#b50000",
-    description: "Madd lazim — prolongation obligatoire de 6 temps",
-    patterns: [/[\u0627وي]\u0651/g],
-  },
-  {
-    id: "lam-shamsiyya",
-    nameAr: "حرف ساكن",
-    nameEn: "Silent letter",
-    nameFr: "Lettre muette",
-    color: "#8c8c8c",
-    description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
-    patterns: [
-      // Matches both ٱل (alef wasla) and ال (regular alef)
-      /[ٱا]ل[تثدذرزسشصضطظنل]/g,
-    ],
-  },
-  {
-    id: "tafkhim",
-    nameAr: "تفخيم",
-    nameEn: "Tafkhim (heavy)",
-    nameFr: "Tafkhim (lourd)",
-    color: "#3f48e6",
-    description: "Prononciation emphatique/lourde (lettres مستعلية)",
-    patterns: [
-      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),
-    ],
-  },
-];
-
-// ══════════════════════════════════════════════════════════════
-// WARSH TAJWEED RULES (specific to Warsh 'an Nafi')
-// ══════════════════════════════════════════════════════════════
-const WARSH_TAJWID_RULES = [
-  // ─────────────── Warsh-specific rules ───────────────
-  {
-    id: "naql",
-    nameAr: "نقل",
-    nameEn: "Naql (Transfer)",
-    nameFr: "Naql (Transfert)",
-    color: "#e06c00",
-    description:
-      "Transfert de la voyelle du hamza à la lettre précédente sakin",
-    patterns: [
-      /[ٱا]ل[اأإءؤئ]/g,
-      new RegExp(`ل[${SK}][\\s]*[أإءؤئ]`, "g"),
-      new RegExp(`[بتثجحخدذرزسشصضطظعغفقكلمنهوي][${SK}][\\s]*[ءأإؤئ]`, "g"),
-    ],
-  },
-  {
-    id: "tashil",
-    nameAr: "تسهيل",
-    nameEn: "Tashil (Softening)",
-    nameFr: "Tashil (Adoucissement)",
-    color: "#08a300",
-    description: "Adoucissement du hamza entre deux voyelles",
-    patterns: [
-      /[اآ][ءأإؤئ][اآ]/g,
-      /[أإ][ءأإؤئ]/g,
-      /[ءأإؤئ][\u064E\u064F\u0650][ءأإؤئ]/g,
-    ],
-  },
-  {
-    id: "ibdal",
-    nameAr: "إبدال",
-    nameEn: "Ibdal (Substitution)",
-    nameFr: "Ibdal (Substitution)",
-    color: "#e06c00",
-    description: "Remplacement du hamza par alif/waw/ya",
-    patterns: [
-      /[\u064E][ءأ]/g,
-      /[\u064F][ءؤ]/g,
-      /[\u0650][ءئ]/g,
-      /[اوي][\u0670]?[ءأإؤئ]/g,
-    ],
-  },
-  {
-    id: "madd-badal",
-    nameAr: "مد البدل",
-    nameEn: "Madd Badal (Warsh 4-6)",
-    nameFr: "Madd Badal (4-6 temps)",
-    color: "#e06c00",
-    description: "Prolongation après hamza substitué (4 à 6 temps en Warsh)",
-    patterns: [
-      /[ءأإ][\u064E\u064F\u0650]?[اوي]/g,
-      /آ/g,
-      /ءا/g,
-      /[أإء][وي]/g,
-    ],
-  },
-  {
-    id: "sila-kubra",
-    nameAr: "صلة كبرى",
-    nameEn: "Sila Kubra",
-    nameFr: "Sila Kubra",
-    color: "#f40000",
-    description: "Prolongation du haa du pronom suivi de hamza",
-    patterns: [
-      /ه[\u064F\u0650][\s]*[ءأإؤئ]/g,
-      /[لبمنعف]ه[\u064F\u0650]?[\s]+[ءأإؤئا]/g,
-    ],
-  },
-  {
-    id: "tarqiq-ra",
-    nameAr: "ترقيق الراء",
-    nameEn: "Tarqiq Ra (Warsh)",
-    nameFr: "Tarqiq Ra (léger)",
-    color: "#8c8c8c",
-    description: "Prononciation légère du ra en Warsh (cas spécifiques)",
-    patterns: [
-      /ر[\u0650]/g,
-      new RegExp(`[\u0650]ر[${SK}]`, "g"),
-      new RegExp(`ي[${SK}]ر[${SK}]`, "g"),
-    ],
-  },
-  {
-    id: "idgham-warsh",
-    nameAr: "إدغام ورش",
-    nameEn: "Idgham (Warsh)",
-    nameFr: "Idgham (Warsh)",
-    color: "#8c8c8c",
-    description: "Assimilation spécifique à Warsh",
-    patterns: [
-      /ل\u0651?ر/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*[يرملون]`, "g"),
-      /[\u064B\u064C\u064D][\s\u200C]*[يرملون]/g,
-    ],
-  },
-  // ─────────────── Common rules (also in Hafs but with Warsh variations) ───────────────
-  {
-    id: "ghunna",
-    nameAr: "غنّة",
-    nameEn: "Ghunna",
-    nameFr: "Ghounna",
-    color: "#08a300",
-    description: "Nasalisation (ghunna)",
-    patterns: [
-      /([نم])\u0651/g,
-    ],
-  },
-  {
-    id: "ikhfa",
-    nameAr: "إخفاء",
-    nameEn: "Ikhfa'",
-    nameFr: "Ikhfa",
-    color: "#08a300",
-    description: "Dissimulation",
-    patterns: [
-      /[\u064B\u064C\u064D][\s\u200C]*[تثجدذزسشصضطظفقك]/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*[تثجدذزسشصضطظفقك]`, "g"),
-    ],
-  },
-  {
-    id: "qalqala",
-    nameAr: "قلقلة",
-    nameEn: "Qalqala (echo)",
-    nameFr: "Qalqala (écho)",
-    color: "#0091f0",
-    description: "Rebondissement sur les lettres ق ط ب ج د en sukun",
-    patterns: [new RegExp(`[قطبجد][${SK}]`, "g")],
-  },
-  {
-    id: "iqlab",
-    nameAr: "إقلاب",
-    nameEn: "Iqlab",
-    nameFr: "Iqlab",
-    color: "#08a300",
-    description: "Conversion du noon sakin ou tanwin en meem devant ب",
-    patterns: [
-      /[\u064B\u064C\u064D][\s\u200C]*ب/g,
-      new RegExp(`ن[${SK}][\\s\\u200C]*ب`, "g"),
-    ],
-  },
-
-  {
-    id: "madd-normal",
-    nameAr: "مدّ طبيعي",
-    nameEn: "Normal madd (2)",
-    nameFr: "Madd normal (2)",
-    color: "#ad8500",
-    description: "Madd tabii — prolongation de 2 temps",
-    patterns: [
-      /[\u064E][\u0627\u0670]/g,
-      new RegExp(`[\\u064F]و(?![${SK}])`, "g"),
-      new RegExp(`[\\u0650]ي(?![${SK}])`, "g"),
-    ],
-  },
-  {
-    id: "madd-separated",
-    nameAr: "مدّ منفصل",
-    nameEn: "Separated madd (4-5 Warsh)",
-    nameFr: "Madd séparé (4-5 temps)",
-    color: "#e06c00",
-    description:
-      "Madd munfasil — prolongation 4-5 temps en Warsh (madd entre deux mots)",
-    patterns: [/[اوي][\s\u200C]+[ءأإؤئ]/g],
-  },
-  {
-    id: "madd-connected",
-    nameAr: "مدّ متصل",
-    nameEn: "Connected madd (4-6)",
-    nameFr: "Madd connecté (4-6)",
-    color: "#f40000",
-    description:
-      "Madd muttasil — hamza après madd dans le même mot (4-6 temps en Warsh)",
-    patterns: [/[ءأإؤئ][\u064E\u064F\u0650]?[\u0627وي]/g],
-  },
-  {
-    id: "madd",
-    nameAr: "مدّ لازم",
-    nameEn: "Necessary madd (6)",
-    nameFr: "Madd nécessaire (6)",
-    color: "#b50000",
-    description: "Madd lazim — prolongation obligatoire de 6 temps",
-    patterns: [/[\u0627وي]\u0651/g],
-  },
-  {
-    id: "lam-shamsiyya",
-    nameAr: "حرف ساكن",
-    nameEn: "Silent letter",
-    nameFr: "Lettre muette",
-    color: "#8c8c8c",
-    description: "Lam de l'article assimilée (lam shamsiyya) / lettre muette",
-    patterns: [/[ٱا]ل[تثدذرزسشصضطظنل]/g],
-  },
-  {
-    id: "tafkhim",
-    nameAr: "تفخيم",
-    nameEn: "Tafkhim (heavy)",
-    nameFr: "Tafkhim (lourd)",
-    color: "#3f48e6",
-    description: "Prononciation emphatique/lourde (lettres مستعلية)",
-    patterns: [
-      new RegExp(`[صضطظخغق][\\u064E\\u064F\\u0650${SK}\\u0651]?`, "g"),
-    ],
-  },
-];
-
+const LABELS = {
+  "madd-badal": ["Madd badal", "Substitution madd", "مد بدل"],
+  "madd-arid": ["Madd à l’arrêt", "Stopping madd", "مد عارض للسكون"],
+  "madd-lin": ["Madd līn", "Soft madd", "مد لين"],
+  silent: ["Lettre non prononcée", "Silent letter", "حرف غير منطوق"],
+  "ham-wasl": ["Hamzat al-wasl", "Connecting hamza", "همزة الوصل"],
+  "lam-shamsiyya": ["Lām solaire", "Solar lām", "لام شمسية"],
+  ghunna: ["Ghounna", "Ghunnah", "غنة"],
+  ikhfa: ["Ikhfāʾ", "Ikhfāʾ", "إخفاء"],
+  "ikhfa-shafawi": ["Ikhfāʾ du mīm", "Labial ikhfa", "إخفاء شفوي"],
+  iqlab: ["Iqlāb", "Iqlāb", "إقلاب"],
+  idgham: ["Idghām", "Idghām", "إدغام"],
+  "idgham-ghunnah": ["Idghām avec ghounna", "Idghām with ghunnah", "إدغام بغنة"],
+  "idgham-without-ghunnah": ["Idghām sans ghounna", "Idghām without ghunnah", "إدغام بغير غنة"],
+  "idgham-shafawi": ["Idghām du mīm", "Labial idghām", "إدغام شفوي"],
+  "idgham-mutamathilayn": ["Idghām de lettres identiques", "Identical-letter idghām", "إدغام المتماثلين"],
+  "idgham-mutajanisayn": ["Idghām de lettres homogènes", "Homogeneous-letter idghām", "إدغام المتجانسين"],
+  "idgham-mutaqaribayn": ["Idghām de lettres proches", "Similar-letter idghām", "إدغام المتقاربين"],
+  qalqala: ["Qalqala", "Qalqalah", "قلقلة"],
+  tafkhim: ["Tafkhīm", "Tafkhīm", "تفخيم"],
+  "madd-normal": ["Madd naturel", "Natural madd", "مد طبيعي"],
+  "madd-permissible": ["Madd permis", "Permissible madd", "مد جائز"],
+  "madd-obligatory": ["Madd obligatoire", "Obligatory madd", "مد واجب"],
+  "madd-obligatory-separated": ["Madd obligatoire séparé", "Obligatory separated madd", "مد واجب منفصل"],
+  "madd-separated": ["Madd permis", "Permissible madd", "مد جائز"],
+  "madd-connected": ["Madd obligatoire", "Obligatory madd", "مد واجب"],
+  madd: ["Madd nécessaire", "Necessary madd", "مد لازم"],
+};
+const TAJWID_RULES = Object.freeze(Object.entries(LABELS).map(([id, names]) => Object.freeze({
+  id, nameFr: names[0], nameEn: names[1], nameAr: names[2],
+  visualGroup: TAJWID_RULE_GROUPS[id], color: `var(--tajwid-${id})`,
+  patterns: Object.freeze([]),
+})));
+// Warsh paints only the rules its own pinned edition prints, so its metadata is
+// the Hafs metadata restricted to those ids: a Warsh tooltip can only ever name
+// a rule the Warsh source actually marks.
+export const WARSH_TAJWID_RULES = Object.freeze(
+  TAJWID_RULES.filter((rule) => WARSH_TAJWID_RULE_IDS.includes(rule.id) || WARSH_ARCHIVE_RULE_IDS.includes(rule.id)),
+);
 export default TAJWID_RULES;
-export { WARSH_TAJWID_RULES };
-
-/**
- * Get the appropriate ruleset based on riwaya.
- * @param {string} riwaya - 'hafs' or 'warsh'
- * @returns {Array} The tajweed rules to use
- */
 export function getRulesForRiwaya(riwaya) {
-  return riwaya === "warsh" ? WARSH_TAJWID_RULES : TAJWID_RULES;
+  return riwaya === "hafs" ? TAJWID_RULES : WARSH_TAJWID_RULES;
 }
-
-// ── Tajweed parsing cache ────────────────────
 const _parseTajwidCache = new Map();
 const _PARSE_CACHE_MAX = 2000;
-const _perWordCache = new Map();
-const _PER_WORD_CACHE_MAX = 2000;
-const LEADING_ARABIC_MARKS =
-  /^([\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06ED]+)/u;
 
-/**
- * Keep Arabic combining marks attached to the preceding glyph.
- *
- * Quran.com tajwid markup can start a coloured segment with a harakah. DOM
- * element boundaries prevent that mark from shaping with its base letter, so
- * browsers render a coloured dotted circle instead. U+0672 is also used by
- * that markup as a stand-in for the Quranic superscript alef; the Hafs font
- * expects U+0670.
- */
+/** Merge adjacent annotations without changing any Unicode code point. */
 export function stabilizeTajwidSegments(segments = []) {
-  const stabilized = [];
-
+  const result = [];
   for (const segment of segments) {
-    let segmentText = normalizeQuranGlyphText(segment?.text).replace(/\u0672/g, "\u0670");
-    if (!segmentText) continue;
-
-    const leadingMarks = segmentText.match(LEADING_ARABIC_MARKS)?.[0] || "";
-    if (leadingMarks && stabilized.length > 0) {
-      // Quran.com can place ZWNJ at the end of one segment and the waqf mark at
-      // the start of the next. Keeping that separator would still isolate the
-      // combining mark after segmentation and make Chromium draw a black
-      // dotted-circle fallback.
-      if (/^[\u06D6-\u06ED]/u.test(leadingMarks)) {
-        stabilized[stabilized.length - 1].text = stabilized[
-          stabilized.length - 1
-        ].text.replace(/\u200C$/u, "");
-      }
-      stabilized[stabilized.length - 1].text += leadingMarks;
-      segmentText = segmentText.slice(leadingMarks.length);
-    }
-
-    if (!segmentText) continue;
-
-    const normalizedSegment = {
-      text: segmentText,
-      ruleId: segment?.ruleId || null,
-    };
-    const previous = stabilized[stabilized.length - 1];
-
-    if (previous && previous.ruleId === normalizedSegment.ruleId) {
-      previous.text += normalizedSegment.text;
-    } else {
-      stabilized.push(normalizedSegment);
-    }
+    const text = String(segment?.text ?? "");
+    if (!text) continue;
+    const ruleId = segment?.ruleId || null;
+    if (result.at(-1)?.ruleId === ruleId) result.at(-1).text += text;
+    else result.push({ text, ruleId });
   }
-
-  return stabilized;
+  return result;
 }
 
 function _cacheGet(cache, key) {
@@ -446,88 +78,75 @@ function _cacheSet(cache, maxSize, key, value) {
   cache.set(key, value);
 }
 
+// Rewritten as annotation-only. The single entry point every rendering mode
+// goes through, so gating the invented patterns here is what actually removes
+// them from the app.
+import {
+  ANNOTATED_RIWAYAS,
+  parseTajweedAnnotation,
+  stripTajweedMarkup,
+} from "../utils/tajwidAnnotation.js";
+
 /**
- * Apply all tajwid rules to a text string.
- * Returns an array of segments: { text, ruleId | null }
- * @param {string} text - Arabic text to parse
+ * Apply the provider's Tajweed annotation to a text string.
+ *
+ * Colour comes only from the annotation the API returns
+ * (`text_uthmani_tajweed`), never from letter patterns: a recitation rule
+ * depends on how the verse is read, so inferring one from the characters alone
+ * is guessing, and guessing a Quran reading rule is not acceptable here.
+ *
+ * Consequences that are intentional:
+ *  - Warsh renders uncoloured when the toggle is off, and paints only the
+ *    rules its own edition prints (see src/data/warshTajwidSigns.js).
+ *  - Hafs renders uncoloured when the annotation is missing, which is what
+ *    offline looks like until the payload is cached.
+ *  - The Quran text itself is never altered in any of those cases.
+ *
+ * @param {string} text - annotated or plain Arabic text
  * @param {string} riwaya - 'hafs' or 'warsh' (default: 'hafs')
+ * @returns {Array<{ text: string, ruleId: string|null }>}
  */
 export function parseTajwid(text, riwaya = "hafs") {
   if (!text) return [{ text: "", ruleId: null }];
+  const source = String(text);
 
-  const clean = String(text).replace(/[<>]/g, '');
-  const cacheKey = `${riwaya}:${clean}`;
+  if (!ANNOTATED_RIWAYAS.includes(riwaya)) {
+    // Strip any markup rather than pass it through: a Warsh segment must never
+    // be able to render `<rule …>` as literal Quran text.
+    return stabilizeTajwidSegments([
+      { text: stripTajweedMarkup(source), ruleId: null },
+    ]);
+  }
+
+  const cacheKey = `${riwaya}:${source}`;
   const cached = _cacheGet(_parseTajwidCache, cacheKey);
   if (cached) return cached;
 
-  const rules = getRulesForRiwaya(riwaya);
-
-  // Collect all matches with positions
-  const matches = [];
-  for (const rule of rules) {
-    for (const pattern of rule.patterns) {
-      // Reset regex state
-      const re = new RegExp(pattern.source, pattern.flags);
-      let m;
-      while ((m = re.exec(clean)) !== null) {
-        matches.push({
-          start: m.index,
-          end: m.index + m[0].length,
-          ruleId: rule.id,
-          text: m[0],
-        });
-      }
-    }
-  }
-
-  if (matches.length === 0) {
-    const result = stabilizeTajwidSegments([{ text: clean, ruleId: null }]);
-    _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
-    return result;
-  }
-
-  // Sort by position, longest match first for same position
-  matches.sort((a, b) => a.start - b.start || b.end - a.end);
-
-  // Remove overlapping matches (keep first/longest)
-  const cleaned = [];
-  let lastEnd = 0;
-  for (const m of matches) {
-    if (m.start >= lastEnd) {
-      cleaned.push(m);
-      lastEnd = m.end;
-    }
-  }
-
-  // Build segments
-  const segments = [];
-  let pos = 0;
-  for (const m of cleaned) {
-    if (m.start > pos) {
-      segments.push({ text: clean.slice(pos, m.start), ruleId: null });
-    }
-    segments.push({ text: m.text, ruleId: m.ruleId });
-    pos = m.end;
-  }
-  if (pos < clean.length) {
-    segments.push({ text: clean.slice(pos), ruleId: null });
-  }
-
-  const stabilizedSegments = stabilizeTajwidSegments(segments);
-  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, stabilizedSegments);
-  return stabilizedSegments;
+  const parsed = parseTajweedAnnotation(source);
+  const result = stabilizeTajwidSegments(
+    parsed || [{ text: stripTajweedMarkup(source), ruleId: null }],
+  );
+  _cacheSet(_parseTajwidCache, _PARSE_CACHE_MAX, cacheKey, result);
+  return result;
 }
 
 /** UTF-16 rule ranges for each word, preserving the complete Arabic text run. */
 export function getPerWordTajweedRanges(words, riwaya = "hafs") {
   if (!Array.isArray(words) || words.length === 0) return [];
-  const text = words.join(" ");
-  const segments = parseTajwid(text, riwaya);
-  // A font-specific normalization must never shift a colour onto another
-  // Quranic letter. In that case render the uncoloured, intact words.
-  if (segments.map((segment) => segment.text).join("") !== text) {
+  const annotated = words.join(" ");
+  const segments = parseTajwid(annotated, riwaya);
+  // Segments are expressed in the markup-free text, so every offset below is
+  // computed on it. The parser only assigns rules to characters; it never
+  // rewrites them, which the equality check re-proves before any colour is
+  // allowed to reach a Quranic letter.
+  const plain = segments.map((segment) => segment.text).join("");
+  if (plain !== stripTajweedMarkup(annotated)) {
     return words.map(() => []);
   }
+  // Word boundaries must come from the text the renderer actually paints.
+  const plainWords = plain.split(/\s+/).filter((word) => word.length > 0);
+  if (plainWords.length !== words.length) return words.map(() => []);
+  words = plainWords;
   const ranges = words.map(() => []);
   const positions = [];
   let cursor = 0;
@@ -556,88 +175,110 @@ export function getPerWordTajweedRanges(words, riwaya = "hafs") {
   return ranges;
 }
 
-/**
- * Get per-word tajweed rule IDs for use with QCF4 Warsh rendering.
- * Analyses an Arabic text string and returns an array of ruleId (or null) per word.
- * Each ruleId maps to a CSS variable --tajwid-{ruleId} for proper theming.
- * @param {string} text - Arabic text to analyse
- * @param {string} riwaya - 'hafs' or 'warsh' (default: 'hafs')
- * @returns {Array<string|null>} One ruleId per word
- */
-export function getPerWordTajweedColors(text, riwaya = "hafs") {
-  if (!text) return [];
+export const TAJWID_RULE_DESCRIPTIONS = {
+    ghunna: {
 
-  const cacheKey = `pw:${riwaya}:${text}`;
-  const cached = _cacheGet(_perWordCache, cacheKey);
-  if (cached) return cached;
-
-  const rules = getRulesForRiwaya(riwaya);
-  let segments;
-  try {
-    segments = parseTajwid(text, riwaya);
-  } catch {
-    return [];
-  }
-  if (!segments || segments.length === 0) return [];
-
-  const words = text.split(/\s+/).filter((w) => w.length > 0);
-  if (words.length === 0) return [];
-
-  // Rebuild full text from segments for position alignment
-  const fullText = segments.map((s) => s.text).join("");
-
-  // Build character → ruleId map
-  const charRules = new Array(fullText.length).fill(null);
-  let cPos = 0;
-  for (const seg of segments) {
-    if (seg.ruleId) {
-      for (let i = 0; i < seg.text.length; i++) {
-        if (cPos + i < fullText.length) charRules[cPos + i] = seg.ruleId;
-      }
-    }
-    cPos += seg.text.length;
-  }
-
-  // Map each word to its dominant tajweed rule
-  const result = [];
-  let charIdx = 0;
-  for (const word of words) {
-    // Skip whitespace
-    while (charIdx < fullText.length && /\s/.test(fullText[charIdx])) charIdx++;
-    const ruleCounts = {};
-    for (let i = 0; i < word.length && charIdx + i < fullText.length; i++) {
-      const rule = charRules[charIdx + i];
-      if (rule) ruleCounts[rule] = (ruleCounts[rule] || 0) + 1;
-    }
-    charIdx += word.length;
-
-    let dominant = null;
-    let maxCount = 0;
-    for (const [rule, count] of Object.entries(ruleCounts)) {
-      if (count > maxCount) {
-        maxCount = count;
-        dominant = rule;
-      }
-    }
-
-    // Fallback: direct per-word pattern detection when char-map found nothing
-    if (!dominant) {
-      for (const rule of rules) {
-        let found = false;
-        for (const pattern of rule.patterns) {
-          const re = new RegExp(pattern.source, pattern.flags.replace("g", ""));
-          if (re.test(word)) {
-            dominant = rule.id;
-            found = true;
-            break;
-          }
+        desc: {
+            fr: "Nasalisation produite par la cavité nasale pendant 2 temps.",
+            en: "Nasalization produced from the nose, lasting for 2 beats.",
+            ar: "صوت يخرج من الخيشوم بمقدار حركتين."
         }
-        if (found) break;
-      }
-    }
+    },
+    ikhfa: {
 
-    result.push(dominant);
-  }
-  _cacheSet(_perWordCache, _PER_WORD_CACHE_MAX, cacheKey, result);
-  return result;
-}
+        desc: {
+            fr: "Dissimulation de la lettre Nūn ou Tanwīn devant les lettres de l'Ikhfā'.",
+            en: "Hiding the sound of Nūn or Tanwīn when followed by an Ikhfā' letter.",
+            ar: "نطق الحرف بصفة بين الإظهار والإدغام مع الغنة."
+        }
+    },
+    idgham: {
+
+        desc: {
+            fr: "Assimilation ou fusion de la lettre Nūn ou Tanwīn avec la lettre suivante.",
+            en: "Merging the sound of Nūn or Tanwīn into the following letter.",
+            ar: "إدخل حرف ساكن في حرف متحرك بحيث يصيران حرفاً واحداً مشدداً."
+        }
+    },
+    iqlab: {
+
+        desc: {
+            fr: "Conversion du Nūn ou Tanwīn en un Mīm léger avec Ghunnah.",
+            en: "Converting the sound of Nūn or Tanwīn into a light Mīm with Ghunnah.",
+            ar: "قلب النون الساكنة أو التنوين ميماً مخفاة مع الغنة."
+        }
+    },
+    qalqala: {
+
+        desc: {
+            fr: "Rebondissement ou écho de la consonne lorsqu'elle est calme (Sākīnah).",
+            en: "Echoing or bouncing sound of the consonant when silent (Sākīnah).",
+            ar: "اضطراب الحرف في مخرجه عند النطق به ساكناً."
+        }
+    },
+    "madd-connected": {
+
+        desc: {
+            fr: "Allongement lié : la lettre de Madd et la hamza sont dans le même mot. La durée dépend de la récitation.",
+            en: "Connected elongation: the madd letter and hamza are in the same word. Duration depends on the recitation.",
+            ar: "أن يأتي حرف المد والهمزة في كلمة واحدة، ويختلف المقدار بحسب الرواية."
+        }
+    },
+    "madd-separated": {
+
+        desc: {
+            fr: "Allongement permis : la durée dépend de la règle et du contexte de lecture.",
+            en: "Permissible elongation: duration depends on the rule and reading context.",
+            ar: "مد يختلف مقداره بحسب الحكم وسياق القراءة."
+        }
+    },
+    madd: {
+
+        desc: {
+            fr: "Allongement nécessaire ou obligatoire (6 temps).",
+            en: "Necessary/obligatory elongation (6 beats).",
+            ar: "أن يأتي بعد حرف المد حرف ساكن سكوناً أصلياً بمقدار ٦ حركات."
+        }
+    },
+    "madd-normal": {
+
+        desc: {
+            fr: "Allongement naturel ou normal (2 temps).",
+            en: "Natural or normal elongation (2 beats).",
+            ar: "المد الطبيعي الذي لا تقوم ذات الحرف إلا به بمقدار حركتين."
+        }
+    },
+    silent: {
+
+        desc: {
+            fr: "Lettre écrite mais non prononcée (ex: Hamzat al-Wasl ou Alif muet).",
+            en: "Written but unpronounced letter (e.g., Hamzat al-Wasl or silent Alif).",
+            ar: "حرف يكتب ولا ينطق في القراءة."
+        }
+    },
+    "lam-shamsiyya": {
+
+        desc: {
+            fr: "Lām solaire assimilé dans la lettre suivante (non prononcé).",
+            en: "Solar Lām merged into the following letter (unpronounced).",
+            ar: "اللام التي تكتب ولا تلفظ ويشدد الحرف بعدها."
+        }
+    }
+};
+
+Object.assign(TAJWID_RULE_DESCRIPTIONS, {
+  "madd-badal": { desc: { fr: "Allongement badal signalé par le fichier Warsh.", en: "Substitution madd marked by the Warsh file.", ar: "مد بدل يحدده ملف ورش." } },
+  "madd-arid": { desc: { fr: "Allongement lié au sukūn lors de l’arrêt.", en: "Elongation associated with the sukūn when stopping.", ar: "مد بسبب السكون العارض عند الوقف." } },
+  "madd-lin": { desc: { fr: "Allongement d’une lettre de līn signalé par la source.", en: "Elongation of a soft letter marked by the source.", ar: "مد حرف لين يحدده المصدر." } },
+  "madd-permissible": { desc: { fr: "Allongement permis : la durée dépend de la règle et du contexte de lecture.", en: "Permissible elongation: duration depends on the rule and reading context.", ar: "مد يختلف مقداره بحسب الحكم وسياق القراءة." } },
+  "madd-obligatory": { desc: { fr: "Allongement signalé comme obligatoire par la source.", en: "Elongation marked obligatory by the source.", ar: "مد يصفه المصدر بأنه واجب." } },
+  "madd-obligatory-separated": { desc: { fr: "Allongement séparé signalé comme obligatoire par la source.", en: "Separated elongation marked obligatory by the source.", ar: "مد منفصل يصفه المصدر بأنه واجب." } },
+  "ham-wasl": { desc: { fr: "Hamza prononcée au début de la lecture et omise en liaison.", en: "Hamza pronounced at the start of reading and omitted in connected reading.", ar: "همزة تثبت عند الابتداء وتسقط عند الوصل." } },
+  "ikhfa-shafawi": { desc: { fr: "Dissimulation du mīm sākin devant le bāʾ, avec ghounna.", en: "Concealment of a silent mīm before bāʾ, with ghunnah.", ar: "إخفاء الميم الساكنة عند الباء مع الغنة." } },
+  "idgham-ghunnah": { desc: { fr: "Assimilation avec nasalisation.", en: "Assimilation with nasalisation.", ar: "إدغام مصحوب بالغنة." } },
+  "idgham-without-ghunnah": { desc: { fr: "Assimilation sans nasalisation.", en: "Assimilation without nasalisation.", ar: "إدغام دون غنة." } },
+  "idgham-shafawi": { desc: { fr: "Assimilation du mīm sākin dans un mīm, avec ghounna.", en: "Assimilation of a silent mīm into mīm, with ghunnah.", ar: "إدغام الميم الساكنة في الميم مع الغنة." } },
+  "idgham-mutamathilayn": { desc: { fr: "Assimilation de deux lettres identiques.", en: "Assimilation of two identical letters.", ar: "إدغام حرفين متماثلين." } },
+  "idgham-mutajanisayn": { desc: { fr: "Assimilation de lettres de même point d’articulation.", en: "Assimilation of letters sharing an articulation point.", ar: "إدغام حرفين متجانسين في المخرج." } },
+  "idgham-mutaqaribayn": { desc: { fr: "Assimilation de lettres proches dans leur articulation.", en: "Assimilation of letters close in articulation.", ar: "إدغام حرفين متقاربين." } },
+});

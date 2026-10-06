@@ -75,9 +75,6 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .reciter-detail__loading-spinner {
-        animation-duration: 1.4s;
-    }
 }
 
 .reciter-detail__accent {
@@ -318,7 +315,6 @@
 
 .reciter-detail__bio {
     border: 1px solid var(--border);
-    border-radius: 16px !important;
     background: color-mix(in srgb, var(--theme-bg-alt) 72%, var(--theme-surface));
     padding: 0.9rem;
 }
@@ -345,7 +341,6 @@
     gap: 0.4rem;
     margin-top: 1.25rem;
     border: 1px solid var(--border);
-    border-radius: 15px;
     background: var(--theme-bg-alt);
     padding: 1.1rem 1.15rem;
 }
@@ -455,10 +450,8 @@
 
 .reciter-detail__section-heading {
     display: flex;
-    align-items: flex-end;
     justify-content: space-between;
     gap: 1rem;
-    margin-bottom: 0.8rem;
 }
 
 .reciter-detail__section-heading span {
@@ -474,8 +467,6 @@
 .reciter-detail__section-heading h3 {
     margin: 0;
     color: var(--text-primary);
-    font-size: 1rem;
-    font-weight: 780;
     letter-spacing: -0.015em;
 }
 
@@ -705,7 +696,6 @@
     gap: 0.65rem;
     margin-bottom: 0.65rem;
     padding-block: 0.25rem;
-    background: var(--theme-surface);
 }
 
 .recitation-library__search {
@@ -716,7 +706,6 @@
     align-items: center;
     gap: 0.48rem;
     border: 1px solid var(--border);
-    border-radius: 14px;
     background: var(--theme-bg-alt);
     padding: 0 0.65rem;
     color: var(--text-muted);
@@ -1013,18 +1002,12 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
 .recitation-row--load-more {
     width: 100%;
     min-height: 44px;
-    border-top: 1px solid var(--border);
     background: transparent;
     color: var(--primary);
-    font-size: 0.76rem;
-    font-weight: 760;
     content-visibility: visible;
 }
 
 @media (hover: hover) and (pointer: fine) {
-    .recitation-row--load-more:hover {
-        background: rgba(var(--primary-rgb), 0.06);
-    }
 }
 
 .recitation-library__empty {

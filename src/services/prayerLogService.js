@@ -14,8 +14,36 @@ const RETENTION_DAYS = 400;
 // Notification bookkeeping kinds (never the reader's "prayed" answer).
 export const NOTIFY_KINDS = ["pre", "adhan", "post"];
 
+/**
+ * Storage key for one local day: `YYYY-M-D` with a **0-based** month, exactly
+ * as `Date#getMonth()` reports it, so `2026-0-15` is 15 January 2026 and not
+ * December. The same format is produced by `prayerTimesService.localDayKey`
+ * (the times cache) and by the page that lists the reader's week and month;
+ * `dayKeyToDate` below is the only decoder, so an encoder and its reader cannot
+ * drift apart again.
+ */
 export function localDayKey(date = new Date()) {
   return `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+}
+
+/**
+ * Inverse of `localDayKey`. Noon is deliberate: a midnight timestamp is pushed
+ * into the neighbouring day by a DST transition.
+ *
+ * A month of 12 cannot come from the encoder above, so it can only be a
+ * hand-written or legacy 1-based key: those are read the way they were meant,
+ * because dropping the day would erase a mark the reader made.
+ */
+export function dayKeyToDate(dayKey) {
+  const match = /^(\d{4})-(\d{1,2})-(\d{1,2})$/.exec(String(dayKey ?? ""));
+  if (!match) return null;
+  const year = Number(match[1]);
+  const day = Number(match[3]);
+  if (day < 1 || day > 31) return null;
+  const rawMonth = Number(match[2]);
+  // 0..11 is the encoder's own range; 12 is the 1-based shape of a legacy key.
+  const month = rawMonth === 12 ? 11 : rawMonth;
+  return new Date(year, month, day, 12);
 }
 
 function readEncryptedMap(key) {
@@ -66,9 +94,13 @@ function pruneOldDays(log, now = new Date()) {
   const cutoff = now.getTime() - RETENTION_DAYS * 24 * 60 * 60 * 1000;
   const out = {};
   for (const [day, prayers] of Object.entries(log)) {
-    const [year, month, date] = day.split("-").map(Number);
-    const stamp = new Date(year, month - 1, date, 23, 59, 59).getTime();
-    if (stamp >= cutoff) out[day] = prayers;
+    // A day used to be dated by subtracting one from the key's month, which
+    // aged every entry by about a month and rolled marks off the retention
+    // window early — the reader's own record disappearing on its own.
+    const parsed = dayKeyToDate(day);
+    // A key that cannot be read is a key we must not delete: a corrupt entry is
+    // small and bounded, a deleted mark is gone for good.
+    if (parsed == null || parsed.getTime() >= cutoff) out[day] = prayers;
   }
   return out;
 }

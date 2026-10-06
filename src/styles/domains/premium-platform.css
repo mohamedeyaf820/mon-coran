@@ -269,7 +269,6 @@
 }
 
 .modal-overlay {
-    backdrop-filter: blur(10px);
     background:
         radial-gradient(
             circle at top,

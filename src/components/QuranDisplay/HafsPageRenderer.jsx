@@ -9,6 +9,7 @@ import {
   normalizeFontId,
   resolveFontFamily,
 } from "../../data/fonts";
+import { getHafsTajwidSource } from "../../utils/hafsTajwidSource";
 import { getJuzOpeningAtAyah } from "../../data/juz";
 import { playWordAudio } from "../../utils/wordAudio";
 import MushafAyahMarker from "./MushafAyahMarker";
@@ -107,14 +108,6 @@ export function usesMushafPageGlyphs(fontFamily, riwaya) {
   return riwaya === "hafs" && PAGE_GLYPH_FONT_IDS.has(normalizeFontId(fontFamily, riwaya));
 }
 
-function getHafsFlowWords(ayah, fontFamily, riwaya) {
-  const words = Array.isArray(ayah?.words) ? ayah.words : [];
-  return words
-    .filter((word) => (word.charType || word.charTypeName || word.char_type_name) !== "end")
-    .map((word) => getQuranWordTextForFont(word, fontFamily, riwaya))
-    .filter(Boolean);
-}
-
 export default function HafsPageRenderer({
   activeAyah,
   ayahs,
@@ -145,15 +138,15 @@ export default function HafsPageRenderer({
       usesPageGlyphs
         ? []
         : buildFlowSegments(ayahs, {
-            getWords: (ayah) => getHafsFlowWords(ayah, flowFontId, riwaya),
+            getTajwidSource: (ayah) => getHafsTajwidSource(ayah, flowFontId),
             riwaya: "hafs",
             showTajwid,
           }),
-    [ayahs, flowFontId, riwaya, showTajwid, usesPageGlyphs],
+    [ayahs, flowFontId, showTajwid, usesPageGlyphs],
   );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
-    [ayahs, currentPage, lang, riwaya],
+    [ayahs, currentPage, lang],
   );
 
   useEffect(() => {

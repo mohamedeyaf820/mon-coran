@@ -187,9 +187,10 @@ test("reading page stays usable after riwaya refresh and browser history navigat
   await expect(page.locator(".quran-display--warsh").first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
-  const warshSize = await getArabicFontSize(page);
-  expect(warshSize).toBeGreaterThanOrEqual(22);
-  expect(warshSize).toBeLessThanOrEqual(72);
+  // The first verse node can be swapped right after its first paint (a detached
+  // node reports an empty size, parsed as 0): wait for a settled, in-range value.
+  await expect.poll(() => getArabicFontSize(page)).toBeGreaterThanOrEqual(22);
+  await expect.poll(() => getArabicFontSize(page)).toBeLessThanOrEqual(72);
 
   await page.goto("/surah/3");
   await waitForReader(page);

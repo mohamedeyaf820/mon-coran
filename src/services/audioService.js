@@ -1,3 +1,5 @@
+import { findOfflineAudio, resolveAudioSource } from "./offlineAudioStore.js";
+import { bindEngineMediaSession, syncEngineMediaSession, updateEngineMetadata } from "./engineMediaSession.js";
 /**
  * Audio service – manages Quran playback, playlists and resilient fallbacks.
  * Wraps HTML5 Audio API with retry logic, preloading, and timeout handling.
@@ -10,7 +12,7 @@ import {
 } from "../utils/surahStreamSync.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
-import { handOffToIndex, handleVerseEnded } from "./audioHandoff.js";
+import { handleVerseEnded } from "./audioHandoff.js";
 import { createBasmalaPreroll } from "./basmalaPreroll.js";
 import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
 import {
@@ -18,7 +20,6 @@ import {
   preparePlaybackSession,
   recoverBackgroundAudio,
   reportPausedState,
-  retryPendingBackgroundAudio,
 } from "./audioSession.js";
 import {
   buildLatencyKey,
@@ -57,7 +58,13 @@ function devLog(method, ...args) {
 
 class AudioService {
   constructor() {
+    this.state = "IDLE";
+    this._commandId = 0;
+    this._objectUrl = null;
+    this._resumePromise = null;
+    this._diagnostics = [];
     this.audio = new Audio();
+    this._releaseMediaSession = bindEngineMediaSession(this);
     this.audio.preload = "metadata";
     this.audio.playsInline = true;
     if (typeof this.audio.setAttribute === "function") {
@@ -98,12 +105,6 @@ class AudioService {
     // doing: an OS suspension or a background load failure flips `isPlaying`,
     // and recovery must not mistake that for an intentional pause.
     this._playbackIntent = "stopped";
-    this._pendingBackgroundIndex = null;
-    this._backgroundRecoveryIndex = null;
-    // A backgrounded advance can fail transiently while the page is hidden;
-    // this timer retries it without waiting for the user to reopen the app.
-    this._backgroundRetryTimer = null;
-    this._backgroundRetryAttempts = 0;
 
     // Surah/playlist repeat
     // 1 => no repeat, N => replay full playlist N times, 0 => infinite.
@@ -143,57 +144,34 @@ class AudioService {
     this._ayahChangeListeners = [];
     this._rafId = null; // RAF guard — caps UI updates at display refresh rate
     this._pendingSeekSec = null; // seek asked during the basmala pre-roll
-    this._transientRecoveryTimer = null;
     // True while a source swap we initiated is in flight. Swapping the source
     // of a live element makes the engine report the *old* resource as paused;
     // that is our transition, not the reader stopping the recitation.
     this._handOffInFlight = false;
 
     // Wire up native events (store bound refs for cleanup)
-    this._boundEnded = () => this._handleEnded();
+    this._boundEnded = () => { this._diagnose("ended"); this._handleEnded(); };
     this._boundTimeUpdate = () => {
-      // timeupdate fires 4-17×/sec; cap React re-renders at ~60fps with RAF.
-      // rAF is suspended while the page is hidden, so background playback runs
-      // the same pipeline on a timer instead of freezing the lock screen.
-      if (this._rafId) return;
-      const hidden =
-        typeof document !== "undefined" && document.visibilityState === "hidden";
-      if (hidden) {
-        this._rafId = setTimeout(() => {
-          this._rafId = null;
-          this._emitTimeUpdate();
-        }, 500);
-        return;
-      }
-      const raf = typeof requestAnimationFrame !== "undefined" ? requestAnimationFrame : (fn) => (fn(), 0);
-      this._rafId = raf(() => {
-        this._rafId = null;
-        this._emitTimeUpdate();
-      });
+      this._emitTimeUpdate();
+      syncEngineMediaSession(this);
     };
     this._boundError = (e) => {
       // Ignore errors from clearing src
       if (!this.audio.src || this.audio.src === window.location.href) return;
       this._handOffInFlight = false;
+      if (this._basmala.active && !this._cancelPendingLoad) { this._basmala.ended(); return; }
       // A load already owns its retry/error path. Reporting this native event
       // as well can switch reciters before the retry has even finished.
-      if (this._cancelPendingLoad) return;
-      if (recoverBackgroundAudio(this)) return;
-      if (this.isPlaying) {
-        // A media error after playback started is a transient network drop,
-        // not a dead CDN: retry the same track instead of failing over to
-        // another reciter (which would burn a cooldown up to 4 hours).
-        this._scheduleTransientPlaybackRecovery();
-        return;
-      }
-      devLog("error", "Audio error:", e);
-      this.onError?.(e);
+      if (this._cancelPendingLoad || this.state === "LOADING") return;
+      this._diagnose("native-error", this.audio.error || e);
+      recoverBackgroundAudio(this);
+
     };
     this.audio.addEventListener("ended", this._boundEnded);
     this.audio.addEventListener("timeupdate", this._boundTimeUpdate);
     this.audio.addEventListener("error", this._boundError);
-    this._boundWaiting = () => this.onNetworkState?.("buffering");
-    this._boundStalled = () => this.onNetworkState?.("stalled");
+    this._boundWaiting = () => { this._setState("BUFFERING"); this.onNetworkState?.("buffering"); };
+    this._boundStalled = () => { this._diagnose("stalled"); this.onNetworkState?.("stalled"); };
     this._boundCanPlay = () => this.onNetworkState?.("ready");
     this._boundPlaying = () => this.onNetworkState?.("playing");
     this.audio.addEventListener("waiting", this._boundWaiting);
@@ -202,55 +180,35 @@ class AudioService {
     this.audio.addEventListener("playing", this._boundPlaying);
     this._releaseNativePlayback = observeNativePlayback(this);
 
-    // Android lock screens suspend the page and reject play; resume on
-    // visibility instead of silently stopping. Recovery is driven by the
-    // playback intent, because an OS suspension clears `isPlaying` first.
     this._boundVisibilityChange = () => {
-      // Re-assert the session in both directions: iOS reads the audio session
-      // type at the moment the app leaves the foreground, and every further
-      // background advance has to keep the playback context out of
-      // `suspended` or the recitation goes silent even though the element
-      // keeps buffering.
-      if (this._playbackIntent === "playing") {
-        preparePlaybackSession(this._audioCtx);
-      }
-      if (document.hidden || this._playbackIntent !== "playing") return;
-      if (this._pendingBackgroundIndex != null) {
-        retryPendingBackgroundAudio(this);
-        return;
-      }
-      if (this.audio?.paused && this.audio.src) this.resume();
-    };
-    this._boundOnline = () => {
-      if (this._playbackIntent !== "playing" || this._pendingBackgroundIndex == null) return;
-      retryPendingBackgroundAudio(this);
-    };
-    // Android's Chrome freezes a backgrounded tab (not merely hides it), which
-    // suspends the media element once its buffer drains. The `resume` lifecycle
-    // event is the unfreeze signal, and it can arrive while the page is still
-    // hidden — before `visibilitychange` — so restart the stalled verse here and
-    // re-assert playback audio focus. Without this the recitation stays silent
-    // until the reader opens the app again.
-    this._boundResume = () => {
-      if (this._playbackIntent !== "playing") return;
-      preparePlaybackSession(this._audioCtx);
-      if (this._pendingBackgroundIndex != null) {
-        retryPendingBackgroundAudio(this);
-      } else if (this.audio?.paused && this.audio.src &&
-                 this.audio.src !== window.location.href) {
-        this.audio.play().catch(() => {});
+      this._diagnose("visibilitychange");
+      // Reconcile native state; returning to the app is never a play gesture.
+      if (!document.hidden) {
+        if (this.audio.paused && this._playbackIntent === "playing") reportPausedState(this);
+        syncEngineMediaSession(this);
+        this._emitTimeUpdate();
       }
     };
+    this._boundResume = this._boundVisibilityChange;
+    this._boundOnline = () => this._diagnose("online");
     if (typeof document !== "undefined") {
       document.addEventListener("visibilitychange", this._boundVisibilityChange);
       document.addEventListener("resume", this._boundResume);
     }
     if (typeof window !== "undefined") window.addEventListener?.("online", this._boundOnline);
+    this._channel = typeof window !== "undefined" && typeof BroadcastChannel !== "undefined" && import.meta.env
+      ? new BroadcastChannel("mushafplus-playback") : null;
+    if (this._channel) this._channel.onmessage = () => {
+      if (this._playbackIntent === "playing") this.pause();
+    };
+    this._boundOtherAudio = (event) => { if (event.detail?.owner !== "recitation" && this._playbackIntent === "playing") this.pause(); };
+    if (typeof window !== "undefined") window.addEventListener?.("mushafplus-playback-claim", this._boundOtherAudio);
+
   }
 
   /* ── Playlist Management ───────────────────── */
 
-  loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah") {
+  loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah", { autoRestart = true } = {}) {
     const requestedAyahs = Array.isArray(ayahs) ? ayahs : [];
     ayahs = filterAyahAudioGaps(requestedAyahs, cdnType, reciterCdn);
     this.playlistGapCount = Math.max(0, requestedAyahs.length - ayahs.length);
@@ -304,7 +262,7 @@ class AudioService {
     const previousCurrent = this.currentAyah;
     const previousPlaylist = this.playlist;
     const wasPlaying = this.isPlaying;
-    const previousSrc = this.audio.src;
+    const previousSrc = this._resolvedOriginalUrl || this.audio.src;
     this._playlistSignature = nextSignature;
     this._currentReciterCdn = reciterCdn || "";
     this._currentCdnType = cdnType || "everyayah";
@@ -371,7 +329,7 @@ class AudioService {
 
     // If we were playing and the reciter/URL changed for the current ayah,
     // stop the stale audio and immediately restart with the new reciter's URL.
-    if (wasPlaying && preservedIndex >= 0) {
+    if (wasPlaying && preservedIndex >= 0 && autoRestart) {
       const newUrl = this.playlist[preservedIndex].url;
       if (previousSrc && previousSrc !== newUrl) {
         const savedTime = this.audio.currentTime;
@@ -453,7 +411,7 @@ class AudioService {
             quranComAudioTiming: null,
           }));
 
-    this.loadPlaylist(sourceAyahs, reciterCdn, cdnType);
+    this.loadPlaylist(sourceAyahs, reciterCdn, cdnType, { autoRestart: false });
 
     if (!snapshotAyah) {
       if (wasPlaying) {
@@ -509,37 +467,49 @@ class AudioService {
   }
 
   pause() {
+    this._resumePromise = null;
+    this._resumeNeedsLoad = this._basmala.active || this.state === "LOADING";
+    this._commandId++;
+    this._cancelPendingLoad?.();
+    this._loadRequestId++;
+    this._basmala.cancel();
+    this._setState("PAUSED_BY_USER");
     this._playbackIntent = "paused";
-    this._pendingBackgroundIndex = null;
     this._handOffInFlight = false;
-    this._clearBackgroundRetry();
     this.audio.pause();
     this.isPlaying = false;
     this._notifyPause(this.currentAyah);
+    this._setState("PAUSED_BY_USER");
   }
 
   resume() {
+    if (this._resumePromise) return this._resumePromise;
+    this._playbackIntent = "playing";
+    this._channel?.postMessage("claim");
+    if (typeof window !== "undefined") window.dispatchEvent?.(new CustomEvent("mushafplus-playback-claim", { detail: { owner: "recitation" } }));
     preparePlaybackSession(this._audioCtx);
-    if (this._pendingBackgroundIndex != null) {
-      this._playbackIntent = "playing";
-      return retryPendingBackgroundAudio(this);
+    if (this._resumeNeedsLoad || !this.audio.src || this.audio.error || this.audio.ended) {
+      this._resumeNeedsLoad = false;
+      const loading = this._loadAndPlay(Math.max(0, this.playlistIndex), { position: this.currentTime }).finally(() => {
+        if (this._resumePromise === loading) this._resumePromise = null;
+      });
+      this._resumePromise = loading;
+      return loading;
     }
-    if (this.audio.src && this.audio.src !== window.location.href) {
-      this.audio.play()
-        .then(() => {
-          this._playbackIntent = "playing";
-          this.isPlaying = true;
-          this._notifyPlay(
-            this.currentAyah || this.playlist[this.playlistIndex],
-          );
-        })
-        .catch((err) => {
-          reportPausedState(this, this.currentAyah);
-          // A blocked gesture is not a dead CDN: the UI must not switch
-          // reciters over it, it just needs another tap.
-          if (err?.name !== "NotAllowedError") this.onError?.(err);
-        });
-    }
+    const commandId = this._commandId;
+    const pending = Promise.resolve(this.audio.play()).then(() => {
+      if (commandId !== this._commandId) return;
+      this.isPlaying = true;
+      this._setState("PLAYING");
+      this._notifyPlay(this.currentAyah);
+    }).catch((err) => {
+      if (commandId !== this._commandId) return;
+      reportPausedState(this);
+      this._diagnose("play-rejected", err);
+      this.onError?.(err);
+    }).finally(() => { if (this._resumePromise === pending) this._resumePromise = null; });
+    this._resumePromise = pending;
+    return pending;
   }
 
   toggle() {
@@ -557,12 +527,11 @@ class AudioService {
   }
 
   stop() {
+    this._commandId++;
+    this._setState("IDLE");
     const wasPlaying = this.isPlaying;
     this._playbackIntent = "stopped";
-    this._pendingBackgroundIndex = null;
-    this._backgroundRecoveryIndex = null;
     this._handOffInFlight = false;
-    this._clearBackgroundRetry();
     this._basmala.cancel();
     this._cancelPendingLoad?.();
     this._loadRequestId++;
@@ -575,6 +544,7 @@ class AudioService {
     this.audio.currentTime = 0;
     this.audio.removeAttribute("src");
     this.audio.load(); // Reset without triggering error
+    this._releaseObjectUrl();
     this._releasePreloadPool();
     this.isPlaying = false;
     this.playlist = [];
@@ -584,7 +554,6 @@ class AudioService {
     this._playlistSourceAyahs = [];
     this._pendingSurahStreamAyah = null;
     this._pendingSeekSec = null;
-    this._clearTransientPlaybackRecovery();
     this.memCurrentRepeat = 0;
     this.surahCurrentCycle = 1;
     if (wasPlaying) {
@@ -667,12 +636,15 @@ class AudioService {
    * Play a single ayah by URL (one-shot) with retry
    */
   async playSingle(url, meta = {}) {
+    const commandId = ++this._commandId;
+    this._playbackIntent = "playing";
     try {
       this.onNetworkState?.("loading");
       this._basmala.cancel();
       const verse = { surah: meta.surah, ayah: meta.ayah };
-      if (!(await this._basmala.before(verse))) return false;
+      if (!(await this._basmala.before(verse)) || commandId !== this._commandId) return false;
       await this._loadUrlWithRetry(url);
+      if (commandId !== this._commandId) return false;
       if (this.audio.paused) {
         this.isPlaying = false;
         this.onNetworkState?.("error");
@@ -743,26 +715,6 @@ class AudioService {
     }
   }
 
-  _clearTransientPlaybackRecovery() {
-    if (this._transientRecoveryTimer) {
-      clearTimeout(this._transientRecoveryTimer);
-      this._transientRecoveryTimer = null;
-    }
-  }
-
-  _scheduleTransientPlaybackRecovery() {
-    if (this._transientRecoveryTimer) return;
-    this._transientRecoveryTimer = setTimeout(() => {
-      this._transientRecoveryTimer = null;
-      if (this._playbackIntent !== "playing" || !this.audio?.paused) return;
-      if (!this.audio.src || this.audio.src === window.location.href) return;
-      this.audio.play().catch(() => {
-        // The browser refused to resume; surface it so the UI can act.
-        this.isPlaying = false;
-        this.onError?.(new Error("Transient playback interruption"));
-      });
-    }, 1500);
-  }
 
   /* ── Playlist repeat ───────────────────────── */
 
@@ -822,14 +774,30 @@ class AudioService {
 
   /**
    * Load a URL into the audio element and start playing.
-   * Waits for 'canplay' before calling play(). Retries on failure.
+   * Resolves a verified local source first; native play() determines readiness.
    */
-  _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+  async _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+    if (!isTrustedAudioUrl(url)) throw new Error("Untrusted audio URL");
+    const commandId = this._commandId;
+    const source = await resolveAudioSource([url]);
+    if (commandId !== this._commandId) {
+      if (source.local) URL.revokeObjectURL(source.url);
+      throw new DOMException("Audio load superseded", "AbortError");
+    }
+    this._resolvedOriginalUrl = source.originalUrl;
+    this._releaseObjectUrl();
+    this._objectUrl = source.local ? source.url : null;
+    this._sourceLocal = source.local;
+    this._diagnose("source");
+    return this._loadResolvedUrlWithRetry(source.url, source.local ? 0 : retries);
+  }
+
+  _loadResolvedUrlWithRetry(url, retries = MAX_RETRIES) {
     preparePlaybackSession(this._audioCtx);
     if (typeof navigator !== "undefined" && navigator.onLine === false) retries = 0;
     this._cancelPendingLoad?.();
     return new Promise((resolve, reject) => {
-      if (!isTrustedAudioUrl(url)) {
+      if (url !== this._objectUrl && !isTrustedAudioUrl(url)) {
         reject(new Error("Untrusted audio URL"));
         return;
       }
@@ -843,11 +811,11 @@ class AudioService {
           .then(() => {
             // A superseded load must not resolve its caller: the new track
             // owns the element now, and re-asserting the old one double-starts.
-            if (requestId !== this._loadRequestId) return;
+            if (requestId !== this._loadRequestId) { reject(new DOMException("Superseded", "AbortError")); return; }
             resolve();
           })
           .catch((e) => {
-            if (requestId !== this._loadRequestId) return;
+            if (requestId !== this._loadRequestId) { reject(new DOMException("Superseded", "AbortError")); return; }
             reject(e);
           });
         return;
@@ -915,25 +883,8 @@ class AudioService {
         cleanup();
 
         const onCanPlay = () => {
-          if (settled || requestId !== this._loadRequestId) return;
-          cleanup();
-          this._clearLoadTimeout();
-          this.audio
-            .play()
-            .then(() => finishResolve())
-            .catch((e) => {
-              // Browser may block autoplay — user gesture needed
-              if (e.name === "NotAllowedError") {
-                finishReject(e);
-              } else if (retriesLeft > 0) {
-                retryTimer = setTimeout(
-                  () => attempt(retriesLeft - 1),
-                  RETRY_DELAY,
-                );
-              } else {
-                finishReject(e);
-              }
-            });
+          // play() below already waits for media readiness; never start twice.
+          this.onNetworkState?.("ready");
         };
 
         const onError = () => {
@@ -977,9 +928,8 @@ class AudioService {
         this.audio.src = url;
         this.audio.load();
 
-        // Start playback immediately while still inside the user's activation
-        // chain. Waiting for `canplay` first can lose that activation on mobile
-        // browsers and also leaves mocked media elements idle in CI.
+        // Request playback once. Its promise settles when the browser is ready
+        // or rejects when playback is unavailable or permission is denied.
         this.audio
           .play()
           .then(() => finishResolve())
@@ -1021,13 +971,17 @@ class AudioService {
 
   loadAndPlay(index) { return this._loadAndPlay(index); }
 
-  async _loadAndPlay(index, { throwOnError = false } = {}) {
+  async _loadAndPlay(index, { throwOnError = false, position = 0 } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
 
-    // Claim the native playback session synchronously at the point playback
-    // is requested. The basmala pre-roll and URL loader both await; waiting
-    // until `_loadUrlWithRetry` to set this can lose the mobile user-activation
-    // window before the first audio resource is handed to the browser.
+    // Record the command before asynchronous cache lookup. The browser owns
+    // autoplay permission; a rejected play stays interrupted until user action.
+    const commandId = ++this._commandId;
+    this._cancelPendingLoad?.();
+    this._playbackIntent = "playing";
+    this._channel?.postMessage("claim");
+    if (typeof window !== "undefined") window.dispatchEvent?.(new CustomEvent("mushafplus-playback-claim", { detail: { owner: "recitation" } }));
+    this._setState("LOADING");
     preparePlaybackSession(this._audioCtx);
     this._basmala.cancel();
     this.playlistIndex = index;
@@ -1049,13 +1003,17 @@ class AudioService {
 
     try {
       this.onNetworkState?.("loading");
-      if (!(await this._basmala.before(item))) return;
-      const candidateUrls = Array.isArray(item.urls) && item.urls.length > 0 ? item.urls : [item.url];
+      if (!(await this._basmala.before(item)) || commandId !== this._commandId) return;
+      let candidateUrls = (Array.isArray(item.urls) && item.urls.length > 0 ? item.urls : [item.url]).filter(isTrustedAudioUrl);
+      const cached = await findOfflineAudio(candidateUrls);
+      if (commandId !== this._commandId) return;
+      if (cached) candidateUrls = [cached.originalUrl, ...candidateUrls.filter(url => url !== cached.originalUrl)];
       let loadedUrl = null;
       let lastErr = null;
       for (const urlCandidate of candidateUrls) {
         try {
           await this._loadUrlWithRetry(urlCandidate);
+          if (commandId !== this._commandId) return;
           loadedUrl = urlCandidate;
           break;
         } catch (err) {
@@ -1083,7 +1041,7 @@ class AudioService {
             item.surah,
             pending.ayah,
           );
-          this.audio.currentTime = progress * this.audio.duration;
+          if (progress !== null) this.audio.currentTime = progress * this.audio.duration;
         }
         activeItem = resolveSurahStreamAyah(
           this._playlistSourceAyahs,
@@ -1094,14 +1052,14 @@ class AudioService {
         );
         this._pendingSurahStreamAyah = null;
       }
+      if (commandId !== this._commandId) return;
       this.currentAyah = activeItem;
+      this._setState("PLAYING");
       this.isPlaying = true;
       this._playbackIntent = "playing";
       this._handOffInFlight = false;
+      if (position > 0 && Number.isFinite(position)) this._pendingSeekSec = position;
       this._applyPendingSeek();
-      this._pendingBackgroundIndex = null;
-      this._clearBackgroundRetry();
-      if (this._backgroundRecoveryIndex !== index) this._backgroundRecoveryIndex = null;
       this.onNetworkState?.("playing");
       this._notifyPlay(activeItem);
       this._emitAyahChange(activeItem);
@@ -1110,19 +1068,9 @@ class AudioService {
       this._preloadAhead(index + 1, 3);
     } catch (err) {
       if (err?.name === "AbortError") return;
-      const hidden =
-        typeof document !== "undefined" && document.visibilityState === "hidden";
-      if (hidden && this._playbackIntent === "playing") {
-        // Backgrounded loads get suspended by the browser all the time. Keep
-        // the intent and retry on a timer (and again on visibility/online)
-        // instead of reporting an error nobody can see — and without
-        // announcing a pause to the OS, which would give up audio focus and
-        // let the tab be frozen before the retry can run.
-        this._pendingBackgroundIndex = index;
-        reportPausedState(this, this.currentAyah);
-        this._scheduleBackgroundRetry(index);
-        return;
-      }
+      if (commandId !== this._commandId) return;
+      this._setState(err?.name === "NotAllowedError" ? "INTERRUPTED" : "ERROR");
+      this._diagnose("load-error", err);
       devLog("error", "Audio play error:", err);
       this.onNetworkState?.("error");
       this.onError?.(err);
@@ -1135,42 +1083,33 @@ class AudioService {
     }
   }
 
-  /**
-   * Android keeps a MediaSession tab eligible to run while its audio is active,
-   * but a backgrounded next-verse load can still fail transiently. Retry it on
-   * a bounded, backing-off timer instead of parking it until the page becomes
-   * visible again — that wait is what stopped recitation after a few verses.
-   */
-  _scheduleBackgroundRetry(index) {
-    if (this._backgroundRetryTimer != null) return;
-    // Retry offline too: the active URL may be in the audio service-worker
-    // cache, and an OS suspension is independent of network connectivity.
-    // Retries are bounded below, so an uncached file cannot loop forever.
-    if (this._backgroundRetryAttempts >= 6) return; // visibility/online still recover
-    this._backgroundRetryAttempts += 1;
-    const delay = Math.min(1000 * 2 ** (this._backgroundRetryAttempts - 1), 15000);
-    this._backgroundRetryTimer = setTimeout(() => {
-      this._backgroundRetryTimer = null;
-      if (this._playbackIntent !== "playing" || this._pendingBackgroundIndex == null) return;
-      retryPendingBackgroundAudio(this);
-    }, delay);
+
+  _releaseObjectUrl() {
+    if (this._objectUrl) URL.revokeObjectURL(this._objectUrl);
+    this._objectUrl = null;
   }
 
-  _clearBackgroundRetry() {
-    if (this._backgroundRetryTimer != null) {
-      clearTimeout(this._backgroundRetryTimer);
-      this._backgroundRetryTimer = null;
-    }
-    this._backgroundRetryAttempts = 0;
+  _setState(state) {
+    this.state = state;
+    syncEngineMediaSession(this);
+    this._diagnose(state);
   }
 
-  /**
-   * Verse boundary: see services/audioHandoff.js for the hidden-playback
-   * rationale (a source swap that stays inside the `ended` task).
-   */
-  _handOffToIndex(index) {
-    return handOffToIndex(this, index);
+  _diagnose(event, error) {
+    if (!import.meta.env?.DEV) return;
+    this._diagnostics.push({ event, at: Date.now(), state: this.state,
+      track: this.currentAyah ? `${this.currentAyah.surah}:${this.currentAyah.ayah ?? "surah"}` : null,
+      paused: this.audio.paused, position: this.audio.currentTime, readyState: this.audio.readyState,
+      source: this._sourceLocal ? "local" : "remote", hidden: typeof document !== "undefined" && document.hidden,
+      error: error?.name, code: error?.code || this.audio.error?.code,
+      mediaSession: typeof navigator !== "undefined" && navigator.mediaSession?.playbackState,
+      serviceWorker: typeof navigator !== "undefined" && Boolean(navigator.serviceWorker?.controller),
+    });
+    if (this._diagnostics.length > 100) this._diagnostics.shift();
   }
+
+  getDiagnostics() { return this._diagnostics.map(entry => ({ ...entry })); }
+
 
   _handleEnded() {
     handleVerseEnded(this);
@@ -1198,6 +1137,7 @@ class AudioService {
   }
 
   _notifyPlay(item) {
+    syncEngineMediaSession(this);
     this.onPlay?.(item);
     for (const fn of this._playListeners) {
       try {
@@ -1208,7 +1148,10 @@ class AudioService {
     }
   }
 
+  setMediaContext(context) { this._mediaContext = context; updateEngineMetadata(this); }
+
   _emitAyahChange(item) {
+    updateEngineMetadata(this);
     this.onAyahChange?.(item);
     for (const fn of this._ayahChangeListeners) {
       try {
@@ -1246,6 +1189,7 @@ class AudioService {
   }
 
   _notifyPause(item) {
+    syncEngineMediaSession(this);
     this.onPause?.();
     for (const fn of this._pauseListeners) {
       try {
@@ -1325,6 +1269,9 @@ class AudioService {
   }
 
   destroy() {
+    this._releaseMediaSession();
+    this._channel?.close();
+    if (typeof window !== "undefined") window.removeEventListener?.("mushafplus-playback-claim", this._boundOtherAudio);
     this._releaseNativePlayback();
     if (this._rafId) {
       cancelAnimationFrame(this._rafId);
@@ -1332,7 +1279,6 @@ class AudioService {
       this._rafId = null;
     }
     this._clearLoadTimeout();
-    this._clearTransientPlaybackRecovery();
     this.stop();
     this._releasePreloadPool();
     if (this.audio) {
@@ -1371,4 +1317,7 @@ Object.assign(AudioService, {
 // Singleton
 const audioService = new AudioService();
 export { AudioService };
+if (import.meta.env?.DEV && typeof window !== "undefined") {
+  window.__mushafAudioDiagnostics = () => audioService.getDiagnostics();
+}
 export default audioService;

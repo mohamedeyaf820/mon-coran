@@ -1,0 +1,51 @@
+name: Signaler un bug
+description: Quelque chose ne fonctionne pas comme prévu
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: Ce qui se passe
+      description: Qu'avez-vous vu, et qu'attendiez-vous ?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pour reproduire
+      placeholder: "1. Ouvrir la sourate 2 en mode liste\n2. …"
+    validations:
+      required: true
+  - type: dropdown
+    id: riwaya
+    attributes:
+      label: Riwaya
+      options:
+        - Hafs
+        - Warsh
+        - Les deux / sans objet
+  - type: input
+    id: font
+    attributes:
+      label: Police du Coran (si le texte ou le Tajwid est concerné)
+      placeholder: "QPC Uthmani Hafs, IndoPak, Scheherazade…"
+  - type: dropdown
+    id: lang
+    attributes:
+      label: Langue de l'interface
+      options:
+        - Français
+        - English
+        - العربية
+  - type: input
+    id: env
+    attributes:
+      label: Appareil et navigateur
+      placeholder: "iPhone 15 / Safari 18, PC / Chrome 130…"
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Contexte
+      options:
+        - label: Le problème apparaît aussi hors-ligne ou en PWA installée
+        - label: Une capture d'écran est jointe

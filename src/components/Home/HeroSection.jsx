@@ -97,7 +97,7 @@ export default function HeroSection({
         </div>
 
         <header className="home-resume-panel__header">
-          <div className="home-resume-panel__brand" aria-label="MushafPlus">
+          <div className="home-resume-panel__brand">
             <PlatformLogo
               className="home-resume-panel__logo"
               imgClassName="h-full w-full object-cover"

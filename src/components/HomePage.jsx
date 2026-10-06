@@ -124,7 +124,6 @@ import {
 } from "./Home/homeConstants";
 import HeroSection from "./Home/HeroSection";
 import ContentSection from "./Home/ContentSection";
-import PrayerTimesCard from "./Home/PrayerTimesCard";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
 
 
@@ -640,7 +639,8 @@ export default function HomePage({ lowPerfMode = false }) {
     const params = new URLSearchParams(window.location.search);
     const reciterId = params.get("reciter");
     const shouldPlay = params.get("play") === "1";
-    const surahParam = Number(params.get("surah")) || 1;
+    // The link is typed by anyone: keep the surah inside the 114 that exist.
+    const surahParam = Math.min(114, Math.max(1, Math.trunc(Number(params.get("surah"))) || 1));
     if (!reciterId || !shouldPlay) return;
     const found = availableReciters.find((r) => r.id === reciterId);
     if (!found) return;

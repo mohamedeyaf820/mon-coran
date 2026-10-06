@@ -1,6 +1,9 @@
 import React from "react";
-import { AlertTriangle, CloudOff, Home, RefreshCw } from "lucide-react";
+import { AlertTriangle, Bug, CloudOff, Home, RefreshCw } from "lucide-react";
 import { t } from "../i18n";
+import siteConfig from "../../site.config.json";
+import { buildIssueDraft } from "../services/issueDraft.js";
+import { logError } from "../services/errorAnalytics.js";
 import { classifyBoundaryError } from "./QuranDisplay/readerLoadError.js";
 
 const SUPPORTED_LANGS = ["fr", "en", "ar"];
@@ -35,6 +38,13 @@ function getLang() {
   return "fr";
 }
 
+/**
+ * `silent` marks a boundary around an accessory of the shell (header, bottom
+ * bar, directory, audio dock). Losing one of them, typically because its code
+ * chunk did not arrive, must not replace the reading surface with a full-page
+ * error: the failure is logged, the piece is left out and the rest keeps
+ * working. A screen keeps the default behaviour: message, reload, home.
+ */
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -51,6 +61,8 @@ export class ErrorBoundary extends React.Component {
     if (import.meta.env.DEV) {
       console.error("[ErrorBoundary]", error, errorInfo);
     }
+    logError(error, this.props.silent ? `boundary:${this.props.name || "shell"}` : "boundary");
+    if (this.props.silent) return;
     const kind = classifyBoundaryError(error, { online: isOnline() });
     if (kind.chunkLoad && kind.retryable && claimChunkReload()) {
       window.location.reload();
@@ -67,6 +79,7 @@ export class ErrorBoundary extends React.Component {
 
   render() {
     if (!this.state.hasError) return this.props.children;
+    if (this.props.silent) return null;
 
     const lang = getLang();
     const kind = classifyBoundaryError(this.state.error, { online: isOnline() });
@@ -206,6 +219,31 @@ export class ErrorBoundary extends React.Component {
               <RefreshCw size={13} strokeWidth={2.5} aria-hidden="true" />
               {copy.reloadLabel}
             </button>
+          ) : null}
+          {!offlineGap ? (
+            <a
+              href={buildIssueDraft({ repositoryUrl: siteConfig.repositoryUrl, version: siteConfig.version, lang })}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={t("errors.boundaryReportHint", lang)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: ".38rem",
+                padding: ".48rem 1.1rem",
+                borderRadius: ".6rem",
+                border: "1px solid var(--border, rgba(148,163,184,.22))",
+                background: "transparent",
+                color: "var(--text-secondary, #4b6355)",
+                fontSize: ".82rem",
+                fontWeight: 600,
+                textDecoration: "none",
+                minHeight: "2.75rem",
+              }}
+            >
+              <Bug size={13} strokeWidth={2.5} aria-hidden="true" />
+              {t("errors.boundaryReport", lang)}
+            </a>
           ) : null}
           <button
             type="button"

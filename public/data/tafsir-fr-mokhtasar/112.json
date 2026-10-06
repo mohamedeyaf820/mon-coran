@@ -1,0 +1,25 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 112,
+  "number_of_ayahs": 4,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Ô Messager, dis: Il est Allah, seul détenteur de la divinité, nul dieu hormis Lui."
+    },
+    {
+      "ayah_number": 2,
+      "text": "Il est le Seigneur qui détient à la perfection les attributs de la beauté et Celui que les créatures implorent"
+    },
+    {
+      "ayah_number": 3,
+      "text": "Il est Celui qui n’a jamais engendré personne ni n’a été engendré par quiconque. Il n’a donc ni progéniture ni géniteur."
+    },
+    {
+      "ayah_number": 4,
+      "text": "Et rien dans Sa création ne Lui est semblable."
+    }
+  ]
+}

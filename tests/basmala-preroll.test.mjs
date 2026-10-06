@@ -208,20 +208,17 @@ test("a playback request made during the basmala takes over the element", async 
   service.destroy();
 });
 
-test("a basmala that never advances cannot hold the surah hostage", async () => {
-  // A mocked or stalled element resolves play() and then reports nothing: no
-  // `ended`, no clock. The verse must still arrive.
-  const { service, seen } = harness([
-    { surah: 2, ayah: 1, number: 7, hafsNumber: 1 },
-  ]);
+test("a stalled basmala waits for native settlement and can be cancelled", async () => {
+  const { service, seen } = harness([{ surah: 2, ayah: 1, number: 7, hafsNumber: 1 }]);
   const playing = service.loadAndPlay(0);
-  await new Promise((resolve) => setTimeout(resolve, 4500));
+  await settle();
+  service.audio.dispatchEvent(new Event("waiting"));
+  assert.equal(service.state, "BUFFERING");
+  assert.deepEqual(seen, [BASMALA]);
+  service.pause();
   await playing;
-  assert.deepEqual(seen, [
-    BASMALA,
-    `https://everyayah.com/data/${HUSARY}/002001.mp3`,
-  ]);
-  assert.equal(service.playlistIndex, 0);
+  assert.equal(service.state, "PAUSED_BY_USER");
+  assert.equal(service.audio.paused, true);
   service.destroy();
 });
 

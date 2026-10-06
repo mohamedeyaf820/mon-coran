@@ -28,22 +28,37 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 820px) {
   .app-root[data-view="home"] .home-resume-panel {
-    min-height: 23rem;
+    min-height: 0;
   }
 
   .app-root[data-view="home"] .home-resume-panel__body {
     flex: 0 1 auto;
-    padding-block: 1rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    padding-block: 0.65rem;
   }
 
   .app-root[data-view="home"] .home-resume-panel__library {
-    margin-top: clamp(1rem, 4vw, 1.5rem);
+    margin-top: 0.75rem;
   }
 
   .app-root[data-view="home"] .home-resume-panel__actions {
     margin-top: auto;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel h1 {
+    max-width: 24ch;
+    font-size: clamp(1.4rem, 4vw, 1.9rem);
+    line-height: 1.2;
+  }
+
+  .app-root[data-view="home"] .home-resume-panel__target {
+    align-self: stretch;
+    min-height: 0;
+    margin-top: 0.65rem;
+    padding-block: 0.25rem;
   }
 }
 
@@ -51,4 +66,11 @@
   .app-root[data-view="home"] .home-resume-panel h1 {
     font-size: clamp(1.4rem, 6vw, 1.8rem);
   }
+}
+
+/* The reciter card is a <button>, whose UA default centres text: the name sat
+   centred above a start-aligned subtitle. */
+.reciter-card__main,
+.reciter-card__main .reciter-card__name {
+  text-align: start;
 }

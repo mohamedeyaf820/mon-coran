@@ -157,7 +157,6 @@
 }
 
 .settings-reciter-option {
-  min-height: 3.45rem;
   color: var(--text-primary);
 }
 
@@ -172,9 +171,6 @@
 
 .settings-reciter-avatar {
   display: inline-flex;
-  width: 2.35rem;
-  height: 2.35rem;
-  flex: 0 0 2.35rem;
   align-items: center;
   justify-content: center;
   overflow: hidden;
@@ -182,7 +178,6 @@
   border: 1px solid color-mix(in srgb, var(--primary, #0f766e) 26%, transparent);
   background: var(--avatar-bg, linear-gradient(135deg, #0f766e, #155e75));
   color: #fff;
-  font-size: 0.7rem;
   font-weight: 800;
   box-shadow: 0 10px 22px rgba(2, 8, 23, 0.14);
 }
@@ -234,18 +229,6 @@ html[data-theme="dark"] body,
   background:
     linear-gradient(180deg, #07110f 0%, #050908 46%, #030605 100%) !important;
   color: rgba(244, 247, 245, 0.94);
-}
-
-html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact {
-  border-color: rgba(148, 163, 184, 0.18) !important;
-  background:
-    radial-gradient(circle at 18% 18%, rgba(47, 159, 107, 0.2), transparent 34%),
-    radial-gradient(circle at 88% 6%, rgba(214, 180, 92, 0.1), transparent 32%),
-    linear-gradient(145deg, rgba(18, 29, 25, 0.98), rgba(6, 11, 10, 0.99)) !important;
-  color: rgba(244, 247, 245, 0.96) !important;
-  box-shadow:
-    0 22px 58px rgba(0, 0, 0, 0.36),
-    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
 }
 
 html[data-theme="dark"] body .app-root.premium-plus .home-hero-compact.home-hero-compact :is(h1, h2, h3, strong, .font-bold, .font-extrabold) {

@@ -50,19 +50,24 @@ function getOrCreateAudio() {
     // The singleton must not outlive the page and keep a decoder alive.
     _onPageHide = () => releaseAudioElement(_audioInstance);
     window.addEventListener("pagehide", _onPageHide);
+    _onOtherAudio = (event) => { if (event.detail?.owner !== "word") releaseAudioElement(_audioInstance); };
+    window.addEventListener("mushafplus-playback-claim", _onOtherAudio);
   }
   return _audioInstance;
 }
 
 let _onPageHide = null;
+let _onOtherAudio = null;
 
 // Reset the shared instance so tests and long sessions start clean.
 export function resetWordAudio() {
   releaseAudioElement(_audioInstance);
   if (_onPageHide && typeof window !== "undefined") {
     window.removeEventListener("pagehide", _onPageHide);
+    window.removeEventListener("mushafplus-playback-claim", _onOtherAudio);
   }
   _onPageHide = null;
+  _onOtherAudio = null;
   _audioInstance = null;
 }
 
@@ -96,6 +101,7 @@ export function playWordAudio(input, ayah = null, wordPosition = null) {
   try {
     const audio = getOrCreateAudio();
     if (!audio) return;
+    window.dispatchEvent?.(new CustomEvent("mushafplus-playback-claim", { detail: { owner: "word" } }));
     audio.pause();
     audio.currentTime = 0;
     audio.src = url;

@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { test, expect } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 const OUTPUT_DIR = path.join("test-results", "visual-surah-zones");
@@ -72,10 +73,7 @@ for (const viewport of VIEWPORTS) {
       if (viewport.isMobile) {
         // Search is grouped into the compact header menu on phones; the direct
         // desktop action is hidden at this breakpoint.
-        await page.locator(".mp-header__more").click();
-        await page
-          .locator('.mp-header-menu__primary-command [data-key="search"]')
-          .click();
+        await openQuickMenuItem(page, "search");
       } else {
         await page.getByRole("button", { name: /Rechercher|Search/i }).first().click();
       }

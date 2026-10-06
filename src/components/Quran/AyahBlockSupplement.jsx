@@ -3,7 +3,6 @@ import { cn } from "../../lib/utils";
 
 export default function AyahBlockSupplement({
   ayahTransliteration,
-  isRtl,
   riwaya,
   trans,
 }) {

@@ -19,6 +19,7 @@ import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 import audioService from "../../services/audioService";
 import ArabicFontControls from "../ArabicFontControls";
+import TajweedLegend from "./TajweedLegend";
 
 function toolbarLabels(lang) {
   return {
@@ -47,6 +48,7 @@ export default function ReadingToolbar({
   const { set } = useAppActions();
   const {
     lang,
+    riwaya,
     mushafLayout,
     showTajwid,
     showTranslation,
@@ -55,6 +57,7 @@ export default function ReadingToolbar({
   } = useAppSelector(
     (s) => ({
       lang: s.lang,
+      riwaya: s.riwaya,
       mushafLayout: s.mushafLayout,
       showTajwid: s.showTajwid,
       showTranslation: s.showTranslation,
@@ -146,7 +149,7 @@ export default function ReadingToolbar({
             className={cn(
               "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               mushafIsOn
-                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary-ink,var(--primary))] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
             onClick={setMushafLayout}
@@ -161,7 +164,7 @@ export default function ReadingToolbar({
             className={cn(
               "flex h-11 cursor-pointer items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold transition-all",
               !mushafIsOn
-                ? "bg-[var(--bg-card)] font-bold text-[var(--primary)] shadow-sm"
+                ? "bg-[var(--bg-card)] font-bold text-[var(--primary-ink,var(--primary))] shadow-sm"
                 : "text-[var(--text-muted)] hover:text-[var(--text-primary)]",
             )}
             onClick={setListLayout}
@@ -220,6 +223,7 @@ export default function ReadingToolbar({
 
       {/* ── Right side: Fullscreen, Typography, Audio ── */}
       <div className="qc-reader-toolbar__utilities flex flex-wrap items-center gap-1.5 sm:gap-2">
+        <TajweedLegend lang={lang} riwaya={riwaya} compactTrigger />
         {onOpenFullscreen ? (
           <button
             type="button"
@@ -246,6 +250,7 @@ export default function ReadingToolbar({
             onClick={() => set({ readerTypographyOpen: !showTypography })}
             aria-expanded={showTypography}
             aria-controls="reader-toolbar-typography-panel"
+            aria-label={labels.text}
           >
             <SlidersHorizontal size={13} aria-hidden="true" />
             <span>{labels.text}</span>

@@ -8,6 +8,7 @@
  */
 
 import { dbGet, dbSet, dbDelete } from './dbService.js';
+import { ensureWarshArchiveRules } from './warshArchiveService.js';
 import { JUZ_DATA } from '../data/juz.js';
 import {
   WARSH_DATA_BASE_URL,
@@ -488,7 +489,7 @@ export async function loadWarshSurah(surahNum) {
       }
     } catch { }
 
-    let normalized = [];
+    let normalized;
     try {
       const rows = await fetchWarshSurahRows(n);
       normalized = normalizeWarshRows(rows, n);
@@ -496,7 +497,7 @@ export async function loadWarshSurah(surahNum) {
       if (!validateWarshRows(normalized, n)) {
         throw new Error(`Invalid per-surah Warsh source (got ${normalized.length} verses)`);
       }
-    } catch (err) {
+    } catch {
       try {
         const legacy = await loadLegacyWarshData();
         const rows = rowsFromLegacyData(legacy, n);
@@ -626,6 +627,7 @@ export async function getWarshVerse(surahNum, verseNum) {
 }
 
 export async function getWarshSurahFormatted(surahNum) {
+  void ensureWarshArchiveRules();
   const cacheKey = Number(surahNum);
   const warm = recallBounded(cachedSurahPayloads, cacheKey);
   if (warm) return warm;
@@ -687,6 +689,7 @@ async function getScopedWarshJuzAyahs(juzNum) {
 }
 
 export async function getWarshJuzVerses(juzNum) {
+  void ensureWarshArchiveRules();
   const cacheKey = Number(juzNum);
   const warm = recallBounded(cachedJuzPayloads, cacheKey);
   if (warm) return warm;
@@ -737,6 +740,7 @@ export async function getWarshJuzVerses(juzNum) {
 }
 
 export async function getWarshPageVerses(pageNum) {
+  void ensureWarshArchiveRules();
   const cacheKey = Number(pageNum);
   const warm = recallBounded(cachedPagePayloads, cacheKey);
   if (warm) return warm;

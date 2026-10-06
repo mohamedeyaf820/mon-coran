@@ -45,7 +45,7 @@ for (const online of [false, true]) {
       document: { getElementById: () => null },
       window: { addEventListener: (name, callback) => { handlers[name] = callback; }, location: { reload: () => { reloads++; } } },
       sessionStorage: { getItem: () => null, setItem: () => {} },
-      caches: { keys: async () => ['mushaf-plus-v21'], delete: async () => { deletions++; } },
+      caches: { keys: async () => ['mushaf-plus-v22'], delete: async () => { deletions++; } },
       fetch: async (_url, options) => {
         assert.equal(options.method, 'HEAD', 'connectivity probe must bypass the GET-only service worker');
         throw new TypeError('Network unavailable');
@@ -61,7 +61,7 @@ for (const online of [false, true]) {
 }
 
 for (const [url, cacheName, ignoreVary] of [
-  ['https://qa.test/assets/app.js', 'mushaf-plus-v21', true],
+  ['https://qa.test/assets/app.js', 'mushaf-plus-v22', true],
   ['https://api.alquran.cloud/v1/surah/1', 'mushaf-plus-api-v6', false],
 ]) {
   test(`worker uses the correct Vary policy for ${url}`, async () => {
@@ -140,7 +140,7 @@ test('saveSettings mirrors the Warsh preload bit in plain text', () => {
 
 test('worker and downloader open the same offline audio cache', () => {
   const downloadSource = readFileSync(
-    new URL('../src/services/downloadService.js', import.meta.url),
+    new URL('../src/services/offlineAudioStore.js', import.meta.url),
     'utf8',
   );
   const workerCache = /const AUDIO_CACHE_NAME = "([^"]+)"/.exec(workerSource)?.[1];

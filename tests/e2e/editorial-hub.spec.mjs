@@ -24,7 +24,7 @@ test("footer and surah directory remain usable on a phone", async ({ page }) => 
   await openHome(page, { width: 375, height: 812 });
   const footer = page.locator(".mp-footer-v2");
   await footer.scrollIntoViewIfNeeded();
-  await expect(footer.locator(".mp-footer-v2__nav-btn")).toHaveCount(4);
+  await expect(page.locator(".mobile-navigation__item")).toHaveCount(5);
   await expect(footer.locator(".mp-footer-v2__verse-translation")).toBeVisible();
   await expect(footer.locator(".mp-footer-v2__legal a")).toHaveCount(4);
   await expect(footer.locator(".mp-footer-v2__brand")).toHaveText(/^v\d+\.\d+\.\d+$/u);

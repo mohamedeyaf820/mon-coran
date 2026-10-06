@@ -207,6 +207,7 @@ export default function useQuranDisplayView({
     quranFontCss,
     quranTranslationFontSize,
     mushafLayout,
+    preferredReadingFontSize,
     readingFontSize,
     riwaya,
   ]);

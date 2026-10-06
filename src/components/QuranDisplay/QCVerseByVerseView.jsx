@@ -76,7 +76,6 @@ const QCVerseCard = memo(function QCVerseCard({
   getTransliterationForAyah,
   calibration,
   riwaya,
-  fontSize,
   onToggleActive,
   toggleId,
   referenceLabel,
@@ -272,6 +271,8 @@ const QCVerseCard = memo(function QCVerseCard({
   );
 });
 
+const EAGER_TOP_COUNT = 10;
+
 export default function QCVerseByVerseView({
   ayahs,
   surahGroups,
@@ -300,9 +301,11 @@ export default function QCVerseByVerseView({
           )
         : (ayahs || []).map((ayah) => ({
             ayah,
-            surahNum: ayah.surah?.number || 1,
+            // Some sources (the alquran.cloud fallback) ship ayahs without their
+            // surah: defaulting to 1 made the Basmala glued to verse 1 survive.
+            surahNum: ayah.surah?.number || surahMeta?.n || surahMeta?.number || 1,
           })),
-    [surahGroups, ayahs],
+    [surahGroups, ayahs, surahMeta],
   );
 
   const contentKey = useMemo(() => {
@@ -323,6 +326,15 @@ export default function QCVerseByVerseView({
     return <AyahSkeleton count={5} showTranslation={showTranslation} lang={lang} />;
 
   const estimatedHeight = showTranslation || showTransliteration ? 350 : 250;
+  // A deep link lands far from the top: rendering the first ten verses eagerly
+  // only to unmount them when the view jumps to the target (21 of 30 verse nodes
+  // were created then removed within 600 ms on Warsh 2:25). Keep the eager
+  // tranche around the target instead.
+  const targetIndex =
+    displayMode === "surah" && Number(initialTargetAyah) > 0
+      ? items.findIndex(({ ayah }) => Number(ayah.numberInSurah) === Number(initialTargetAyah))
+      : -1;
+  const targetIsFar = targetIndex > EAGER_TOP_COUNT + 4;
   const renderingProfile = [
     showTranslation ? 1 : 0,
     showTransliteration ? 1 : 0,
@@ -357,7 +369,11 @@ export default function QCVerseByVerseView({
           <VirtualizedItem
             key={itemKey}
             cacheKey={`${contentKey}:${renderingProfile}:${itemKey}`}
-            eager={index < 10 || isInitialTarget}
+            eager={
+              targetIsFar
+                ? Math.abs(index - targetIndex) <= 2
+                : index < EAGER_TOP_COUNT || isInitialTarget
+            }
             estimatedHeight={estimatedHeight + (showSeparator ? 70 : 0)}
             pinned={isPlaying || isActive || isInitialTarget}
             id={ayahId}

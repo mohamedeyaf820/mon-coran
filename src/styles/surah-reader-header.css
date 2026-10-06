@@ -18,7 +18,6 @@
         color-mix(in srgb, var(--srh-surface) 95%, transparent);
     box-shadow: var(--srh-shadow), inset 0 1px 0 color-mix(in srgb, #fff 55%, transparent);
     color: var(--text-primary);
-    backdrop-filter: blur(18px) saturate(125%);
     isolation: isolate;
 }
 
@@ -126,7 +125,6 @@
     color: var(--text-primary);
     font-size: clamp(1.18rem, 2.15vw, 1.55rem);
     font-weight: 800;
-    letter-spacing: -0.025em;
     line-height: 1.16;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -149,15 +147,11 @@
     display: inline-flex;
     min-height: 1.55rem;
     align-items: center;
-    padding: 0.18rem 0.55rem;
     border: 1px solid var(--srh-line);
-    border-radius: 999px;
     background: color-mix(in srgb, var(--srh-surface-soft) 84%, transparent);
     color: var(--text-muted);
     font-family: var(--font-ui, sans-serif);
-    font-size: 0.62rem;
     font-weight: 800;
-    letter-spacing: 0.075em;
     line-height: 1;
     text-transform: uppercase;
     white-space: nowrap;
@@ -237,12 +231,11 @@
     border: 1px solid color-mix(in srgb, var(--primary) 82%, #fff 18%);
     background: linear-gradient(145deg, color-mix(in srgb, var(--primary) 88%, #fff 12%), var(--primary));
     box-shadow: 0 8px 18px color-mix(in srgb, var(--primary) 26%, transparent);
-    color: #fff;
+    color: var(--primary-fg, #fff);
 }
 
 .srh-play-btn:hover:not(:disabled) {
     box-shadow: 0 11px 24px color-mix(in srgb, var(--primary) 34%, transparent);
-    transform: translateY(-1px);
 }
 
 .srh-play-btn:active:not(:disabled) {
@@ -362,9 +355,7 @@
 
 .srh-pill--active {
     border-color: color-mix(in srgb, var(--primary) 18%, var(--border));
-    background: var(--bg-card);
     box-shadow: 0 3px 10px color-mix(in srgb, var(--text-primary) 7%, transparent);
-    color: var(--primary);
 }
 
 .srh-toggle--active {
@@ -619,8 +610,7 @@
         min-width: 0;
     }
 
-    .srh-typography-panel :is(.afc-font-group, .afc-size-group),
-    .srh-typography-panel .afc-select {
+    .srh-typography-panel :is(.afc-font-group, .afc-size-group), .srh-typography-panel .afc-select {
         width: 100%;
         min-width: 0;
         max-width: none;
@@ -946,29 +936,6 @@ html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-head
     -webkit-backdrop-filter: blur(18px) saturate(120%);
 }
 
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend {
-    order: 0;
-    width: 100% !important;
-    max-width: none !important;
-    margin: 0 !important;
-    padding: 0.28rem 0.75rem !important;
-    overflow: hidden;
-    border: 0 !important;
-    border-bottom: 1px solid var(--reader-header-line) !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
-    padding: 0.38rem 0.75rem 0.5rem !important;
-}
-
-html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
-    min-height: 2rem;
-    padding: 0.3rem 0.25rem;
-}
-
 html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .srh-root {
     position: relative;
     top: auto;
@@ -997,21 +964,6 @@ html[data-theme="sepia"] body .app-root[data-view="reading"] .quran-display--pla
         margin-bottom: 0.45rem !important;
         border-radius: 0.95rem;
         box-shadow: 0 8px 22px color-mix(in srgb, var(--text-primary) 7%, transparent);
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend,
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend[open] {
-        padding: 0.18rem 0.45rem !important;
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__intro {
-        min-height: 1.85rem;
-        padding: 0.24rem 0.18rem;
-    }
-
-    html body .app-root[data-view="reading"] .quran-display--platform .qc-surah-header-wrap--unified > .tajweed-legend .tajweed-legend__eyebrow {
-        font-size: 0.6rem;
-        letter-spacing: 0.075em;
     }
 }
 

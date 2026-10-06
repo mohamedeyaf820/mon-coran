@@ -1,0 +1,20 @@
+name: Proposer une amélioration
+description: Une idée pour la lecture, l'audio, l'étude ou l'interface
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Quel problème rencontrez-vous ?
+      description: Décrivez le besoin avant la solution.
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Ce que vous imaginez
+  - type: textarea
+    id: scope
+    attributes:
+      label: Garde-fous
+      description: Impact éventuel sur le texte coranique, les riwayat, la vie privée ou le hors-ligne.

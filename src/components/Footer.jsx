@@ -1,20 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {
   BookOpenText,
-  BookOpen,
-  CalendarDays,
   CircleUserRound,
   Database,
-  Headphones,
-  Home,
   Scale,
   ShieldCheck,
 } from "lucide-react";
 import {
-  shallowEqual,
   useAppActions,
   useAppLocale,
-  useAppSelector,
 } from "../context/AppContext";
 import { t } from "../i18n";
 import siteConfig from "../../site.config.json";
@@ -26,16 +20,6 @@ export default function Footer() {
   const [verseIndex, setVerseIndex] = useState(0);
   const [rotationPaused, setRotationPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
-  const view = useAppSelector(
-    (state) => ({
-      homeSection: state.homeSection,
-      legalPage: state.legalPage,
-      showDuas: state.showDuas,
-      showPrayers: state.showPrayers,
-      showHome: state.showHome,
-    }),
-    shallowEqual,
-  );
 
   // WCAG 2.2.2: the rotating verse must stop for people who ask for reduced
   // motion, and pause while a visitor reads or tabs through it.
@@ -58,44 +42,11 @@ export default function Footer() {
     return () => window.clearInterval(timer);
   }, [reduceMotion, rotationPaused]);
 
-  const activeView = view.legalPage || view.showDuas || view.showPrayers
-    ? null
-    : view.showHome
-      ? view.homeSection === "audio"
-        ? "audio"
-        : "home"
-      : "read";
-
   const scrollTop = () => {
     const main = document.querySelector("#main-content");
-    if (main) main.scrollTo({ top: 0, behavior: "smooth" });
-    else window.scrollTo({ top: 0, behavior: "smooth" });
+    if (main) main.scrollTo({ top: 0, behavior: "instant" });
+    else window.scrollTo({ top: 0, behavior: "instant" });
   };
-  const openHome = () => {
-    set({ legalPage: null, showHome: true, showDuas: false, showPrayers: false });
-    scrollTop();
-  };
-  const openReader = () => {
-    set({ legalPage: null, showHome: false, showDuas: false, showPrayers: false });
-    scrollTop();
-  };
-  const openAudio = () => {
-    set({ legalPage: null, showHome: true, showDuas: false, showPrayers: false, homeSection: "audio" });
-    window.requestAnimationFrame(() => {
-      document.querySelector(".home-content-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
-    });
-  };
-  const openPrayers = () => {
-    set({ legalPage: null, showHome: false, showDuas: false, showPrayers: true });
-    scrollTop();
-  };
-
-  const navItems = [
-    { key: "home",      Icon: Home,      label: t("nav.home", lang),      onClick: openHome },
-    { key: "read",      Icon: BookOpen,  label: t("footer.navRead", lang),      onClick: openReader },
-    { key: "prayers",   Icon: CalendarDays, label: t("nav.prayers", lang), onClick: openPrayers },
-    { key: "audio",     Icon: Headphones,label: t("footer.navListen", lang), onClick: openAudio },
-  ];
   const legalLabels = {
     about: t("footer.legalAbout", lang),
     privacy: t("footer.legalPrivacy", lang),
@@ -126,7 +77,7 @@ export default function Footer() {
   const verseAttribution = t("footer.verseAttribution", lang);
 
   return (
-    <footer className="mp-footer-v2" role="contentinfo">
+    <footer className="mp-footer-v2">
       <div className="mp-footer-v2__shell">
         <div
           className="mp-footer-v2__verse"
@@ -154,27 +105,6 @@ export default function Footer() {
           </div>
           <span className="mp-footer-v2__verse-ref">{verseReference}</span>
         </div>
-
-        <nav
-          className="mp-footer-v2__nav"
-          aria-label={t("nav.quickNav", lang)}
-        >
-          {navItems.map((item) => (
-            <button
-              key={item.key}
-              type="button"
-              className="mp-footer-v2__nav-btn"
-              onClick={item.onClick}
-              aria-label={item.label}
-              aria-current={item.key === activeView ? "page" : undefined}
-            >
-              <span className="mp-footer-v2__nav-icon" aria-hidden="true">
-                <item.Icon size={14} />
-              </span>
-              <span className="mp-footer-v2__nav-label">{item.label}</span>
-            </button>
-          ))}
-        </nav>
 
         <div className="mp-footer-v2__directory">
           <div className="mp-footer-v2__directory-copy">

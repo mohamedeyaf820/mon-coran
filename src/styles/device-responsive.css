@@ -986,12 +986,6 @@ html body .app-root > .mp-header
     box-shadow: none;
   }
 
-  html body #root .app-root.app-root[data-view="reading"]
-    .quran-display.quran-display--platform > .tajweed-legend {
-    margin-top: 0;
-    border-radius: 0.8rem;
-  }
-
   html body .app-root > .mp-header .mp-header__bar {
     --mp-header-control: max(2.75rem, 44px);
     --mp-header-icon: 0.78rem;
@@ -1402,7 +1396,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-verse-by-verse-view {
     width: 100% !important;
     border-inline: 0;
-    border-radius: 0;
     box-shadow: none;
   }
 
@@ -1415,8 +1408,6 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card .qc-ayah-text-ar {
     /* The reader's device-aware size (--qd-font-size) is honoured up to the
        phone ceiling; the viewport scale is the fallback without it. */
-    font-size: min(var(--qd-font-size, 8.4vw), 34px) !important;
-    line-height: 1.86 !important;
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
@@ -1440,10 +1431,8 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
     padding-inline: 0 !important;
   }
 }
-.home-mobile-quick-disclosure > .home-info-panel { display: block; }
 @media (max-width: 640px) {
   .home-mobile-quick-disclosure:not([open]) > .home-info-panel { display: none; }
-  .home-mobile-quick-disclosure[open] > .home-info-panel { margin-top:.55rem; }
 }
 
 /* Mobile reader header: preserve a clear path back home. */
@@ -1778,7 +1767,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   html body .app-root.immersive-keep-player .audio-player-simple.mp-audio-player--mobile,
   html body .app-root.immersive-keep-player .audio-player-simple.simple-player--compact.mp-audio-player--dock {
     position: fixed !important;
-    bottom: max(0.55rem, env(safe-area-inset-bottom, 8px)) !important;
+    bottom: calc(var(--mobile-nav-h, 0px) + max(0.55rem, env(safe-area-inset-bottom, 8px))) !important;
     left: 0 !important;
     right: 0 !important;
     width: min(calc(100% - 1rem), 480px) !important;
@@ -1805,7 +1794,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   html body .app-root .audio-player-simple.simple-player--compact.mp-audio-player--dock,
   html body .app-root .audio-player-simple.simple-player--mobile-open.mp-audio-player--dock {
     right: 0 !important;
-    bottom: max(0.75rem, env(safe-area-inset-bottom)) !important;
+    bottom: calc(var(--mobile-nav-h, 0px) + max(0.75rem, env(safe-area-inset-bottom))) !important;
     left: 0 !important;
     width: min(40rem, calc(100vw - 1.5rem)) !important;
     max-width: calc(100vw - 1.5rem) !important;
@@ -1853,8 +1842,7 @@ html body #root .app-root[data-view="reading"] .quran-display--platform
   }
 
   html body #root .app-root[data-view="reading"] .quran-display--platform
-    :is(.qc-list-card__start, .qc-list-card__end),
-  html body #root .app-root[data-view="reading"] .quran-display--platform
+    :is(.qc-list-card__start, .qc-list-card__end), html body #root .app-root[data-view="reading"] .quran-display--platform
     .qc-list-card :is(.qc-list-card__start, .qc-list-card__end)
     .ayah-actions > div {
     gap: 0.28rem !important;
@@ -2027,13 +2015,24 @@ html body #root#root :is(
     .home-resume-panel__secondary,
     .mp-header__home-summary
   ),
-  html:root:root body > * :is(
+    html:root:root body > * :is(
     .search-pro__close,
     .search-pro__submit,
     .search-pro__voice-btn,
     .library-close
   ) {
   min-width: max(2.75rem, 44px) !important;
+}
+
+/* Secondary reader controls retain a 44px target even with a fluid root font. */
+html body #root#root .qc-reader-toolbar button {
+  min-width: max(2.75rem, 44px) !important;
+}
+
+html body #root#root .qc-reader-toolbar button > svg {
+  width: 16px !important;
+  height: 16px !important;
+  flex-shrink: 0;
 }
 
 /* Tailwind arbitrary text sizes are rem-authored, and this interface sets the

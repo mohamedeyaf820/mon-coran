@@ -78,7 +78,10 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // Raised 7 -> 9 with the 2026-09-26 ceiling commit: the e2e job had not run
   // since 2026-09-24 because the quality job failed earlier in the chain, so
   // this drift was inherited rather than introduced here.
-  expect(initialModulePreloads.length).toBeLessThanOrEqual(9);
+  // Raised 9 -> 11 with the language split: the French dictionary (the fallback
+  // of every key, 32.9 kB) and a 1.2 kB helper became shared chunks of the boot
+  // graph, while English and Arabic moved out of it. Entry JS fell 236 -> 143 kB.
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(11);
   expect(logoBody.byteLength).toBeLessThan(40 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));
@@ -93,9 +96,12 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // earlier in the chain: the growth is the prayer campaign plus this one, not
   // a page-level bundle newly pulled into startup. Headroom is two requests and
   // one chunk, so a new boot import still trips this.
-  expect(parsedRequests.length).toBeLessThanOrEqual(55);
+  // Raised 55 -> 60 (measured 58) for the mobile navigation, the split style
+  // chunks and the data prefetch that landed since; still a hard stop for any
+  // page-level bundle pulled into startup.
+  expect(parsedRequests.length).toBeLessThanOrEqual(60);
   // Performance observers load as one small optional module after first paint.
-  expect(firstLaunchJs.length).toBeLessThanOrEqual(40);
+  expect(firstLaunchJs.length).toBeLessThanOrEqual(46); // measured 44 with the mobile navigation and split style chunks
   expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
   expect(
     parsedRequests.filter(

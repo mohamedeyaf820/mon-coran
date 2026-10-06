@@ -1,3 +1,4 @@
+import fs from "node:fs";
 import { test, expect } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
@@ -62,10 +63,10 @@ test("E2E: bouton play explicite démarre la lecture, clic mot joue l'audio du m
   });
 });
 
-test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", async ({
+test("E2E: la lecture Warsh conserve ses couleurs et un seul marqueur d'ayah", async ({
   page,
 }) => {
-  await installQuranNetworkFixtures(page);
+  await installQuranNetworkFixtures(page, { withWarshDabt: true });
   await page.addInitScript(() => {
     localStorage.clear();
     localStorage.setItem(
@@ -87,20 +88,21 @@ test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", asy
         },
         showTranslation: false,
         showWordByWord: false,
+        showTajwid: true,
         lastPosition: { surah: 3, ayah: 5, page: 50, juz: 3 },
       }),
     );
 
-    HTMLMediaElement.prototype.play = function patchedPlay() {
-      this.dispatchEvent(new Event("play"));
-      return Promise.resolve();
-    };
   });
 
+  await page.route(/\.mp3(?:\?.*)?$/i, route => route.fulfill({
+    status: 200, contentType: "audio/mpeg", body: fs.readFileSync("tests/fixtures/silent-2s.mp3"),
+  }));
   await page.goto("/surah/3/5");
   await expect(page.locator(".cpv-verse").first()).toBeVisible({
     timeout: 30_000,
   });
+  const canonicalTexts = await page.locator('.cpv-verse').evaluateAll(verses => Object.fromEntries(verses.map(verse => [verse.dataset.ayahNumber, verse.querySelector('.qc-ayah-text-ar').textContent])));
 
   // Immersive reading intentionally hides the chrome after navigation. A
   // pointer movement is the desktop gesture that reveals the audio dock.
@@ -109,7 +111,13 @@ test("E2E: la lecture Warsh en vue Mushaf conserve un seul marqueur d'ayah", asy
   await page.locator(".mp-player-play-btn").evaluate((button) => button.click());
 
   const playingVerse = page.locator(".cpv-verse--playing").first();
-  await expect(playingVerse).toBeVisible();
+  // Starting the recitation loads a media file and takes the audio engine's own
+  // load budget (12 s) on a loaded machine: wait longer than that.
+  await expect(playingVerse).toBeVisible({ timeout: 30_000 });
+  await expect.poll(() => playingVerse.locator(".warsh-unicode-word.is-tajweed-painted").count()).toBeGreaterThan(0);
+  const playingAyah = await playingVerse.getAttribute('data-ayah-number');
+  expect(await playingVerse.locator('.qc-ayah-text-ar').textContent()).toBe(canonicalTexts[playingAyah]);
+  expect(await playingVerse.locator('.warsh-unicode-word').evaluateAll(words => words.every(word => word.childNodes.length === 1 && word.firstChild.nodeType === Node.TEXT_NODE))).toBe(true);
   await expect(playingVerse.locator(".native-ayah-marker")).toHaveCount(1);
   await expect(playingVerse.locator(".native-ayah-marker")).toHaveCount(1);
   await expect(

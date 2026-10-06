@@ -1,3 +1,4 @@
+import { offlineText } from "../i18n/offline.js";
 import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import "../styles/domains/audio-legacy.css";
 import "../styles/audio-player-simple.css";
@@ -17,7 +18,6 @@ import {
 import { getSurah, surahName } from "../data/surahs";
 import {
   getReciterUnavailableRemainingMs,
-  isReciterTemporarilyUnavailable,
   sortRecitersByPreference,
 } from "../utils/reciterRanking";
 import { cn, toast } from "../lib/utils";
@@ -25,7 +25,7 @@ import { formatCooldownLabel } from "../utils/formatUtils";
 import AudioOptionsModal from "./audioPlayer/AudioOptionsModal";
 import SimpleAudioPlayerView from "./audioPlayer/SimpleAudioPlayerView";
 import { useAutoScrollAyah } from "../hooks/useAutoScrollAyah";
-import { useMediaSession } from "../hooks/useMediaSession";
+
 import { useDirectionAwareKeys } from "../hooks/useDirectionAwareKeys";
 import {
   isMobilePlayerViewport,
@@ -72,7 +72,6 @@ export default function AudioPlayer() {
     playerMinimized,
     syncOffsetsMs,
     favoriteReciters,
-    autoSelectFastestReciter,
     reciterLatencyByKey,
     reciterAvailabilityById,
   } = state;
@@ -108,9 +107,7 @@ export default function AudioPlayer() {
   const optionsCloseButtonRef = useRef(null);
   const progressRef = useRef(null);
   const audioErrorTimerRef = useRef(null);
-  const autoFailoverBusyRef = useRef(false);
   const reciterSwitchingIdRef = useRef(null);
-  const failedRecitersRef = useRef(new Set());
   const reciterAvailabilityRef = useRef(reciterAvailabilityById || {});
   const autoIdleMinimizeArmedRef = useRef(false);
 
@@ -159,99 +156,6 @@ export default function AudioPlayer() {
     [set],
   );
 
-  const tryAutoReciterFailover = useCallback(async () => {
-    if (!autoSelectFastestReciter) return false;
-    if (autoFailoverBusyRef.current || reciterSwitchingIdRef.current) return false;
-
-    const rankedReciters = sortRecitersByPreference(
-      getRecitersByRiwaya(riwaya),
-      {
-        currentReciterId: reciter,
-        favoriteReciters,
-        latencyByKey: reciterLatencyByKey,
-        availabilityById: reciterAvailabilityRef.current,
-      },
-    );
-    if (!rankedReciters.length) return false;
-
-    const currentIdx = rankedReciters.findIndex((item) => item.id === reciter);
-    const rotated =
-      currentIdx >= 0
-        ? [
-            ...rankedReciters.slice(currentIdx + 1),
-            ...rankedReciters.slice(0, currentIdx),
-          ]
-        : rankedReciters;
-    const candidates = rotated.filter(
-      (item) => item.id !== reciter && !failedRecitersRef.current.has(item.id),
-    );
-    if (!candidates.length) return false;
-    const availableCandidates = candidates.filter(
-      (item) =>
-        !isReciterTemporarilyUnavailable(
-          item.id,
-          reciterAvailabilityRef.current,
-        ),
-    );
-    const finalCandidates =
-      availableCandidates.length > 0 ? availableCandidates : candidates;
-
-    autoFailoverBusyRef.current = true;
-    try {
-      for (const candidate of finalCandidates) {
-        if (typeof navigator !== "undefined" && navigator.onLine === false) {
-          // Stop walking the catalogue: the next failure is the device, not
-          // the voice, and marking it would cool down a healthy reciter.
-          return false;
-        }
-        failedRecitersRef.current.add(candidate.id);
-        reciterSwitchingIdRef.current = candidate.id;
-        setReciterSwitchingId(candidate.id);
-        try {
-          const switched = await audioService.switchReciter(
-            candidate.cdn,
-            candidate.cdnType || "everyayah",
-          );
-          if (!switched) continue;
-          markReciterAvailable(candidate.id);
-          set({ reciter: candidate.id });
-          const switchedName =
-            lang === "fr"
-              ? candidate.nameFr || candidate.nameEn || candidate.name
-              : lang === "ar"
-                ? candidate.name || candidate.nameEn || candidate.id
-                : candidate.nameEn || candidate.nameFr || candidate.name;
-          toast(
-            t("audio.reciterSwitched", lang).replace("{name}", switchedName),
-            "warning",
-          );
-          return true;
-        } catch (error) {
-          markReciterUnavailable(candidate.id, error);
-          console.warn("Auto reciter failover failed:", error);
-        } finally {
-          if (reciterSwitchingIdRef.current === candidate.id) {
-            reciterSwitchingIdRef.current = null;
-            setReciterSwitchingId(null);
-          }
-        }
-      }
-      return false;
-    } finally {
-      autoFailoverBusyRef.current = false;
-    }
-  }, [
-    autoSelectFastestReciter,
-    favoriteReciters,
-    lang,
-    markReciterAvailable,
-    markReciterUnavailable,
-    reciter,
-    reciterLatencyByKey,
-    riwaya,
-    set,
-  ]);
-
   /* Detect mobile */
   useEffect(() => {
     const onResize = () => {
@@ -295,7 +199,6 @@ export default function AudioPlayer() {
       setAudioError(null);
       setAudioFailed(false);
       markReciterAvailable(reciter);
-      failedRecitersRef.current.clear();
       const nextPlayingAyah = item
         ? {
             surah: item.surah,
@@ -348,6 +251,14 @@ export default function AudioPlayer() {
       setProgress(total ? elapsed / total : 0);
     };
     audioService.onError = async (error) => {
+      if (error?.code === "OFFLINE_AUDIO_MISSING") {
+        toast(offlineText("missing", lang), "error");
+        set({ isPlaying: false });
+        setNetworkState("error");
+        setAudioFailed(true);
+        setAudioError(offlineText("missing", lang));
+        return;
+      }
       try {
       set({ isPlaying: false });
       setNetworkState("error");
@@ -371,17 +282,6 @@ export default function AudioPlayer() {
         return;
       }
       markReciterUnavailable(reciter, error);
-      failedRecitersRef.current.add(reciter);
-      const switched = await tryAutoReciterFailover();
-      if (switched) {
-        setNetworkState("loading");
-        setAudioError(t("audio.reciterFailover", lang));
-        audioErrorTimerRef.current = setTimeout(() => {
-          setAudioError(null);
-          audioErrorTimerRef.current = null;
-        }, 2600);
-        return;
-      }
       const msg =
         riwaya === "warsh"
           ? t("audio.reciterLoadErrorWarsh", lang)
@@ -392,7 +292,6 @@ export default function AudioPlayer() {
         audioErrorTimerRef.current = null;
       }, 5000);
       } catch (e) {
-        autoFailoverBusyRef.current = false;
         console.warn("onError handler threw:", e);
       }
     };
@@ -434,7 +333,6 @@ export default function AudioPlayer() {
     reciter,
     riwaya,
     set,
-    tryAutoReciterFailover,
   ]);
 
   const networkBadge = (() => {
@@ -496,7 +394,6 @@ export default function AudioPlayer() {
   }, [reciter, riwaya]);
 
   useEffect(() => {
-    failedRecitersRef.current.clear();
   }, [reciter, riwaya]);
 
   useEffect(() => {
@@ -512,7 +409,7 @@ export default function AudioPlayer() {
   const retryPlayback = useCallback(() => {
     setAudioFailed(false);
     setNetworkState("loading");
-    Promise.resolve(audioService.play()).catch(() => {
+    Promise.resolve(audioService.resume()).catch(() => {
       setAudioFailed(true);
       setNetworkState("error");
     });
@@ -573,13 +470,6 @@ export default function AudioPlayer() {
     },
     [seekFromClientX],
   );
-
-  const formatTime = (s) => {
-    if (!s || isNaN(s)) return "0:00";
-    return `${Math.floor(s / 60)}:${Math.floor(s % 60)
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   const handleVolumeChange = (v) => {
     setVolume(v);
@@ -793,7 +683,6 @@ export default function AudioPlayer() {
     async (nextReciterId) => {
       if (!nextReciterId || nextReciterId === reciter) return;
       // Block user switches during auto-failover
-      if (autoFailoverBusyRef.current) return;
       const target = currentReciters.find((r) => r.id === nextReciterId);
       if (!target) return;
 
@@ -879,45 +768,9 @@ export default function AudioPlayer() {
         ? currentArabicName
         : currentSurahName;
 
-  const mediaSessionTitle = basmalaActive
-    ? t("audio.basmala", lang)
-    : hasAyahContext
-    ? `${currentSurahName || titleLabel} · ${t("quran.ayah", lang)} ${currentPlayingAyah.ayah}`
-    : titleLabel || currentSurahName;
-
-  useMediaSession({
-    title: mediaSessionTitle,
-    artist: reciterLabel,
-    album: "MushafPlus",
-    artwork: "/logo-512.png",
-    isPlaying,
-    // The reader's intent, not the element's instant state: a background
-    // suspension must not publish `paused` to the OS (it releases Android's
-    // audio focus and lets the tab be frozen before the retry runs).
-    playbackState:
-      isPlaying || audioService._playbackIntent === "playing" ? "playing" : "paused",
-    onPlay: () => audioService.resume(),
-    onPause: () => audioService.pause(),
-    onNext: next,
-    onPrev: prev,
-    onStop: () => audioService.stop(),
-    onSeekTo: (time, fastSeek) => {
-      if (fastSeek && typeof audioService.audio?.fastSeek === "function") {
-        audioService.audio.fastSeek(time);
-        return;
-      }
-      audioService.seek(time);
-    },
-    onSeekBackward: (offset) =>
-      audioService.seek(Math.max(0, audioService.currentTime - offset)),
-    onSeekForward: (offset) =>
-      audioService.seek(
-        Math.min(audioService.duration || Infinity, audioService.currentTime + offset),
-      ),
-    currentTime,
-    duration,
-    playbackRate: audioSpeed,
-  });
+  useEffect(() => {
+    audioService.setMediaContext({ lang, artist: reciterLabel });
+  }, [lang, reciterLabel]);
 
   useAutoScrollAyah({
     currentAyah: currentPlayingAyah,

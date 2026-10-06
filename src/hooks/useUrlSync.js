@@ -2,6 +2,56 @@ import { useEffect, useRef } from "react";
 import { getSurahAyahCount } from "../data/surahs.js";
 import { getWarshSurahAyahCount } from "../constants/warshSource.js";
 
+function buildRoute({
+  routeNotFound,
+  legalPage,
+  showHome,
+  showDuas,
+  showPrayers,
+  displayMode,
+  currentAyah,
+  currentSurah,
+  currentPage,
+  currentJuz,
+}) {
+  if (routeNotFound) {
+    const targetPath = typeof window === "undefined" ? "/404" : window.location.pathname;
+    return { targetPath, routeKey: `not-found:${targetPath}` };
+  }
+  if (["surahs", "about", "privacy", "legal", "sources"].includes(legalPage)) {
+    return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
+  }
+  if (showHome) return { targetPath: "/", routeKey: "home" };
+  if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
+  if (showPrayers) return { targetPath: "/prieres", routeKey: "prieres" };
+
+  if (displayMode === "surah") {
+    return {
+      targetPath:
+        currentAyah > 1
+          ? `/surah/${currentSurah}/${currentAyah}`
+          : `/surah/${currentSurah}`,
+      routeKey: `surah:${currentSurah}`,
+    };
+  }
+
+  if (displayMode === "page") {
+    return {
+      targetPath: `/page/${currentPage}`,
+      routeKey: `page:${currentPage}`,
+    };
+  }
+
+  if (displayMode === "juz") {
+    return {
+      targetPath: `/juz/${currentJuz}`,
+      routeKey: `juz:${currentJuz}`,
+    };
+  }
+
+  return { targetPath: "/", routeKey: "home" };
+}
+
 /**
  * Synchronise React navigation state with the browser URL.
  *
@@ -26,47 +76,19 @@ export function useUrlSync({
   const isFirstRender = useRef(true);
   const lastRouteKey = useRef(null);
 
-  const buildRoute = () => {
-    if (routeNotFound) {
-      const targetPath = typeof window === "undefined" ? "/404" : window.location.pathname;
-      return { targetPath, routeKey: `not-found:${targetPath}` };
-    }
-    if (["surahs", "about", "privacy", "legal", "sources"].includes(legalPage)) {
-      return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
-    }
-    if (showHome) return { targetPath: "/", routeKey: "home" };
-    if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
-    if (showPrayers) return { targetPath: "/prieres", routeKey: "prieres" };
-
-    if (displayMode === "surah") {
-      return {
-        targetPath:
-          currentAyah > 1
-            ? `/surah/${currentSurah}/${currentAyah}`
-            : `/surah/${currentSurah}`,
-        routeKey: `surah:${currentSurah}`,
-      };
-    }
-
-    if (displayMode === "page") {
-      return {
-        targetPath: `/page/${currentPage}`,
-        routeKey: `page:${currentPage}`,
-      };
-    }
-
-    if (displayMode === "juz") {
-      return {
-        targetPath: `/juz/${currentJuz}`,
-        routeKey: `juz:${currentJuz}`,
-      };
-    }
-
-    return { targetPath: "/", routeKey: "home" };
-  };
-
   useEffect(() => {
-    const { targetPath, routeKey } = buildRoute();
+    const { targetPath, routeKey } = buildRoute({
+      routeNotFound,
+      legalPage,
+      showHome,
+      showDuas,
+      showPrayers,
+      displayMode,
+      currentAyah,
+      currentSurah,
+      currentPage,
+      currentJuz,
+    });
 
     if (isFirstRender.current) {
       isFirstRender.current = false;

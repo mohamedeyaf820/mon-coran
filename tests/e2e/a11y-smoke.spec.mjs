@@ -14,10 +14,9 @@ test("A11y: le lien d'évitement ne décale pas l'accueil mobile", async ({ page
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
 
-  const header = page.locator("header").first();
-  await expect(header).toBeVisible();
-  const headerBox = await header.boundingBox();
-  expect(headerBox?.y ?? 999).toBeLessThan(2);
+  await expect(page.locator(".mp-header")).toBeHidden();
+  const mainBox = await page.locator("#main-content").boundingBox();
+  expect(mainBox?.y ?? 999).toBeLessThan(2);
 
   const skipLink = page.locator('a[href="#main-content"]');
   await expect(skipLink).not.toBeInViewport();
@@ -47,6 +46,8 @@ test("A11y: les notifications utilisent la langue de l'interface", async ({ page
     );
   });
   await page.goto("/");
+  // The app mounts once the reading language chunk has loaded.
+  await page.locator("#main-content").waitFor();
   await page.evaluate(() => {
     window.dispatchEvent(
       new CustomEvent("quran-toast", {
@@ -107,9 +108,9 @@ test("A11y: la sidebar est inerte fermée et piège le focus ouverte", async ({ 
   await expect(sidebar).toHaveAttribute("inert", "");
   await expect(sidebar).toHaveAttribute("aria-hidden", "true");
 
-  const menuButton = page.getByRole("button", { name: /Menu/i }).first();
-  await menuButton.focus();
+  const menuButton = page.locator('[data-destination="more"]');
   await menuButton.click();
+  await page.locator('[data-tool="directory"]').click();
 
   await expect(sidebar).toHaveClass(/\bopen\b/);
   await expect(sidebar).not.toHaveAttribute("inert");
@@ -136,7 +137,7 @@ test("A11y: la sidebar est inerte fermée et piège le focus ouverte", async ({ 
   await expect(sidebar).not.toHaveClass(/\bopen\b/);
   await expect(sidebar).toHaveAttribute("inert", "");
   await expect(sidebar).toHaveAttribute("aria-hidden", "true");
-  await expect.poll(() => page.evaluate(() => document.activeElement?.getAttribute("aria-controls"))).toBe("sidebar");
+  await expect(menuButton).toBeFocused();
   expect(accessibilityWarnings).toEqual([]);
 });
 

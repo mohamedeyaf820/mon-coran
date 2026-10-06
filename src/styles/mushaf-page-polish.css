@@ -60,13 +60,6 @@
 }
 
 /* reading-platform.css (0,5,2) uses !important on width:max-content — add html+body+state to beat it → (0,6,2) */
-html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend:not([open]),
-html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mode-pane--mushaf) > .tajweed-legend[open] {
-  width: min(100%, 760px) !important;
-  max-width: 760px !important;
-  margin-inline: auto !important;
-  border-radius: 1.2rem !important;
-}
 
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::before,
 .app-root[data-view="reading"] .quran-mode-pane--mushaf .mushaf-page-wrapper::after {
@@ -908,8 +901,7 @@ html body .app-root[data-view="reading"] .quran-display--platform:has(.quran-mod
 
 /* Hairlines run out from the band and the basmala to the sheet margins, so
    the two lines read as page furniture rather than as floating text. */
-.quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::before,
-.quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::after {
+.quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::before, .quran-mode-pane--mushaf :is(.qcm-line--surah-header, .qcm-line--basmala)::after {
   content: "";
   flex: 0 1 3.2em;
   height: 1px;

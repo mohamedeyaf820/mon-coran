@@ -6,9 +6,6 @@ import {
   Radio,
   Search,
   X,
-  SortAsc,
-  LayoutGrid,
-  List,
   Star,
   Play,
   ChevronLeft,
@@ -163,10 +160,7 @@ const ReciterCard = memo(function ReciterCard({
  *   onFilterChange         {function}
  *   reciterStyleFilter     {string}    "all" | "murattal" | "mujawwad" | "muallim"
  *   onStyleFilterChange    {function}
- *   sortDir                {string}    "asc" | "desc"
- *   onChangeSort           {function}
  *   viewMode               {string}    "grid" | "list"
- *   onChangeViewMode       {function}
  *   activeCollectionCount  {number}
  *   activeCollectionLabel  {string}
  *   filteredSurahs         {Array}
@@ -190,7 +184,6 @@ const ReciterCard = memo(function ReciterCard({
  */
 export default function ContentSection({
   lang,
-  isRtl,
   activeTab,
   onSelectTab,
   onRecitationsIntent,
@@ -199,11 +192,7 @@ export default function ContentSection({
   onFilterChange,
   reciterStyleFilter,
   onStyleFilterChange,
-  sortDir,
-  onChangeSort,
   viewMode,
-  isCompactLayout,
-  onChangeViewMode,
   activeCollectionCount,
   activeCollectionLabel,
   filteredSurahs,
@@ -258,9 +247,9 @@ export default function ContentSection({
 
   const refinedCollectionCopy = {
     surah: {
-      fr: ["Explorer les sourates", "Une liste claire, rapide à parcourir, avec recherche et tri."],
-      en: ["Explore surahs", "A clear, fast list with search and sorting."],
-      ar: ["استكشاف السور", "قائمة واضحة وسريعة مع البحث والترتيب."],
+      fr: ["Explorer les sourates", "Une liste claire, rapide à parcourir, avec recherche."],
+      en: ["Explore surahs", "A clear, fast list with search."],
+      ar: ["استكشاف السور", "قائمة واضحة وسريعة مع البحث."],
     },
     juz: {
       fr: ["Lecture par Juz", "Avance par sections régulières pour retrouver facilement ton parcours."],
@@ -283,7 +272,7 @@ export default function ContentSection({
       <div className="home-collection-heading flex items-end justify-between gap-4">
         <div className="home-collection-heading__copy flex w-full flex-wrap items-end justify-between gap-x-5 gap-y-2">
           <div className="home-collection-heading__text min-w-0">
-            <h2>{displayCollectionTitle}</h2>
+            {activeTab === "audio" ? <h1 className="home-audio-title">{displayCollectionTitle}</h1> : <h2>{displayCollectionTitle}</h2>}
             <p className="text-text-secondary text-[0.85rem] mt-0.5">{displayCollectionSubtitle}</p>
           </div>
           <span className="home-collection-heading__eyebrow inline-flex items-center gap-1.5">
@@ -394,62 +383,7 @@ export default function ContentSection({
           </div>
         )}
 
-        {/* Tri + vue */}
-        <details className="ms-auto">
-          <summary className="flex min-h-11 cursor-pointer items-center rounded-xl border border-border px-3 py-1.5 text-[0.82rem] font-semibold text-text-secondary focus-visible:outline focus-visible:outline-2 focus-visible:outline-primary">
-            {t("ux.displayOptions", lang)}
-          </summary>
-          <div className="mt-2 flex w-full items-center justify-between gap-3 rounded-xl border border-border bg-bg-card p-2 md:w-auto">
-          <div className="flex items-center gap-1.5 ml-auto">
-            {activeTab === "surah" && (
-              <label className="home-sort-menu">
-                <SortAsc size={14} aria-hidden="true" />
-                <span className="sr-only">{lang === "ar" ? "ترتيب السور" : lang === "en" ? "Sort surahs" : "Trier les sourates"}</span>
-                <select
-                  value={sortDir}
-                  onChange={(event) => onChangeSort(event.target.value)}
-                  aria-label={lang === "ar" ? "ترتيب السور" : lang === "en" ? "Sort surahs" : "Trier les sourates"}
-                >
-                  <option value="asc">{lang === "ar" ? "١ ← ١١٤" : "1 → 114"}</option>
-                  <option value="desc">{lang === "ar" ? "١١٤ ← ١" : "114 → 1"}</option>
-                </select>
-              </label>
-            )}
-            {!isCompactLayout && (activeTab === "surah" || activeTab === "juz") && (
-              <div className="flex items-center gap-1 p-1 rounded-xl bg-[var(--bg-secondary)] border border-[var(--border)] shadow-sm">
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-text-secondary transition-colors hover:text-text-primary",
-                    viewMode === "grid" &&
-                      "bg-bg-primary text-primary shadow-sm",
-                  )}
-                  onClick={() => onChangeViewMode("grid")}
-                  title={t("home.grid", lang)}
-                  aria-label={t("home.grid", lang)}
-                  aria-pressed={viewMode === "grid"}
-                >
-                  <LayoutGrid size={14} />
-                </button>
-                <button
-                  type="button"
-                  className={cn(
-                    "flex items-center justify-center h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-text-secondary transition-colors hover:text-text-primary",
-                    viewMode === "list" &&
-                      "bg-bg-primary text-primary shadow-sm",
-                  )}
-                  onClick={() => onChangeViewMode("list")}
-                  title={t("home.list", lang)}
-                  aria-label={t("home.list", lang)}
-                  aria-pressed={viewMode === "list"}
-                >
-                  <List size={14} />
-                </button>
-              </div>
-            )}
-          </div>
-          </div>
-        </details>
+
       </div>
 
       {activeTab === "audio" && (

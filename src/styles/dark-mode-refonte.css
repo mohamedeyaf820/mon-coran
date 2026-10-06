@@ -373,14 +373,12 @@ html[data-theme="dark"] .sidebar-link:hover {
 }
 
 
-html[data-theme="dark"] .app-root .hp-wrapper,
-html[data-theme="dark"] .app-root .home-wrapper {
+html[data-theme="dark"] .app-root .hp-wrapper {
     background: transparent !important;
 }
 
 html[data-theme="dark"] .app-root .hp-grid > *,
-html[data-theme="dark"] .app-root .surah-card,
-html[data-theme="dark"] .app-root .home-card {
+html[data-theme="dark"] .app-root .surah-card {
     border-color: var(--theme-border) !important;
     background: linear-gradient(
         180deg,
@@ -389,8 +387,7 @@ html[data-theme="dark"] .app-root .home-card {
     ) !important;
 }
 
-html[data-theme="dark"] .app-root .surah-card:hover,
-html[data-theme="dark"] .app-root .home-card:hover {
+html[data-theme="dark"] .app-root .surah-card:hover {
     border-color: rgba(var(--night-emerald-rgb), 0.28) !important;
     background: linear-gradient(
         180deg,
@@ -443,7 +440,7 @@ html[data-theme="dark"] .reader-toolbar button[aria-pressed="true"],
 html[data-theme="dark"] .qc-reader-toolbar button.active,
 html[data-theme="dark"] .reader-toolbar button.active {
     background: rgba(var(--night-emerald-rgb), 0.18) !important;
-    color: var(--night-emerald) !important;
+    color: var(--primary-ink, var(--night-emerald)) !important;
     border-color: rgba(var(--night-emerald-rgb), 0.3) !important;
 }
 

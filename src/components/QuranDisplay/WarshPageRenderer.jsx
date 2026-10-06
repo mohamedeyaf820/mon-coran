@@ -1,21 +1,16 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState, useSyncExternalStore } from "react";
+import { subscribeWarshArchive, getWarshArchiveSnapshot } from "../../utils/warshArchiveRules";
 import { ensureFontLoaded } from "../../services/fontLoader";
-import { resolveFontFamily, stripEmbeddedAyahMarkers } from "../../data/fonts";
+import { resolveFontFamily } from "../../data/fonts";
 import MushafFlowPage, { buildFlowSegments } from "./MushafFlowPage";
-import { getPageMeta, normalizeArabicText } from "./mushafPageComposition";
+import { getPageMeta } from "./mushafPageComposition";
+import { getWarshTajwidSource, warshDisplayWords } from "../../services/warshTajweedService";
 
 function getCleanWarshWords(ayah) {
-  const source = Array.isArray(ayah?.warshWords) && ayah.warshWords.length > 0
-    ? ayah.warshWords
-        .map((word) => (typeof word === "string" ? word : word?.text || ""))
-        .join(" ")
-    : ayah?.text || "";
-  return stripEmbeddedAyahMarkers(normalizeArabicText(source), {
-    ayahNumber: ayah?.numberInSurah,
-  })
-    .split(/\s+/u)
-    .filter(Boolean);
+  return warshDisplayWords(ayah);
 }
+
+export { getCleanWarshWords };
 
 export default function WarshPageRenderer({
   activeAyah,
@@ -31,19 +26,26 @@ export default function WarshPageRenderer({
   const fallbackFontFamily = resolveFontFamily(fontFamily, riwaya);
   const [fontLoaded, setFontLoaded] = useState(false);
   const [fontSettled, setFontSettled] = useState(false);
+  const archive = useSyncExternalStore(subscribeWarshArchive, getWarshArchiveSnapshot, getWarshArchiveSnapshot);
 
   const segments = useMemo(
     () =>
       buildFlowSegments(ayahs, {
         getWords: getCleanWarshWords,
+        // Warsh paints from the Dabt the pinned edition prints on its own text,
+        // so the sheet reads a canonical source like the Hafs one. Markup stays
+        // refused: no transport annotation ever reaches a Warsh word.
+        getAnnotatedWords: () => [],
+        getTajwidSource: showTajwid ? getWarshTajwidSource : undefined,
         riwaya: "warsh",
         showTajwid,
       }),
-    [ayahs, showTajwid],
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
+    [ayahs, showTajwid, archive],
   );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
-    [ayahs, currentPage, lang, riwaya],
+    [ayahs, currentPage, lang],
   );
 
   useEffect(() => {

@@ -91,7 +91,7 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
   );
 }
 
-export function Waveform({ isPlaying, progress }) {
+export function Waveform({ progress }) {
   const COUNT = 32;
   return (
     <div className="flex h-8 w-full items-end justify-center gap-0.5 rounded-xl border border-white/10 bg-white/[0.05] px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">

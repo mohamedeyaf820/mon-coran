@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -59,8 +60,7 @@ test("duas atmosphere adapts to mobile and all three themes", async ({ page }) =
   await page.goto("/");
 
   const root = page.locator(".app-root");
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="duas"]').click();
+  await openQuickMenuItem(page, "duas");
   await expect(root).toHaveAttribute("data-view", "duas");
   const duas = await pseudoStyle(page, ".app-view-duas");
   expect(duas.background).toContain("gradient");

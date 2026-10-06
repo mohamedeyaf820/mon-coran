@@ -5,6 +5,28 @@ import vm from "node:vm";
 
 const sw = fs.readFileSync(new URL("../public/sw.js", import.meta.url), "utf8");
 
+test("a shell update preserves downloaded audio and font caches", async () => {
+  const handlers = {};
+  const deleted = [];
+  const context = {
+    URL, Response, Request, AbortController, setTimeout, clearTimeout,
+    self: {
+      location: { origin: "https://qa.test" },
+      addEventListener: (name, handler) => { handlers[name] = handler; },
+      clients: { claim: async () => {}, matchAll: async () => [] },
+    },
+    caches: {
+      keys: async () => ["mushaf-plus-v21", "mushaf-plus-v22", "mushafplus-audio-v2", "mushaf-plus-qcf-fonts-v1", "another-app-cache"],
+      delete: async name => { deleted.push(name); return true; },
+    },
+  };
+  vm.runInNewContext(sw, context);
+  let completion;
+  handlers.activate({ waitUntil: promise => { completion = promise; } });
+  await completion;
+  assert.deepEqual(deleted, ["mushaf-plus-v21"]);
+});
+
 test("service worker waits for user confirmation before activating an update", () => {
   const installHandler = sw.match(/addEventListener\("install"[\s\S]*?\n\}\);/)?.[0] || "";
   assert.ok(installHandler, "install handler missing");
@@ -62,7 +84,7 @@ test('runtime cache does not persist opaque network responses', async () => {
     fetch: async () => opaque,
   };
   vm.runInNewContext(sw, context);
-  assert.equal(await context.cacheFirst(new Request('https://qa.test/assets/test.js'), 'mushaf-plus-v21'), opaque);
+  assert.equal(await context.cacheFirst(new Request('https://qa.test/assets/test.js'), 'mushaf-plus-v22'), opaque);
   assert.equal(writes, 0);
 });
 

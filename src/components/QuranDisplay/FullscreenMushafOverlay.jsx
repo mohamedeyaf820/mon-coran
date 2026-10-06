@@ -9,6 +9,7 @@ import { toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 import audioService from "../../services/audioService";
 import AyahActionsModal from "./AyahActionsModal";
+import TajweedLegend from "../Quran/TajweedLegend";
 import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
@@ -325,7 +326,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (event.key === "Escape") {
       // With the sheet open, its own document listener owns Escape; consuming
       // it here would close the whole overlay when focus sits on a marker.
-      if (actionsAyah != null) return;
+      if (actionsAyah != null || document.querySelector("[data-tajwid-guide-dialog]")) return;
       event.stopPropagation();
       onClose();
       return;
@@ -356,7 +357,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   useEffect(() => {
     if (!fullPage) return undefined;
     const handleDocumentEscape = (event) => {
-      if (event.key !== "Escape") return;
+      if (event.key !== "Escape" || event.defaultPrevented || document.querySelector("[data-tajwid-guide-dialog]")) return;
       const cameFromChildDialog =
         event.target instanceof Element &&
         event.target.closest(
@@ -377,7 +378,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     const returnFocusTarget = returnFocusRef?.current;
     closeButtonRef.current?.focus();
     const trapFocus = (event) => {
-      if (event.key !== "Tab") return;
+      if (event.key !== "Tab" || document.querySelector("[data-tajwid-guide-dialog]")) return;
       const focusable = Array.from(overlayRef.current?.querySelectorAll("button:not([disabled]), a[href], input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex='-1'])") || []).filter((element) => element.getClientRects().length > 0);
       if (!focusable.length) return;
       const first = focusable[0];
@@ -473,6 +474,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
           <div className="mfp-header__copy"><h2>{t("quran.page", lang)} {pageLabel}<span className="mfp-header__total">{" / 604"}</span><span className="mfp-header__context">{` · ${riwaya === "warsh" ? "Warsh" : "Hafs"}${currentJuz ? ` · ${t("sidebar.juz", lang)} ${currentJuz}` : ""}`}</span></h2></div>
         </div>
         <div className="mfp-header__tools">
+          <TajweedLegend lang={lang} riwaya={riwaya} compactTrigger />
           <AudioControls {...audioProps} />
           <div className="mfp-zoom-controls" dir="ltr">
             <button type="button" className="mfp-icon-btn" onClick={() => setZoomDelta((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>

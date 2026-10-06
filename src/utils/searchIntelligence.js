@@ -19,7 +19,7 @@ export function sanitizeSearchQuery(input) {
   return String(input || "")
     .trim()
     .slice(0, 200)
-    .replace(/[^\p{L}\p{N}\s\u0600-\u06FF'.,;:!?()\-]/gu, "")
+    .replace(/[^\p{L}\p{N}\s\u0600-\u06FF'.,;:!?()-]/gu, "")
     .replace(/\s+/g, " ")
     .trim();
 }

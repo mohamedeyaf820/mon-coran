@@ -10,7 +10,7 @@
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v21";
+const CACHE_NAME = "mushaf-plus-v22";
 const API_CACHE_NAME = "mushaf-plus-api-v6";
 const QCF_FONT_CACHE_NAME = "mushaf-plus-qcf-fonts-v1";
 const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
@@ -329,7 +329,8 @@ async function audioCacheFirst(request) {
   try {
     const cache = await caches.open(AUDIO_CACHE_NAME);
     const cached = await cache.match(request, { ignoreVary: true });
-    if (cached) {
+    if (cached && cached.type !== "opaque" && cached.status === 200 &&
+        /audio\/(mpeg|mp3)/i.test(cached.headers.get("content-type") || "")) {
       const rangeHeader = request.headers.get("range");
       return rangeHeader ? createPartialResponse(cached, rangeHeader) : cached;
     }

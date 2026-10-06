@@ -20,15 +20,18 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install
+      - run: npm ci
       - name: Lint structure and hooks
         run: npm run lint
       - name: Unit tests with coverage
         run: npm run test:coverage
       - name: Build, budgets, CSS and security headers
         run: npm run build:ci
-      - name: Dependency audit
-        run: npm audit --audit-level=high
+      # Shipped dependencies only. The advisory open on the build-time glob chain
+      # (purgecss > fast-glob > micromatch > braces) has no upstream fix and never
+      # reaches the bundle; the full tree is still listed by `npm audit`.
+      - name: Dependency audit (production)
+        run: npm audit --omit=dev --audit-level=high
       - name: Verify Warsh text, Tajwid and audio sources
         run: npm run audit:warsh
       - uses: actions/upload-artifact@v4
@@ -51,7 +54,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           name: production-dist
@@ -80,7 +83,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           name: production-dist
@@ -106,7 +109,7 @@ jobs:
         with:
           node-version: 22
           cache: npm
-      - run: npm install
+      - run: npm ci
       - uses: actions/download-artifact@v4
         with:
           name: production-dist

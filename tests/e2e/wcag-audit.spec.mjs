@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
@@ -139,8 +140,7 @@ test("navigation, réglages et lecture exposent leurs relations accessibles", as
   if (await settingsButton.isVisible().catch(() => false)) {
     await settingsButton.click();
   } else {
-    await page.locator(".mp-header__more").first().click();
-    await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+    await openQuickMenuItem(page, "settings");
   }
   await page.getByRole("tab", { name: /Affichage|Display/i }).click();
   await expect(page.locator("#settings-font-family")).toHaveAccessibleName(

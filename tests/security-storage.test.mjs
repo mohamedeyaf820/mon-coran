@@ -323,3 +323,29 @@ test("storage: accepts an explicitly cancelled offline download", () => {
 
   assert.equal(result.success, true);
 });
+
+test("the problem report is a draft with the version, the route and scrubbed local entries only", async () => {
+  const { buildIssueDraft } = await import("../src/services/issueDraft.js");
+  const draft = new URL(
+    buildIssueDraft(
+      { repositoryUrl: "https://github.com/owner/repo/", version: "1.2.3", lang: "fr" },
+      {
+        route: "/surah/2",
+        entries: [
+          { ts: "2026-10-06T10:00:00Z", type: "TypeError", msg: "x is undefined", context: "boundary" },
+          { ts: "2026-10-06T09:00:00Z", type: "Error", msg: "b", context: "window.error" },
+          { ts: "2026-10-06T08:00:00Z", type: "Error", msg: "c", context: "window.error" },
+          { ts: "2026-10-06T07:00:00Z", type: "Error", msg: "never shown", context: "window.error" },
+        ],
+      },
+    ),
+  );
+  assert.equal(draft.origin + draft.pathname, "https://github.com/owner/repo/issues/new");
+  const body = draft.searchParams.get("body");
+  assert.match(body, /Version : 1\.2\.3/);
+  assert.match(body, /Page : \/surah\/2/);
+  assert.match(body, /x is undefined/);
+  assert.doesNotMatch(body, /never shown/, "only the last three entries");
+  // No identifier of the reader: no user agent, no storage content.
+  assert.doesNotMatch(body, /Mozilla|localStorage|notes|bookmark/i);
+});

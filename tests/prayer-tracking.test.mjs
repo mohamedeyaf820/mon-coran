@@ -14,11 +14,13 @@ globalThis.localStorage = {
 
 const {
   markPrayer,
+  getPrayerLog,
   getDayAnswers,
   hasNotified,
   markNotified,
   summarizeRange,
   localDayKey,
+  dayKeyToDate,
 } = await import("../src/services/prayerLogService.js");
 const {
   planDayNotifications,
@@ -149,6 +151,54 @@ test("planner respects notification stamps and the performed answer", () => {
   assert.equal(items.some((i) => i.prayerKey === "Fajr" && i.kind === "adhan"), false);
   assert.equal(items.some((i) => i.prayerKey === "Fajr" && i.kind === "pre"), true);
   assert.equal(items.some((i) => i.prayerKey === "Dhuhr" && i.kind === "post"), false);
+});
+
+test("a stored day key decodes back to the day it was written for", () => {
+  // The key carries the 0-based month (`Date#getMonth()`), so all twelve are
+  // checked. Reading it back as if it were 1-based dated every entry about a
+  // month early, which is how a prayer the reader had already marked still
+  // earned its reminders — and how an old mark rolled off retention early.
+  for (let month = 0; month < 12; month += 1) {
+    const decoded = dayKeyToDate(localDayKey(new Date(2026, month, 15)));
+    assert.ok(decoded, `month ${month} must decode`);
+    assert.equal(decoded.getFullYear(), 2026);
+    assert.equal(decoded.getMonth(), month);
+    assert.equal(decoded.getDate(), 15);
+  }
+  // Only a hand-written or legacy key can carry a 1-based month; it still has
+  // to date the day it meant rather than being discarded.
+  assert.equal(dayKeyToDate("2026-12-31").getMonth(), 11);
+  assert.equal(dayKeyToDate("2026-0-1").getMonth(), 0);
+  assert.equal(dayKeyToDate("nonsense"), null);
+  assert.equal(dayKeyToDate("2026-1-32"), null);
+});
+
+test("a completed prayer suppresses that day's reminders", () => {
+  const today = new Date(2026, 6, 4); // 4 July 2026
+  markPrayer(localDayKey(today), "Maghrib", "prayed");
+  // Exactly the chain the routines run: planner day key → decoder → answers.
+  const answers = getDayAnswers(dayKeyToDate(localDayKey(today)));
+  assert.equal(answers.Maghrib, "prayed");
+  assert.equal(answers.Isha, null, "an unanswered prayer stays unanswered");
+});
+
+test("pruning keeps a day inside the retention window and drops only older ones", () => {
+  const dayKeyDaysAgo = (days) => {
+    const date = new Date();
+    date.setDate(date.getDate() - days);
+    return localDayKey(date);
+  };
+  const insideWindow = dayKeyDaysAgo(395);
+  const pastWindow = dayKeyDaysAgo(405);
+  markPrayer(pastWindow, "Fajr", "prayed");
+  markPrayer(insideWindow, "Fajr", "prayed");
+  const log = getPrayerLog();
+  assert.equal(
+    log[insideWindow]?.Fajr?.p,
+    true,
+    "395 days is inside the 400-day retention",
+  );
+  assert.equal(log[pastWindow], undefined, "405 days rolls off");
 });
 
 test("manual offsets shift displayed times and keep the base time for the UI", () => {

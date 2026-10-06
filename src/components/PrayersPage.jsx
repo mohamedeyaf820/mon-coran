@@ -15,7 +15,7 @@ import "../styles/domains/prayers-page.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
-import { PRAYER_KEYS } from "../services/prayerTimesService";
+import { PRAYER_KEYS, localDayKey } from "../services/prayerTimesService";
 import { POST_ADHAN_DUAS } from "../data/adhanDuas";
 
 /**
@@ -30,6 +30,7 @@ export default function PrayersPage() {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const [now, setNow] = useState(() => new Date());
   const [view, setView] = useState("day");
+  const panelRendered = Boolean(state.prayerLocation) && (view === "day" || Boolean(state.prayerTrackingEnabled));
   const [log, setLog] = useState({});
   const prayer = usePrayerTimes({
     enabled: Boolean(state.prayerLocation),
@@ -70,7 +71,7 @@ export default function PrayersPage() {
 
   const togglePrayer = useCallback(
     async (prayerKey) => {
-      const dayKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+      const dayKey = localDayKey(now);
       const wasPrayed = log[dayKey]?.[prayerKey]?.p === true;
       const { markPrayer } = await import("../services/prayerLogService");
       markPrayer(dayKey, prayerKey, wasPrayed ? null : "prayed");
@@ -79,7 +80,7 @@ export default function PrayersPage() {
     [log, now, refreshLog],
   );
 
-  const todayEntries = log[`${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`] || {};
+  const todayEntries = log[localDayKey(now)] || {};
   const timings = prayer.status === "ready" ? prayer.data.timings : null;
 
   const week = useMemo(() => {
@@ -90,7 +91,7 @@ export default function PrayersPage() {
     for (let i = 0; i < 7; i += 1) {
       const date = new Date(start);
       date.setDate(start.getDate() + i);
-      const entries = log[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] || {};
+      const entries = log[localDayKey(date)] || {};
       days.push({
         date,
         future: date > now,
@@ -107,7 +108,7 @@ export default function PrayersPage() {
     const days = [];
     for (let day = 1; day <= last.getDate(); day += 1) {
       const date = new Date(now.getFullYear(), now.getMonth(), day);
-      const entries = log[`${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`] || {};
+      const entries = log[localDayKey(date)] || {};
       days.push({
         date,
         future: date > now,
@@ -150,6 +151,8 @@ export default function PrayersPage() {
         </button>
       </section>
 
+      {/* Only the selected tab owns a panel, and only once the page has what it
+          needs to draw one: a reference to an absent id is invalid ARIA. */}
       <div className="prayers-view-switch" role="tablist" aria-label={t("prayers.switchAria", lang)}>
         {[
           { id: "day", icon: Clock },
@@ -162,14 +165,14 @@ export default function PrayersPage() {
             type="button"
             role="tab"
             aria-selected={view === id}
-            aria-controls={`prayers-panel-${id}`}
+            aria-controls={view === id && panelRendered ? `prayers-panel-${id}` : undefined}
             tabIndex={view === id ? 0 : -1}
             className={`prayers-view-btn${view === id ? " is-active" : ""}`}
             onClick={() => setView(id)}
             onKeyDown={(event) => {
               const forward = isRtl ? "ArrowLeft" : "ArrowRight";
               const backward = isRtl ? "ArrowRight" : "ArrowLeft";
-              let nextIndex = index;
+              let nextIndex;
               if (event.key === forward) nextIndex = (index + 1) % tabs.length;
               else if (event.key === backward) nextIndex = (index - 1 + tabs.length) % tabs.length;
               else if (event.key === "Home") nextIndex = 0;

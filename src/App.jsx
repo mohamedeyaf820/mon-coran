@@ -32,6 +32,8 @@ import {
   isWarshVerifiedReciter,
 } from "./data/reciters";
 const loadHomePage = () => import("./components/HomePage");
+const MobileNavigation = lazy(() => import("./components/MobileNavigation"));
+const CompactMenuTrigger = lazy(() => import("./components/CompactMenuTrigger"));
 let resolvedQuranDisplay;
 const loadQuranDisplay = () => import("./components/QuranDisplay").then((module) => {
   resolvedQuranDisplay = module.default;
@@ -86,7 +88,7 @@ function AppLoadingFallback({ lang, variant = "page" }) {
 
   return (
     <div
-      className="app-loading-fallback"
+      className={`app-loading-fallback${isHeader ? " app-header-loading" : ""}`}
       role="status"
       aria-busy="true"
       style={{
@@ -301,6 +303,7 @@ export default function App() {
     return () => {
       active = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- SEO metadata follows navigation, not every state change
   }, [
     showHome,
     showDuas,
@@ -367,6 +370,13 @@ export default function App() {
   );
   const [hasInteracted, setHasInteracted] = useState(false);
   const [immersiveHidden, setImmersiveHidden] = useState(false);
+  const [compactReadingChrome, setCompactReadingChrome] = useState(() => window.matchMedia('(max-width: 1024px)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 1024px)');
+    const update = () => setCompactReadingChrome(query.matches);
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
   const [toast, setToast] = useState(null);
   const [deferNonCriticalUI, setDeferNonCriticalUI] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
@@ -374,6 +384,10 @@ export default function App() {
   const immersiveScrollTop = useRef(0);
   const immersiveRevealUntil = useRef(0);
   const immersiveReserved = useRef(0);
+  // Read by the scroll handler below, which is bound once per chrome mode: a
+  // closure over state.isPlaying would keep the value from when it was bound.
+  const playbackActiveRef = useRef(false);
+  playbackActiveRef.current = Boolean(state.isPlaying || state.currentPlayingAyah);
   const mainScrollRef = useRef(null);
 
   useEffect(() => {
@@ -506,10 +520,10 @@ export default function App() {
   }, [revealImmersiveChrome]);
 
   useEffect(() => {
-    if (!immersiveActive || !state.isPlaying) return;
+    if (!immersiveActive || !state.isPlaying || compactReadingChrome) return;
     immersiveRevealUntil.current = Date.now() + 1800;
     revealImmersiveChrome();
-  }, [immersiveActive, revealImmersiveChrome, state.isPlaying]);
+  }, [immersiveActive, revealImmersiveChrome, state.isPlaying, compactReadingChrome]);
 
   useEffect(() => {
     if (!immersiveActive || blockingModalOpen || sidebarOpen) {
@@ -524,12 +538,20 @@ export default function App() {
 
     const scheduleHide = () => {
       clearTimeout(immersiveTimer.current);
-      if (scrollContainer.scrollTop < 88) return;
-      immersiveTimer.current = setTimeout(() => setImmersiveHidden(true), 2800);
+      if (!compactReadingChrome && scrollContainer.scrollTop < 88) return;
+      immersiveTimer.current = setTimeout(() => {
+        if (document.querySelector('[role="dialog"], .mobile-navigation-menu[data-state="open"]') ||
+          (compactReadingChrome && document.activeElement?.matches(':focus-visible') && document.activeElement?.closest('.mobile-navigation, .mp-audio-player'))) {
+          scheduleHide();
+          return;
+        }
+        setImmersiveHidden(true);
+      }, 2800);
     };
 
     const showChrome = () => {
       setImmersiveHidden(false);
+      if (compactReadingChrome) immersiveRevealUntil.current = Date.now() + 1800;
       scheduleHide();
     };
 
@@ -538,6 +560,14 @@ export default function App() {
       const delta = nextTop - immersiveScrollTop.current;
       immersiveScrollTop.current = nextTop;
 
+      if (compactReadingChrome) {
+        if (Date.now() >= immersiveRevealUntil.current && delta > 28) {
+          clearTimeout(immersiveTimer.current);
+          setImmersiveHidden(true);
+        }
+        return;
+      }
+
       if (Date.now() < immersiveRevealUntil.current) {
         setImmersiveHidden(false);
         return;
@@ -545,19 +575,21 @@ export default function App() {
 
       if (nextTop < 40 || delta < -14) {
         showChrome();
-      } else if (delta > 28 && nextTop > 160 && !state.isPlaying && !state.currentPlayingAyah) {
+      } else if (delta > 28 && nextTop > 160 && !playbackActiveRef.current) {
         clearTimeout(immersiveTimer.current);
         setImmersiveHidden(true);
       }
     };
 
     const handlePointerMove = (event) => {
+      if (compactReadingChrome) return;
       if (event.clientY <= 64 || event.clientY >= window.innerHeight - 88) {
         showChrome();
       }
     };
 
     const handleTouch = (event) => {
+      if (compactReadingChrome) return;
       const t = event.touches[0];
       if (!t) return;
       if (t.clientY <= 80 || t.clientY >= window.innerHeight - 100) {
@@ -570,7 +602,16 @@ export default function App() {
         showChrome();
       }
     };
+    const handleClick = () => {
+      if (compactReadingChrome && !window.getSelection()?.toString()) showChrome();
+    };
+    const handleControl = event => {
+      if (compactReadingChrome && event.target.closest?.('.mobile-navigation, .mp-audio-player')) showChrome();
+    };
 
+    scheduleHide();
+    scrollContainer.addEventListener('click', handleClick);
+    document.addEventListener('pointerdown', handleControl, { passive: true });
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
     scrollContainer.addEventListener("touchstart", handleTouch, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
@@ -578,12 +619,14 @@ export default function App() {
 
     return () => {
       clearTimeout(immersiveTimer.current);
+      scrollContainer.removeEventListener('click', handleClick);
+      document.removeEventListener('pointerdown', handleControl);
       scrollContainer.removeEventListener("scroll", handleScroll);
       scrollContainer.removeEventListener("touchstart", handleTouch);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("keydown", handleKeyboard);
     };
-  }, [blockingModalOpen, immersiveActive, sidebarOpen]);
+  }, [blockingModalOpen, immersiveActive, sidebarOpen, compactReadingChrome]);
 
   // A new reading target (surah, page, juz, mode) starts at the top: the
   // position remembered for the immersive chrome belongs to the previous
@@ -716,6 +759,7 @@ export default function App() {
       cancelled = true;
       cancelIdle();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the preload re-arms on the settings it reads, not on every state change; the rest is read when it fires
   }, [
     showHome,
     state.riwaya,
@@ -878,6 +922,7 @@ export default function App() {
     state.riwaya,
     state.showDuas,
     state.showHome,
+    state.showPrayers,
   ]);
 
   return (
@@ -902,7 +947,7 @@ export default function App() {
         inert={blockingModalOpen ? "" : undefined}
       >
         {!showHome && !showDuas && !legalPage && !routeNotFound ? (
-          <Suspense fallback={null}><ProgressBar /></Suspense>
+          <ErrorBoundary silent name="progress"><Suspense fallback={null}><ProgressBar /></Suspense></ErrorBoundary>
         ) : null}
         <Suspense fallback={null}>
           <ConfirmDialogHost />
@@ -914,14 +959,18 @@ export default function App() {
           {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={headerFallback}>
-          <Header immersiveHidden={immersiveHidden} />
-        </Suspense>
+        <ErrorBoundary silent name="header">
+          <Suspense fallback={headerFallback}>
+            <Header immersiveHidden={immersiveHidden} />
+          </Suspense>
+        </ErrorBoundary>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={null}>
-            {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
-          </Suspense>
+          <ErrorBoundary silent name="sidebar">
+            <Suspense fallback={null}>
+              {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
+            </Suspense>
+          </ErrorBoundary>
 
           {sidebarLocksMain && (
             <div
@@ -976,9 +1025,11 @@ export default function App() {
             }
             className={`app-main app-main-shell flex-1 min-h-0 min-w-0 overflow-x-hidden overflow-y-auto transition-[margin] duration-300 ${showHome ? "app-main--home" : ""}`}
             style={{
-              paddingBottom: immersiveHidden
-                ? "env(safe-area-inset-bottom, 0px)"
-                : "var(--player-h, 0px)",
+              paddingBottom: compactReadingChrome && immersiveActive
+                ? "calc(var(--player-h, 0px) + 64px + env(safe-area-inset-bottom, 0px))"
+                : immersiveHidden
+                ? focusReading ? "env(safe-area-inset-bottom, 0px)" : "var(--mobile-nav-h, 0px)"
+                : "calc(var(--player-h, 0px) + var(--mobile-nav-h, 0px))",
               height: immersiveHidden
                 ? "100dvh"
                 : "calc(100dvh - var(--header-h, 72px))",
@@ -1047,14 +1098,31 @@ export default function App() {
 
         {shouldMountAudioPlayer && (
           <div
-            aria-hidden={immersiveHidden && !state.isPlaying ? "true" : undefined}
-            inert={immersiveHidden && !state.isPlaying ? "" : undefined}
+            aria-hidden={immersiveHidden && (compactReadingChrome || !state.isPlaying) ? "true" : undefined}
+            inert={immersiveHidden && (compactReadingChrome || !state.isPlaying) ? "" : undefined}
           >
-            <Suspense fallback={null}>
-              <AudioPlayer />
-            </Suspense>
+            <ErrorBoundary silent name="audio-player">
+              <Suspense fallback={null}>
+                <AudioPlayer />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         )}
+
+        <ErrorBoundary silent name="mobile-navigation">
+          <Suspense fallback={null}><MobileNavigation hidden={compactReadingChrome && immersiveHidden} /></Suspense>
+        </ErrorBoundary>
+
+        {/* Reader only: Home, Duas, Prayers and the legal pages have no free top
+            band, the button covered their title or their back button, and they
+            reach the same directory through the Plus menu. */}
+        {immersiveActive ? (
+          <ErrorBoundary silent name="menu-trigger">
+            <Suspense fallback={null}>
+              <CompactMenuTrigger immersiveHidden={immersiveHidden} />
+            </Suspense>
+          </ErrorBoundary>
+        ) : null}
 
         {/* ── Modal raccourcis clavier ─────────────────────────────────── */}
         {showShortcuts && (

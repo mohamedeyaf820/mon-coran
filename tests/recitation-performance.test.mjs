@@ -89,7 +89,7 @@ test("recitation performance: surah-stream radio keeps one item per surah", asyn
   assert.equal(playlist.at(-1).surah, 114);
 });
 
-test("audio sync: a full-surah stream exposes and advances the active ayah", async () => {
+test("audio sync: a full-surah stream never invents verse timing", async () => {
   const service = new AudioService();
   const changes = [];
   service.onAyahChange = (item) => changes.push(item.ayah);
@@ -114,18 +114,18 @@ test("audio sync: a full-surah stream exposes and advances the active ayah", asy
   );
 
   await service.loadAndPlay(0);
-  assert.equal(service.currentAyah.ayah, 1);
-  assert.equal(service.currentAyah.estimatedTiming, true);
+  assert.equal(service.currentAyah.ayah, null);
+  assert.equal(service.currentAyah.estimatedTiming, false);
 
   service.audio.duration = 90;
   service.audio.currentTime = 80;
   service._boundTimeUpdate();
-  assert.equal(service.currentAyah.ayah, 3);
-  assert.deepEqual(changes, [1, 3]);
+  assert.equal(service.currentAyah.ayah, null);
+  assert.deepEqual(changes, [null]);
   service.destroy();
 });
 
-test("audio sync: selecting an ayah seeks within a full-surah stream", async () => {
+test("audio sync: selecting an ayah does not invent a seek in an untimed stream", async () => {
   const service = new AudioService();
   service.loadPlaylist(
     [
@@ -141,8 +141,8 @@ test("audio sync: selecting an ayah seeks within a full-surah stream", async () 
   service.playAyah(3, 3);
   await new Promise((resolve) => setImmediate(resolve));
 
-  assert.equal(service.currentAyah.ayah, 3);
-  assert.ok(service.audio.currentTime > 0);
+  assert.equal(service.currentAyah.ayah, null);
+  assert.equal(service.audio.currentTime, 0);
   service.destroy();
 });
 

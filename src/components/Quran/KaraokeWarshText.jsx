@@ -56,7 +56,7 @@ export default function KaraokeWarshText({
   words,
   isFirstAyah,
   calibration,
-  tajweedColors,
+  showTajwid = false,
   fallbackText,
   ayahNumber,
   fontFamily,
@@ -113,7 +113,7 @@ export default function KaraokeWarshText({
       <WarshWordText
         words={normalizedWords}
         highlightIdx={highlightIdx >= 0 ? highlightIdx : undefined}
-        tajweedColors={tajweedColors}
+        showTajwid={showTajwid}
         fallbackText={fallbackText}
         markerFlags={markerFlags}
       />

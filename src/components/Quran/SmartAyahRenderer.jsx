@@ -1,6 +1,9 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useSyncExternalStore } from "react";
+import { subscribeWarshArchive, getWarshArchiveSnapshot } from "../../utils/warshArchiveRules";
 import { shallowEqual, useAppSelector } from "../../context/AppContext";
 import { stripBasmala } from "../../utils/quranUtils";
+import { getHafsTajwidSource } from "../../utils/hafsTajwidSource";
+import { getWarshTajwidAnnotatedSource } from "../../services/warshTajweedService";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
 import {
   appendNativeAyahMarker,
@@ -28,6 +31,7 @@ function SmartAyahRendererComponent({
   appendNativeMarker = true,
 }) {
   const fontFamily = useAppSelector((state) => state.fontFamily, shallowEqual);
+  const archive = useSyncExternalStore(subscribeWarshArchive, getWarshArchiveSnapshot, getWarshArchiveSnapshot);
   const isFirstAyah =
     ayah.numberInSurah === 1 && surahNum !== 1 && surahNum !== 9;
   const effectiveRiwaya = ayah.warshWords ? "warsh" : riwaya || "hafs";
@@ -35,14 +39,19 @@ function SmartAyahRendererComponent({
     () => getAyahTextForFont(ayah, fontFamily, effectiveRiwaya),
     [ayah, effectiveRiwaya, fontFamily],
   );
+  const hafsSource = useMemo(
+    () => effectiveRiwaya === "hafs" ? getHafsTajwidSource(ayah, fontFamily, surahNum) : null,
+    [ayah, effectiveRiwaya, fontFamily, surahNum],
+  );
+
   const baseCleanText = useMemo(
     () =>
-      stripBasmala(
+      hafsSource?.original ?? stripBasmala(
         fontCompatibleText,
         surahNum,
         ayah.numberInSurah,
       ).trim(),
-    [ayah.numberInSurah, fontCompatibleText, surahNum],
+    [ayah.numberInSurah, fontCompatibleText, surahNum, hafsSource],
   );
   const cleanFallbackText = useMemo(
     () =>
@@ -56,38 +65,20 @@ function SmartAyahRendererComponent({
     [appendNativeMarker, ayah.numberInSurah, baseCleanText, effectiveRiwaya, fontFamily],
   );
 
+  // Warsh paints from the Dabt of the same printed text this renderer draws, so
+  // the verse-by-verse reading carries the same ranges as the mushaf sheet.
+  const warshSource = useMemo(
+    () => effectiveRiwaya === "warsh" ? getWarshTajwidAnnotatedSource(baseCleanText) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
+    [baseCleanText, effectiveRiwaya, archive],
+  );
+  const tajwidSource = effectiveRiwaya === "warsh" ? warshSource : hafsSource;
+
   const wordCount = baseCleanText.split(/\s+/).filter(Boolean).length;
-  const tajweedText = useMemo(() => {
-    let value = null;
-    if (effectiveRiwaya === "warsh") {
-      value = cleanFallbackText || baseCleanText;
-    } else {
-      value =
-        ayah.quranCom?.textTajweed ||
-        ayah.words
-          ?.map((word) => word.textTajweed || word.textUthmani || word.text)
-          .filter(Boolean)
-          .join(" ") ||
-        cleanFallbackText ||
-        baseCleanText;
-    }
-    return appendNativeAyahMarker(
-      value,
-      ayah.numberInSurah,
-      fontFamily,
-      effectiveRiwaya,
-      appendNativeMarker,
-    );
-  }, [
-    appendNativeMarker,
-    ayah.numberInSurah,
-    ayah.quranCom?.textTajweed,
-    ayah.words,
-    baseCleanText,
-    cleanFallbackText,
-    effectiveRiwaya,
-    fontFamily,
-  ]);
+  // The immutable shared source carries rule ranges. Presentation markers are
+  // appended to the canonical display text only, never to provider markup.
+  const tajweedText = effectiveRiwaya === "warsh"
+    ? cleanFallbackText : hafsSource?.annotation || baseCleanText;
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_HAFS_CALIBRATION,
     wordCount,
@@ -97,10 +88,10 @@ function SmartAyahRendererComponent({
     if (isPlaying) {
       return (
         <KaraokeWarshText
-          words={ayah.warshWords}
+          words={baseCleanText.split(/\s+/u).filter(Boolean)}
           isFirstAyah={isFirstAyah}
           calibration={effectiveCalibration}
-          tajweedColors={null}
+          showTajwid={showTajwid}
           fallbackText={cleanFallbackText}
           ayahNumber={ayah.numberInSurah}
           fontFamily={fontFamily}
@@ -113,6 +104,7 @@ function SmartAyahRendererComponent({
       <AyahTextRenderer
         text={cleanFallbackText}
         tajweedText={tajweedText}
+        tajwidSource={tajwidSource}
         showTajwid={showTajwid}
         isPlaying={isPlaying}
         isFirstAyah={isFirstAyah}
@@ -139,6 +131,7 @@ function SmartAyahRendererComponent({
     <AyahTextRenderer
       text={cleanFallbackText}
       tajweedText={tajweedText}
+      tajwidSource={tajwidSource}
       showTajwid={showTajwid}
       isPlaying={isPlaying}
       isFirstAyah={isFirstAyah}

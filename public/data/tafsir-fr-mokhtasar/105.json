@@ -1,0 +1,29 @@
+{
+  "schema": "mushafplus-tafsir-fr-v1",
+  "edition": "fr-mokhtasar",
+  "language": "fr",
+  "surah_number": 105,
+  "number_of_ayahs": 5,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "Ô Messager, ne sais-tu pas ce que ton Seigneur a fait d’Abrahah et de ses compagnons montés sur des éléphants lorsqu’ils voulurent démolir la Ka’bah?"
+    },
+    {
+      "ayah_number": 2,
+      "text": "Il mit à mal leur stratagème et ils ne purent atteindre leur objectif de détourner les gens de la Ka’bah,"
+    },
+    {
+      "ayah_number": 3,
+      "text": "en envoyant sur eux des oiseaux qui se sont abattus sur eux volée après volée"
+    },
+    {
+      "ayah_number": 4,
+      "text": "et leur lançaient des pierres d’argile durcie."
+    },
+    {
+      "ayah_number": 5,
+      "text": "Allah les rendit alors semblables à des feuilles de blé mâchées et piétinées par des bêtes."
+    }
+  ]
+}

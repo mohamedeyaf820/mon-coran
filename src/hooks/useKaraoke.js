@@ -118,7 +118,6 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
       unsubscribeEnd();
       frameLoop.stop();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     offsetSec,
     smoothing,

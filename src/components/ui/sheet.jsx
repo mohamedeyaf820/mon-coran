@@ -25,6 +25,7 @@ export function Sheet({
   size = "md",
   showCloseButton = true,
   className,
+  overlayClassName,
 }) {
   const { lang } = useAppLocale();
   // Two open sheets/modals must not share one aria-labelledby target.
@@ -116,7 +117,7 @@ export function Sheet({
   };
 
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)]" role="dialog" aria-modal="true" aria-labelledby={title ? titleId : undefined}>
+    <div className={cn("fixed inset-0 z-[var(--z-modal)]", overlayClassName)} role="dialog" aria-modal="true" aria-labelledby={title ? titleId : undefined}>
       <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm"
         aria-hidden="true"

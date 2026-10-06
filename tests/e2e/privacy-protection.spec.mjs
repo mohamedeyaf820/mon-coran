@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
 
 const PASSPHRASE = "ma phrase secrete robuste 2026";
 const NEXT_PASSPHRASE = "ma nouvelle phrase robuste 2026";
@@ -10,8 +11,7 @@ async function openSettings(page) {
     return;
   }
 
-  await page.locator(".mp-header__more").first().click();
-  await page.locator('.mp-header-menu__item[data-key="settings"]').click();
+  await openQuickMenuItem(page, "settings");
 }
 
 async function openAdvancedProtection(page) {
@@ -24,7 +24,7 @@ async function openAdvancedProtection(page) {
 async function seedLegacyPrivateRecords(page) {
   await page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 3);
+      const request = indexedDB.open("mushafplus");
       request.onupgradeneeded = () => {
         const nextDb = request.result;
         if (!nextDb.objectStoreNames.contains("notes")) {
@@ -64,7 +64,7 @@ async function seedLegacyPrivateRecords(page) {
 async function readRawPrivateRecords(page) {
   return page.evaluate(async () => {
     const db = await new Promise((resolve, reject) => {
-      const request = indexedDB.open("mushafplus", 3);
+      const request = indexedDB.open("mushafplus");
       request.onerror = () => reject(request.error);
       request.onsuccess = () => resolve(request.result);
     });

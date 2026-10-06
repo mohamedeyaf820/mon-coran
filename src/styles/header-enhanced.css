@@ -412,11 +412,7 @@
 }
 
 .mp-header-menu__header {
-  display: flex;
-  align-items: center;
   gap: var(--space-2);
-  padding: 0.7rem 0.9rem 0.55rem;
-  margin-bottom: 0.25rem;
 }
 .mp-header-menu__header-icon {
   display: flex;
@@ -438,7 +434,6 @@
 }
 
 .mp-header-menu__section {
-  padding: 0 0.45rem;
   margin-bottom: 0.2rem;
 }
 .mp-header-menu__item {
@@ -497,15 +492,8 @@
   color: var(--c-theme-icon);
 }
 .mp-header-menu__item-kbd {
-  margin-inline-start: auto;
-  font-size: 0.6rem;
-  font-weight: 600;
   letter-spacing: 0.02em;
-  padding: 0.1rem 0.35rem;
-  border-radius: 0.25rem;
-  background: var(--bg-secondary);
   border: 1px solid var(--border);
-  color: var(--text-muted);
   opacity: 0.7;
   font-family: var(--font-mono, monospace);
   white-space: nowrap;
@@ -528,11 +516,7 @@
   padding-inline-start: 0.1rem;
 }
 .mp-header-menu__riwaya-btns {
-  display: flex;
-  gap: 0;
   background: var(--bg-primary);
-  border-radius: var(--r-base);
-  padding: 0.2rem;
   border: 1px solid var(--border);
 }
 

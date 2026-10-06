@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { CloudDownload, Loader2, MapPin, Play, Square } from "lucide-react";
 import { Section, SwitchRow } from "./controls";
 import { t } from "../../i18n";
@@ -70,8 +70,8 @@ export default function PrayerSettingsSection({ lang, state, set }) {
     prayerTrackingEnabled,
     prayerPostAdhanDuas,
   } = state;
-  const prefs = prayerNotifications || {};
-  const prayersOn = prefs.prayers || {};
+  const prefs = useMemo(() => prayerNotifications || {}, [prayerNotifications]);
+  const prayersOn = useMemo(() => prefs.prayers || {}, [prefs]);
   const [permission, setPermission] = useState(getNotificationPermission);
   const [locating, setLocating] = useState(false);
   const [locationError, setLocationError] = useState("");

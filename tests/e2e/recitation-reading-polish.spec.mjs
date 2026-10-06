@@ -263,7 +263,8 @@ test("reciter library downloads a surah into the persistent offline cache", asyn
     await route.fulfill({
       status: 200,
       contentType: "audio/mpeg",
-      body: Buffer.from([73, 68, 51, 4, 0, 0, 0, 0, 0, 0]),
+      // Downloads are validated as complete MP3 streams, so serve a real clip.
+      body: fs.readFileSync("tests/fixtures/silent-2s.mp3"),
     });
   });
   await seed(page, { showHome: true });

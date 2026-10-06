@@ -46,6 +46,7 @@ function AyahBlockComponent({
         riwaya={riwaya}
       />
     ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the verse is re-rendered when the reading size changes
     [
     ayah,
     calibration,

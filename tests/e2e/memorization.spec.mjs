@@ -79,10 +79,12 @@ test.describe("Lecteur sans mode mémorisation", () => {
       .first();
     if (await riwayaToggle.isVisible()) {
       await riwayaToggle.click();
-      await page.waitForTimeout(1000);
 
-      const afterCount = await page.locator(".qc-ayah-text-ar, .qc-verse-card").count();
-      expect(afterCount).toBeGreaterThan(0);
+      // The reader reloads its text for the other riwaya: a fixed one-second wait
+      // sampled the empty moment on a loaded machine (2 failures out of 10).
+      await expect
+        .poll(() => page.locator(".qc-ayah-text-ar, .qc-verse-card").count(), { timeout: 20_000 })
+        .toBeGreaterThan(0);
     } else {
       test.info().annotations.push({
         type: "note",

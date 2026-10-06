@@ -321,7 +321,6 @@
 /* Side gutters (juz, hizb): their type is set by the running-head rule
    below; these gutters are margin decoration only. */
 #root ~ .mfp-portal-root .qcm-edge {
-  color: var(--reader-page-muted);
   /* The fixed side-nav arrows sit over these gutters and must receive
      the clicks. */
   pointer-events: none;
@@ -616,11 +615,6 @@
    than hanging from the head. */
 #root ~ .mfp-portal-root .mfp-book .qcm-lines {
   flex: 1 1 auto;
-  min-height: 0;
-}
-
-#root ~ .mfp-portal-root .mfp-book .qcm-page-footer {
-  margin-top: auto;
 }
 
 #root ~ .mfp-portal-root .mfp-book .qcm-edge {

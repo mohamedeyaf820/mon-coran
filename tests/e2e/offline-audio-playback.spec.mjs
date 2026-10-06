@@ -96,7 +96,8 @@ async function playerState(page) {
       ? {
           time: Number(audio.currentTime.toFixed(2)),
           paused: audio.paused,
-          file: (audio.currentSrc || "").split("/").pop(),
+          file: audio.src.startsWith("blob:") ? "local" : (audio.currentSrc || "").split("/").pop(),
+          source: audio.src,
         }
       : null;
   });
@@ -138,11 +139,11 @@ test("a downloaded surah keeps playing verse by verse with no network", async ({
 
   await expect
     .poll(async () => (await playerState(page))?.file)
-    .toBe("001001.mp3");
+    .toBe("local");
 
   const first = await playerState(page);
   expect(first, "the player opened an audio element").not.toBeNull();
-  expect(first.file).toBe("001001.mp3");
+  expect(first.file).toBe("local");
   expect(first.paused, "the cached verse plays with no network").toBe(false);
   await expect
     .poll(() => page.locator(".is-playing").count(), { timeout: 10_000 })
@@ -155,10 +156,20 @@ test("a downloaded surah keeps playing verse by verse with no network", async ({
     window.__playerAudio.dispatchEvent(new Event("ended"));
   });
   await expect
-    .poll(async () => (await playerState(page)).file, { timeout: 20_000 })
-    .not.toBe("001001.mp3");
+    .poll(async () => (await playerState(page)).source, { timeout: 20_000 })
+    .not.toBe(first.source);
   const next = await playerState(page);
   expect(next.paused, "the following verse kept playing").toBe(false);
+  await page.evaluate(() => {
+    window.__routeAudio = window.__playerAudio;
+    window.__routeAudio.loop = true;
+  });
+  await page.getByTestId("mobile-home-logo").click();
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  expect(await page.evaluate(() => window.__routeAudio === window.__playerAudio), "route changes preserve the native player").toBe(true);
+  const afterRoute = await playerState(page);
+  expect(afterRoute.source).toBe(next.source);
+  expect(afterRoute.paused).toBe(false);
 });
 
 test("a missing cached verse is no longer advertised as offline on mobile", async ({ page }) => {
@@ -217,9 +228,9 @@ test("playback keeps running when the reader loses the foreground", async ({
   await expect.poll(async () => {
     const during = await playerState(page);
     return Boolean(during && !during.paused &&
-      (during.file !== started.file || during.time > started.time));
+      (during.source !== started.source || during.time > started.time));
   }, { timeout: 20_000, message: "the verse position or file advances while hidden" }).toBe(true);
   await expect
-    .poll(async () => (await playerState(page)).file, { timeout: 20_000 })
-    .not.toBe(started.file);
+    .poll(async () => (await playerState(page)).source, { timeout: 20_000 })
+    .not.toBe(started.source);
 });
