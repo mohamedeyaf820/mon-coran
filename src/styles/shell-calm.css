@@ -35,6 +35,22 @@
     backdrop-filter: blur(14px) saturate(140%);
     box-shadow: 0 -6px 20px -12px rgba(0, 0, 0, 0.22);
   }
+  /* Bottom bar stepped away on a page that is not the reader (see `navAway` in
+     App.jsx): it slides down in place and hands its band back to the content
+     and to the player dock. The bar keeps its own height so it can slide. */
+  html body .app-root .mobile-navigation { transition: transform 220ms ease, visibility 0s linear 0s; }
+  .app-root.nav-away { --mobile-nav-h: 0px; }
+  html body .app-root.nav-away .mobile-navigation {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 220ms ease, visibility 0s linear 220ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html body .app-root .mobile-navigation,
+    html body .app-root.nav-away .mobile-navigation { transition: none; }
+  }
   html body .app-root.immersive-mode .mobile-navigation { display: none !important; }
   html body .app-root.immersive-mode .compact-menu-trigger { display: none !important; }
 
