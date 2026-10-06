@@ -57,6 +57,7 @@ function PageMode({
     setTurnClass(`page-turn--${direction}`);
     const id = setTimeout(() => setTurnClass(""), 280);
     return () => clearTimeout(id);
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- a page change is the trigger; the navigation source only qualifies it
   }, [currentPage]);
 
   const activeAyahData = ayahs.find(

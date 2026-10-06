@@ -83,8 +83,10 @@ export default function RowActions({
 }) {
   const labels = labelsFor(lang);
   const canDownload = Boolean(surah?.n && reciter?.id && reciter?.cdn);
-  const contextualLabel = (action) =>
-    surahLabel ? `${action} — ${surahLabel}` : action;
+  const contextualLabel = useCallback(
+    (action) => (surahLabel ? `${action} — ${surahLabel}` : action),
+    [surahLabel],
+  );
   const readEntry = useCallback(
     () =>
       canDownload

@@ -69,6 +69,7 @@ function SmartAyahRendererComponent({
   // the verse-by-verse reading carries the same ranges as the mushaf sheet.
   const warshSource = useMemo(
     () => effectiveRiwaya === "warsh" ? getWarshTajwidAnnotatedSource(baseCleanText) : null,
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
     [baseCleanText, effectiveRiwaya, archive],
   );
   const tajwidSource = effectiveRiwaya === "warsh" ? warshSource : hafsSource;

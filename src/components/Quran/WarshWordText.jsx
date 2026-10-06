@@ -16,6 +16,7 @@ import { getWholeWordTajwidRule } from '../../utils/tajwidAnnotation';
 const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, showTajwid = false, markerFlags }) {
     const rootRef = useRef(null);
     const archive = useSyncExternalStore(subscribeWarshArchive, getWarshArchiveSnapshot, getWarshArchiveSnapshot);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
     const ranges = useMemo(() => showTajwid ? getWarshPerWordTajweedRanges(words || []) : [], [words, showTajwid, archive]);
     useLayoutEffect(() => {
         const root = rootRef.current;

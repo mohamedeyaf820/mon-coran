@@ -40,11 +40,12 @@ export default function WarshPageRenderer({
         riwaya: "warsh",
         showTajwid,
       }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
     [ayahs, showTajwid, archive],
   );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
-    [ayahs, currentPage, lang, riwaya],
+    [ayahs, currentPage, lang],
   );
 
   useEffect(() => {

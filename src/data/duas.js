@@ -125,7 +125,7 @@ const QURAN_DUAS = [
     category: 'tawhid',
       surah: 12, ayah: 101,
         arabic: 'رَبِّ قَدْ آتَيْتَنِي مِنَ الْمُلْكِ وَعَلَّمْتَنِي مِن تَأْوِيلِ الْأَحَادِيثِ ۚ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ أَنتَ وَلِيِّي فِي الدُّنْيَا وَالْآخِرَةِ ۖ تَوَفَّنِي مُسْلِمًا وَأَلْحِقْنِي بِالصَّالِحِينَ',
-          transliteration: "Rabbi qad ataytani min al-mulki wa \'allamtani min ta'wil al-ahadith fatir al-samawat wa al-ard anta waliyyi fi al-dunya wa al-akhirat tawaffani musliman wa alhiqni bil-salihin",
+          transliteration: "Rabbi qad ataytani min al-mulki wa 'allamtani min ta'wil al-ahadith fatir al-samawat wa al-ard anta waliyyi fi al-dunya wa al-akhirat tawaffani musliman wa alhiqni bil-salihin",
             fr: 'Seigneur, fais-moi mourir en soumission et joins-moi aux pieux.',
               en: 'My Lord, cause me to die as a Muslim, and join me with the righteous.',
   },

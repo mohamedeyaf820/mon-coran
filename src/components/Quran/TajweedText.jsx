@@ -560,7 +560,10 @@ const TajweedText = React.memo(function TajweedText({
             : normalizeTajwidAnnotation(originalText, text, { riwaya }),
         [originalText, text, riwaya, tajwidSource],
     );
-    const segments = enabled ? annotation.segments : [{ text: annotation.text, ruleId: null }];
+    const segments = useMemo(
+        () => (enabled ? annotation.segments : [{ text: annotation.text, ruleId: null }]),
+        [enabled, annotation],
+    );
     const ruleMetadata = useMemo(
         () => new Map(getRulesForRiwaya(riwaya).map((rule) => [rule.id, rule])),
         [riwaya],

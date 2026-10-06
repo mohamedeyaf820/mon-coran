@@ -432,6 +432,7 @@ async function loadArabicSearchIndex() {
 }
 
 async function searchArabicLocally(query, surahNum = null, signal) {
+  if (signal?.aborted) throw new DOMException('Request aborted', 'AbortError');
   const normalizedQuery = normalizeArabicSearchText(query);
   if (!normalizedQuery) return { matches: [] };
 

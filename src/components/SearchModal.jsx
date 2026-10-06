@@ -100,7 +100,10 @@ export default function SearchModal() {
     () => (reference ? null : findSurahByName(query)),
     [query, reference],
   );
-  const jumpTarget = reference || (namedSurah ? { kind: "surah", surah: namedSurah.n, ayah: 1 } : null);
+  const jumpTarget = useMemo(
+    () => reference || (namedSurah ? { kind: "surah", surah: namedSurah.n, ayah: 1 } : null),
+    [reference, namedSurah],
+  );
 
   // The recogniser hears one language per session, so this is a user choice,
   // not a guess from the text already typed: dictating an Arabic Quran word into

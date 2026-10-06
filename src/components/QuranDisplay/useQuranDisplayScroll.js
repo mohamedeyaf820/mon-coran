@@ -66,7 +66,7 @@ export default function useQuranDisplayScroll({
 
   const resolvePlayingAyahElement = useCallback(
     (playingAyah) => findPlayingAyahElement(contentRef.current || document, playingAyah, displayMode),
-    [displayMode],
+    [contentRef, displayMode],
   );
 
   useEffect(() => {

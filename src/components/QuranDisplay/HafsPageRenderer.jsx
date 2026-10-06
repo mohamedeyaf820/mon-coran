@@ -142,11 +142,11 @@ export default function HafsPageRenderer({
             riwaya: "hafs",
             showTajwid,
           }),
-    [ayahs, flowFontId, riwaya, showTajwid, usesPageGlyphs],
+    [ayahs, flowFontId, showTajwid, usesPageGlyphs],
   );
   const meta = useMemo(
     () => getPageMeta(ayahs, currentPage, lang),
-    [ayahs, currentPage, lang, riwaya],
+    [ayahs, currentPage, lang],
   );
 
   useEffect(() => {

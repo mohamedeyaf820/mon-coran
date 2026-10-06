@@ -303,6 +303,7 @@ export default function App() {
     return () => {
       active = false;
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- SEO metadata follows navigation, not every state change
   }, [
     showHome,
     showDuas,
@@ -758,6 +759,7 @@ export default function App() {
       cancelled = true;
       cancelIdle();
     };
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- the preload re-arms on the settings it reads, not on every state change; the rest is read when it fires
   }, [
     showHome,
     state.riwaya,
