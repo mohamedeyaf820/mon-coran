@@ -1,6 +1,7 @@
 import React from "react";
 import { AlertTriangle, CloudOff, Home, RefreshCw } from "lucide-react";
 import { t } from "../i18n";
+import { logError } from "../services/errorAnalytics.js";
 import { classifyBoundaryError } from "./QuranDisplay/readerLoadError.js";
 
 const SUPPORTED_LANGS = ["fr", "en", "ar"];
@@ -35,6 +36,13 @@ function getLang() {
   return "fr";
 }
 
+/**
+ * `silent` marks a boundary around an accessory of the shell (header, bottom
+ * bar, directory, audio dock). Losing one of them, typically because its code
+ * chunk did not arrive, must not replace the reading surface with a full-page
+ * error: the failure is logged, the piece is left out and the rest keeps
+ * working. A screen keeps the default behaviour: message, reload, home.
+ */
 export class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -51,6 +59,8 @@ export class ErrorBoundary extends React.Component {
     if (import.meta.env.DEV) {
       console.error("[ErrorBoundary]", error, errorInfo);
     }
+    logError(error, this.props.silent ? `boundary:${this.props.name || "shell"}` : "boundary");
+    if (this.props.silent) return;
     const kind = classifyBoundaryError(error, { online: isOnline() });
     if (kind.chunkLoad && kind.retryable && claimChunkReload()) {
       window.location.reload();
@@ -67,6 +77,7 @@ export class ErrorBoundary extends React.Component {
 
   render() {
     if (!this.state.hasError) return this.props.children;
+    if (this.props.silent) return null;
 
     const lang = getLang();
     const kind = classifyBoundaryError(this.state.error, { online: isOnline() });

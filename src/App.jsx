@@ -945,7 +945,7 @@ export default function App() {
         inert={blockingModalOpen ? "" : undefined}
       >
         {!showHome && !showDuas && !legalPage && !routeNotFound ? (
-          <Suspense fallback={null}><ProgressBar /></Suspense>
+          <ErrorBoundary silent name="progress"><Suspense fallback={null}><ProgressBar /></Suspense></ErrorBoundary>
         ) : null}
         <Suspense fallback={null}>
           <ConfirmDialogHost />
@@ -957,14 +957,18 @@ export default function App() {
           {t("app.skipToContent", lang)}
         </a>
 
-        <Suspense fallback={headerFallback}>
-          <Header immersiveHidden={immersiveHidden} />
-        </Suspense>
+        <ErrorBoundary silent name="header">
+          <Suspense fallback={headerFallback}>
+            <Header immersiveHidden={immersiveHidden} />
+          </Suspense>
+        </ErrorBoundary>
 
         <div className="app-layout-shell relative flex min-h-0 flex-1">
-          <Suspense fallback={null}>
-            {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
-          </Suspense>
+          <ErrorBoundary silent name="sidebar">
+            <Suspense fallback={null}>
+              {(deferNonCriticalUI || sidebarOpen) && <Sidebar />}
+            </Suspense>
+          </ErrorBoundary>
 
           {sidebarLocksMain && (
             <div
@@ -1095,17 +1099,28 @@ export default function App() {
             aria-hidden={immersiveHidden && (compactReadingChrome || !state.isPlaying) ? "true" : undefined}
             inert={immersiveHidden && (compactReadingChrome || !state.isPlaying) ? "" : undefined}
           >
-            <Suspense fallback={null}>
-              <AudioPlayer />
-            </Suspense>
+            <ErrorBoundary silent name="audio-player">
+              <Suspense fallback={null}>
+                <AudioPlayer />
+              </Suspense>
+            </ErrorBoundary>
           </div>
         )}
 
-        <Suspense fallback={null}><MobileNavigation hidden={compactReadingChrome && immersiveHidden} /></Suspense>
+        <ErrorBoundary silent name="mobile-navigation">
+          <Suspense fallback={null}><MobileNavigation hidden={compactReadingChrome && immersiveHidden} /></Suspense>
+        </ErrorBoundary>
 
-        <Suspense fallback={null}>
-          <CompactMenuTrigger immersiveHidden={immersiveHidden} />
-        </Suspense>
+        {/* Reader only: Home, Duas, Prayers and the legal pages have no free top
+            band, the button covered their title or their back button, and they
+            reach the same directory through the Plus menu. */}
+        {immersiveActive ? (
+          <ErrorBoundary silent name="menu-trigger">
+            <Suspense fallback={null}>
+              <CompactMenuTrigger immersiveHidden={immersiveHidden} />
+            </Suspense>
+          </ErrorBoundary>
+        ) : null}
 
         {/* ── Modal raccourcis clavier ─────────────────────────────────── */}
         {showShortcuts && (

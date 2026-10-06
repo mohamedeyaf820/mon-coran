@@ -9,7 +9,10 @@ import { t } from "../i18n";
  * recitation-page hamburger is unreachable on exactly the viewports it
  * serves. This trigger mounts beside the bottom bar and opens the same
  * Sidebar via TOGGLE_SIDEBAR — a second entry point to the existing
- * menu, not a parallel navigation.
+ * menu, not a parallel navigation. App mounts it on reading views only: the
+ * other screens start at the top edge, where a fixed button covers their title
+ * or their back button, and the bottom bar's Plus menu opens the same
+ * directory there.
  *
  * It is deliberately self-styled rather than reusing mp-header__icon-btn:
  * responsive-all.css forces a 2.15rem !important size on
