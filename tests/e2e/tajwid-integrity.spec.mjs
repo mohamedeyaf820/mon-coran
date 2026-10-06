@@ -91,9 +91,12 @@ for (const width of [384, 1440]) {
       await openReader(page, width, { riwaya: "warsh", fontFamily: "qpc-warsh", theme, lang: width === 384 ? "ar" : "fr", lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 } }, undefined, { withWarshDabt: true });
       const painted = page.locator(".qc-ayah-text-ar .is-tajweed-painted");
       await expect.poll(() => painted.count()).toBeGreaterThan(0);
-      const gradients = await painted.evaluateAll(nodes => nodes.map(node => ({ text: node.textContent, gradient: node.style.getPropertyValue("--tajweed-paint"), fill: getComputedStyle(node).backgroundImage })));
+      const readPaint = () => painted.evaluateAll(nodes => nodes.map(node => ({ text: node.textContent, gradient: node.style.getPropertyValue("--tajweed-paint"), fill: getComputedStyle(node).backgroundImage })));
+      // A word gets its class before its paint variable: wait for the pair
+      // instead of sampling the one frame in between.
+      await expect.poll(async () => (await readPaint()).every(word => word.gradient !== "" && word.fill !== "none" && word.text.length > 0)).toBe(true);
+      const gradients = await readPaint();
       expect(gradients.some(word => word.gradient.includes("var(--tajwid-ghunna)") || word.gradient.includes("var(--tajwid-ham-wasl)"))).toBe(true);
-      expect(gradients.every(word => word.fill !== "none" && word.text.length > 0)).toBe(true);
       expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBeLessThanOrEqual(2);
       await page.screenshot({ path: info.outputPath(`warsh-${width}-${theme}.png`) });
     });
