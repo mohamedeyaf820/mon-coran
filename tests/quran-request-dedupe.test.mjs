@@ -130,14 +130,14 @@ test("a slow body is not cut off by the header deadline", async (t) => {
   globalThis.fetch = async (_url, options = {}) => ({
     ok: true,
     status: 200,
-    text: () =>
+    json: () =>
       new Promise((resolve, reject) => {
         options.signal?.addEventListener(
           "abort",
           () => reject(new DOMException("Request aborted", "AbortError")),
           { once: true },
         );
-        setTimeout(() => resolve(JSON.stringify(payload)), 4500);
+        setTimeout(() => resolve(payload), 4500);
       }),
   });
 
@@ -255,7 +255,7 @@ test("a constrained link keeps the short cap so the small fallback text arrives 
   globalThis.fetch = async (_url, options = {}) => ({
     ok: true,
     status: 200,
-    text: () =>
+    json: () =>
       new Promise((_resolve, reject) => {
         options.signal?.addEventListener(
           "abort",

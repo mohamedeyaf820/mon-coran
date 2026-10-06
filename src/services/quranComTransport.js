@@ -50,37 +50,6 @@ function getMemoryCache(key) {
   return value;
 }
 
-/**
- * A cached payload is stored as the response text. IndexedDB copies an object
- * graph value by value, which for one page of verses (hundreds of kilobytes,
- * ~20 fields per word) cost several times more to write and to read than the
- * same bytes as one string followed by JSON.parse. Records written by earlier
- * versions hold the parsed object and stay readable.
- */
-function readCachedPayload(data) {
-  if (typeof data === "string") {
-    try {
-      const parsed = JSON.parse(data);
-      return parsed && typeof parsed === "object" ? parsed : null;
-    } catch {
-      return null;
-    }
-  }
-  return data && typeof data === "object" ? data : null;
-}
-
-/** Parse a response body, refusing anything that is not a JSON object. */
-function parsePayloadText(text) {
-  let parsed;
-  try {
-    parsed = JSON.parse(text);
-  } catch {
-    throw new Error("Malformed Quran.com API response");
-  }
-  if (!parsed || typeof parsed !== "object") throw new Error("Malformed Quran.com API response");
-  return parsed;
-}
-
 async function persistCache(key, data) {
   try {
     const savedKey = await dbSet(IDB_STORE, { key, data, ts: Date.now() });
@@ -168,14 +137,15 @@ function refreshInBackground(url, cacheKey) {
     .then((response) => {
       extendForBody(timed);
       if (response.ok) {
-        return response.text();
+        return response.json();
       }
       throw new Error(`Background fetch failed ${response.status}`);
     })
-    .then((text) => {
-      const json = parsePayloadText(text);
-      setMemoryCache(cacheKey, json);
-      void persistCache(cacheKey, text);
+    .then((json) => {
+      if (json && typeof json === "object") {
+        setMemoryCache(cacheKey, json);
+        void persistCache(cacheKey, json);
+      }
     })
     .catch(()=>{})
     .finally(() => {
@@ -212,11 +182,15 @@ export async function fetchJson(url, signal) {
 
   try {
     const cached = await dbGet(IDB_STORE, cacheKey);
-    const payload = cached?.ts ? readCachedPayload(cached.data) : null;
-    if (payload) {
-      setMemoryCache(cacheKey, payload);
-      if (Date.now() - cached.ts >= CACHE_TTL) refreshInBackground(url, cacheKey);
-      return payload;
+    if (cached?.data && cached?.ts) {
+      setMemoryCache(cacheKey, cached.data);
+      const isFresh = Date.now() - cached.ts < CACHE_TTL;
+      if (isFresh) {
+        return cached.data;
+      } else {
+        refreshInBackground(url, cacheKey);
+        return cached.data;
+      }
     }
   } catch {
     // Network fetch below remains the source of truth.
@@ -247,14 +221,16 @@ export async function fetchJson(url, signal) {
         throw new Error(`Quran.com API error ${response.status}: ${url}`);
       }
 
-      const text = await response.text();
-      const json = parsePayloadText(text);
+      const json = await response.json();
+      if (!json || typeof json !== "object") {
+        throw new Error("Malformed Quran.com API response");
+      }
 
       setMemoryCache(cacheKey, json);
       // The visible Quran text is only considered loaded once its durable
       // offline copy has settled. This also prevents an immediate reload from
       // cancelling the IndexedDB transaction.
-      await persistCache(cacheKey, text);
+      await persistCache(cacheKey, json);
       return json;
     } catch (error) {
       if (error?.name === "AbortError") {
