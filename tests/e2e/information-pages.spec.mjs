@@ -88,7 +88,7 @@ for (const width of [320, 390, 768, 1280]) {
     const footer = page.locator(".mp-footer-v2");
     await footer.scrollIntoViewIfNeeded();
     await expect(footer.locator(".mp-footer-v2__legal a")).toHaveCount(4);
-    await expect(footer.locator(".mp-footer-v2__group--popular a")).toHaveCount(6);
+    await expect(footer.locator(".mp-footer-v2__group--popular a")).toHaveCount(7);
     expect(await horizontalOverflow(page)).toBeLessThanOrEqual(1);
     for (const control of await footer.locator("a, button").all()) {
       if (!(await control.isVisible())) continue;

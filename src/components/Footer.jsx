@@ -1,25 +1,26 @@
 import React, { useEffect, useState } from "react";
-import {
-  ArrowUp,
-  BookOpenText,
-  CircleUserRound,
-  Database,
-  Flag,
-  Github,
-  Scale,
-  ShieldCheck,
-} from "lucide-react";
+import { ArrowUp, BookOpenText } from "lucide-react";
 import {
   useAppActions,
   useAppLocale,
+  useAppSelector,
 } from "../context/AppContext";
 import { t } from "../i18n";
 import { getSurah } from "../data/surahs";
+import { THEMES } from "../data/themes";
 import siteConfig from "../../site.config.json";
 import "../styles/domains/footer-refonte.css";
 
-// Surahs people come back to most; the reader opens them from any page.
-const POPULAR_SURAHS = [18, 36, 55, 56, 67, 112];
+// What readers come back to most. Ayat al-Kursi is a verse, the rest are surahs.
+const POPULAR = [
+  { surah: 2, ayah: 255, label: "footer.ayatKursi" },
+  { surah: 36 },
+  { surah: 67 },
+  { surah: 55 },
+  { surah: 56 },
+  { surah: 18 },
+  { surah: 73 },
+];
 
 function FooterAction({ label, href, onClick }) {
   return href
@@ -27,9 +28,14 @@ function FooterAction({ label, href, onClick }) {
     : <button type="button" onClick={onClick}>{label}</button>;
 }
 
+function themeName(theme, lang) {
+  return lang === "ar" ? theme.ar : lang === "en" ? theme.en : theme.fr;
+}
+
 export default function Footer({ goSurah }) {
   const { set, dispatch } = useAppActions();
   const { lang } = useAppLocale();
+  const theme = useAppSelector((state) => state.theme);
   const [verseIndex, setVerseIndex] = useState(0);
   const [rotationPaused, setRotationPaused] = useState(false);
   const [reduceMotion, setReduceMotion] = useState(false);
@@ -80,20 +86,14 @@ export default function Footer({ goSurah }) {
     set({ legalPage: page, showHome: false, showDuas: false, showPrayers: false });
     scrollTop();
   };
-  const openSurah = (number) => () => {
+  const openSurah = (surah, ayah = 1) => () => {
     set({ ...leaveAnyPage, displayMode: "surah", showHome: false });
-    if (goSurah) goSurah(number);
-    else dispatch({ type: "NAVIGATE_SURAH", payload: { surah: number, ayah: 1 } });
+    if (goSurah && ayah === 1) goSurah(surah);
+    else dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
   };
 
-  const exploreLinks = [
+  const navigateLinks = [
     { key: "home", label: t("nav.home", lang), ...go("/", openHome("surah")) },
-    // Panels are actions, not destinations: they render as buttons.
-    { key: "directory", label: t("nav.surahList", lang), onClick: () => set({ sidebarOpen: true }) },
-    { key: "library", label: t("library.title", lang), onClick: () => set({ libraryOpen: true, libraryTab: "favorites" }) },
-    { key: "search", label: t("nav.search", lang), onClick: () => dispatch({ type: "TOGGLE_SEARCH" }) },
-  ];
-  const listenLinks = [
     { key: "recitations", label: t("footer.navRecitations", lang), ...go("/", openHome("audio")) },
     {
       key: "prayers",
@@ -111,12 +111,16 @@ export default function Footer({ goSurah }) {
         scrollTop();
       }),
     },
+    // Panels are actions, not destinations: they render as buttons.
+    { key: "directory", label: t("nav.surahList", lang), onClick: () => set({ sidebarOpen: true }) },
+    { key: "library", label: t("library.title", lang), onClick: () => set({ libraryOpen: true, libraryTab: "favorites" }) },
+    { key: "search", label: t("nav.search", lang), onClick: () => dispatch({ type: "TOGGLE_SEARCH" }) },
   ];
   const legalItems = [
-    { key: "about", Icon: CircleUserRound, label: t("footer.legalAbout", lang) },
-    { key: "privacy", Icon: ShieldCheck, label: t("footer.legalPrivacy", lang) },
-    { key: "legal", Icon: Scale, label: t("footer.legalNotice", lang) },
-    { key: "sources", Icon: Database, label: t("footer.legalSources", lang) },
+    ["about", t("footer.legalAbout", lang)],
+    ["privacy", t("footer.legalPrivacy", lang)],
+    ["legal", t("footer.legalNotice", lang)],
+    ["sources", t("footer.legalSources", lang)],
   ];
   const repository = siteConfig.repositoryUrl.replace(/\/$/, "");
 
@@ -130,9 +134,10 @@ export default function Footer({ goSurah }) {
   // register the footer already links to instead of claiming an edition.
   const verseAttribution = t("footer.verseAttribution", lang);
 
-  const surahName = (number) => {
-    const surah = getSurah(number);
-    return lang === "ar" ? surah?.ar : lang === "en" ? surah?.en : surah?.fr;
+  const popularName = ({ surah, label }) => {
+    if (label) return t(label, lang);
+    const entry = getSurah(surah);
+    return lang === "ar" ? entry?.ar : lang === "en" ? entry?.en : entry?.fr;
   };
 
   return (
@@ -167,83 +172,83 @@ export default function Footer({ goSurah }) {
 
         <div className="mp-footer-v2__directory">
           <div className="mp-footer-v2__about">
-            <span className="mp-footer-v2__wordmark">MushafPlus</span>
-            <strong>{t("footer.tagline", lang)}</strong>
-            <p>{t("footer.mission", lang)}</p>
-            <span className="mp-footer-v2__privacy">
-              <ShieldCheck size={14} aria-hidden="true" />
-              {t("footer.privacyNote", lang)}
-            </span>
+            <span className="mp-footer-v2__wordmark">Mushaf<b>Plus</b></span>
+            <h2>{t("footer.mission", lang)}</h2>
+            <p>{t("footer.missionP1", lang)}</p>
+            <p>{t("footer.missionP2", lang)}</p>
           </div>
 
-          <nav className="mp-footer-v2__group" aria-labelledby="mp-footer-explore">
-            <h2 id="mp-footer-explore">{t("footer.colExplore", lang)}</h2>
+          <nav className="mp-footer-v2__group" aria-labelledby="mp-footer-navigate">
+            <h2 id="mp-footer-navigate">{t("footer.colNavigate", lang)}</h2>
             <ul>
-              {exploreLinks.map(({ key, ...item }) => (
+              {navigateLinks.map(({ key, ...item }) => (
                 <li key={key}><FooterAction {...item} /></li>
               ))}
             </ul>
           </nav>
 
-          <nav className="mp-footer-v2__group" aria-labelledby="mp-footer-listen">
-            <h2 id="mp-footer-listen">{t("footer.colListen", lang)}</h2>
+          <nav className="mp-footer-v2__group mp-footer-v2__group--resources" aria-labelledby="mp-footer-resources">
+            <h2 id="mp-footer-resources">{t("footer.colResources", lang)}</h2>
             <ul>
-              {listenLinks.map(({ key, ...item }) => (
-                <li key={key}><FooterAction {...item} /></li>
-              ))}
+              <li><a href={repository} target="_blank" rel="noopener noreferrer">{t("footer.sourceCode", lang)}</a></li>
+              <li><a href={`${repository}/issues`} target="_blank" rel="noopener noreferrer">{t("footer.reportCorrection", lang)}</a></li>
+              <li><a href={siteConfig.contactUrl} target="_blank" rel="noopener noreferrer">{t("footer.contact", lang)}</a></li>
             </ul>
           </nav>
 
           <nav className="mp-footer-v2__group mp-footer-v2__group--popular" aria-labelledby="mp-footer-popular">
             <h2 id="mp-footer-popular">{t("footer.colPopular", lang)}</h2>
             <ul>
-              {POPULAR_SURAHS.map((number) => (
-                <li key={number}>
-                  <a {...go(`/surah/${number}`, openSurah(number))}>{surahName(number)}</a>
+              {POPULAR.map((item) => (
+                <li key={`${item.surah}:${item.ayah || 1}`}>
+                  <a {...go(item.ayah ? `/surah/${item.surah}/${item.ayah}` : `/surah/${item.surah}`, openSurah(item.surah, item.ayah))}>
+                    {popularName(item)}
+                  </a>
                 </li>
               ))}
             </ul>
           </nav>
-
-          <div className="mp-footer-v2__group mp-footer-v2__group--project">
-            <h2 id="mp-footer-project">{t("footer.colProject", lang)}</h2>
-            <nav className="mp-footer-v2__legal" aria-labelledby="mp-footer-project">
-              <ul>
-                {legalItems.map(({ key, Icon, label }) => (
-                  <li key={key}>
-                    <a {...go(`/${key}`, openPage(key))}>
-                      <Icon size={14} aria-hidden="true" />
-                      <span>{label}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </nav>
-            <ul className="mp-footer-v2__external">
-              <li>
-                <a href={repository} target="_blank" rel="noopener noreferrer">
-                  <Github size={14} aria-hidden="true" />
-                  <span>{t("footer.sourceCode", lang)}</span>
-                </a>
-              </li>
-              <li>
-                <a href={`${repository}/issues`} target="_blank" rel="noopener noreferrer">
-                  <Flag size={14} aria-hidden="true" />
-                  <span>{t("footer.reportCorrection", lang)}</span>
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
 
         <div className="mp-footer-v2__bottom">
-          <span className="mp-footer-v2__credit">{t("footer.credit", lang)}</span>
-          <span className="mp-footer-v2__third-party">{t("footer.thirdParty", lang)}</span>
-          <span className="mp-footer-v2__brand">v{siteConfig.version}</span>
-          <button type="button" className="mp-footer-v2__top" onClick={scrollTop}>
-            <ArrowUp size={14} aria-hidden="true" />
-            <span>{t("footer.backToTop", lang)}</span>
-          </button>
+          <div className="mp-footer-v2__fine">
+            <nav className="mp-footer-v2__legal" aria-label={t("footer.legalNotice", lang)}>
+              <ul>
+                {legalItems.map(([key, label]) => (
+                  <li key={key}><a {...go(`/${key}`, openPage(key))}>{label}</a></li>
+                ))}
+              </ul>
+            </nav>
+            <p className="mp-footer-v2__copyright">
+              <span className="mp-footer-v2__brand">v{siteConfig.version}</span>
+              <span>{t("footer.copyright", lang)}</span>
+            </p>
+          </div>
+
+          <div className="mp-footer-v2__tools">
+            <a className="mp-footer-v2__contribute" href={repository} target="_blank" rel="noopener noreferrer">
+              {t("footer.contribute", lang)}
+            </a>
+            <label className="mp-footer-v2__select">
+              <span className="sr-only">{t("footer.themeLabel", lang)}</span>
+              <select value={theme} onChange={(event) => set({ theme: event.target.value })}>
+                {THEMES.map((item) => (
+                  <option key={item.id} value={item.id}>{themeName(item, lang)}</option>
+                ))}
+              </select>
+            </label>
+            <label className="mp-footer-v2__select">
+              <span className="sr-only">{t("footer.languageLabel", lang)}</span>
+              <select value={lang} onChange={(event) => set({ lang: event.target.value })}>
+                <option value="fr">Français</option>
+                <option value="en">English</option>
+                <option value="ar">العربية</option>
+              </select>
+            </label>
+            <button type="button" className="mp-footer-v2__top" onClick={scrollTop} aria-label={t("footer.backToTop", lang)} title={t("footer.backToTop", lang)}>
+              <ArrowUp size={16} aria-hidden="true" />
+            </button>
+          </div>
         </div>
       </div>
     </footer>
