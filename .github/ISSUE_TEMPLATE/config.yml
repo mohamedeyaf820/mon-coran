@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Faille de sécurité
+    url: https://github.com/mohamedeyaf820/mon-coran/security/policy
+    about: Ne publiez pas de faille en issue, suivez la politique de sécurité.

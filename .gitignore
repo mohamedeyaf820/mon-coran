@@ -77,3 +77,6 @@ vendor/
 # Warsh tajweed build intermediates (re-run scripts/build-warsh-tajweed/prepare-words.mjs).
 scripts/build-warsh-tajweed/words/
 scripts/build-warsh-tajweed/annotated/
+
+# README image sources (regenerate with scripts/capture-readme-screenshots.mjs)
+docs/images/raw/
