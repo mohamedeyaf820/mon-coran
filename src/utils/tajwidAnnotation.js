@@ -104,7 +104,7 @@ export function isAnnotationAlignedForPaint(annotatedPlain, displayText) {
 }
 
 /** A mismatch leaves the immutable source plain and emits an integrity diagnostic. */
-export function normalizeTajwidAnnotation(originalText, annotatedText, { riwaya = "hafs", source = "quran.com" } = {}) {
+export function normalizeTajwidAnnotation(originalText, annotatedText, { riwaya = "hafs", source = "quran.com", lenient = false } = {}) {
   const text = String(originalText ?? "");
   const result = { text, segments: [{ text, ruleId: null }], status: "plain", diagnostic: null };
   if (!ANNOTATED_RIWAYAS.includes(riwaya) || source !== "quran.com") {
@@ -120,7 +120,7 @@ export function normalizeTajwidAnnotation(originalText, annotatedText, { riwaya 
   // of the same words. Move the spans onto the painted characters instead of
   // refusing the whole verse (see tajwidAlignment.js). The painted text itself
   // is never rewritten: the aligned segments concatenate to exactly `text`.
-  const aligned = annotation.valid ? alignSegmentsToText(annotation.segments, text) : null;
+  const aligned = annotation.valid ? alignSegmentsToText(annotation.segments, text, undefined, { lenient }) : null;
   if (aligned) {
     // A word whose letters or signs cannot be matched stays plain and is
     // reported; the other words of the verse keep their colours.

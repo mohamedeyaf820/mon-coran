@@ -20,46 +20,70 @@
  */
 
 const MARK = /[\u0610-\u061A\u064B-\u065F\u0670\u06D6-\u06DC\u06DF-\u06E8\u06EA-\u06ED]/u;
-const INVISIBLE = /[\u0640\u200B-\u200D]/u;
+const INVISIBLE = /[\u0640\u200B-\u200F\uFEFF\uE000-\uF8FF]/u;
 // The rub-el-hizb sign and the prostration sign are words of their own in QPC
 // and glued to a neighbouring word in the annotated edition.
-const WORD_SPACE = /[\s\u00A0\u200B\u06DE\u06E9]/u;
-// Letters Quran.com and QPC write with different code points for one letter.
+const WORD_SPACE = /[\s\u00A0\u200B\u200E\u200F\uFEFF\uE000-\uF8FF\u06DE\u06E9]/u;
+// Letter shapes the editions spell with different code points. Folding them to
+// one skeleton is safe because only the colour range moves, never the text, and
+// every word is still required to carry the same letters and signs (sameWord).
 const LETTER_CLASS = new Map([
-  ["\u064A", "\u0649"], // yeh to alif maqsura
-  ["\u06CC", "\u0649"], // farsi yeh
-  ["\u066E", "\u0649"], // dotless beh, the skeleton of a final yeh
+  // yeh family (final yeh / alif maqsura / hamza seat / IndoPak dotless forms)
+  ["\u064A", "\u0649"], ["\u06CC", "\u0649"], ["\u066E", "\u0649"], ["\u0626", "\u0649"],
+  ["\u06D0", "\u0649"], ["\u06D2", "\u0649"], ["\u0678", "\u0649"],
+  // alef family (hamza seats, wasla, madda)
+  ["\u0623", "\u0627"], ["\u0625", "\u0627"], ["\u0622", "\u0627"], ["\u0671", "\u0627"],
+  ["\u0673", "\u0627"], ["\u0675", "\u0627"],
+  // waw family
+  ["\u0624", "\u0648"], ["\u0676", "\u0648"], ["\u06C7", "\u0648"],
+  // Quran.com writes the dagger alef as a wavy-hamza alef in some fields.
+  ["\u0672", "\u0670"],
+  // IndoPak letter shapes: keheh for kaf, heh doachashmee for heh
+  ["\u06a9", "\u0643"], ["\u06aa", "\u0643"], ["\u06be", "\u0647"], ["\u06c1", "\u0647"],
 ]);
 
 // Signs the two editions encode with different code points for the same sign:
 // sukun, and the three tanween in their stacked (Uthmani) vs open (QPC) form.
 const MARK_CLASS = new Map([
-  ["ۡ", "ْ"],
-  ["ٗ", "ً"],
-  ["ٞ", "ٌ"],
-  ["ٖ", "ٍ"],
+  ["\u06E1", "\u0652"],
+  ["\u06DF", "\u0652"], // rounded zero on a silent letter, a sukun in the annotation
+  ["\u06E0", "\u0652"], // rectangular zero, the same silent-letter sign
+  ["\u0657", "\u064B"],
+  ["\u065E", "\u064C"],
+  ["\u0656", "\u064D"],
 ]);
 
 const canon = (char) => LETTER_CLASS.get(char) ?? MARK_CLASS.get(char) ?? char;
 const isMark = (char) => MARK.test(char);
 const isInvisible = (char) => INVISIBLE.test(char);
-// Letters that one edition may write and the other omit or move.
-const isFloatingLetter = (char) => char === "\u0627" || char === "\u0670";
+// Letters that one edition may write and the other omit or move: alef, the
+// dagger alef, and a free-standing hamza.
+const isFloatingLetter = (char) => {
+  const folded = canon(char);
+  return folded === "\u0627" || folded === "\u0670" || folded === "\u0621";
+};
 // Pause signs differ between the editions (qalay vs jeem...) and carry no letter.
-const isPauseSign = (char) => /[\u06d6-\u06dc]/u.test(char);
+const isPauseSign = (char) => /[\u06D6-\u06DC]/u.test(char);
 // QPC writes the fatha under a dagger alef or as a maddah where Uthmani omits
-// or spells it differently; either side may carry one the other lacks.
-const isOptionalMark = (char) => isPauseSign(char) || char === "\u064e" || char === "\u0653";
+// or spells it differently, and some editions seat the hamza as a sign; either
+// side may carry one the other lacks.
+const isOptionalMark = (char) => isPauseSign(char) || char === "\u064E" || char === "\u0653" || char === "\u0654" || char === "\u0655";
 
 const SUBSTITUTE_MARK = 0.4;
 const GAP_INVISIBLE = 0.1;
 const GAP_OPTIONAL = 0.3;
 const GAP_MARK = 1;
 const GAP_FLOATING = 2;
+const LENIENT_SUBSTITUTE = 0.6;
+const LENIENT_GAP = 0.5;
 const FORBIDDEN = Infinity;
 
-function substitutionCost(a, b) {
+function substitutionCost(a, b, lenient) {
   if (a === b) return 0;
+  if (canon(a) === canon(b)) return 0.2;
+  // IndoPak spells its signs by another convention altogether: any sign may
+  // stand for any sign, the letters still have to match.
+  if (lenient && isMark(a) && isMark(b)) return LENIENT_SUBSTITUTE;
   if (isMark(a) && isMark(b)) return canon(a) === canon(b) ? 0 : FORBIDDEN;
   // QPC spells a final alif maqsura + dagger alef where Uthmani has tatweel + dagger alef.
   if ((a === "\u0640" && canon(b) === "\u0649") || (b === "\u0640" && canon(a) === "\u0649")) return SUBSTITUTE_MARK;
@@ -67,8 +91,9 @@ function substitutionCost(a, b) {
   return canon(a) === canon(b) ? 0.2 : FORBIDDEN;
 }
 
-function gapCost(char) {
+function gapCost(char, lenient) {
   if (isInvisible(char)) return GAP_INVISIBLE;
+  if (lenient && isMark(char)) return LENIENT_GAP;
   if (isOptionalMark(char)) return GAP_OPTIONAL;
   if (isMark(char)) return GAP_MARK;
   if (isFloatingLetter(char)) return GAP_FLOATING;
@@ -82,41 +107,59 @@ function gapCost(char) {
  * maddah may exist on one side only.
  * Without this, a different vowel could "align" as a pair of gaps.
  */
-function sameWord(a, b) {
+function sameWord(a, b, lenient) {
   const split = (word) => {
     const letters = [];
     const marks = [];
-    const chars = [...word];
-    for (const [index, char] of chars.entries()) {
+    let daggerAlef = false;
+    for (const char of word) {
+      if (canon(char) === "ٰ") daggerAlef = true;
       if (isInvisible(char) || isFloatingLetter(char) || isOptionalMark(char)) continue;
-      // QPC carries the dagger alef on an alif maqsura where Uthmani uses a tatweel.
-      if (canon(char) === "ى" && chars[index + 1] === "ٰ") continue;
-      if (isMark(char)) marks.push(canon(char));
-      else letters.push(canon(char));
+      if (isMark(char)) {
+        if (!lenient) marks.push(canon(char));
+      } else letters.push(canon(char));
     }
-    return { letters: letters.join(""), marks: marks.sort().join("") };
+    return { letters, marks: marks.sort().join(""), daggerAlef };
   };
   const left = split(a);
   const right = split(b);
-  return left.letters === right.letters && left.marks === right.marks;
+  if (left.marks !== right.marks) return false;
+  if (left.letters.join("") === right.letters.join("")) return true;
+  // The dagger alef sits on an alif maqsura / yeh in QPC and IndoPak, on a
+  // tatweel (or after the next letter) in Uthmani: with a dagger alef in play,
+  // the yeh that carries it is spelling, not a letter. Compared without any yeh
+  // on both sides, the remaining letters must still be identical.
+  if (left.daggerAlef || right.daggerAlef) {
+    const bare = (letters) => letters.filter((letter) => letter !== "ى").join("");
+    return bare(left.letters) === bare(right.letters);
+  }
+  return false;
 }
 
 /** Index map from the annotated word's characters to the painted word's, or null. */
-function alignWord(annotated, painted) {
-  if (!sameWord(annotated, painted)) return null;
+// Before an iqlab / ikhfa small meem the annotation writes the short vowel and
+// the display writes the tanween (damma + meem vs dammatan + meem): one
+// sound, two spellings. Folded on both sides, character for character.
+const FOLD_TANWEEN = { "ً": "َ", "ٌ": "ُ", "ٍ": "ِ" };
+const foldTanween = (word) => (/[ۭۢ]/u.test(word) ? [...word].map((char) => FOLD_TANWEEN[char] ?? char).join("") : word);
+
+function alignWord(annotatedWord, paintedWord, lenient) {
+  const annotated = foldTanween(annotatedWord);
+  const painted = foldTanween(paintedWord);
+  if (!sameWord(annotated, painted, lenient)) return null;
   const a = [...annotated];
   const b = [...painted];
   const rows = a.length + 1;
   const cols = b.length + 1;
   const cost = Array.from({ length: rows }, () => new Float64Array(cols));
-  for (let i = 1; i < rows; i += 1) cost[i][0] = cost[i - 1][0] + gapCost(a[i - 1]);
-  for (let j = 1; j < cols; j += 1) cost[0][j] = cost[0][j - 1] + gapCost(b[j - 1]);
+  for (let i = 1; i < rows; i += 1) cost[i][0] = cost[i - 1][0] + gapCost(a[i - 1], lenient);
+  for (let j = 1; j < cols; j += 1) cost[0][j] = cost[0][j - 1] + gapCost(b[j - 1], lenient);
   for (let i = 1; i < rows; i += 1) {
     for (let j = 1; j < cols; j += 1) {
       cost[i][j] = Math.min(
-        cost[i - 1][j - 1] + substitutionCost(a[i - 1], b[j - 1]),
-        cost[i - 1][j] + gapCost(a[i - 1]),
-        cost[i][j - 1] + gapCost(b[j - 1]),
+        cost[i - 1][j - 1] + substitutionCost(a[i - 1], b[j - 1], lenient),
+        cost[i - 1][j] + gapCost(a[i - 1], lenient),
+        cost[i][j - 1] + gapCost(b[j - 1], lenient),
       );
     }
   }
@@ -127,11 +170,11 @@ function alignWord(annotated, painted) {
   let j = b.length;
   while (i > 0 && j > 0) {
     const here = cost[i][j];
-    if (here === cost[i - 1][j - 1] + substitutionCost(a[i - 1], b[j - 1])) {
+    if (here === cost[i - 1][j - 1] + substitutionCost(a[i - 1], b[j - 1], lenient)) {
       map[i - 1] = j - 1;
       i -= 1;
       j -= 1;
-    } else if (here === cost[i - 1][j] + gapCost(a[i - 1])) {
+    } else if (here === cost[i - 1][j] + gapCost(a[i - 1], lenient)) {
       i -= 1;
     } else {
       j -= 1;
@@ -140,28 +183,53 @@ function alignWord(annotated, painted) {
   return { map, painted: b };
 }
 
-function splitWords(chars) {
+function splitWords(chars, lenient) {
   const words = [];
   let current = [];
+  const flush = () => {
+    if (!current.length) return;
+    // A token with no letter (a free-standing pause sign) belongs to the word
+    // before it: the editions disagree on whether it is glued or separate.
+    const signOnly = current.every((entry) => isMark(entry.char) || isInvisible(entry.char) || isPauseSign(entry.char));
+    if (signOnly && words.length) words.at(-1).push(...current);
+    else words.push(current);
+    current = [];
+  };
   for (const entry of chars) {
-    if (WORD_SPACE.test(entry.char)) {
-      if (current.length) words.push(current);
-      current = [];
-    } else current.push(entry);
+    if (WORD_SPACE.test(entry.char)) flush();
+    else current.push(entry);
   }
-  if (current.length) words.push(current);
-  return words;
+  flush();
+  if (!lenient) return words;
+  // IndoPak prints a one-letter prefix (wa-, fa-, bi-) as a word of its own
+  // where the annotation glues it: fold such a token into the word after it,
+  // on both sides, so the counts and the letters line up.
+  const letters = (word) => word.filter((entry) => !isMark(entry.char) && !isInvisible(entry.char)).length;
+  const merged = [];
+  let carry = [];
+  for (const word of words) {
+    const joined = [...carry, ...word];
+    carry = [];
+    if (letters(joined) <= 1 && word !== words.at(-1)) carry = joined;
+    else merged.push(joined);
+  }
+  if (carry.length) merged.push(carry);
+  return merged;
 }
 
 /**
  * @param {Array<{text: string, ruleId: string|null}>} segments annotated text
  * @param {string} paintedText the text the reader renders
+ * @param {(annotated: string, painted: string) => void} [onUnalignable] diagnostics hook
+ * @param {{lenient?: boolean}} [options] lenient: match words by their letters only
+ *   (IndoPak signs follow another convention); a sign-only span then lands on the
+ *   nearest sign of the word, a letter span still lands on its exact letter
  * @returns {{segments: Array<{text: string, ruleId: string|null}>, failedWords: number}|null}
  *   segments whose concatenation is exactly `paintedText`, or null when the
  *   word counts differ. A word that cannot be aligned safely comes back
  *   uncoloured and is counted in `failedWords`.
  */
-export function alignSegmentsToText(segments, paintedText) {
+export function alignSegmentsToText(segments, paintedText, onUnalignable, { lenient = false } = {}) {
   const painted = String(paintedText ?? "");
   const annotatedChars = [];
   for (const segment of segments) {
@@ -174,18 +242,21 @@ export function alignSegmentsToText(segments, paintedText) {
     unit += char.length;
   }
 
-  const annotatedWords = splitWords(annotatedChars);
-  const paintedWords = splitWords(paintedChars);
+  const annotatedWords = splitWords(annotatedChars, lenient);
+  const paintedWords = splitWords(paintedChars, lenient);
   if (annotatedWords.length !== paintedWords.length) return null;
 
   const paintedRule = new Array(painted.length).fill(null);
   let failedWords = 0;
   annotatedWords.forEach((word, index) => {
     const target = paintedWords[index];
-    const alignment = alignWord(word.map((entry) => entry.char).join(""), target.map((entry) => entry.char).join(""));
+    const alignment = alignWord(word.map((entry) => entry.char).join(""), target.map((entry) => entry.char).join(""), lenient);
     if (!alignment) {
       // A word without any rule loses nothing by staying unaligned.
-      if (word.some((entry) => entry.rule)) failedWords += 1;
+      if (word.some((entry) => entry.rule)) {
+        failedWords += 1;
+        onUnalignable?.(word.map((entry) => entry.char).join(""), target.map((entry) => entry.char).join(""));
+      }
       return;
     }
     word.forEach((entry, k) => {

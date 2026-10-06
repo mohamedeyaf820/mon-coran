@@ -13,6 +13,6 @@ export function getHafsTajwidSource(ayah, fontFamily, surahNum = ayah?.surah?.nu
     ?.filter(word => (word.charType || word.charTypeName || word.char_type_name) !== "end")
     .map(word => word.textTajweed || word.textUthmani || word.text)
     .filter(Boolean).join(" ") || null;
-  const normalized = normalizeTajwidAnnotation(original, annotation);
+  const normalized = normalizeTajwidAnnotation(original, annotation, { lenient: fontFamily === "qpc-indopak" });
   return { original, annotation, ...normalized, words: splitTajwidIntoWords(normalized.segments).words, wordAudioIsAligned: hasCoherentWordData(ayah.words, original, fontFamily, "hafs", surahNum, ayah.numberInSurah) };
 }

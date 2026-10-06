@@ -54,3 +54,50 @@ test("normalizeTajwidAnnotation reports a mapped annotation", () => {
   assert.equal(result.diagnostic, null);
   assert.equal(result.segments.map((segment) => segment.text).join(""), "وَٱلْحَىُّ");
 });
+
+test("the wavy-hamza alef Quran.com uses for the dagger alef carries its rule onto the dagger alef", () => {
+  // 2:2 verse-level annotation: dhalika, madd normal on fatha + U+0672.
+  const { segments, failedWords } = align("ذ<tajweed class=madda_normal>\u064E\u0672</tajweed>لِكَ", "ذَٰلِكَ");
+  assert.equal(failedWords, 0);
+  // The span covered the fatha and the wavy-hamza alef: both painted signs take the rule.
+  assert.deepEqual(rules(segments), [["\u064E\u0670", "madd-normal"]]);
+});
+
+test("a free-standing pause sign is not a word of its own", () => {
+  const { segments, failedWords } = align("رَيْ<rule class=ghunnah>بَ</rule>ۛ فِيهِ", "رَيْبَ ۛ فِيهِ");
+  assert.equal(failedWords, 0);
+  assert.deepEqual(rules(segments), [["بَ", "ghunna"]]);
+});
+
+test("the silent-alef sign written as a rounded zero maps to the annotation's sukun", () => {
+  const { segments, failedWords } = align("قَالُو<rule class=slnt>ا</rule>\u0652", "قَالُوا\u06DF");
+  assert.equal(failedWords, 0);
+  assert.deepEqual(rules(segments), [["ا", "silent"]]);
+});
+
+test("before an iqlab meem, dammatan and damma are one sound", () => {
+  const { failedWords } = align("عَلِيمُ<rule class=iqlab>\u06E2</rule>", "عَلِيمٌ\u06E2");
+  assert.equal(failedWords, 0);
+});
+
+test("a different vowel before a plain letter is still never aligned", () => {
+  const { failedWords } = align("<rule class=ghunnah>نُ</rule>", "نَ");
+  assert.equal(failedWords, 1);
+});
+
+test("IndoPak: lenient mode matches by letters and keeps a letter rule on its letter", () => {
+  const annotated = parseTajweedAnnotation("مِ<rule class=ikhafa>ن</rule>");
+  // IndoPak always writes the sukun the Uthmani edition omits.
+  const result = alignSegmentsToText(annotated, "مِنۡ", undefined, { lenient: true });
+  assert.equal(result.failedWords, 0);
+  assert.deepEqual(rules(result.segments), [["ن", "ikhfa"]]);
+  // Strict mode refuses the same pair.
+  assert.equal(alignSegmentsToText(annotated, "مِنۡ").failedWords, 1);
+});
+
+test("IndoPak: a one-letter prefix printed as its own word is folded into the next word", () => {
+  const annotated = parseTajweedAnnotation("وَ<rule class=ikhafa>يُ</rule>قِيمُونَ");
+  const result = alignSegmentsToText(annotated, "وَ يُقِيۡمُوۡنَ", undefined, { lenient: true });
+  assert.ok(result);
+  assert.equal(result.failedWords, 0);
+});
