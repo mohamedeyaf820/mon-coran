@@ -58,14 +58,18 @@ export function buildUrl(reciterCdn, ayah, cdnType = "everyayah") {
 }
 
 /**
- * The basmala is Al-Fatiha's first verse in both riwayas, so every per-ayah
- * CDN publishes it as 001001.mp3 — the same file naming the player already
- * uses. Whole-surah streams carry their own opening, Al-Fatiha already begins
- * with the basmala, and At-Tawba has none.
+ * In Hafs the basmala is Al-Fatiha's first verse, so the per-ayah CDNs keyed on
+ * the Hafs verse publish it as 001001.mp3. Whole-surah streams carry their own
+ * opening, Al-Fatiha already begins with the basmala, and At-Tawba has none.
+ *
+ * 'quranpedia' is keyed on the Warsh verse, and Warsh does not count the
+ * basmala as a verse: its 001001.mp3 is "Al-hamdu lillahi rabbi l-'alamin".
+ * Used as a pre-roll it made every surah open with that verse, then the first
+ * verse of the surah. There is no basmala file on that CDN, so no pre-roll.
  */
 export function hasBasmalaPreroll(cdnType, surah) {
   const number = Number(surah);
-  if (isSurahStreamCdn(cdnType)) return false;
+  if (isSurahStreamCdn(cdnType) || cdnType === "quranpedia") return false;
   return Number.isInteger(number) && number > 1 && number !== 9;
 }
 
