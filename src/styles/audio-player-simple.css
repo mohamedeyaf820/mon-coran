@@ -1311,3 +1311,91 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
   direction: ltr !important;
   white-space: nowrap;
 }
+
+/* ==========================================================================
+   Compact player, refined
+
+   A clear top progress line, the cover and the title block left-aligned next
+   to each other (the meta block used to float to the middle of the row), a
+   filled play button as the one primary control and a quiet outlined expand
+   button. Selectors carry #root so they win over the layers above.
+   ========================================================================== */
+
+html body #root .app-root .mp-audio-player.simple-player--compact {
+  border-top: 0 !important;
+  background: color-mix(in srgb, var(--bg-card) 95%, transparent) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  backdrop-filter: blur(14px) saturate(140%);
+  box-shadow: 0 -12px 28px -16px rgba(0, 0, 0, 0.34), 0 -1px 0 color-mix(in srgb, var(--border) 85%, transparent) !important;
+}
+
+/* Progress: a full-width 4px line on the top edge; the thumb only shows on focus. */
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__timeline {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__progress {
+  height: 4px !important;
+  min-height: 4px !important;
+  border-radius: 0 !important;
+  background: color-mix(in srgb, var(--border) 75%, transparent) !important;
+  opacity: 1 !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__progress circle { opacity: 0; transition: opacity 160ms ease; }
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__progress:focus-visible circle { opacity: 1; }
+
+/* Row: cover, then title block starting right next to it. */
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-row {
+  gap: 0.75rem !important;
+  justify-content: flex-start !important;
+  min-height: 4rem !important;
+  padding: 0.5rem max(0.9rem, env(safe-area-inset-right)) 0.55rem max(0.9rem, env(safe-area-inset-left)) !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-meta {
+  justify-content: flex-start !important;
+  text-align: start !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-meta-text {
+  align-items: flex-start !important;
+  gap: 0.2rem !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-title {
+  font-size: 1rem !important;
+  font-weight: 750 !important;
+  letter-spacing: -0.01em;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-reciter {
+  color: var(--text-secondary) !important;
+  font-size: 0.8rem !important;
+  font-weight: 500 !important;
+}
+
+/* Controls: one filled primary action, one quiet outlined one. */
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-actions { gap: 0.5rem !important; margin-inline-start: auto; }
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__play--compact {
+  background: var(--primary) !important;
+  color: var(--on-primary, #fff) !important;
+  box-shadow: 0 6px 16px -6px rgba(var(--primary-rgb), 0.55) !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-actions > button:not(.simple-player__play--compact) {
+  width: max(2.75rem, 44px);
+  height: max(2.75rem, 44px);
+  border: 1px solid var(--border) !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  color: var(--text-secondary) !important;
+  box-shadow: none !important;
+}
+html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__compact-actions > button:not(.simple-player__play--compact):hover {
+  border-color: var(--primary) !important;
+  color: var(--primary) !important;
+}
+
+/* The title block is a button: no frame of its own, the row is the surface. */
+html body #root .app-root .mp-audio-player.simple-player--compact .mp-player-minimized-open {
+  border: 0 !important;
+  border-radius: 0.75rem !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
