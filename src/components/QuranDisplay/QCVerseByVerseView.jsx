@@ -299,9 +299,11 @@ export default function QCVerseByVerseView({
           )
         : (ayahs || []).map((ayah) => ({
             ayah,
-            surahNum: ayah.surah?.number || 1,
+            // Some sources (the alquran.cloud fallback) ship ayahs without their
+            // surah: defaulting to 1 made the Basmala glued to verse 1 survive.
+            surahNum: ayah.surah?.number || surahMeta?.n || surahMeta?.number || 1,
           })),
-    [surahGroups, ayahs],
+    [surahGroups, ayahs, surahMeta],
   );
 
   const contentKey = useMemo(() => {
