@@ -1,0 +1,135 @@
+/* ==========================================================================
+   Home — the resume card, refined
+
+   One job: take the reader back to the next reading. So the next reading is
+   the card's centre (an inset block with its calligraphy), the promise above
+   it is quieter, and the call to action below it is the one big control.
+   The library shortcuts are small pills that show a count only once there
+   is one. Loaded after home-resume-refinement.css (see deferredStyles.js).
+   ========================================================================== */
+
+/* Header: brand on one side, day and date on the other, both quiet. */
+.app-root[data-view="home"] .home-resume-panel__header { padding-bottom: 0.15rem; }
+.app-root[data-view="home"] .home-resume-panel__greeting { color: rgba(255, 255, 255, 0.7); }
+
+/* The promise: smaller than a poster, still the first thing read. */
+.app-root[data-view="home"] .home-resume-panel h1 {
+  max-width: 20ch;
+  font-size: clamp(1.7rem, 3vw, 2.5rem);
+  font-weight: 760;
+  letter-spacing: -0.035em;
+  line-height: 1.1;
+}
+
+/* The next reading, as an inset block rather than a caption beside a rule. */
+.app-root[data-view="home"] .home-resume-panel__target {
+  align-self: stretch;
+  gap: 0.35rem;
+  margin-top: clamp(0.8rem, 1.6vw, 1.1rem);
+  padding: 0.85rem 1rem 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-inline-start: 3px solid #f0d786;
+  border-radius: 1rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.04));
+  text-align: start;
+  justify-content: center;
+}
+
+.app-root[data-view="home"] .home-resume-panel__target-label { color: #f0d786; }
+
+.app-root[data-view="home"] .home-resume-panel__target-line {
+  width: 100%;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.app-root[data-view="home"] .home-resume-panel__target-line > strong {
+  font-size: clamp(1.05rem, 1.7vw, 1.35rem);
+  font-weight: 750;
+}
+
+.app-root[data-view="home"] .home-resume-panel__target-arabic {
+  flex: none;
+  font-size: clamp(1.9rem, 3.2vw, 2.6rem);
+  filter: drop-shadow(0 2px 8px rgba(240, 215, 134, 0.25));
+}
+
+/* On the wide two-column layout the target sits beside the promise: stack them
+   in one column so the block reads as the next step, whatever the width. */
+@media (min-width: 821px) {
+  .app-root[data-view="home"] .home-resume-panel__body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0;
+  }
+  .app-root[data-view="home"] .home-resume-panel__eyebrow { margin-bottom: 0.2rem; }
+}
+
+/* Library shortcuts: small pills that wrap, never a stretched row of boxes. */
+.app-root[data-view="home"] .home-resume-panel__library {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.85rem;
+}
+
+.app-root[data-view="home"] .home-resume-panel__library > button {
+  min-height: 2.75rem;
+  padding-inline: 0.85rem;
+  border-radius: 999px;
+  background: transparent;
+  font-size: max(0.72rem, 11px);
+}
+
+.app-root[data-view="home"] .home-resume-panel__library > button > span { flex: none; }
+
+/* The pill icons stay (an older phone rule hid the last icon of a button, which
+   used to be the chevron). */
+.app-root[data-view="home"] .home-resume-panel__library > button > svg { display: inline-block !important; flex: none; }
+
+/* One big action, one quiet one. The row is a <footer>, which the dark theme
+   paints with the page footer's gradient: it is not a bar. */
+.app-root[data-view="home"] .home-resume-panel__actions {
+  gap: 0.6rem;
+  border: 0 !important;
+  background: none !important;
+  box-shadow: none !important;
+}
+
+.app-root[data-view="home"] .home-resume-panel__primary,
+.app-root[data-view="home"] .home-resume-panel__secondary {
+  min-height: 3.25rem;
+  border-radius: 1rem;
+}
+
+.app-root[data-view="home"] .home-resume-panel__primary {
+  font-size: 1rem;
+  font-weight: 800;
+  box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.55);
+}
+
+.app-root[data-view="home"] .home-resume-panel__secondary { font-weight: 700; }
+
+/* A phone keeps the card short: smaller promise, tighter block. */
+@media (max-width: 480px) {
+  .app-root[data-view="home"] .home-resume-panel h1 { font-size: clamp(1.35rem, 6vw, 1.7rem); }
+  .app-root[data-view="home"] .home-resume-panel__target { padding: 0.6rem 0.8rem 0.65rem; margin-top: 0.55rem; }
+  .app-root[data-view="home"] .home-resume-panel__target-arabic { font-size: clamp(1.5rem, 8vw, 1.9rem); }
+  .app-root[data-view="home"] .home-resume-panel__library { margin-top: 0.55rem; gap: 0.3rem; }
+  .app-root[data-view="home"] .home-resume-panel__library > button { padding-inline: 0.65rem; }
+  .app-root[data-view="home"] .home-resume-panel__primary,
+  .app-root[data-view="home"] .home-resume-panel__secondary { min-height: 3rem; }
+}
+
+/* The narrowest phones keep the whole card within a short height. */
+@media (max-width: 360px) {
+  .app-root[data-view="home"] .home-resume-panel { padding: 0.8rem; }
+  .app-root[data-view="home"] .home-resume-panel__body { padding-block: 0.3rem; }
+  .app-root[data-view="home"] .home-resume-panel h1 { margin-top: 0.4rem; font-size: 1.3rem; }
+  .app-root[data-view="home"] .home-resume-panel__target { margin-top: 0.4rem; padding: 0.45rem 0.7rem 0.5rem; }
+  .app-root[data-view="home"] .home-resume-panel__library { margin-top: 0.4rem; }
+  .app-root[data-view="home"] .home-resume-panel__primary,
+  .app-root[data-view="home"] .home-resume-panel__secondary { min-height: 2.75rem; }
+}

@@ -3,7 +3,6 @@ import {
   ArrowRight,
   BookOpen,
   Bookmark,
-  ChevronRight,
   CirclePlay,
   Feather,
   HandHeart,
@@ -148,21 +147,17 @@ export default function HeroSection({
             className="home-resume-panel__library"
             aria-label={t("home.hero.personalLibrary", lang)}
           >
-            <button type="button" onClick={() => openLibrary("favorites")}>
-              <Bookmark size={13} aria-hidden="true" />
-              <span><strong>{bookmarks.length}</strong> {t("home.hero.favorites", lang)}</span>
-              <ChevronRight size={12} aria-hidden="true" />
-            </button>
-            <button type="button" onClick={() => openLibrary("notes")}>
-              <StickyNote size={13} aria-hidden="true" />
-              <span><strong>{notes.length}</strong> {t("home.hero.notes", lang)}</span>
-              <ChevronRight size={12} aria-hidden="true" />
-            </button>
-            <button type="button" onClick={() => openLibrary("playlists")}>
-              <ListMusic size={13} aria-hidden="true" />
-              <span><strong>{playlists.length}</strong> {t("home.hero.lists", lang)}</span>
-              <ChevronRight size={12} aria-hidden="true" />
-            </button>
+            {[
+              ["favorites", Bookmark, bookmarks.length, "home.hero.favorites"],
+              ["notes", StickyNote, notes.length, "home.hero.notes"],
+              ["playlists", ListMusic, playlists.length, "home.hero.lists"],
+            ].map(([tab, Icon, count, label]) => (
+              <button type="button" key={tab} onClick={() => openLibrary(tab)}>
+                <Icon size={14} aria-hidden="true" />
+                {/* A zero says nothing: the count appears once there is one. */}
+                <span>{count > 0 ? <strong>{count}</strong> : null} {t(label, lang)}</span>
+              </button>
+            ))}
           </nav>
         </div>
 

@@ -182,7 +182,7 @@ test("home presents one reading journey and one unified audio library", async ({
   await expect(page.getByRole("button", { name: "Murattal", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Mujawwad", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Muallim", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Favoris", exact: true })).toBeVisible();
+  await expect(page.locator(".home-content-section").getByRole("button", { name: "Favoris", exact: true })).toBeVisible();
   await expect(page.getByText(/Murattal : posé/)).toBeVisible();
   await expect(page.locator(".home-content-section input[type='range']")).toHaveCount(0);
 

@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
 
 async function openLibrary(page, tab = 'Notes') {
   await page.goto('/');
-  await page.getByRole('button', { name: new RegExp(`^\\d+ ${tab}$`) }).click();
+  await page.getByRole('button', { name: new RegExp(`^(\\d+ )?${tab}$`) }).click();
   const dialog = page.getByRole('dialog', { name: 'Bibliothèque', exact: true });
   await expect(dialog).toBeVisible();
   await expect(dialog.locator('.library-loading')).toHaveCount(0);
@@ -59,7 +59,7 @@ test('QA: library notes can be edited, searched and restored after reload', asyn
   await page.reload();
   await expect(page.locator('.app-view-home')).toBeVisible();
   await expect(page.getByRole('button', { name: /^1 Notes$/ })).toBeVisible();
-  await page.getByRole('button', { name: /^\d+ Notes$/ }).click();
+  await page.getByRole('button', { name: /^(\d+ )?Notes$/ }).click();
   dialog = page.getByRole('dialog', { name: 'Bibliothèque', exact: true });
   await expect(dialog.locator('.library-loading')).toHaveCount(0);
   await expect(dialog.getByText('Note QA modifiée', { exact: true })).toBeVisible();

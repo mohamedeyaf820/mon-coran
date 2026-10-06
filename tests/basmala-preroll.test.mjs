@@ -79,10 +79,15 @@ test("the basmala file is the reciter's own Al-Fatiha verse 1", () => {
     basmalaPrerollUrl("Alafasy/mp3/", "quran-cdn", 2),
     "https://audio.qurancdn.com/Alafasy/mp3/001001.mp3",
   );
-  assert.equal(
-    basmalaPrerollUrl("262", "quranpedia", 2),
-    "https://files.quranpedia.net/recitations/262/001001.mp3",
-  );
+});
+
+test("Warsh (quranpedia) has no basmala file: its 001001 is Al-hamdu lillahi", () => {
+  // Warsh does not count the basmala as a verse, so the riwaya-numbered file 1
+  // of Al-Fatiha is "Al-hamdu lillahi rabbi l-'alamin". A pre-roll built from
+  // it opened every surah with that verse before the surah's own first verse.
+  assert.equal(basmalaPrerollUrl("262", "quranpedia", 2), null);
+  assert.equal(hasBasmalaPreroll("quranpedia", 2), false);
+  assert.equal(hasBasmalaPreroll("quranpedia", 114), false);
 });
 
 test("Al-Fatiha, At-Tawba and whole-surah streams get no pre-roll", () => {
