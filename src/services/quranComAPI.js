@@ -277,8 +277,11 @@ const MAX_PARALLEL_PAGES = 6;
  *   verse count of a surah is fixed). Every page is then requested at once
  *   instead of waiting for page 1 to learn the total: that serial round trip
  *   delayed every long surah by the whole duration of its first page.
+ * @param {(partial: object) => void} [onFirstPage] Called once, as soon as page 1
+ *   arrives and more pages follow, with the verses of that page in the final
+ *   shape. The first fifty verses can be read while the rest is still travelling.
  */
-async function fetchPaginated(path, meta, signal, expectedPages = 1) {
+async function fetchPaginated(path, meta, signal, expectedPages = 1, onFirstPage) {
   const fetchPage = (page) =>
     fetchJson(
       buildUrl(path, { page: String(page), words: true }),
@@ -287,10 +290,23 @@ async function fetchPaginated(path, meta, signal, expectedPages = 1) {
     );
   const speculative = Math.max(1, Math.min(expectedPages, MAX_PARALLEL_PAGES));
 
+  const fetchWavePage = (page) =>
+    fetchPage(page).then((chunk) => {
+      const announced = Number(chunk?.pagination?.total_pages || 1);
+      if (page === 1 && onFirstPage && announced > 1 && !signal?.aborted) {
+        try {
+          onFirstPage(normalizeVerseCollection(chunk.verses || [], meta));
+        } catch {
+          // A faulty listener never costs the reader their text.
+        }
+      }
+      return chunk;
+    });
+
   const wave = await mapWithConcurrency(
     Array.from({ length: speculative }, (_, index) => index + 1),
     MAX_PARALLEL_PAGES,
-    fetchPage,
+    fetchWavePage,
   );
   const first = wave[0];
   // The API answers with the real count: pages we guessed beyond it are dropped,
@@ -341,12 +357,22 @@ export async function fetchQuranComSurahInfo(surahNum, signal) {
   };
 }
 
-export async function fetchQuranComText(pathPrefix, signal) {
+/**
+ * @param {{ onFirstPage?: (partial: object) => void }} [options] Only a whole
+ *   surah is announced early: page and juz requests are one request or one short wave.
+ */
+export async function fetchQuranComText(pathPrefix, signal, options = {}) {
   let match = /^surah\/(\d+)$/.exec(pathPrefix);
   if (match) {
     const number = Number(match[1]);
     const expectedPages = Math.ceil(getSurahAyahCount(number) / VERSES_PER_PAGE);
-    return fetchPaginated(`/verses/by_chapter/${number}`, { number }, signal, expectedPages);
+    return fetchPaginated(
+      `/verses/by_chapter/${number}`,
+      { number },
+      signal,
+      expectedPages,
+      options.onFirstPage,
+    );
   }
 
   match = /^page\/(\d+)$/.exec(pathPrefix);

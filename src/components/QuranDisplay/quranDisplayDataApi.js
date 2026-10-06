@@ -78,6 +78,7 @@ export async function loadArabicData({
   displayMode,
   riwaya,
   signal,
+  onPartial,
 }) {
   if (riwaya === "warsh") {
     if (displayMode === "page") return getWarshPageVerses(currentPage);
@@ -108,7 +109,7 @@ export async function loadArabicData({
   try {
     return displayMode === "juz"
       ? await getJuz(currentJuz, riwaya, signal)
-      : await getSurahText(currentSurah, riwaya, signal);
+      : await getSurahText(currentSurah, riwaya, signal, { onFirstPage: onPartial });
   } catch (error) {
     if (error?.name === "AbortError") throw error;
     const fallback = getOfflineArabicData({

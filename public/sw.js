@@ -5,6 +5,10 @@
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
+//   • api.quran.com/api/v4/verses/ → jamais mis en cache ici : l'application les
+//     conserve dans IndexedDB (compressé par le navigateur). Les garder aussi
+//     dans Cache Storage, non compressés, coûtait ~16 Mo pour ~4 Mo côté
+//     IndexedDB après sept lectures (mesuré), soit les deux tiers du stockage.
 //   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate (le cache répond
 //     instantanément, le réseau rafraîchit les traductions révisées en arrière-plan)
 //   • Reste          → Network-First avec fallback cache
@@ -161,6 +165,27 @@ async function precacheUrls(cache, urls, concurrency = 4) {
 
 // ─── Activation ───────────────────────────────────────────────────────────────
 
+// Les pages de versets Quran.com (≈ 0,5 à 1 Mo chacune une fois décodées) étaient
+// copiées ici en plus d'IndexedDB. Elles n'y sont plus écrites ; celles déjà
+// stockées sont retirées pour rendre l'espace.
+function isVersePayload(url) {
+  return url.hostname === "api.quran.com" && url.pathname.startsWith("/api/v4/verses/");
+}
+
+async function dropCachedVersePayloads() {
+  try {
+    const cache = await caches.open(API_CACHE_NAME);
+    const requests = await cache.keys();
+    await Promise.all(
+      requests
+        .filter((request) => isVersePayload(new URL(request.url)))
+        .map((request) => cache.delete(request)),
+    );
+  } catch {
+    // Best effort: the entries age out through the cache budget anyway.
+  }
+}
+
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
@@ -177,6 +202,7 @@ self.addEventListener("activate", (event) => {
           )
           .map((key) => caches.delete(key)),
       );
+      await dropCachedVersePayloads();
       if (claimClientsOnActivate) {
         await self.clients.claim();
       }
@@ -229,6 +255,10 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME, event));
     return;
   }
+
+  // Verse pages: the page keeps its own durable copy (IndexedDB); the browser
+  // fetches them directly.
+  if (isVersePayload(url)) return;
 
   // ── 4. API Coran – Stale-While-Revalidate ──────────────────────────────────
   // Le texte coranique est immuable, mais les traductions et tafsirs servis par

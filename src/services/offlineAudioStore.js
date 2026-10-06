@@ -64,8 +64,12 @@ export async function findOfflineAudio(urls) {
   return null;
 }
 
-export async function resolveAudioSource(urls) {
-  const local = await findOfflineAudio(urls);
+// `known` is the outcome of a lookup made earlier: a hit, or `null` for a miss.
+// With it, no storage is read here, which keeps the verse boundary free of I/O
+// (a locked phone may freeze the page between two tracks). Left `undefined`,
+// the lookup runs now.
+export async function resolveAudioSource(urls, known) {
+  const local = known === undefined ? await findOfflineAudio(urls) : known;
   if (local) return { url: URL.createObjectURL(local.blob), originalUrl: local.originalUrl, local: true };
   if (typeof navigator !== "undefined" && navigator.onLine === false) {
     const error = new Error("Audio unavailable offline");

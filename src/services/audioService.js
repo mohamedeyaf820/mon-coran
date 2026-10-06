@@ -1,4 +1,5 @@
 import { findOfflineAudio, resolveAudioSource } from "./offlineAudioStore.js";
+import { candidateUrls, prepareNextSource, takePreparedSource } from "./audioNextSource.js";
 import { bindEngineMediaSession, syncEngineMediaSession, updateEngineMetadata } from "./engineMediaSession.js";
 /**
  * Audio service – manages Quran playback, playlists and resilient fallbacks.
@@ -83,6 +84,7 @@ class AudioService {
     this._cancelPendingLoad = null;
     this._preloadAudio = null; // For preloading next track
     this._preloadPool = []; // [{ url, audio }]
+    this._preparedSource = null; // { signature, index, urls, cached } for the next track
     this._maxPreloadPool = getAdaptiveAudioPreloadCount();
     this._loadRequestId = 0; // Used to ignore stale retry attempts
     this._reciterSwitchRequestId = 0;
@@ -250,6 +252,8 @@ class AudioService {
       if ((hasTextUpdates || hasTimingUpdates) && this.playlistIndex >= 0) {
         this.currentAyah = this.playlist[this.playlistIndex] || this.currentAyah;
       }
+      // Timings change a verse's candidate URLs: look the next one up again.
+      if (hasTimingUpdates && this.isPlaying && this.playlistIndex >= 0) void this._prepareNextSource(this.playlistIndex);
       return;
     }
 
@@ -776,10 +780,10 @@ class AudioService {
    * Load a URL into the audio element and start playing.
    * Resolves a verified local source first; native play() determines readiness.
    */
-  async _loadUrlWithRetry(url, retries = MAX_RETRIES) {
+  async _loadUrlWithRetry(url, retries = MAX_RETRIES, known) {
     if (!isTrustedAudioUrl(url)) throw new Error("Untrusted audio URL");
     const commandId = this._commandId;
-    const source = await resolveAudioSource([url]);
+    const source = await resolveAudioSource([url], known);
     if (commandId !== this._commandId) {
       if (source.local) URL.revokeObjectURL(source.url);
       throw new DOMException("Audio load superseded", "AbortError");
@@ -962,6 +966,7 @@ class AudioService {
   }
 
   _releasePreloadPool() {
+    this._preparedSource = null;
     releasePreloadPool(this);
   }
 
@@ -970,6 +975,12 @@ class AudioService {
   }
 
   loadAndPlay(index) { return this._loadAndPlay(index); }
+
+  _candidateUrls(item) { return candidateUrls(item); }
+
+  _prepareNextSource(fromIndex) { return prepareNextSource(this, fromIndex); }
+
+  _takePreparedSource(index, urls) { return takePreparedSource(this, index, urls); }
 
   async _loadAndPlay(index, { throwOnError = false, position = 0 } = {}) {
     if (index < 0 || index >= this.playlist.length) return;
@@ -1004,15 +1015,21 @@ class AudioService {
     try {
       this.onNetworkState?.("loading");
       if (!(await this._basmala.before(item)) || commandId !== this._commandId) return;
-      let candidateUrls = (Array.isArray(item.urls) && item.urls.length > 0 ? item.urls : [item.url]).filter(isTrustedAudioUrl);
-      const cached = await findOfflineAudio(candidateUrls);
+      let candidateUrls = this._candidateUrls(item);
+      // The lookup was usually made while the previous verse played. A verse
+      // boundary then needs no storage read: the hand-off is a source swap and a
+      // play() in the same turn, so a locked phone has no gap to freeze in.
+      const prepared = this._takePreparedSource(index, candidateUrls);
+      const cached = prepared ? prepared.cached : await findOfflineAudio(candidateUrls);
       if (commandId !== this._commandId) return;
       if (cached) candidateUrls = [cached.originalUrl, ...candidateUrls.filter(url => url !== cached.originalUrl)];
       let loadedUrl = null;
       let lastErr = null;
       for (const urlCandidate of candidateUrls) {
         try {
-          await this._loadUrlWithRetry(urlCandidate);
+          // A miss holds for every candidate; a hit only for its own URL.
+          const known = cached ? (cached.originalUrl === urlCandidate ? cached : undefined) : null;
+          await this._loadUrlWithRetry(urlCandidate, undefined, known);
           if (commandId !== this._commandId) return;
           loadedUrl = urlCandidate;
           break;
@@ -1066,6 +1083,7 @@ class AudioService {
 
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
+      void this._prepareNextSource(index);
     } catch (err) {
       if (err?.name === "AbortError") return;
       if (commandId !== this._commandId) return;

@@ -15,6 +15,8 @@ const DISPLAY_DATA_CACHE = new Map();
 const DISPLAY_DATA_CACHE_MAX = 120;
 const DISPLAY_DATA_PREFETCHES = new Map();
 const EMPTY_AYAHS = Object.freeze([]);
+// A deep link or a resume point past the first page of verses waits for the whole surah.
+const FIRST_PAGE_MAX_TARGET = 45;
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
   const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
@@ -126,6 +128,8 @@ export default function useQuranDisplayData({
   const requestSeqRef = useRef(0);
   const requestAbortRef = useRef(null);
   const persistRef = useRef(null);
+  const latestViewRef = useRef({ currentAyah, mushafLayout });
+  latestViewRef.current = { currentAyah, mushafLayout };
 
   const persistReadingPosition = useCallback(
     (allAyahs) => {
@@ -202,6 +206,32 @@ export default function useQuranDisplayData({
       }
     }
 
+    // The first fifty verses of a long Hafs surah are readable as soon as their
+    // page arrives; the rest is appended when it lands. Not when the reader is
+    // resuming beyond them (the scroll would have nothing to land on), and not in
+    // the mushaf layout, whose pages are composed from the whole surah.
+    // Read through a ref: the reading position moves while the reader scrolls
+    // and must not make fetchData, hence the request, start over.
+    const { currentAyah: resumeAyah, mushafLayout: layout } = latestViewRef.current;
+    const allowFirstPage =
+      displayMode === "surah" &&
+      riwaya === "hafs" &&
+      layout !== "mushaf" &&
+      !(Number(resumeAyah) > FIRST_PAGE_MAX_TARGET);
+    const showFirstPage = (partialData) => {
+      if (signal.aborted || requestSeqRef.current !== requestId) return;
+      const partialAyahs = attachWarshHafsMapping(
+        ensureRequestedRiwaya(partialData?.ayahs || [], riwaya),
+        riwaya,
+      );
+      if (!partialAyahs.length) return;
+      // Visible, but neither settled nor cached: the loading veil stays below the
+      // verses and the final payload replaces this one.
+      setAyahs(partialAyahs);
+      setResolvedCacheKey(cacheKey);
+      setDataSource(describeArabicDataSource(partialData, riwaya));
+    };
+
     const fetchPromise = (async () => {
       const hafsPromise = needsHafsSupport
         ? loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal }).catch(() => null)
@@ -216,6 +246,7 @@ export default function useQuranDisplayData({
             displayMode,
             riwaya,
             signal,
+            onPartial: allowFirstPage ? showFirstPage : undefined,
           });
       const fetchedAyahs = attachWarshHafsMapping(
         cachedData?.ayahs || ensureRequestedRiwaya(arabicData.ayahs || [], riwaya),

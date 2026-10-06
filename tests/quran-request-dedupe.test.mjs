@@ -344,3 +344,67 @@ test("the page cache gives room back as the storage quota fills", async () => {
   assert.equal(cachedPageBudget({ supported: false }), 360);
   assert.equal(cachedPageBudget(null), 360);
 });
+
+test("the first fifty verses are announced while the other pages are still on the wire", async () => {
+  const originalFetch = globalThis.fetch;
+  const gates = [];
+  globalThis.fetch = (url) => {
+    const page = Number(new URL(String(url)).searchParams.get("page"));
+    const respond = () =>
+      new Response(JSON.stringify(versePage(4, (page - 1) * 50 + 1, Math.min(page * 50, 176), 4)), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    if (page === 1) return Promise.resolve(respond());
+    return new Promise((resolve) => gates.push(() => resolve(respond())));
+  };
+
+  try {
+    const announced = [];
+    const loading = fetchQuranComText("surah/4", undefined, {
+      onFirstPage: (partial) => announced.push(partial.ayahs.map((ayah) => ayah.numberInSurah)),
+    });
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    assert.equal(announced.length, 1, "announced once, before the rest arrived");
+    assert.deepEqual(announced[0], Array.from({ length: 50 }, (_, index) => index + 1));
+    assert.equal(gates.length, 3, "the other three pages were requested at once");
+
+    gates.forEach((release) => release());
+    const result = await loading;
+    assert.equal(result.ayahs.length, 176);
+    assert.equal(announced.length, 1, "never announced again");
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("a single-page answer is never announced twice, and a faulty listener changes nothing", async () => {
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () =>
+    new Response(JSON.stringify(versePage(6, 1, 50, 1)), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  try {
+    let calls = 0;
+    const result = await fetchQuranComText("surah/6", undefined, { onFirstPage: () => { calls += 1; } });
+    assert.equal(result.ayahs.length, 50);
+    assert.equal(calls, 0, "total_pages 1: nothing to announce early");
+
+    globalThis.fetch = async (url) => {
+      const page = Number(new URL(String(url)).searchParams.get("page"));
+      return new Response(JSON.stringify(versePage(7, (page - 1) * 50 + 1, Math.min(page * 50, 200), 4)), {
+        status: 200,
+        headers: { "content-type": "application/json" },
+      });
+    };
+    const survived = await fetchQuranComText("surah/7", undefined, {
+      onFirstPage: () => {
+        throw new Error("listener bug");
+      },
+    });
+    assert.equal(survived.ayahs.length, 200);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});

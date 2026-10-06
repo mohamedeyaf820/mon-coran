@@ -52,13 +52,20 @@ export function registerWarshArchive(rows, meta = null) {
   records.clear();
   warshArchiveMeta = meta;
   for (const [text, ranges] of rows) {
-    const words = text.split(/\s+/u).filter(Boolean);
-    const key = words.map(archiveWordKey).filter(Boolean).join(" ");
+    // A verse can carry standalone signs (the rub al-hizb marker) that are tokens
+    // of the printed text but carry no letter: they have no key and no range,
+    // and must not shift the words that do.
+    const usable = text.split(/\s+/u).filter(Boolean)
+      .map((word, index) => ({ word, ranges: ranges[index] || [], key: archiveWordKey(word) }))
+      .filter((item) => item.key);
+    const words = usable.map((item) => item.word);
+    const usableRanges = usable.map((item) => item.ranges);
+    const key = usable.map((item) => item.key).join(" ");
     const previous = records.get(key);
     if (previous === null) continue;
     // Repeated wording with different annotations needs verse identity; decline it.
-    if (previous && JSON.stringify(previous.ranges) !== JSON.stringify(ranges)) records.set(key, null);
-    else records.set(key, { words, ranges });
+    if (previous && JSON.stringify(previous.ranges) !== JSON.stringify(usableRanges)) records.set(key, null);
+    else records.set(key, { words, ranges: usableRanges });
   }
   listeners.forEach(listener => listener());
 }

@@ -10,6 +10,8 @@
 .tajwid-guide__rules { display: grid; gap: .75rem; }
 .tajwid-guide__rules dt { display: flex; align-items: center; gap: .5rem; font-weight: 600; }
 .tajwid-guide__rules dd { margin-inline-start: 1.25rem; color: var(--text-secondary); }
+.tajwid-guide__content p.tajwid-guide__source { margin-block: 1rem 0; padding-block-start: .75rem; border-block-start: 1px solid var(--border); font-size: .8rem; color: var(--text-muted); }
+.tajwid-guide__source a { color: var(--primary-ink, var(--primary)); font-weight: 600; text-decoration: underline; text-underline-offset: 2px; }
 .tajwid-guide__dot { inline-size: .75rem; block-size: .75rem; flex-shrink: 0; border-radius: 50%; }
 .tajwid-guide__sheet > button { position: absolute !important; inset-block-start: 1rem; inset-inline-end: 1rem; left: auto; right: 1rem; }
 [dir="rtl"] .tajwid-guide__sheet > button { left: 1rem; right: auto; }

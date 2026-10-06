@@ -469,11 +469,11 @@ async function searchArabicLocally(query, surahNum = null, signal) {
   };
 }
 
-async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
+async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal, options = {}) {
   if (USE_QURAN_COM_TEXT && canLoadFromQuranCom(pathPrefix, riwaya)) {
     try {
       lastWarshFallback = false;
-      const data = await fetchQuranComText(pathPrefix, signal);
+      const data = await fetchQuranComText(pathPrefix, signal, options);
       if (!Array.isArray(data?.ayahs) || data.ayahs.length) return data;
       throw new Error('Empty Quran.com text payload');
     } catch (err) {
@@ -570,8 +570,12 @@ async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
 
 /* ── Surah Text ──────────────────────────────── */
 
-export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
-  return fetchWithEditionFallback(`surah/${surahNum}`, riwaya, signal);
+/**
+ * @param {{ onFirstPage?: (partial: object) => void }} [options] Called with the
+ *   first page of verses while the rest of a long surah is still loading.
+ */
+export async function getSurahText(surahNum, riwaya = 'hafs', signal, options = {}) {
+  return fetchWithEditionFallback(`surah/${surahNum}`, riwaya, signal, options);
 }
 
 export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {

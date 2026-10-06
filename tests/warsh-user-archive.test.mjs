@@ -16,7 +16,7 @@ test('aligned archive is pinned and uses only actual Warsh corpus text and known
   const corpus = JSON.parse(fs.readFileSync('public/data/warsh-page-source.json', 'utf8'));
   const verses = Array.isArray(corpus) ? corpus : corpus.verses;
   const texts = new Set(verses.map(v => stripEmbeddedAyahMarkers(v.aya_text.normalize('NFC'), { ayahNumber: v.aya_no }).trim()));
-  assert.equal(pack.rows.length, 5773);
+  assert.equal(pack.rows.length, 6207);
   assert.equal(pack.meta.validatedByScholar, false);
   registerWarshArchive(pack.rows, pack.meta);
   let matched = 0;
@@ -36,7 +36,7 @@ test('aligned archive is pinned and uses only actual Warsh corpus text and known
     const annotation = getWarshTajwidAnnotatedSource(text);
     assert.equal(annotation.segments.map(s => s.text).join(''), text);
   }
-  assert.ok(matched > 5700, `matched ${matched}`);
+  assert.ok(matched > 6150, `matched ${matched}`);
   assert.equal(getWarshTajwidSourceStatus().status, 'warsh-user-archive');
 });
 
@@ -68,4 +68,25 @@ test('loader rejects a corrupt file, retries and registers only the pinned file'
     assert.equal(await ensureWarshArchiveRules(), true);
     assert.equal(requests.length, 2);
   } finally { Date.now = originalNow; globalThis.fetch = original; registerWarshArchive([]); }
+});
+
+test('a verse that opens a rub keeps its annotations: the standalone marker has no word to colour', () => {
+  registerWarshArchive(pack.rows, pack.meta);
+  const corpus = JSON.parse(fs.readFileSync('public/data/warsh-page-source.json', 'utf8'));
+  const verses = Array.isArray(corpus) ? corpus : corpus.verses;
+  const opening = verses.filter(v => stripEmbeddedAyahMarkers(v.aya_text.normalize('NFC'), { ayahNumber: v.aya_no }).split(/\s+/u).some(word => word === '\u06DE'));
+  assert.ok(opening.length > 400, `${opening.length} verses carry the rub marker`);
+  let annotated = 0;
+  for (const verse of opening) {
+    const words = stripEmbeddedAyahMarkers(verse.aya_text.normalize('NFC'), { ayahNumber: verse.aya_no }).split(/\s+/u).filter(Boolean);
+    const ranges = getWarshArchiveRanges(words);
+    if (!ranges) continue;
+    assert.equal(ranges.length, words.length, 'one list per printed token');
+    const marker = words.indexOf('\u06DE');
+    assert.deepEqual(ranges[marker], [], 'the marker itself is never coloured');
+    if (ranges.some(list => list.length)) annotated++;
+  }
+  // Before the fix every one of them fell back to the printed signs.
+  assert.ok(annotated > 400, `${annotated} rub-opening verses annotated`);
+  registerWarshArchive([]);
 });

@@ -6,7 +6,7 @@
 // runs is normal), so the Quran APIs are answered from a recorded copy through a
 // simulated shared link (FIFO bandwidth + latency) with the CPU throttled by CDP.
 // Build both trees with a plain `vite build --outDir <dir>` and serve each one
-// with `vite preview`. Reports the median of 3 runs per scenario.
+// with `vite preview`. Reports the median of 7 interleaved runs per scenario.
 import { chromium } from "playwright";
 
 const bases = process.argv.slice(2);
@@ -56,13 +56,19 @@ async function run(browser, base, scenario, cpu, warm) {
 
 const browser = await chromium.launch();
 for (const base of bases) await run(browser, base, SCENARIOS.fast, 1, true); // record the payloads once
+const RUNS = 7;
 for (const [name, scenario] of Object.entries(SCENARIOS)) {
   for (const cpu of [1, 4]) {
+    // Interleaved (A B A B ... then B A ...): a machine that drifts during the
+    // measure otherwise favours whichever build ran last.
+    const times = Object.fromEntries(bases.map((base) => [base, []]));
+    for (let i = 0; i < RUNS; i += 1) {
+      const order = i % 2 ? [...bases].reverse() : bases;
+      for (const base of order) times[base].push(await run(browser, base, scenario, cpu, false));
+    }
     for (const base of bases) {
-      const times = [];
-      for (let i = 0; i < 3; i += 1) times.push(await run(browser, base, scenario, cpu, false));
-      times.sort((a, b) => a - b);
-      console.log(`${name.padEnd(5)} cpu${cpu}x ${base}  median ${times[1]} ms  [${times.join(", ")}]`);
+      const sorted = [...times[base]].sort((x, y) => x - y);
+      console.log(`${name.padEnd(5)} cpu${cpu}x ${base}  median ${sorted[Math.floor(RUNS / 2)]} ms  [${sorted.join(", ")}]`);
     }
   }
 }

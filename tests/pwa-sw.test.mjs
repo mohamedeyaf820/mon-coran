@@ -155,3 +155,63 @@ test("iOS startup images are declared and available for phone and tablet formats
     );
   }
 });
+
+function loadWorker({ cacheEntries = [] } = {}) {
+  const handlers = {};
+  const deletedEntries = [];
+  const context = {
+    URL, Response, Request, AbortController, setTimeout, clearTimeout,
+    self: {
+      location: { origin: "https://qa.test" },
+      addEventListener: (name, handler) => { handlers[name] = handler; },
+      clients: { claim: async () => {}, matchAll: async () => [] },
+    },
+    fetch: async () => new Response("{}"),
+    caches: {
+      keys: async () => ["mushaf-plus-v22", "mushaf-plus-api-v6"],
+      delete: async () => true,
+      open: async () => ({
+        keys: async () => cacheEntries.map((url) => new Request(url)),
+        delete: async (request) => { deletedEntries.push(request.url); return true; },
+        match: async () => undefined,
+        put: async () => {},
+      }),
+    },
+  };
+  vm.runInNewContext(sw, context);
+  return { handlers, deletedEntries };
+}
+
+test("verse pages are left to IndexedDB: the worker no longer copies them, other API answers still use it", () => {
+  const { handlers } = loadWorker();
+  const answered = (url) => {
+    let responded = false;
+    handlers.fetch({
+      request: new Request(url),
+      respondWith: () => { responded = true; },
+      waitUntil: () => {},
+    });
+    return responded;
+  };
+  assert.equal(answered("https://api.quran.com/api/v4/verses/by_chapter/2?page=1"), false);
+  assert.equal(answered("https://api.quran.com/api/v4/chapters/2/info?language=en"), true);
+  assert.equal(answered("https://api.alquran.cloud/v1/surah/2/fr.hamidullah"), true);
+});
+
+test("activation removes the verse pages an earlier worker stored, and nothing else", async () => {
+  const { handlers, deletedEntries } = loadWorker({
+    cacheEntries: [
+      "https://api.quran.com/api/v4/verses/by_chapter/2?page=1",
+      "https://api.quran.com/api/v4/verses/by_page/50?page=1",
+      "https://api.quran.com/api/v4/chapters/2/info?language=en",
+      "https://api.alquran.cloud/v1/surah/2/fr.hamidullah",
+    ],
+  });
+  let completion;
+  handlers.activate({ waitUntil: (promise) => { completion = promise; } });
+  await completion;
+  assert.deepEqual(deletedEntries.sort(), [
+    "https://api.quran.com/api/v4/verses/by_chapter/2?page=1",
+    "https://api.quran.com/api/v4/verses/by_page/50?page=1",
+  ]);
+});
