@@ -8,6 +8,7 @@ import {
 import { t } from "../i18n";
 import { getSurah } from "../data/surahs";
 import { THEMES } from "../data/themes";
+import PlatformLogo from "./PlatformLogo";
 import siteConfig from "../../site.config.json";
 import "../styles/domains/footer-refonte.css";
 
@@ -172,7 +173,10 @@ export default function Footer({ goSurah }) {
 
         <div className="mp-footer-v2__directory">
           <div className="mp-footer-v2__about">
-            <span className="mp-footer-v2__wordmark">Mushaf<b>Plus</b></span>
+            <span className="mp-footer-v2__wordmark">
+              <PlatformLogo className="mp-footer-v2__logo" imgClassName="h-full w-full object-cover" decorative />
+              <span>Mushaf<b>Plus</b></span>
+            </span>
             <h2>{t("footer.mission", lang)}</h2>
             <p>{t("footer.missionP1", lang)}</p>
             <p>{t("footer.missionP2", lang)}</p>

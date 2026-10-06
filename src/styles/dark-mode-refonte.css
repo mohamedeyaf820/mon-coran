@@ -408,7 +408,10 @@ html[data-theme="dark"] header.mp-header {
 }
 
 
-html[data-theme="dark"] footer,
+/* Footers that are components of their own (hero actions, info panel, legal
+   actions, the site footer) paint themselves: the dark gradient made a dark band
+   behind their buttons. */
+html[data-theme="dark"] footer:not(.mp-footer-v2):not(.home-resume-panel__actions):not(.sip-overview__footer):not(.legal-page__actions):not(.prayers-dua-source),
 html[data-theme="dark"] .app-footer {
     background: linear-gradient(
         180deg,
