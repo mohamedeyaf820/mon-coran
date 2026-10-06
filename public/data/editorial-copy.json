@@ -16,6 +16,11 @@
         ["Offline", "MushafPlus installs as a web app and keeps working offline once texts and recitations are cached on the device."],
         ["Project lead", "Mohamed Eyaf leads MushafPlus. Code, changes and reports are available in the public repository."],
         ["Corrections and version", "Version 1.1.0, updated 2026-08-20. Reports are reviewed, documented and shipped in a later release."]
+      ],
+      "highlights": [
+        ["Hafs and Warsh", "Two riwayas, each with its own text and recitations."],
+        ["Read, listen, study", "Paginated Mushaf or continuous flow, verse-by-verse recitations, tajweed, translations and tafsir."],
+        ["No account", "Bookmarks, notes and settings stay on your device."]
       ]
     },
     "privacy": {
@@ -23,13 +28,31 @@
       "intro": "MushafPlus works without an account or public profile. Personal reading data is stored in your browser.",
       "trust": ["No account", "No trackers"],
       "sections": [
-        ["Stored locally", "Preferences, last position, bookmarks and notes use localStorage or IndexedDB. A local passphrase lock can be enabled."],
+        ["Stored locally", "Preferences, last position, bookmarks and notes use localStorage or IndexedDB. Downloaded recitations are kept in the browser's storage. A local passphrase lock can be enabled."],
         ["No account, no trackers", "MushafPlus uses no analytics, advertising or third-party trackers, and sends no usage statistics to a server."],
-        ["External services", "Text, translations and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request."],
-        ["Permissions", "Microphone access starts only when you intentionally launch voice search. MushafPlus stores no voice recordings."],
-        ["Your data, your control", "You can export bookmarks, notes, playlists and settings as JSON, or permanently erase all local data from the app. No automatic cloud sync is performed."],
+        ["External services", "Text, translations, tafsir and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request. For prayer times, the coordinates you choose (your position or a city), rounded to about 10 m, are sent to the Aladhan service."],
+        ["Permissions", "Microphone access starts only when you intentionally launch voice search, and no voice recording is kept. Location is requested only when you ask for it in the Prayer tab of the settings. Notifications turn on only at your request."],
+        ["Your data, your control", "In the settings, in the Data tab, you can export bookmarks, notes, playlists and settings as JSON, or permanently erase all local data. No automatic cloud sync is performed."],
         ["Data retention", "Data stays on the device until you delete it or clear browser storage. The offline cache refreshes with each update."]
-      ]
+      ],
+      "highlights": [
+        ["No account, no trackers", "No analytics, no advertising."],
+        ["Data on your device", "Settings, bookmarks and notes stay in your browser."],
+        ["You stay in control", "Export, passphrase protection, full erasure."]
+      ],
+      "dataMap": {
+        "title": "What is stored, and where",
+        "intro": "Everything MushafPlus keeps is on this device. Nothing is copied to a server run by the project.",
+        "columns": ["Data", "Location", "What you can do"],
+        "rows": [
+          ["Settings and reading position", "localStorage", "Export, protect, erase everything"],
+          ["Bookmarks, notes and playlists", "IndexedDB", "Export as JSON, erase everything"],
+          ["Texts and translations already read", "IndexedDB (cache)", "Clear the cache"],
+          ["Downloaded recitations", "Cache Storage", "Delete the downloads"],
+          ["Location for prayer times", "Settings (rounded to about 10 m)", "Erase everything"]
+        ],
+        "manage": "Manage my data"
+      }
     },
     "legal": {
       "title": "Publishing and usage information",
@@ -42,6 +65,11 @@
         ["Responsibility", "The app does not replace a certified Mushaf edition, a qualified teacher, or religious, medical or legal advice."],
         ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners' rights."],
         ["Warranty and changes", "The service is provided \"as is\", from third-party sources that may change. This page may be updated; its version follows the app."]
+      ],
+      "highlights": [
+        ["Independent project", "Public code and reports on GitHub."],
+        ["Personal use", "Free, for reading and study."],
+        ["Third-party content", "Each text, translation and recitation stays subject to its own rights."]
       ]
     },
     "sources": {
@@ -57,7 +85,12 @@
         ["Verification and reporting", "Each source is tested and documented, with an automatic fallback to a compatible mirror when one is unavailable. Attribution errors can be reported, reviewed and corrected."]
       ],
       "register": "Third-party content register",
-      "registerIntro": "Application usage, known terms and a direct link to each source."
+      "registerIntro": "Application usage, known terms and a direct link to each source.",
+      "highlights": [
+        ["Every provider is named", "Text, translations, recitations, fonts and tafsir are attributed."],
+        ["Fallback sources", "A compatible mirror takes over when the main service is unavailable."],
+        ["Terms shown", "Known rights and conditions are listed for each source."]
+      ]
     },
     "actions": { "project": "View project on GitHub", "correction": "Report a correction", "home": "Back to home" }
   },
@@ -78,6 +111,11 @@
         ["دون اتصال", "يُثبَّت MushafPlus كتطبيق ويب ويواصل العمل دون اتصال بعد تخزين النصوص والتلاوات مؤقتاً على الجهاز."],
         ["مسؤول المشروع", "يدير Mohamed Eyaf مشروع MushafPlus، والكود والتغييرات والبلاغات منشورة في المستودع العام."],
         ["التصحيحات والإصدار", "الإصدار 1.1.0، آخر تحديث 2026-08-20. تُراجع البلاغات وتوثق قبل نشرها."]
+      ],
+      "highlights": [
+        ["حفص وورش", "روايتان، لكل منهما نصها وتلاواتها."],
+        ["اقرأ واستمع وادرس", "مصحف مصفح أو تدفق مستمر، وتلاوات آية بآية، وتجويد، وترجمات، وتفسير."],
+        ["بلا حساب", "تبقى العلامات والملاحظات والإعدادات على جهازك."]
       ]
     },
     "privacy": {
@@ -85,13 +123,31 @@
       "intro": "يعمل MushafPlus بلا حساب أو ملف عام، وتُحفظ بيانات القراءة الشخصية في المتصفح.",
       "trust": ["بلا حساب", "بلا متتبعات"],
       "sections": [
-        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات في localStorage أو IndexedDB، ويمكن تفعيل قفل محلي بعبارة سرية."],
+        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات في localStorage أو IndexedDB، وتُحفظ التلاوات المنزّلة في تخزين المتصفح، ويمكن تفعيل قفل محلي بعبارة سرية."],
         ["لا حساب ولا متتبعات", "لا يستخدم MushafPlus أي خدمة لتحليل الزوار أو إعلانات أو متتبعات خارجية، ولا يرسل أي إحصاءات استخدام إلى خادم."],
-        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة للرد على الطلب."],
-        ["الأذونات", "لا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي اختيارياً، ولا يحتفظ التطبيق بأي تسجيل صوتي."],
-        ["بياناتك تحت سيطرتك", "يمكنك تصدير العلامات والملاحظات وقوائم الاستماع والإعدادات بصيغة JSON، أو حذف جميع البيانات المحلية نهائياً من التطبيق. لا تتم أي مزامنة سحابية تلقائية."],
+        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والتفسير والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة للرد على الطلب. ولأوقات الصلاة تُرسل الإحداثيات التي تختارها (موقعك أو مدينة)، مقرّبة إلى نحو 10 أمتار، إلى خدمة Aladhan."],
+        ["الأذونات", "لا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي اختيارياً، ولا يُحتفظ بأي تسجيل صوتي. ولا يُطلب الموقع إلا عندما تطلبه من تبويب الصلاة في الإعدادات، ولا تُفعَّل الإشعارات إلا بطلبك."],
+        ["بياناتك تحت سيطرتك", "يمكنك من الإعدادات، في تبويب البيانات، تصدير العلامات والملاحظات وقوائم الاستماع والإعدادات بصيغة JSON، أو حذف جميع البيانات المحلية نهائياً. لا تتم أي مزامنة سحابية تلقائية."],
         ["مدة الاحتفاظ", "تبقى البيانات على الجهاز حتى تحذفها أو تفرّغ مساحة تخزين المتصفح، وتُحدَّث الذاكرة المؤقتة دون اتصال مع كل إصدار."]
-      ]
+      ],
+      "highlights": [
+        ["بلا حساب ولا متتبعات", "لا تحليلات ولا إعلانات."],
+        ["بيانات على جهازك", "تبقى الإعدادات والعلامات والملاحظات في متصفحك."],
+        ["أنت المتحكم", "تصدير، وحماية بعبارة سرية، وحذف كامل."]
+      ],
+      "dataMap": {
+        "title": "ما يُحفظ وأين",
+        "intro": "كل ما يحتفظ به MushafPlus موجود على هذا الجهاز، ولا يُنسخ شيء إلى خادم يتبع المشروع.",
+        "columns": ["البيانات", "المكان", "ما يمكنك فعله"],
+        "rows": [
+          ["الإعدادات وموضع القراءة", "localStorage", "التصدير، والحماية، وحذف كل شيء"],
+          ["العلامات والملاحظات وقوائم الاستماع", "IndexedDB", "التصدير بصيغة JSON وحذف كل شيء"],
+          ["النصوص والترجمات التي قرأتها", "IndexedDB (ذاكرة مؤقتة)", "تفريغ الذاكرة المؤقتة"],
+          ["التلاوات المنزّلة", "Cache Storage", "حذف التنزيلات"],
+          ["الموقع لأوقات الصلاة", "الإعدادات (مقرّب إلى نحو 10 أمتار)", "حذف كل شيء"]
+        ],
+        "manage": "إدارة بياناتي"
+      }
     },
     "legal": {
       "title": "معلومات النشر وإطار الاستخدام",
@@ -104,6 +160,11 @@
         ["المسؤولية", "لا يحل التطبيق محل مصحف معتمد أو معلّم مؤهل أو فتوى أو استشارة طبية أو قانونية."],
         ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها."],
         ["الضمان والتحديث", "تُقدَّم الخدمة كما هي اعتماداً على مصادر خارجية قد تتغير، وقد تُحدَّث هذه الصفحة ويتبع إصدارها إصدار التطبيق."]
+      ],
+      "highlights": [
+        ["مشروع مستقل", "الشفرة والبلاغات علنية على GitHub."],
+        ["استخدام شخصي", "مجاني للقراءة والدراسة."],
+        ["محتوى خارجي", "يبقى كل نص وترجمة وتلاوة خاضعاً لحقوقه."]
       ]
     },
     "sources": {
@@ -119,7 +180,12 @@
         ["التحقق والإبلاغ", "يُختبر كل مصدر وتُوثَّق بياناته مع تحويل تلقائي إلى مرآة متوافقة عند تعذر المصدر، ويمكن الإبلاغ عن خطأ في النسب لمراجعته وتصحيحه."]
       ],
       "register": "سجل المحتوى الخارجي",
-      "registerIntro": "الاستخدام والشروط المعروفة والرابط المباشر لكل مصدر."
+      "registerIntro": "الاستخدام والشروط المعروفة والرابط المباشر لكل مصدر.",
+      "highlights": [
+        ["كل مزوّد مذكور بالاسم", "تُنسب النصوص والترجمات والتلاوات والخطوط والتفسير."],
+        ["مصادر احتياطية", "تحل مرآة متوافقة محل الخدمة الأساسية عند تعذرها."],
+        ["الشروط معروضة", "تُذكر الحقوق والشروط المعروفة لكل مصدر."]
+      ]
     },
     "actions": { "project": "المشروع على GitHub", "correction": "الإبلاغ عن تصحيح", "home": "العودة إلى الرئيسية" }
   }

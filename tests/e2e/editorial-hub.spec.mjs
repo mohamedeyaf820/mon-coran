@@ -71,8 +71,10 @@ test("about page is compact on mobile and prepares a complete correction report"
   await page.goto("/about");
   await expect(page.locator(".legal-page")).toBeVisible({ timeout: 30_000 });
 
-  const grid = page.locator(".legal-page__grid");
-  expect(await grid.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length)).toBe(1);
+  // The three "at a glance" tiles stack, and the side contents list is left out.
+  const glance = page.locator(".legal-page__glance ul");
+  expect(await glance.evaluate((node) => getComputedStyle(node).gridTemplateColumns.split(" ").length)).toBe(1);
+  await expect(page.locator(".legal-page__toc")).toBeHidden();
   expect(await page.locator(".legal-page").evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true);
 
   const repositoryLink = page.getByRole("link", { name: /projet sur GitHub/i });
