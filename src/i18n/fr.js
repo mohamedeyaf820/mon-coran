@@ -98,8 +98,7 @@ export default {
     noData: 'Aucune donnée disponible.',
     loadError: 'Impossible de charger le tafsir.',
     offline: 'Vous êtes hors ligne. Reconnectez-vous pour charger le tafsir.',
-    offlineSourceBadge: 'Source intégrée',
-    frenchAttribution: '« Al-Mukhtasar fi at-Tafsir » — explication abrégée du Coran, édition du Ministère égyptien des Awqaf (traduction française).',
+    frenchAttribution: '« Al-Mukhtasar fi at-Tafsir » — explication abrégée du Coran, Centre Tafsir pour les études coraniques. Traduction française, texte de QuranEnc.com.',
     reportError: 'Signaler une erreur',
   },
   sidebar: {

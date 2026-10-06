@@ -99,8 +99,7 @@ export default {
     noData: 'No data available.',
     loadError: 'Unable to load tafsir.',
     offline: 'You are offline. Reconnect to load the tafsir.',
-    offlineSourceBadge: 'Bundled source',
-    frenchAttribution: '"Al-Mukhtasar fi at-Tafsir" — abridged explanation of the Quran, Egyptian Ministry of Awqaf edition (French translation).',
+    frenchAttribution: '"Al-Mukhtasar fi at-Tafsir" — abridged explanation of the Quran, Tafsir Center for Quranic Studies. French translation, text from QuranEnc.com.',
     reportError: 'Report an error',
   },
   sidebar: {

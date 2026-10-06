@@ -49,7 +49,7 @@
       "intro": "Each content family is linked to its provider, with a compatible fallback when needed.",
       "trust": ["Text & translation", "Recitations"],
       "sections": [
-        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support Quran text, translations, metadata and integrity checks."],
+        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support Quran text, translations, metadata and integrity checks. The French Al-Mukhtasar tafsir (Tafsir Center for Quranic Studies) is loaded from QuranEnc.com: the surah being read is requested, then kept on the device; the other tafsirs come from Quran.com."],
         ["Translations", "The French (Montada 2017) and English (Pickthall 1930) translations are tied to their edition and presented as approximate meanings, not exegesis."],
         ["Recitations", "EveryAyah, the Quran.com audio CDN and QuranPedia (Warsh) supply verse-by-verse recitations by reciter and riwaya; QuranicAudio acts as a fallback mirror."],
         ["Warsh", "Warsh text and audio catalogues are kept separate from Hafs and explicitly labelled."],
@@ -111,7 +111,7 @@
       "intro": "ترتبط كل فئة محتوى بمصدرها وقد يستخدم بديل متوافق عند تعذر المصدر الأساسي.",
       "trust": ["نص وترجمة", "تلاوات"],
       "sections": [
-        ["النص والبنية", "تدعم Quran Foundation وAlQuran Cloud وTanzil النص والكلمات والترجمات والبيانات والتحقق."],
+        ["النص والبنية", "تدعم Quran Foundation وAlQuran Cloud وTanzil النص والكلمات والترجمات والبيانات والتحقق. ويُحمَّل التفسير الفرنسي «المختصر» (مركز تفسير للدراسات القرآنية) من QuranEnc.com: تُطلب السورة المقروءة ثم تُحفظ على الجهاز، وبقية التفاسير من Quran.com."],
         ["الترجمات", "ترتبط الترجمة الفرنسية (مونتادا 2017) والإنجليزية (بكثول 1930) بطبعتهما وتُقدَّم كمعاني تقريبية لا كتفسير."],
         ["التلاوات", "توفر EveryAyah وCDN الصوتي لـQuran.com وQuranPedia (ورش) التلاوات آية بآية بحسب القارئ والرواية، ويعمل QuranicAudio مرآةً احتياطية."],
         ["ورش", "يُفصل نص ورش وصوته عن حفص مع إظهار الرواية والمصدر."],

@@ -127,8 +127,9 @@ Lightweight system in `src/i18n/` — `t(key, lang)` function with fallback chai
   `reciterLatency.js` and `audioEq.js`
 - `quranComStudyService.js` — Quran commentary/exegesis fetching and the tafsir
   source registry (`TAFSIR_RESOURCES`); `frenchTafsirService.js` serves the
-  vendored Al-Mukhtasar commentary from `public/data/tafsir-fr-mokhtasar`,
-  digest-gated for offline use. There is no separate `tafsirService.js`
+  Al-Mukhtasar commentary (QuranEnc.com API, key `french_mokhtasar`, Tafsir Center
+  for Quranic Studies) one surah per request, validated for completeness and kept
+  in IndexedDB so a surah already read reopens offline; no file is vendored. There is no separate `tafsirService.js`
 - `cryptoUtil.js` — AES encryption for sensitive local data
 
 ### Bundle Strategy

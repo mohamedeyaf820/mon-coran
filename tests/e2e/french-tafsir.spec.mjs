@@ -1,10 +1,25 @@
+import { readFileSync } from "node:fs";
 import { expect, test } from "@playwright/test";
 
+const QURANENC_SURAH = "https://quranenc.com/api/v1/translation/sura/french_mokhtasar/*";
+// A real QuranEnc response for surah 1 (tests/fixtures), so the suite never
+// depends on the third-party API being reachable.
+const SURAH_1 = readFileSync("tests/fixtures/quranenc-french-mokhtasar-001.json", "utf8");
+
 // Renders the French tafsir through the app's real verse-action flow to prove the
-// vendored Al-Mukhtasar edition is served offline (same-origin asset), is the
-// French reader's default source, and carries its attribution + error-report link.
+// Al-Mukhtasar edition is fetched from QuranEnc, is the French reader's default
+// source, reopens from the device when the API is unreachable, and carries its
+// attribution + error-report link.
 test.describe("French tafsir (Al-Mukhtasar)", () => {
   test.beforeEach(async ({ page }) => {
+    await page.route(QURANENC_SURAH, (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        headers: { "access-control-allow-origin": "*" },
+        body: SURAH_1,
+      }),
+    );
     await page.addInitScript(() => {
       if (sessionStorage.getItem("mp-fr-tafsir-seed")) return;
       sessionStorage.setItem("mp-fr-tafsir-seed", "1");
@@ -39,13 +54,13 @@ test.describe("French tafsir (Al-Mukhtasar)", () => {
     return dialog;
   };
 
-  test("shows the French commentary by default, from the local asset", async ({
+  test("shows the French commentary by default, from QuranEnc", async ({
     page,
   }) => {
     const dialog = await openTafsir(page);
 
-    // The default source for a French reader is the vendored French edition,
-    // not the English Ibn Kathir that stood in before it existed.
+    // The default source for a French reader is the French edition, not the
+    // English Ibn Kathir that stood in before it existed.
     await expect(page.locator("#tafsir-source-select")).toHaveValue(
       "fr-mokhtasar",
     );
@@ -64,7 +79,35 @@ test.describe("French tafsir (Al-Mukhtasar)", () => {
     await expect(
       dialog.getByRole("link", { name: /Signaler une erreur/i }),
     ).toHaveAttribute("href", /\/issues\/new/);
-    await expect(dialog.getByText(/Awqaf/i)).toBeVisible();
+    await expect(dialog.getByText(/Centre Tafsir/i)).toBeVisible();
+    await expect(dialog.getByText(/texte de QuranEnc\.com/i)).toBeVisible();
+    await expect(dialog.getByText(/Awqaf/i)).toHaveCount(0);
+    await expect(dialog.getByText("QuranEnc.com", { exact: true })).toBeVisible();
+  });
+
+  test("reopens a surah already read when the API is unreachable", async ({
+    page,
+  }) => {
+    const first = await openTafsir(page);
+    await expect
+      .poll(async () => (await first.locator("article").innerText()).length, {
+        timeout: 15_000,
+      })
+      .toBeGreaterThan(40);
+    const expected = await first.locator("article").innerText();
+
+    // Reload so the in-memory copy is gone, then cut the API: only the copy kept
+    // on the device can answer.
+    await page.unroute(QURANENC_SURAH);
+    await page.route(QURANENC_SURAH, (route) => route.abort("internetdisconnected"));
+    await page.reload();
+    await expect(page.locator(".qc-verse-card").first()).toBeVisible({
+      timeout: 30_000,
+    });
+    const reopened = await openTafsir(page);
+    await expect(reopened.locator("article")).toHaveText(expected, {
+      timeout: 15_000,
+    });
   });
 
   test("lists a French source group and stays readable on a phone and wide screen", async ({

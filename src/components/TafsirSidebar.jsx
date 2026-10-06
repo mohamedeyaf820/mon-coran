@@ -247,8 +247,8 @@ export default function TafsirSidebar() {
         "",
         `- **Référence :** ${reference}`,
         `- **Source :** ${displayedOption.name}`,
-        ...(attribution?.source?.sha
-          ? [`- **Jeu de données :** ${attribution.source.slug}@${attribution.source.sha.slice(0, 7)}`]
+        ...(displayedIsFrench && attribution?.source?.version
+          ? [`- **Jeu de données :** ${attribution.source.owner} ${attribution.source.slug} v${attribution.source.version}`]
           : []),
         `- **Version :** ${siteConfig.version}`,
         "",
@@ -258,7 +258,14 @@ export default function TafsirSidebar() {
       ].join("\n"),
     );
     return url.toString();
-  }, [attribution, displayAyahNumber, displayedOption, lang, surahNumber]);
+  }, [
+    attribution,
+    displayAyahNumber,
+    displayedIsFrench,
+    displayedOption,
+    lang,
+    surahNumber,
+  ]);
 
   useEffect(() => {
     // Only reset tafsir key if the current selection is no longer valid for this lang;
@@ -522,9 +529,7 @@ export default function TafsirSidebar() {
                           : ""}
                       </span>
                       <span className="text-[var(--text-secondary)]">
-                        {displayedIsFrench
-                          ? t("tafsir.offlineSourceBadge", lang)
-                          : "Quran.com"}
+                        {displayedIsFrench ? "QuranEnc.com" : "Quran.com"}
                       </span>
                     </div>
                     <article

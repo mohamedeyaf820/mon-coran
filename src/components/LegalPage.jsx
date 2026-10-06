@@ -128,7 +128,7 @@ const COPY = {
       intro: "Chaque famille de contenu est reliée à son fournisseur. Une source de secours compatible peut être utilisée si le service principal est indisponible.",
       trust: ["Texte & traduction", "Récitations"],
       sections: [
-        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte."],
+        ["Textes et structure", "Quran Foundation / Quran.com et AlQuran Cloud fournissent selon les écrans les versets, traductions et métadonnées. Tanzil sert de référence documentée pour le contrôle du texte. Le tafsir français Al-Mukhtasar (Centre Tafsir pour les études coraniques) est chargé depuis QuranEnc.com : la sourate lue y est demandée, puis conservée sur l’appareil ; les autres tafsirs viennent de Quran.com."],
         ["Traductions", "Les traductions française (Montada 2017) et anglaise (Pickthall 1930) sont rattachées à leur édition et présentées comme des sens approximatifs, non comme une exégèse."],
         ["Récitations", "EveryAyah, le CDN audio de Quran.com et QuranPedia (Warsh) fournissent les récitations verset par verset, selon le récitateur et la riwaya. QuranicAudio sert de miroir de secours."],
         ["Warsh", "Le texte Unicode Warsh et les catalogues audio sont traités séparément de Hafs. Les profils indiquent la riwaya et la provenance afin d’éviter un mélange de récitations."],
