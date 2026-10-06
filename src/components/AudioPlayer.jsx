@@ -72,7 +72,6 @@ export default function AudioPlayer() {
     playerMinimized,
     syncOffsetsMs,
     favoriteReciters,
-    autoSelectFastestReciter,
     reciterLatencyByKey,
     reciterAvailabilityById,
   } = state;
@@ -471,13 +470,6 @@ export default function AudioPlayer() {
     },
     [seekFromClientX],
   );
-
-  const formatTime = (s) => {
-    if (!s || isNaN(s)) return "0:00";
-    return `${Math.floor(s / 60)}:${Math.floor(s % 60)
-      .toString()
-      .padStart(2, "0")}`;
-  };
 
   const handleVolumeChange = (v) => {
     setVolume(v);

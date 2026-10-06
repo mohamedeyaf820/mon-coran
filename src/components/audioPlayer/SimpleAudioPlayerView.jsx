@@ -179,7 +179,6 @@ function CompactPlayer(props) {
     reciter,
     reciterLabel,
     retryLabel,
-    surahNum,
     title,
   } = props;
 

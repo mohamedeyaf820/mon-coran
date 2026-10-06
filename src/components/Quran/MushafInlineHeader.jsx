@@ -5,13 +5,11 @@ import { t } from "../../i18n";
 export default function MushafInlineHeader({
   ayahCountLabel,
   basmalaTranslation,
-  currentJuz,
   displayName,
   isQCF4,
   juzNum,
   juzNumEnd,
   lang,
-  pageStart,
   revelBadge,
   showBasmala,
   surahNameAr,

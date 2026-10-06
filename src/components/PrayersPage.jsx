@@ -169,7 +169,7 @@ export default function PrayersPage() {
             onKeyDown={(event) => {
               const forward = isRtl ? "ArrowLeft" : "ArrowRight";
               const backward = isRtl ? "ArrowRight" : "ArrowLeft";
-              let nextIndex = index;
+              let nextIndex;
               if (event.key === forward) nextIndex = (index + 1) % tabs.length;
               else if (event.key === backward) nextIndex = (index - 1 + tabs.length) % tabs.length;
               else if (event.key === "Home") nextIndex = 0;

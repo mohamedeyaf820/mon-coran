@@ -362,37 +362,6 @@ function _refreshInBackground(url, idbKey) {
     .finally(() => _backgroundRefreshInFlight.delete(key));
 }
 
-async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT) {
-  const timeoutCtrl = new AbortController();
-  const timeoutId = setTimeout(() => timeoutCtrl.abort(), timeoutMs);
-
-  try {
-    const combinedSignal = signal
-      ? createMergedAbortSignal([signal, timeoutCtrl.signal])
-      : timeoutCtrl.signal;
-
-    const res = await fetch(url, { signal: combinedSignal });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
-    const json = await res.json();
-
-    if (!json || typeof json !== 'object') {
-      throw new Error('Malformed API response');
-    }
-
-    if (json.code !== 200 || json.status !== 'OK') {
-      const msg = typeof json.data === 'string' ? json.data : JSON.stringify(json.data) || 'Unknown API error';
-      throw new Error(msg);
-    }
-
-    return validateApiDataShape(url, json.data);
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
-}
-
 function sanitizeText(text) {
   if (typeof text !== 'string') return text;
   return text.replace(/^\uFEFF/, '');
@@ -432,25 +401,7 @@ function isValidSearchIndex(index) {
   );
 }
 
-function buildArabicSearchIndexFromQuran(quranData) {
-  const surahs = Array.isArray(quranData?.surahs) ? quranData.surahs : [];
-  return surahs.flatMap((surah) =>
-    (Array.isArray(surah?.ayahs) ? surah.ayahs : [])
-      .map((ayah) => {
-        const text = sanitizeText(ayah?.text || '');
-        return {
-          surah: surah?.number || ayah?.surah?.number || 0,
-          numberInSurah: ayah?.numberInSurah || 0,
-          number: ayah?.number || 0,
-          text,
-          normalized: normalizeArabicSearchText(text),
-        };
-      })
-      .filter((ayah) => ayah.surah > 0 && ayah.numberInSurah > 0 && ayah.normalized)
-  );
-}
-
-async function loadArabicSearchIndex(signal) {
+async function loadArabicSearchIndex() {
   if (arabicSearchIndex) return arabicSearchIndex;
   if (arabicSearchIndexPromise) return arabicSearchIndexPromise;
 
@@ -485,7 +436,7 @@ async function searchArabicLocally(query, surahNum = null, signal) {
   if (!normalizedQuery) return { matches: [] };
 
   const queryWords = normalizedQuery.split(' ').filter(Boolean);
-  const index = await loadArabicSearchIndex(signal);
+  const index = await loadArabicSearchIndex();
   const matches = [];
 
   for (const ayah of index) {

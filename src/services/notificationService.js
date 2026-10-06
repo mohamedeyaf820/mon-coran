@@ -69,7 +69,7 @@ export async function showAppNotification(
     // Fall through to the constructor path.
   }
   try {
-    /* eslint-disable-next-line no-new -- fire-and-forget by design */
+    // Fire-and-forget by design.
     new Notification(title, options);
     return true;
   } catch (error) {

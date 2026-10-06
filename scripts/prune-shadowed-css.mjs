@@ -36,7 +36,7 @@ const contextOf = (node) => {
 };
 // A later declaration the browser may reject at parse time leaves the earlier
 // one as the fallback: keep those pairs.
-const PROGRESSIVE = /color-mix|\d*(?:[sld]vh|[sld]vw|dvi|dvb)|env\(|clamp\(|min\(|max\(|round\(|light-dark|oklch|oklab|lab\(|lch\(|anchor|subgrid|@container|cqw|cqh|calc-size|field-sizing/i;
+const PROGRESSIVE = /color-mix|\b\d*(?:[sld]vh|[sld]vw|dvi|dvb)\b|env\(|clamp\(|\bmin\(|\bmax\(|round\(|light-dark|oklch|oklab|\blab\(|\blch\(|anchor|subgrid|@container|cqw|cqh|calc-size|field-sizing/i;
 const normalise = (selector) => selector.replace(/\s+/g, " ").replace(/\s*([>+~,])\s*/g, "$1").trim();
 
 let removedTotal = 0;

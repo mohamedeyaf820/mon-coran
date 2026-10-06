@@ -318,7 +318,6 @@ export const JuzCard = memo(function JuzCard({
   juzData,
   onClick,
   isActive,
-  lang,
   viewMode,
 }) {
   const { juz, name } = juzData;

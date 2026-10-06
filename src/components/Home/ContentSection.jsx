@@ -184,7 +184,6 @@ const ReciterCard = memo(function ReciterCard({
  */
 export default function ContentSection({
   lang,
-  isRtl,
   activeTab,
   onSelectTab,
   onRecitationsIntent,

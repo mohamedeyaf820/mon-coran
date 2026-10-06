@@ -835,7 +835,6 @@ export function AppProvider({ children }) {
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
   // dispatch is stable (guaranteed by React), but listing it satisfies exhaustive-deps
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch]);
 
   // Apply direction to <html>

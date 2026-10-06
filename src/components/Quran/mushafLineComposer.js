@@ -7,7 +7,7 @@
 
 import { toAr } from "../../data/surahs.js";
 
-export function composeMushafLines(ayahs, currentPage = null, riwaya = "hafs") {
+export function composeMushafLines(ayahs, currentPage = null, _riwaya = "hafs") {
   if (!Array.isArray(ayahs) || ayahs.length === 0) {
     return [];
   }

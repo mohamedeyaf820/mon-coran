@@ -489,7 +489,7 @@ export async function loadWarshSurah(surahNum) {
       }
     } catch { }
 
-    let normalized = [];
+    let normalized;
     try {
       const rows = await fetchWarshSurahRows(n);
       normalized = normalizeWarshRows(rows, n);
@@ -497,7 +497,7 @@ export async function loadWarshSurah(surahNum) {
       if (!validateWarshRows(normalized, n)) {
         throw new Error(`Invalid per-surah Warsh source (got ${normalized.length} verses)`);
       }
-    } catch (err) {
+    } catch {
       try {
         const legacy = await loadLegacyWarshData();
         const rows = rowsFromLegacyData(legacy, n);

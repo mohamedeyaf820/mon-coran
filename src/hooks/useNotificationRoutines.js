@@ -85,7 +85,7 @@ export function useNotificationRoutines({
         const fire = async (item) => {
           const prayerLabel = t(`prayer.names.${item.prayerKey}`, lang);
           const hhmm = data.timings[item.prayerKey]?.hhmm || "";
-          let shown = false;
+          let shown;
           if (item.kind === "post") {
             shown = await notifModule.showAppNotification(
               t("prayer.postTitle", lang).replace("{prayer}", prayerLabel),

@@ -11,7 +11,6 @@ import {
 } from "./displayHelpers";
 
 export default function useQuranTranslations({
-  arabicReady = true,
   currentJuz,
   currentPage,
   currentSurah,

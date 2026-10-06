@@ -117,7 +117,7 @@ async function loadFontFace(fontId, source) {
   }
 
   if (source.localOnly) {
-    let available = false;
+    let available;
     try {
       available = document.fonts.check(`16px "${source.family}"`);
     } catch {
@@ -128,7 +128,7 @@ async function loadFontFace(fontId, source) {
   }
 
   if (source.selfHosted) {
-    let matched = [];
+    let matched;
     try {
       matched = await document.fonts.load(`400 1em "${source.family}"`);
     } catch {

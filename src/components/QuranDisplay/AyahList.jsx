@@ -6,7 +6,7 @@ import { cn } from "../../lib/utils";
 import AyahBlock from "../Quran/AyahBlock";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
 
-function PageSeparator({ ayah, lang, theme }) {
+function PageSeparator({ ayah, lang }) {
   return (
     <div
       className="page-separator relative my-8 flex items-center justify-center gap-4 select-none"

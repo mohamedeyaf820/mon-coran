@@ -76,7 +76,6 @@ const QCVerseCard = memo(function QCVerseCard({
   getTransliterationForAyah,
   calibration,
   riwaya,
-  fontSize,
   onToggleActive,
   toggleId,
   referenceLabel,
