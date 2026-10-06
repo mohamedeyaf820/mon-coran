@@ -511,6 +511,8 @@ export default {
     boundaryBody: 'واجه هذا القسم خطأً غير متوقع.',
     boundaryReload: 'إعادة التحميل',
     boundaryHome: 'الرئيسية',
+    boundaryReport: 'الإبلاغ عن المشكلة',
+    boundaryReportHint: 'يفتح مسودة على GitHub تراجعها قبل إرسالها. لا يُرسَل أي شيء تلقائيًا.',
     loadNetwork: 'تعذر تحميل البيانات. تحقق من اتصالك بالإنترنت ثم أعد المحاولة.',
     attemptedSource: 'المصدر المطلوب',
     backHome: 'العودة للرئيسية',

@@ -509,6 +509,8 @@ export default {
     boundaryBody: 'Cette section a rencontré un problème inattendu.',
     boundaryReload: 'Recharger',
     boundaryHome: 'Accueil',
+    boundaryReport: 'Signaler le problème',
+    boundaryReportHint: 'Ouvre un brouillon sur GitHub, que vous relisez avant de l’envoyer. Rien n’est transmis automatiquement.',
     loadNetwork: 'Impossible de charger les données : vérifiez votre connexion internet et réessayez.',
     attemptedSource: 'Source tentée',
     backHome: 'Retour à l’accueil',

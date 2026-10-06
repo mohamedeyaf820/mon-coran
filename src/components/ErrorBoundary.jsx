@@ -1,6 +1,8 @@
 import React from "react";
-import { AlertTriangle, CloudOff, Home, RefreshCw } from "lucide-react";
+import { AlertTriangle, Bug, CloudOff, Home, RefreshCw } from "lucide-react";
 import { t } from "../i18n";
+import siteConfig from "../../site.config.json";
+import { buildIssueDraft } from "../services/issueDraft.js";
 import { logError } from "../services/errorAnalytics.js";
 import { classifyBoundaryError } from "./QuranDisplay/readerLoadError.js";
 
@@ -217,6 +219,31 @@ export class ErrorBoundary extends React.Component {
               <RefreshCw size={13} strokeWidth={2.5} aria-hidden="true" />
               {copy.reloadLabel}
             </button>
+          ) : null}
+          {!offlineGap ? (
+            <a
+              href={buildIssueDraft({ repositoryUrl: siteConfig.repositoryUrl, version: siteConfig.version, lang })}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={t("errors.boundaryReportHint", lang)}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: ".38rem",
+                padding: ".48rem 1.1rem",
+                borderRadius: ".6rem",
+                border: "1px solid var(--border, rgba(148,163,184,.22))",
+                background: "transparent",
+                color: "var(--text-secondary, #4b6355)",
+                fontSize: ".82rem",
+                fontWeight: 600,
+                textDecoration: "none",
+                minHeight: "2.75rem",
+              }}
+            >
+              <Bug size={13} strokeWidth={2.5} aria-hidden="true" />
+              {t("errors.boundaryReport", lang)}
+            </a>
           ) : null}
           <button
             type="button"

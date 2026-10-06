@@ -510,6 +510,8 @@ export default {
     boundaryBody: 'This section encountered an unexpected error.',
     boundaryReload: 'Reload',
     boundaryHome: 'Home',
+    boundaryReport: 'Report the problem',
+    boundaryReportHint: 'Opens a draft on GitHub that you review before sending it. Nothing is sent automatically.',
     loadNetwork: 'Unable to load data: please check your internet connection and try again.',
     attemptedSource: 'Attempted source',
     backHome: 'Back to home',
