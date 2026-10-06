@@ -218,7 +218,7 @@ test("a hidden native verse boundary advances through the global engine", async 
     })
     .toMatch(/\.mp3$/);
 
-  const transition = await page.evaluate(() => {
+  const transition = await page.evaluate(async () => {
     Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
     Object.defineProperty(document, "visibilityState", {
       configurable: true,
@@ -229,12 +229,19 @@ test("a hidden native verse boundary advances through the global engine", async 
     const audio = window.__handoffAudio;
     const before = audio.src;
     window.__playbackStates.length = 0;
-    // Native ended drives the queue; Cache Storage lookup may be async.
+    // The next verse is looked up in the downloads while this one plays.
+    await new Promise((resolve) => setTimeout(resolve, 400));
+    // Native ended drives the queue. A locked phone may freeze the page as soon
+    // as nothing plays, so the next verse must start without waiting for any
+    // storage read or timer: only microtasks may pass.
     audio.dispatchEvent(new Event("ended"));
+    for (let turn = 0; turn < 40; turn++) await Promise.resolve();
     return { before, after: audio.src, paused: audio.paused };
   });
 
   expect(transition.before).not.toBe("");
+  expect(transition.after, "the next verse started in the same turn as the verse end").not.toBe(transition.before);
+  expect(transition.paused).toBe(false);
   await expect.poll(() => page.evaluate(() => window.__handoffAudio.src)).not.toBe(transition.before);
   await expect.poll(() => page.evaluate(() => window.__handoffAudio.paused)).toBe(false);
 

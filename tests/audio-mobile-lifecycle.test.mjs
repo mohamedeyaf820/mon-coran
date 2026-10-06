@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import test from 'node:test';
 
 globalThis.window = { location: { href: 'https://qa.test/' } };
@@ -223,4 +224,71 @@ test('Media Session owns actions even with no UI, and mirrors a native interrupt
   service.destroy();
   assert.equal(actions.get('play'), null);
   delete navigator.mediaSession;
+});
+
+// A locked phone may freeze the page the moment a verse ends and nothing plays.
+// The next verse must therefore start in the same turn as `ended`: only
+// microtasks may separate the two, never a storage read or a timer.
+const microtasks = async () => { for (let i = 0; i < 40; i++) await Promise.resolve(); };
+const untilPrepared = async (service) => {
+  for (let i = 0; i < 100 && !service._preparedSource; i++) await new Promise(resolve => setTimeout(resolve, 5));
+  assert.ok(service._preparedSource, 'the next verse was looked up while the current one played');
+};
+const slowStorage = (hit) => ({ open: async () => ({ match: (key) => new Promise(resolve => setTimeout(() => resolve(hit?.(key)), 60)) }) });
+
+test('a verse boundary starts the next verse with no storage read in between', async () => {
+  globalThis.caches = slowStorage();
+  const service = new AudioService();
+  const urls = [1, 2].map(n => url.replace('001001', `00100${n}`));
+  service.playlist = urls.map((u, i) => ({ surah: 1, ayah: i + 1, number: i + 1, url: u }));
+  try {
+    await service.loadAndPlay(0);
+    await untilPrepared(service);
+    service.audio.dispatchEvent(new Event('ended'));
+    await microtasks();
+    assert.equal(service.audio.src, urls[1]);
+    assert.equal(service.audio.paused, false);
+  } finally { service.destroy(); delete globalThis.caches; }
+});
+
+test('a downloaded verse boundary hands the next local file over without reading the cache again', async () => {
+  const clip = readFileSync(new URL('./fixtures/silent-2s.mp3', import.meta.url));
+  globalThis.caches = slowStorage(() => new Response(clip, { headers: { 'content-type': 'audio/mpeg' } }));
+  Object.defineProperty(navigator, 'onLine', { configurable: true, value: false });
+  const service = new AudioService();
+  const urls = [1, 2].map(n => url.replace('001001', `00100${n}`));
+  service.playlist = urls.map((u, i) => ({ surah: 1, ayah: i + 1, number: i + 1, url: u }));
+  try {
+    await service.loadAndPlay(0);
+    await untilPrepared(service);
+    let lookups = 0;
+    const open = globalThis.caches.open;
+    globalThis.caches.open = async (...args) => { lookups++; return open(...args); };
+    service.audio.dispatchEvent(new Event('ended'));
+    await microtasks();
+    assert.match(service.audio.src, /^blob:/);
+    assert.equal(service.audio.paused, false);
+    assert.equal(lookups, 0);
+  } finally { service.destroy(); delete globalThis.caches; delete navigator.onLine; }
+});
+
+test('a lookup made ahead survives a candidate added by Quran.com timings, but not a changed playlist', () => {
+  const service = new AudioService();
+  const a = 'https://audio.qurancdn.com/Alafasy/mp3/001002.mp3';
+  const added = 'https://verses.quran.com/Alafasy/mp3/001002.mp3';
+  service._playlistSignature = 'one';
+  const prepare = (cached) => { service._preparedSource = { signature: 'one', index: 1, urls: [a], cached }; };
+  prepare({ originalUrl: a });
+  assert.ok(service._takePreparedSource(1, [added, a]), 'a hit stays valid when a candidate is added');
+  prepare(null);
+  assert.equal(service._takePreparedSource(1, [added, a]), null, 'a miss cannot vouch for a URL it never looked up');
+  prepare(null);
+  assert.ok(service._takePreparedSource(1, [a]), 'a miss holds for the URLs it covered');
+  prepare(null);
+  service._playlistSignature = 'two';
+  assert.equal(service._takePreparedSource(1, [a]), null, 'another playlist invalidates it');
+  prepare(null);
+  service._playlistSignature = 'one';
+  assert.equal(service._takePreparedSource(2, [a]), null, 'another track invalidates it');
+  service.destroy();
 });
