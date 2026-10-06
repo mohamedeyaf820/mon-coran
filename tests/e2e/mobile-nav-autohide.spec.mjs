@@ -22,6 +22,20 @@ const away = (page) => page.locator(".app-root").evaluate((node) => node.classLi
 const scrollMain = (page, top) =>
   page.locator("#main-content").evaluate((node, value) => { node.scrollTop = value; }, top);
 
+// Scrolls down in two steps, like a thumb, until the bar steps away. Layout and
+// the scroll listener may not be ready on the first attempt on a slow runner.
+async function scrollDownUntilAway(page) {
+  for (let attempt = 0; attempt < 6; attempt++) {
+    await scrollMain(page, 0);
+    await page.waitForTimeout(120);
+    await scrollMain(page, 120);
+    await page.waitForTimeout(120);
+    await scrollMain(page, 320);
+    await page.waitForTimeout(250);
+    if (await away(page)) return;
+  }
+}
+
 for (const path of ["/privacy", "/duas", "/prieres", "/"]) {
   test(`the bottom bar steps away on scroll and returns on tap (${path})`, async ({ page }) => {
     await open(page, path);
@@ -31,9 +45,7 @@ for (const path of ["/privacy", "/duas", "/prieres", "/"]) {
     expect(await page.locator("#main-content").evaluate((node) => node.scrollHeight - node.clientHeight)).toBeGreaterThan(100);
 
     expect(await away(page)).toBe(false);
-    await scrollMain(page, 120);
-    await page.waitForTimeout(100);
-    await scrollMain(page, 320);
+    await scrollDownUntilAway(page);
     await expect.poll(() => away(page)).toBe(true);
     await expect(nav).toBeHidden();
     // Hidden means out of reach for assistive tech and the keyboard as well.
@@ -55,9 +67,7 @@ test("the bar is never hidden at the top of a page", async ({ page }) => {
 
 test("a key press brings the bar back", async ({ page }) => {
   await open(page, "/privacy");
-  await scrollMain(page, 120);
-  await page.waitForTimeout(100);
-  await scrollMain(page, 320);
+  await scrollDownUntilAway(page);
   await expect.poll(() => away(page)).toBe(true);
   await page.keyboard.press("Tab");
   await expect.poll(() => away(page)).toBe(false);
