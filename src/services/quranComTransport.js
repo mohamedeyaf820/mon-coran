@@ -5,6 +5,7 @@
  */
 import { shouldAvoidBackgroundWork } from "../utils/networkPolicy.js";
 import { dbGet, dbPruneByPrefix, dbSet } from "./dbService.js";
+import { getStorageSnapshot } from "./storageQuotaService.js";
 
 const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
 // Budget to receive the response headers: a server that does not answer in this
@@ -50,13 +51,45 @@ function getMemoryCache(key) {
   return value;
 }
 
-async function persistCache(key, data) {
+const MAX_CACHED_PAGES = 360;
+const MIB = 1024 * 1024;
+let budgetSnapshotAt = 0;
+let budgetEntries = MAX_CACHED_PAGES;
+
+/**
+ * How many verse pages the cache may keep. A page is up to ~0.8 MB, so the full
+ * allowance (360) can reach a few hundred megabytes: on a device whose quota is
+ * filling up the cache gives room back before it makes the notes and bookmarks
+ * of the reader fail to save. Pure: the caller supplies the storage snapshot.
+ */
+export function cachedPageBudget(snapshot) {
+  if (!snapshot?.supported || !(snapshot.quota > 0)) return MAX_CACHED_PAGES;
+  if (snapshot.usageRatio >= 0.9 || snapshot.available < 48 * MIB) return 60;
+  if (snapshot.usageRatio >= 0.8 || snapshot.available < 128 * MIB) return 120;
+  return MAX_CACHED_PAGES;
+}
+
+async function currentPageBudget() {
+  if (Date.now() - budgetSnapshotAt < 60_000) return budgetEntries;
+  budgetSnapshotAt = Date.now();
   try {
-    const savedKey = await dbSet(IDB_STORE, { key, data, ts: Date.now() });
+    budgetEntries = cachedPageBudget(await getStorageSnapshot());
+  } catch {
+    budgetEntries = MAX_CACHED_PAGES;
+  }
+  return budgetEntries;
+}
+
+async function persistCache(key, data, ts = Date.now()) {
+  try {
+    const savedKey = await dbSet(IDB_STORE, { key, data, ts });
     if (savedKey === undefined) return false;
+    const maxEntries = await currentPageBudget();
     void dbPruneByPrefix(IDB_STORE, IDB_PREFIX, {
-      maxEntries: 360,
+      maxEntries,
       maxAgeMs: CACHE_TTL,
+      // Under quota pressure the clean-up runs again soon instead of in 30 minutes.
+      throttleMs: maxEntries < MAX_CACHED_PAGES ? 60_000 : undefined,
     }).catch(() => {});
     return true;
   } catch {
@@ -170,12 +203,35 @@ export async function mapWithConcurrency(items, limit, fn) {
   return Promise.all(results);
 }
 
-export async function fetchJson(url, signal) {
+/**
+ * The cache identity of a request is its path and its non-field parameters: the
+ * list of requested fields can change between releases without stranding the
+ * pages already stored for offline reading. URLs without field parameters keep
+ * their exact string, hence their existing keys.
+ */
+export function canonicalCacheUrl(url) {
+  try {
+    const parsed = new URL(url);
+    if (!parsed.searchParams.has("fields") && !parsed.searchParams.has("word_fields")) return url;
+    parsed.searchParams.delete("fields");
+    parsed.searchParams.delete("word_fields");
+    parsed.searchParams.sort();
+    return parsed.toString();
+  } catch {
+    return url;
+  }
+}
+
+/**
+ * @param {string} [legacyUrl] The URL an earlier release requested for the same
+ *   data: a page cached under it is served and re-filed under the current key.
+ */
+export async function fetchJson(url, signal, legacyUrl) {
   if (signal?.aborted) {
     throw new DOMException("Request aborted", "AbortError");
   }
 
-  const cacheKey = IDB_PREFIX + url;
+  const cacheKey = IDB_PREFIX + canonicalCacheUrl(url);
 
   const memoryHit = getMemoryCache(cacheKey);
   if (memoryHit !== undefined) return memoryHit;
@@ -190,6 +246,17 @@ export async function fetchJson(url, signal) {
       } else {
         refreshInBackground(url, cacheKey);
         return cached.data;
+      }
+    }
+
+    // Pages cached by an earlier release under their full URL.
+    if (legacyUrl && legacyUrl !== url) {
+      const legacy = await dbGet(IDB_STORE, IDB_PREFIX + legacyUrl);
+      if (legacy?.data && legacy?.ts) {
+        setMemoryCache(cacheKey, legacy.data);
+        void persistCache(cacheKey, legacy.data, legacy.ts);
+        if (Date.now() - legacy.ts >= CACHE_TTL) refreshInBackground(url, cacheKey);
+        return legacy.data;
       }
     }
   } catch {

@@ -13,23 +13,16 @@ const VERSE_FIELDS = [
   "juz_number",
   "hizb_number",
   "rub_el_hizb_number",
-  "ruku_number",
-  "manzil_number",
   "text_uthmani",
-  "text_uthmani_simple",
   "text_uthmani_tajweed",
   "text_indopak",
   "text_qpc_hafs",
-  "text_qpc_nastaleeq_hafs",
   "code_v1",
   "code_v2",
-  "v1_page",
-  "v2_page",
 ].join(",");
 
 const WORD_FIELDS = [
   "id",
-  "verse_id",
   "chapter_id",
   "verse_key",
   "location",
@@ -42,15 +35,19 @@ const WORD_FIELDS = [
   "text_uthmani_tajweed",
   "text_indopak",
   "text_qpc_hafs",
-  "text_imlaei",
   "code_v1",
   "code_v2",
-  "v1_page",
-  "v2_page",
   "audio_url",
   "char_type_name",
   "translation",
 ].join(",");
+
+// Fields the client asked for until 2026-10 and never read (text_uthmani_simple,
+// text_qpc_nastaleeq_hafs, v1/v2 pages, ruku, manzil, word text_imlaei and
+// verse_id): about 14% of every page. Pages cached under those URLs are still
+// served, see fetchJson's legacy URL.
+const LEGACY_VERSE_FIELDS = ["id","chapter_id","verse_key","verse_number","page_number","juz_number","hizb_number","rub_el_hizb_number","ruku_number","manzil_number","text_uthmani","text_uthmani_simple","text_uthmani_tajweed","text_indopak","text_qpc_hafs","text_qpc_nastaleeq_hafs","code_v1","code_v2","v1_page","v2_page"].join(",");
+const LEGACY_WORD_FIELDS = ["id","verse_id","chapter_id","verse_key","location","position","line_number","line_v1","line_v2","page_number","text_uthmani","text_uthmani_tajweed","text_indopak","text_qpc_hafs","text_imlaei","code_v1","code_v2","v1_page","v2_page","audio_url","char_type_name","translation"].join(",");
 
 // Verified live: 131 is not in /resources/translations, and asking for it
 // returns verses with no translation body at all - a 200 that paints nothing.
@@ -61,23 +58,23 @@ const TRANSLATION_RESOURCE_IDS = {
 };
 
 
-function buildVerseParams(extra = {}) {
+function buildVerseParams(extra = {}, legacy = false) {
   const includeWords = extra.words === true || extra.words === "true";
   const params = new URLSearchParams({
-    fields: VERSE_FIELDS,
+    fields: legacy ? LEGACY_VERSE_FIELDS : VERSE_FIELDS,
     mushaf: "1",
     per_page: "50",
     ...extra,
   });
   params.set("words", includeWords ? "true" : "false");
   if (includeWords) {
-    params.set("word_fields", WORD_FIELDS);
+    params.set("word_fields", legacy ? LEGACY_WORD_FIELDS : WORD_FIELDS);
   }
   return params;
 }
 
-function buildUrl(path, extraParams) {
-  const params = buildVerseParams(extraParams);
+function buildUrl(path, extraParams, legacy = false) {
+  const params = buildVerseParams(extraParams, legacy);
   return `${BASE_URL}${path}?${params.toString()}`;
 }
 
@@ -283,7 +280,11 @@ const MAX_PARALLEL_PAGES = 6;
  */
 async function fetchPaginated(path, meta, signal, expectedPages = 1) {
   const fetchPage = (page) =>
-    fetchJson(buildUrl(path, { page: String(page), words: true }), signal);
+    fetchJson(
+      buildUrl(path, { page: String(page), words: true }),
+      signal,
+      buildUrl(path, { page: String(page), words: true }, true),
+    );
   const speculative = Math.max(1, Math.min(expectedPages, MAX_PARALLEL_PAGES));
 
   const wave = await mapWithConcurrency(
@@ -363,7 +364,11 @@ export async function fetchQuranComText(pathPrefix, signal) {
   match = /^ayah\/(\d+):(\d+)$/.exec(pathPrefix);
   if (match) {
     const verseKey = `${Number(match[1])}:${Number(match[2])}`;
-    const json = await fetchJson(buildUrl(`/verses/by_key/${verseKey}`, { words: true }), signal);
+    const json = await fetchJson(
+      buildUrl(`/verses/by_key/${verseKey}`, { words: true }),
+      signal,
+      buildUrl(`/verses/by_key/${verseKey}`, { words: true }, true),
+    );
     return normalizeVerse(json.verse || {});
   }
 

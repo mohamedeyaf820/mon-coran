@@ -277,3 +277,70 @@ test("a constrained link keeps the short cap so the small fallback text arrives 
     else delete globalThis.navigator;
   }
 });
+
+test("the requested fields can change without changing the cache identity", async () => {
+  const { canonicalCacheUrl } = await import("../src/services/quranComTransport.js");
+  const base = "https://api.quran.com/api/v4/verses/by_chapter/2?mushaf=1&per_page=50&page=3&words=true";
+  const old = `${base}&fields=id,text_uthmani,ruku_number&word_fields=id,text_imlaei`;
+  const current = `${base}&fields=id,text_uthmani&word_fields=id`;
+  assert.equal(canonicalCacheUrl(old), canonicalCacheUrl(current));
+  // Same page, another parameter: another identity.
+  assert.notEqual(canonicalCacheUrl(current), canonicalCacheUrl(current.replace("page=3", "page=4")));
+  // No field parameter: the exact string, so the keys written before stay valid.
+  const plain = "https://api.quran.com/api/v4/chapters/2/info?language=en";
+  assert.equal(canonicalCacheUrl(plain), plain);
+});
+
+test("verse requests no longer ask for fields the reader never reads", async () => {
+  const originalFetch = globalThis.fetch;
+  const urls = [];
+  globalThis.fetch = async (url) => {
+    urls.push(new URL(String(url)));
+    return new Response(JSON.stringify({ verses: [], pagination: { total_pages: 1 } }), {
+      status: 200,
+      headers: { "content-type": "application/json" },
+    });
+  };
+  try {
+    await fetchQuranComText("surah/105").catch(() => {});
+    const request = urls.find((url) => url.pathname.endsWith("/by_chapter/105"));
+    assert.ok(request, "a verses request was sent");
+    const verseFields = request.searchParams.get("fields").split(",");
+    const wordFields = request.searchParams.get("word_fields").split(",");
+    for (const dropped of ["text_uthmani_simple", "text_qpc_nastaleeq_hafs", "v1_page", "v2_page", "ruku_number", "manzil_number"]) {
+      assert.equal(verseFields.includes(dropped), false, dropped);
+    }
+    for (const dropped of ["text_imlaei", "verse_id", "v1_page", "v2_page"]) {
+      assert.equal(wordFields.includes(dropped), false, dropped);
+    }
+    // Every field a renderer reads is still requested.
+    for (const kept of ["text_uthmani", "text_uthmani_tajweed", "text_indopak", "text_qpc_hafs", "code_v1", "code_v2"]) {
+      assert.equal(verseFields.includes(kept), true, kept);
+    }
+    for (const kept of ["audio_url", "position", "line_number", "char_type_name", "text_qpc_hafs", "code_v2"]) {
+      assert.equal(wordFields.includes(kept), true, kept);
+    }
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+});
+
+test("the page cache gives room back as the storage quota fills", async () => {
+  const { cachedPageBudget } = await import("../src/services/quranComTransport.js");
+  const MIB = 1024 * 1024;
+  const snap = (usageRatio, availableMiB) => ({
+    supported: true,
+    quota: 1000 * MIB,
+    usage: usageRatio * 1000 * MIB,
+    usageRatio,
+    available: availableMiB * MIB,
+  });
+  assert.equal(cachedPageBudget(snap(0.3, 700)), 360);
+  assert.equal(cachedPageBudget(snap(0.82, 180)), 120);
+  assert.equal(cachedPageBudget(snap(0.5, 100)), 120);
+  assert.equal(cachedPageBudget(snap(0.93, 70)), 60);
+  assert.equal(cachedPageBudget(snap(0.5, 30)), 60);
+  // Browsers without the Storage API keep the full allowance.
+  assert.equal(cachedPageBudget({ supported: false }), 360);
+  assert.equal(cachedPageBudget(null), 360);
+});
