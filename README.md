@@ -102,7 +102,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 - **Trois modes** : sourate (défilement continu), page (les 604 pages du mushaf), juz.
 - **Deux présentations** : *liste* (un verset par bloc, avec traduction et translittération) et *mushaf* (mise en page de page imprimée, plein écran inclus).
 - **Reprise exacte** là où vous vous êtes arrêté, y compris après rechargement ou hors-ligne.
-- **Cinq polices Hafs** (QPC Uthmani, IndoPak Nastaleeq, Scheherazade New, Amiri Quran, Noto Naskh) et deux polices Warsh, avec réglage de taille.
+- **Cinq polices Hafs** (QPC Uthmani, IndoPak Nastaleeq, Scheherazade New, Amiri Quran, Noto Naskh) et deux polices Warsh, avec réglage de taille. La police IndoPak vient d'un CDN distant (sa licence interdit de l'héberger) : sans réseau, le lecteur prévient et affiche le texte Hafs, puis revient à IndoPak au retour du réseau.
 - **Recherche sans choix de langue** : référence (`2:255`), nom de sourate, texte arabe, translittération (`kulhuallah`, `Bismillahirrahmanirrahim`), mot ou phrase en français ou en anglais (« le tout miséricordieux »). La langue est reconnue seule ; la dictée vocale écoute dans la langue de l'interface puis, si rien n'est trouvé, une seconde fois dans l'autre.
 - **Informations de sourate** : dossier éditorial, lieu de révélation, nombre de versets.
 
@@ -119,6 +119,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 - **Mémorisation** : répétition A-B, répétition de la sourate (0 = infinie), nombre de répétitions réglable.
 - **Téléchargements hors-ligne validés** : un fichier n'est déclaré disponible que s'il est un flux MP3 complet et lisible.
 - Contrôles écran verrouillé (Media Session) et lecteur persistant entre les écrans.
+- **Reprise après une coupure réseau** : un verset qui n'a pas pu être chargé au changement de verset est relancé tout seul au retour du réseau (sauf si vous avez mis en pause).
 
 ### 📚 Étudier et suivre
 - **Tafsir** (français Al-Mukhtasar via QuranEnc.com, conservé sur l’appareil après lecture) et sources Quran.com, traductions et translittération.
@@ -246,8 +247,8 @@ npm run preview        # http://localhost:4173
 
 ## 🧪 Qualité
 
-- **545 tests unitaires et contrats** : intégrité du texte coranique et du Tajwid, chiffrement, crypto, budgets tactiles, parité des en-têtes de déploiement, i18n (parité des clés FR/EN/AR).
-- **71 fichiers de scénarios e2e** (325 tests sur Chromium) sur Chromium, Firefox, WebKit et en PWA hors-ligne : lecture, audio, téléchargements, responsive, RTL, accessibilité (axe-core), régression visuelle.
+- **550 tests unitaires et contrats** : intégrité du texte coranique et du Tajwid, chiffrement, crypto, budgets tactiles, parité des en-têtes de déploiement, i18n (parité des clés FR/EN/AR).
+- **74 fichiers de scénarios e2e** (335 tests sur Chromium), dont la lecture audio en arrière-plan (versets une seule fois et dans l'ordre, onglet masqué, écran verrouillé, coupure réseau) sur Chromium, Firefox, WebKit et en PWA hors-ligne : lecture, audio, téléchargements, responsive, RTL, accessibilité (axe-core), régression visuelle.
 - **CI** (GitHub Actions) : lint, tests avec couverture, build + budgets, audit des dépendances, vérification des données Warsh.
 - Preuves de non-régression CSS : [`scripts/snapshot-computed-styles.mjs`](scripts/snapshot-computed-styles.mjs) compare le style calculé de chaque élément entre deux builds.
 
@@ -255,7 +256,7 @@ npm run preview        # http://localhost:4173
 
 ## 🗺️ Feuille de route
 
-Les huit phases initiales (stabilisation, lecture fluide, audio modulaire, design system, accueil, récitateurs, sécurité, bibliothèque) sont **terminées**. Récemment : Tajwid fidèle à Quran.com sur toutes les polices Hafs, navigation mobile, téléchargements hors-ligne validés, dictionnaires par langue. **Version 1.2.0 (octobre 2026)** : recherche sans filtre de langue, pages d'information refaites, lecteur compact et défilement plus stables, 2 700 règles CSS mortes supprimées. Voir [ROADMAP.md](ROADMAP.md).
+Les huit phases initiales (stabilisation, lecture fluide, audio modulaire, design system, accueil, récitateurs, sécurité, bibliothèque) sont **terminées**. Récemment : Tajwid fidèle à Quran.com sur toutes les polices Hafs, navigation mobile, téléchargements hors-ligne validés, dictionnaires par langue. **Version 1.2.0 (octobre 2026)** : recherche sans filtre de langue, pages d'information refaites, charte verte commune et démarrage animé, lecteur compact et défilement plus stables, reprise audio après coupure réseau, repli de la police IndoPak, 2 700 règles CSS mortes supprimées. Voir [ROADMAP.md](ROADMAP.md).
 
 ---
 
