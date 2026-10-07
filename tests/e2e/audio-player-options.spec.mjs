@@ -172,7 +172,7 @@ test.describe("mobile", () => {
     ).toBeVisible();
   });
 
-  test("E2E mobile: une fiche Warsh charge la biographie sourcée et le portrait", async ({ page }) => {
+  test("E2E mobile: une fiche Warsh charge la biographie et le portrait", async ({ page }) => {
     await page.addInitScript(() => {
       try {
         localStorage.clear();
@@ -200,18 +200,8 @@ test.describe("mobile", () => {
     await expect(detail.locator(".reciter-detail__bio p")).toContainText(/Riyad/i);
     await expect(detail.locator(".reciter-detail__bio p")).toContainText(/doctorat/i);
 
-    const biographyLink = detail.getByRole("link", { name: "Assabile" });
-    await expect(biographyLink).toHaveText("Assabile");
-    await expect(biographyLink).toHaveAttribute(
-      "href",
-      /\/ibrahim-al-dossari-206\//,
-    );
-    const portraitSourceLink = detail.getByRole("link", { name: "Way2Quran" });
-    await expect(portraitSourceLink).toHaveText("Way2Quran");
-    await expect(portraitSourceLink).toHaveAttribute(
-      "href",
-      /way2quran\.com\/ar\/reciters\/ibrahim-al-dosari/,
-    );
+    // The sheet no longer carries a "Verified sources" block (removed with the
+    // reciter-sheet reorder): the provider links are not asserted here.
 
     const portrait = detail.locator(".reciter-hero__avatar");
     await expect(portrait).toBeVisible();
