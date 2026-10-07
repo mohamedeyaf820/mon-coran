@@ -288,3 +288,55 @@ export function parseSearchReference(rawQuery = "") {
 
   return null;
 }
+
+const FRENCH_WORDS = new Set([
+  "le", "la", "les", "un", "une", "des", "du", "de", "et", "est", "qui", "que", "quoi", "il", "elle", "ils", "nous", "vous",
+  "dans", "pour", "par", "sur", "avec", "sans", "ne", "pas", "tout", "tous", "toute", "très", "au", "aux", "ce", "cette",
+  "son", "sa", "ses", "leur", "dieu", "seigneur", "miséricordieux", "misericordieux", "miséricorde", "misericorde",
+  "louange", "paix", "serviteurs", "jour", "terre", "ciel", "croyants", "gens", "homme", "hommes",
+]);
+const ENGLISH_WORDS = new Set([
+  "the", "and", "of", "is", "are", "who", "you", "your", "he", "she", "they", "we", "us", "in", "to", "for", "with", "not",
+  "all", "his", "her", "their", "that", "this", "lord", "god", "merciful", "mercy", "praise", "peace", "servants", "day",
+  "earth", "heavens", "believers", "people", "man", "men", "most", "gracious", "worship",
+]);
+const FRENCH_ACCENT_RE = /[éèêëàâçùûîïôœ]/i;
+// Sounds a French or English word almost never carries but a transliterated
+// Arabic one does: doubled long vowels, emphatic digraphs, the definite article.
+const PHONETIC_HINT_RE = /(dh|kh|gh|sh(?!e)|aa|ii|uu|ou[a-z]*ah\b|ullah|llah|rahman|rahim|bismi|^al[- ]?[a-z]|\bal-[a-z]|^ar[- ]|^an[- ]|\bash[- ]|['’`]a)/i;
+
+/**
+ * Guess what a Latin-script query is: a transliteration of the Arabic text
+ * ("bismillahirrahmanirrahim", "kulhuallah"), a French phrase or an English one.
+ * The result only orders the sources to try first; every source is still asked,
+ * so a wrong guess costs a little rank, never a missing result.
+ */
+export function guessLatinQueryKind(rawQuery = "") {
+  const text = String(rawQuery || "").trim().toLowerCase();
+  if (!text) return "unknown";
+  const words = text.split(/[^\p{L}'’-]+/u).filter(Boolean);
+  let french = FRENCH_ACCENT_RE.test(text) ? 1 : 0;
+  let english = 0;
+  let phonetic = PHONETIC_HINT_RE.test(text) ? 1 : 0;
+  for (const word of words) {
+    if (FRENCH_WORDS.has(word)) french += 1;
+    if (ENGLISH_WORDS.has(word)) english += 1;
+  }
+  // A single long run of letters with no space is a spelled-out Arabic phrase.
+  if (words.length === 1 && words[0].length >= 12 && !FRENCH_WORDS.has(words[0]) && !ENGLISH_WORDS.has(words[0])) phonetic += 1;
+  const best = Math.max(french, english, phonetic);
+  if (best === 0) return "unknown";
+  if (phonetic === best && french < best && english < best) return "phonetic";
+  if (french === best && french > english) return "fr";
+  if (english === best && english > french) return "en";
+  return phonetic >= 1 ? "phonetic" : "unknown";
+}
+
+/** The order in which to prefer the sources of a Latin-script query. */
+export function latinSourceOrder(kind, interfaceLanguage = "fr") {
+  const own = interfaceLanguage === "en" ? ["en", "fr"] : ["fr", "en"];
+  if (kind === "fr") return ["fr", "en", "phonetic"];
+  if (kind === "en") return ["en", "fr", "phonetic"];
+  if (kind === "phonetic") return ["phonetic", ...own];
+  return ["phonetic", ...own];
+}

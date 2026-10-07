@@ -180,9 +180,9 @@ export default {
     inputLabel: 'النص المراد البحث عنه في القرآن',
     voiceStart: 'البحث باستخدام صوتك', voiceStop: 'إيقاف الاستماع',
     voiceStartShort: 'إملاء', voiceStopShort: 'إيقاف', voiceListening: 'أستمع إليك… تحدث الآن.',
-    voiceLangGroup: 'لغة الإملاء',
-    voiceLang: { arabic: 'ع', fr: 'FR', en: 'EN' },
-    voiceLangFull: { arabic: 'العربية', fr: 'Français', en: 'English' },
+    detected: { arabic: 'نص عربي', phonetic: 'تم التعرّف على النطق بالحروف اللاتينية', fr: 'ترجمة فرنسية', en: 'ترجمة إنجليزية' },
+    voiceRetryAr: 'لم يُعثر على شيء: أستمع مجددًا بالعربية…',
+    voiceRetryFr: 'لم يُعثر على شيء: أستمع مجددًا بالفرنسية…',
     voiceErrors: {
       secureContext: 'افتح التطبيق عبر عنوان HTTPS لاستخدام الميكروفون.',
       unsupported: 'البحث الصوتي غير مدعوم في هذا المتصفح.',
@@ -200,7 +200,7 @@ export default {
     submit: 'بحث',
     resultsAria: 'نتائج البحث',
     listAria: 'نتائج البحث',
-    emptyHint: 'اكتب كلمة أو آية أو استخدم الميكروفون.',
+    emptyHint: 'اكتب أو انطق بالعربية أو الفرنسية أو الإنجليزية: تُعرَف اللغة تلقائيًا.',
     resultsCount: { one: '{count} نتيجة', other: '{count} نتيجة' },
     openInReading: 'فتح في القراءة',
     errors: {

@@ -8,6 +8,7 @@ import {
 import SURAHS from "../src/data/surahs.js";
 import {
   buildSearchCandidates,
+  containsArabic,
   filterSurahDirectory,
   findSurahByName,
   foldSearchText,
@@ -167,4 +168,33 @@ test("a long query stops widening once the shortened phrase means less", () => {
   assert.equal(candidates.length, 5);
   assert.equal(candidates[0], "Ain solde rien du tout de ma vie");
   assert.equal(candidates.at(-1), "Ain solde");
+});
+
+test("a Latin query is recognised as transliteration, French or English without a language choice", async () => {
+  const { guessLatinQueryKind, latinSourceOrder } = await import("../src/utils/searchIntelligence.js");
+  for (const phonetic of ["bismillahirrahmanirrahim", "kulhuallah", "Al-Fatiha", "qul huwa allahu ahad", "alhamdulillahi rabbil alamin"]) {
+    assert.equal(guessLatinQueryKind(phonetic), "phonetic", phonetic);
+  }
+  for (const french of ["le tout miséricordieux", "louange à Dieu", "les croyants et les gens", "dans la terre"]) {
+    assert.equal(guessLatinQueryKind(french), "fr", french);
+  }
+  for (const english of ["the most merciful", "praise be to God", "peace upon you", "the believers and the people"]) {
+    assert.equal(guessLatinQueryKind(english), "en", english);
+  }
+  assert.equal(guessLatinQueryKind(""), "unknown");
+  assert.equal(guessLatinQueryKind("xyz"), "unknown");
+  // The guess orders the sources; the others are still asked.
+  assert.deepEqual(latinSourceOrder("fr"), ["fr", "en", "phonetic"]);
+  assert.deepEqual(latinSourceOrder("en"), ["en", "fr", "phonetic"]);
+  assert.deepEqual(latinSourceOrder("phonetic", "en"), ["phonetic", "en", "fr"]);
+  assert.deepEqual(latinSourceOrder("unknown", "fr"), ["phonetic", "fr", "en"]);
+});
+
+// Phrases are typed or heard as one word; the letter table alone cannot split them.
+test("a Latin phrase written as one word is split into the Quranic words it is made of", () => {
+  const first = (query) => buildSearchCandidates(query, "phonetic").find(containsArabic);
+  assert.equal(first("kulhuallah"), "قل هو الله");
+  assert.equal(first("Bismillahirrahmanirrahim"), "بسم الله الرحمن الرحيم");
+  assert.equal(first("qul huwa allahu ahad"), "قل هو الله أحد");
+  assert.equal(first("lailahaillallah"), "لا إله إلا الله");
 });
