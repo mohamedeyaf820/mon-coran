@@ -138,6 +138,7 @@ export default {
     verseLabel: 'Verset',
     bookmarkVerse: 'Marquer ce verset',
     verseActionsHint: 'Touchez le numéro d\'un verset pour ouvrir ses actions',
+    fontFallback: 'La police IndoPak n\'a pas pu être chargée (réseau) : la police Hafs est utilisée en attendant.',
     juzLabel: 'Juz {n}',
     juzWord: 'Juz',
     ayahAbbr: 'v.',

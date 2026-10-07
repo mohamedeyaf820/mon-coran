@@ -22,10 +22,16 @@ const FONT_SOURCES = {
     url: "/fonts/uthmanic-hafs-v18.woff2",
     format: "woff2",
   },
+  // Remote and not redistributable (its licence forbids it), so it is the one
+  // face that can be missing. Its text uses private-use glyph codes that no other
+  // face draws: until it is there nothing should be painted ("block"), and after a
+  // short wait the reader falls back to the Hafs text and face.
   "qpc-indopak": {
     family: "IndoPak",
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
+    display: "block",
+    timeoutMs: 4000,
   },
   // Scheherazade New: served from local woff2 (preloaded in index.html)
   "scheherazade-new": SCHEHERAZADE_FACE,
@@ -170,7 +176,7 @@ async function loadFontFace(fontId, source) {
     },
   );
 
-  const FONT_LOAD_TIMEOUT_MS = 10000;
+  const FONT_LOAD_TIMEOUT_MS = source.timeoutMs || 10000;
   const loadedFont = await Promise.race([
     fontFace.load(),
     new Promise((_, reject) =>

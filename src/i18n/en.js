@@ -139,6 +139,7 @@ export default {
     verseLabel: 'Verse',
     bookmarkVerse: 'Bookmark this verse',
     verseActionsHint: 'Tap a verse number to open its actions',
+    fontFallback: 'The IndoPak font could not be loaded (network): the Hafs font is used meanwhile.',
     juzLabel: 'Juz {n}',
     juzWord: 'Juz',
     ayahAbbr: 'v.',

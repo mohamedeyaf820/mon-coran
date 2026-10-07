@@ -56,6 +56,7 @@ export default function QuranDisplay() {
       displayMode: current.displayMode,
       focusReading: current.focusReading,
       fontFamily: current.fontFamily,
+      fontFamilyByRiwaya: current.fontFamilyByRiwaya,
       isPlaying: current.isPlaying,
       lang: current.lang,
       loading: current.loading,
@@ -91,6 +92,7 @@ export default function QuranDisplay() {
     displayMode,
     focusReading,
     fontFamily,
+    fontFamilyByRiwaya,
     isPlaying,
     lang,
     loading,
@@ -360,7 +362,23 @@ export default function QuranDisplay() {
                 : "v1";
           await ensureQcfPageFontLoaded(currentPage, qcfVersion);
         } else {
-          await ensureFontLoaded(fontFamily);
+          const result = await ensureFontLoaded(fontFamily);
+          // The IndoPak face is remote. Without it its text is unreadable (private-use
+          // glyph codes), so the Hafs text and face stand in; the stored choice stays.
+          if (
+            active &&
+            fontFamily === "qpc-indopak" &&
+            result?.loaded === false &&
+            !result.unknown &&
+            !result.unsupported
+          ) {
+            dispatch({ type: "SET_FONT_FALLBACK", payload: "qpc-hafs" });
+            window.dispatchEvent(
+              new CustomEvent("quran-toast", {
+                detail: { type: "warning", message: t("quran.fontFallback", lang) },
+              }),
+            );
+          }
         }
       } catch (err) {
         console.error("Font loading error:", err);
@@ -374,7 +392,25 @@ export default function QuranDisplay() {
     return () => {
       active = false;
     };
-  }, [fontFamily, currentPage, displayMode]);
+  }, [dispatch, fontFamily, currentPage, displayMode, lang]);
+
+  // The IndoPak face stood in for by Hafs (see above) comes back as soon as the
+  // network does: the choice kept for this riwaya is still IndoPak.
+  const wantedFontFamily = fontFamilyByRiwaya?.[riwaya];
+  useEffect(() => {
+    if (wantedFontFamily !== "qpc-indopak" || fontFamily === wantedFontFamily) return undefined;
+    let cancelled = false;
+    const retry = async () => {
+      const { ensureFontLoaded } = await import("../services/fontLoader");
+      const result = await ensureFontLoaded(wantedFontFamily);
+      if (!cancelled && result?.loaded) dispatch({ type: "SET_FONT_FALLBACK", payload: wantedFontFamily });
+    };
+    window.addEventListener("online", retry);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("online", retry);
+    };
+  }, [dispatch, fontFamily, wantedFontFamily]);
 
   const readerBusy =
     dataTransitioning ||
