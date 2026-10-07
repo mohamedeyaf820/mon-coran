@@ -451,6 +451,11 @@ export default function LegalPage({ page = "privacy" }) {
   const shell = CHROME_COPY[lang] || CHROME_COPY.fr;
   const locale = lang === "fr" || showOriginal ? COPY.fr : translatedCopy;
   const reportCopy = REPORT_COPY[lang] || REPORT_COPY.fr;
+  // /surahs is the surah directory, which lives on the home page: it used to
+  // fall through to the privacy text. Send it where it belongs.
+  useEffect(() => {
+    if (page === "surahs") set({ legalPage: null, showHome: true, showDuas: false, homeSection: "surah" });
+  }, [page, set]);
   const activePage = PAGE_KEYS.includes(page) ? page : "privacy";
   const content = locale?.[activePage];
   const ActiveIcon = PAGE_ICONS[activePage];

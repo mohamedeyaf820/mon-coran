@@ -241,7 +241,7 @@ export default function LibraryModal() {
               <div>
                 <p>{t("library.personalSpace", lang)}</p>
                 <Dialog.Title id="library-title">{t("library.title", lang)}</Dialog.Title>
-                <Dialog.Description>{t("library.subtitle", lang)}</Dialog.Description>
+                <Dialog.Description className="library-modal__lede">{t("library.subtitle", lang)}</Dialog.Description>
               </div>
               <button type="button" className="library-close" onClick={close} aria-label={t("library.closeLabel", lang)}><X size={18} /></button>
             </header>

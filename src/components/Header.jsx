@@ -75,6 +75,7 @@ export default function Header({ immersiveHidden = false }) {
     riwaya,
     showHome,
     showDuas,
+    showPrayers,
     legalPage,
     sidebarOpen,
     theme,
@@ -152,7 +153,7 @@ export default function Header({ immersiveHidden = false }) {
   const openSearch = () => dispatch({ type: "TOGGLE_SEARCH" });
   const openSettings = () => dispatch({ type: "TOGGLE_SETTINGS" });
   const openLibrary = () => set({ libraryOpen: true, libraryTab: "favorites" });
-  const isReadingView = !showHome && !showDuas && !legalPage;
+  const isReadingView = !showHome && !showDuas && !showPrayers && !legalPage;
   const changeArabicFontSize = (delta) => {
     set({
       quranFontSize: clampArabicFontSize(Number(quranFontSize) + delta),
@@ -532,7 +533,24 @@ export default function Header({ immersiveHidden = false }) {
 
         {/* ── CENTER: surah nav ───────────────────────────── */}
         <div className="mp-header__center">
-          {showHome || legalPage ? (
+          {showDuas || showPrayers ? (
+            // These pages are not about a surah: the previous/next arrows and the
+            // go-to popover of the reader would only lead somewhere unrelated.
+            <button
+              className="mp-header__home-summary"
+              type="button"
+              onClick={() =>
+                set({ legalPage: null, showHome: false, showDuas: false, showPrayers: false })
+              }
+            >
+              <strong className="mp-header__home-summary-clean">
+                {i18nT(showDuas ? "nav.duas" : "nav.prayers", lang)}
+              </strong>
+              <span className="mp-header__home-meta-clean">
+                {headerLabels.homeSummary}
+              </span>
+            </button>
+          ) : showHome || legalPage ? (
             <button
               className="mp-header__home-summary"
               type="button"

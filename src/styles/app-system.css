@@ -436,7 +436,9 @@ html body .app-root {
   border-bottom: 1px solid var(--theme-border);
 }
 
-.library-modal__header p {
+/* The dialog description is a <p> too (Radix adds no attribute to it): only the
+   eyebrow is the small caps line. */
+.library-modal__header p:not(.library-modal__lede) {
   margin: 0 0 0.25rem;
   color: var(--primary);
   font-size: 0.68rem;
@@ -451,7 +453,7 @@ html body .app-root {
   line-height: 1.15;
 }
 
-.library-modal__header [data-radix-dialog-description] {
+.library-modal__header .library-modal__lede {
   margin: 0.35rem 0 0;
   color: var(--text-secondary);
   line-height: 1.5;
@@ -648,7 +650,7 @@ html body .app-root {
     padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
-  .library-modal__header [data-radix-dialog-description] {
+  .library-modal__header .library-modal__lede {
     display: none;
   }
 

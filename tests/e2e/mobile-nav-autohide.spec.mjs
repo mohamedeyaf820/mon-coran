@@ -38,7 +38,8 @@ async function scrollDownUntilAway(page) {
 
 for (const path of ["/privacy", "/duas", "/prieres", "/"]) {
   test(`the bottom bar steps away on scroll and returns on tap (${path})`, async ({ page }) => {
-    await open(page, path);
+    // The prayers page without a city is a short card: a shorter phone keeps it scrollable.
+    await open(page, path, { height: path === "/prieres" ? 520 : 700 });
     const nav = page.locator(".mobile-navigation");
     await expect(nav).toBeVisible();
     // The page must be tall enough to scroll; the test would prove nothing otherwise.
