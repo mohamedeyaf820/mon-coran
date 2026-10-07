@@ -204,7 +204,9 @@ def strip(items, name, width=1900, per_row=None, cap_size=38):
 strip([("home-mobile", "Accueil"), ("reader-mushaf-mobile", "Mushaf · Tajwid"), ("reader-mobile", "Liste · traduction"),
        ("audio-mobile", "54 récitateurs"), ("menu-mobile", "Menu · mode sombre")], "devices-phone.webp", width=2400, cap_size=42)
 strip([("reader-arabic-mobile", "Arabe · RTL · sépia"), ("search-auto-mobile", "Recherche automatique"), ("duas-mobile", "Invocations"),
-       ("about-mobile", "Transparence"), ("settings-mobile", "Réglages")], "devices-phone-2.webp", width=2400, cap_size=38)
+       ("reciter-mobile", "Récitateur"), ("settings-mobile", "Réglages")], "devices-phone-2.webp", width=2400, cap_size=38)
+strip([("splash-mobile", "Démarrage animé"), ("prayers-mobile", "Mes prières"), ("about-mobile", "Transparence"),
+       ("home-mobile", "Accueil")], "devices-phone-3.webp", width=2000, cap_size=40)
 
 # --- 3. tablets ---------------------------------------------------------------
 TW, TH = 2400, 1010

@@ -41,6 +41,10 @@ const SHOTS = [
   { name: "search-auto-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "dark" }, mobile: true, reveal: true, mobileTool: "search", query: "Bismillahirrahmanirrahim" },
   { name: "about-desktop", url: "/about", viewport: DESKTOP, settings: { showHome: false } },
   { name: "about-mobile", url: "/privacy", viewport: PHONE, settings: { showHome: false }, mobile: true },
+  { name: "splash-mobile", url: "/", viewport: PHONE, settings: { showHome: true, theme: "dark" }, mobile: true, splashFrame: 1100, freshStorage: true },
+  { name: "prayers-mobile", url: "/prieres", viewport: PHONE, settings: { showHome: false }, mobile: true },
+  { name: "reciter-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true, openReciter: true },
+  { name: "reciter-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true, openReciter: true },
   { name: "duas-mobile", url: "/duas", viewport: PHONE, settings: { showHome: false }, mobile: true },
   { name: "settings-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSettings: true },
 ];
@@ -49,10 +53,25 @@ const only = process.env.ONLY?.split(",");
 const browser = await chromium.launch();
 for (const shot of SHOTS) {
   if (only && !only.includes(shot.name)) continue;
-  const context = await browser.newContext({ viewport: shot.viewport, deviceScaleFactor: shot.mobile ? 2 : 1.5, serviceWorkers: "block", reducedMotion: "reduce", locale: "fr-FR" });
+  const context = await browser.newContext({ viewport: shot.viewport, deviceScaleFactor: shot.mobile ? 2 : 1.5, serviceWorkers: "block", reducedMotion: shot.splashFrame ? "no-preference" : "reduce", locale: "fr-FR" });
   const page = await context.newPage();
-  await page.addInitScript((s) => localStorage.setItem("mushaf-plus-settings", JSON.stringify(s)), { ...base, ...shot.settings });
+  const settings = { ...base, ...shot.settings };
+  if (shot.splashFrame) {
+    // Hold the splash and freeze its animations at a given moment of the sequence.
+    delete settings.skipSplashAnimation;
+    await page.addInitScript(() => { const st = window.setTimeout; window.setTimeout = (f, d, ...a) => st(f, d >= 400 ? d * 40 : d, ...a); });
+  }
+  await page.addInitScript((s) => localStorage.setItem("mushaf-plus-settings", JSON.stringify(s)), settings);
   await page.goto(BASE + shot.url, { waitUntil: "domcontentloaded" });
+  if (shot.splashFrame) {
+    await page.waitForSelector(".sp-root", { timeout: 20000 });
+    await page.evaluate((t) => { for (const a of document.getAnimations()) { a.pause(); const d = a.effect.getComputedTiming(); a.currentTime = Math.min(t, d.endTime === Infinity ? t : d.endTime); } }, shot.splashFrame);
+    await page.waitForTimeout(300);
+    await page.screenshot({ path: `${OUT}/${shot.name}.png`, animations: "allow" });
+    console.log("captured", shot.name);
+    await context.close();
+    continue;
+  }
   await page.waitForSelector("#main-content", { timeout: 40000 });
   await page.waitForTimeout(shot.url === "/" ? 3500 : 7000);
   if (shot.scrollTo) await page.locator(shot.scrollTo).scrollIntoViewIfNeeded().catch(() => {});
@@ -60,6 +79,12 @@ for (const shot of SHOTS) {
   try {
     if (shot.openAudio) {
       await page.locator('.mobile-navigation [data-destination="audio"]').click({ timeout: 4000 });
+      await page.waitForTimeout(2500);
+    }
+    if (shot.openReciter) {
+      if (shot.viewport.width <= 1024) await page.locator('.mobile-navigation [data-destination="audio"]').click({ timeout: 4000 });
+      await page.waitForTimeout(2000);
+      await page.locator(".reciter-card__main").first().click({ timeout: 4000 });
       await page.waitForTimeout(2500);
     }
     if (shot.openAudioTab) {
