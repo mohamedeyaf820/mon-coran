@@ -1242,7 +1242,8 @@ test("duas dark theme keeps its devotional palette on a direct load", async ({ p
     };
   });
 
-  expect(surfaces.heroImage).toContain("rgb(17, 29, 24)");
+  // The hero is the brand hero surface shared with the home and prayers cards.
+  expect(surfaces.heroImage).toContain("rgb(16, 45, 34)");
   expect(surfaces.heroBorder).toContain("202, 160, 63");
   expect(surfaces.cardBackground).toBe("rgb(16, 27, 23)");
   expect(await overflowX(page)).toBeLessThanOrEqual(2);

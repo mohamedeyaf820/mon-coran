@@ -717,6 +717,20 @@ html body .app-root {
   box-shadow: var(--mp-shadow-card);
 }
 
+/* The brand's hero surface: one owner for every green (brown in sepia) banner card,
+   the home card, "Mes prières" and "Invocations". */
+.app-root {
+  --brand-hero-bg:
+    radial-gradient(circle at 88% 20%, rgba(244, 221, 160, 0.13), transparent 21rem),
+    linear-gradient(145deg,
+      color-mix(in srgb, var(--primary) 80%, #06130c),
+      color-mix(in srgb, var(--primary) 43%, #102219));
+}
+
+[data-theme="sepia"] .app-root { --brand-hero-bg: linear-gradient(145deg, #5d3516, #2c2117 72%); }
+
+[data-theme="dark"] .app-root { --brand-hero-bg: linear-gradient(145deg, #102d22, #0a1812 76%); }
+
 .app-root[data-view="home"] .home-resume-panel {
   isolation: isolate;
   display: flex;
@@ -724,15 +738,7 @@ html body .app-root {
   flex-direction: column;
   padding: clamp(1rem, 1.7vw, 1.35rem);
   color: #f8fbf9;
-  background:
-    radial-gradient(circle at 88% 20%, rgba(244, 221, 160, 0.13), transparent 21rem),
-    linear-gradient(145deg,
-      color-mix(in srgb, var(--primary) 80%, #06130c),
-      color-mix(in srgb, var(--primary) 43%, #102219));
-}
-
-[data-theme="sepia"] .app-root[data-view="home"] .home-resume-panel {
-  background: linear-gradient(145deg, #5d3516, #2c2117 72%);
+  background: var(--brand-hero-bg);
 }
 
 [data-theme="sepia"] .app-root[data-view="home"] .home-resume-panel__secondary {
@@ -748,7 +754,6 @@ html body .app-root {
 
 [data-theme="dark"] .app-root[data-view="home"] .home-resume-panel {
   border-color: color-mix(in srgb, var(--primary) 28%, var(--theme-border));
-  background: linear-gradient(145deg, #102d22, #0a1812 76%);
 }
 
 .app-root[data-view="home"] .home-resume-panel__glow {

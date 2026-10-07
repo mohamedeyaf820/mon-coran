@@ -1,11 +1,4 @@
-/* ==========================================================================
-   Page-level coherence fixes found while reviewing every page
-
-   - Duas, dark themes: the search icon and the "other categories" toggle took
-     a near-black colour on a near-black card (unreadable), and the field was a
-     box inside a box.
-   Loaded last (see deferredStyles.js).
-   ========================================================================== */
+/* Page-level coherence fixes (duas dark search, library tabs, settings notes, hero surface). Loaded last. */
 
 html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap {
   width: min(100%, 36rem);
@@ -52,4 +45,11 @@ html body .settings-drawer .settings-notification-note {
   font-size: 0.8rem !important;
   font-weight: 600 !important;
   line-height: 1.5 !important;
+}
+
+/* ── One hero surface for the whole app ──────────────────────────────────── */
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero,
+html[data-theme] body .app-root.app-root .prayers-hero {
+  background: var(--brand-hero-bg) !important;
+  border-radius: clamp(1rem, 1.5vw, 1.35rem) !important;
 }
