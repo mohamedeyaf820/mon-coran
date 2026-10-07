@@ -52,7 +52,9 @@ for (const [width, lang] of [[390, 'fr'], [820, 'ar']]) {
     await expect.poll(() => page.evaluate(() => window.__chromeMedia?.paused)).toBe(false);
     await page.evaluate(() => { window.__initialChromeMedia = window.__chromeMedia; });
     await reveal();
-    await page.locator('#main-content').evaluate(node => node.scrollTo({ top: 400, behavior: 'instant' }));
+    // The chrome follows the reader's own gesture, not scrolls the page makes by itself.
+    await page.mouse.move(width / 2, 400);
+    await page.mouse.wheel(0, 400);
     await expect.poll(() => page.locator('#main-content').evaluate(node => node.scrollTop)).toBeGreaterThan(0);
     const before = await page.locator('#main-content').evaluate(node => node.scrollTop);
     await expect(nav).toBeHidden({ timeout: 6000 });

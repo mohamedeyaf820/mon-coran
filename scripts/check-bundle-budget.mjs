@@ -63,8 +63,9 @@ const LIMITS = {
   // 2026-10-06: +25 kB (2418.7 kB measured, 13.7 kB over the previous ceiling).
   // 2026-10-06 (later): 2426.5 kB measured (+10 kB of headroom).
   // 2026-10-06 (information pages): 2459.7 kB measured, +25 kB of headroom.
-  // 2026-10-06 (automatic search): 2486.2 kB measured, ceiling 2500 kB.
-  total: Number(process.env.BUDGET_TOTAL_KB || 2500),
+  // 2026-10-07: 2485.2 kB measured after the player/scroll stability work
+  // (pending-audio event, scroll compensation, hint fold), ceiling 2490 kB.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2490),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

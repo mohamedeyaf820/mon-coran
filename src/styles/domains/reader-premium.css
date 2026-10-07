@@ -75,9 +75,6 @@
 }
 
 /* Fullscreen trigger: show with a little more style */
-.srh-root .srh-info-btn--fullscreen {
-    gap: 0.36rem !important;
-}
 
 /* ═══════════════════════════════════════════════════════════════
    2. LIST MODE — AYAH CARDS (qc-list-card)

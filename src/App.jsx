@@ -388,6 +388,30 @@ export default function App() {
   // closure over state.isPlaying would keep the value from when it was bound.
   const playbackActiveRef = useRef(false);
   playbackActiveRef.current = Boolean(state.isPlaying || state.currentPlayingAyah);
+  // Audio asked for but not started yet: the player stays where the reader sees it.
+  const [audioPending, setAudioPending] = useState(false);
+  const audioPendingRef = useRef(false);
+  audioPendingRef.current = audioPending;
+  useEffect(() => {
+    let expiry;
+    const onPending = (event) => {
+      clearTimeout(expiry);
+      const active = Boolean(event.detail);
+      setAudioPending(active);
+      // A source that never answers must not pin the chrome on screen for good.
+      if (active) expiry = setTimeout(() => setAudioPending(false), 4000);
+    };
+    window.addEventListener("mushafplus-audio-pending", onPending);
+    return () => {
+      clearTimeout(expiry);
+      window.removeEventListener("mushafplus-audio-pending", onPending);
+    };
+  }, []);
+  // Last moment the reader themselves moved the page (wheel, finger, keys,
+  // scrollbar). The page also scrolls on its own - following the verse being
+  // recited, the list settling after measurement - and none of that is a gesture
+  // that should show or hide the chrome.
+  const lastUserScrollInput = useRef(0);
   const mainScrollRef = useRef(null);
 
   useEffect(() => {
@@ -540,7 +564,8 @@ export default function App() {
       clearTimeout(immersiveTimer.current);
       if (!compactReadingChrome && scrollContainer.scrollTop < 88) return;
       immersiveTimer.current = setTimeout(() => {
-        if (document.querySelector('[role="dialog"], .mobile-navigation-menu[data-state="open"]') ||
+        if (audioPendingRef.current ||
+          document.querySelector('[role="dialog"], .mobile-navigation-menu[data-state="open"]') ||
           (compactReadingChrome && document.activeElement?.matches(':focus-visible') && document.activeElement?.closest('.mobile-navigation, .mp-audio-player'))) {
           scheduleHide();
           return;
@@ -555,10 +580,13 @@ export default function App() {
       scheduleHide();
     };
 
+    const noteUserInput = () => { lastUserScrollInput.current = Date.now(); };
     const handleScroll = () => {
       const nextTop = scrollContainer.scrollTop;
       const delta = nextTop - immersiveScrollTop.current;
       immersiveScrollTop.current = nextTop;
+      // Momentum after a flick keeps scrolling for a second or two.
+      if (Date.now() - lastUserScrollInput.current > 1800) return;
 
       if (compactReadingChrome) {
         if (Date.now() >= immersiveRevealUntil.current && delta > 28) {
@@ -613,6 +641,9 @@ export default function App() {
     scrollContainer.addEventListener('click', handleClick);
     document.addEventListener('pointerdown', handleControl, { passive: true });
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
+    for (const type of ["wheel", "touchstart", "touchmove", "pointerdown", "keydown"]) {
+      scrollContainer.addEventListener(type, noteUserInput, { passive: true });
+    }
     scrollContainer.addEventListener("touchstart", handleTouch, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("keydown", handleKeyboard);
@@ -622,6 +653,9 @@ export default function App() {
       scrollContainer.removeEventListener('click', handleClick);
       document.removeEventListener('pointerdown', handleControl);
       scrollContainer.removeEventListener("scroll", handleScroll);
+      for (const type of ["wheel", "touchstart", "touchmove", "pointerdown", "keydown"]) {
+        scrollContainer.removeEventListener(type, noteUserInput);
+      }
       scrollContainer.removeEventListener("touchstart", handleTouch);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("keydown", handleKeyboard);
@@ -973,7 +1007,7 @@ export default function App() {
         />
       ) : null}
       <div
-        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && state.isPlaying ? "immersive-keep-player" : ""} ${navAway ? "nav-away" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
+        className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && (state.isPlaying || audioPending) ? "immersive-keep-player" : ""} ${navAway ? "nav-away" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
         dir={lang === "ar" ? "rtl" : "ltr"}
         data-dir={lang === "ar" ? "rtl" : "ltr"}

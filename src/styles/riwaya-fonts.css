@@ -105,10 +105,6 @@
   white-space: normal !important;
 }
 
-.app-root .quran-display--warsh .warsh-waqf-marker {
-  transform: translateY(-0.03em);
-}
-
 /* IndoPak, Scheherazade New, Amiri Quran and Noto Naskh Arabic draw U+06DD as
    an empty, broken, or plain-disc rosette that never composes the ayah digits.
    Their digit-only markers are shaped by the QPC Hafs calt rosette instead.

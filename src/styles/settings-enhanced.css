@@ -1,11 +1,6 @@
 
 
 
-.settings-overlay {
-  backdrop-filter: none;
-}
-
-
 .settings-backdrop {
   backdrop-filter: blur(8px) saturate(120%);
   -webkit-backdrop-filter: blur(8px) saturate(120%);
@@ -900,10 +895,6 @@
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
   font-size: 1.35rem !important;
-}
-
-
-@media (min-width: 721px) and (max-width: 900px) {
 }
 
 @media (max-width: 720px) {

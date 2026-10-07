@@ -51,16 +51,20 @@ test("the search asks for no language and understands a transliterated phrase", 
   });
 
   await page.goto("/");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.locator(".mp-header__search").first().click();
+  await expect(page.locator(".search-pro")).toBeVisible({ timeout: 30_000 });
 
   await expect(page.locator(".search-pro__voice-langs")).toHaveCount(0);
   await expect(page.locator(".search-pro__voice-lang")).toHaveCount(0);
 
-  await page.locator(".search-pro").getByRole("textbox").first().fill("kulhuallah");
+  const input = page.locator(".search-pro").getByRole("textbox").first();
+  await expect(input).toBeVisible();
+  await input.fill("kulhuallah");
 
   const result = page.getByTestId("search-result").first();
   await expect(result).toBeVisible({ timeout: 15_000 });
   await expect(result).toHaveAttribute("data-surah", "112");
   await expect(page.locator(".search-pro__detected")).toBeVisible();
-  expect(asked.some((url) => url.includes("قل هو الله"))).toBe(true);
+  await expect.poll(() => asked.some((url) => url.includes("قل هو الله"))).toBe(true);
 });

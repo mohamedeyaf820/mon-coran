@@ -238,11 +238,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
 
 @media (max-width: 680px) {
 
-    .settings-overlay {
-        align-items: flex-end !important;
-        justify-content: center !important;
-    }
-
     .settings-drawer {
         border-radius: 1.5rem 1.5rem 0 0 !important;
         height: min(90dvh, 48rem) !important;
@@ -341,22 +336,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
     border-radius: 50% !important;
 }
 
-.settings-reciter-option__name {
-    font-size: 0.8rem !important;
-    font-weight: 700 !important;
-    line-height: 1.25 !important;
-    display: -webkit-box !important;
-    -webkit-line-clamp: 2 !important;
-    -webkit-box-orient: vertical !important;
-    overflow: hidden !important;
-}
-
-.settings-reciter-option__meta {
-    font-size: 0.65rem !important;
-    opacity: 0.72 !important;
-    margin-top: 0.1rem !important;
-}
-
 .qc-ayah-text-ar,
 .rd-arabic,
 .quran-arabic-text,
@@ -375,23 +354,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         font-size: clamp(1.45rem, 5.5vw, 1.85rem) !important;
         line-height: 2.2 !important;
     }
-}
-
-.qc-ayah-translation,
-.rd-trans-item,
-.translation-text {
-    font-size: clamp(0.85rem, 0.75rem + 0.4vw, 1rem) !important;
-    line-height: 1.75 !important;
-    color: var(--text-secondary, #475569) !important;
-}
-
-.rd-ayah-head,
-.qc-ayah-number,
-.ayah-number-badge {
-    width: clamp(1.8rem, 3vw, 2.15rem) !important;
-    height: clamp(1.8rem, 3vw, 2.15rem) !important;
-    font-size: clamp(0.68rem, 1vw, 0.82rem) !important;
-    flex: 0 0 clamp(1.8rem, 3vw, 2.15rem) !important;
 }
 
 .qc-verse-card,
@@ -571,22 +533,6 @@ input[type="range"].mp-progress-input:hover::-webkit-slider-thumb {
         align-items: flex-end !important;
         padding: 0 !important;
     }
-
-    .search-pro-modal,
-    .search-modal-box {
-        width: 100vw !important;
-        max-width: 100vw !important;
-        border-radius: 1.5rem 1.5rem 0 0 !important;
-        max-height: 88dvh !important;
-    }
-}
-
-@media (max-width: 640px) {
-    .modal-panel,
-    .modal-box {
-        border-radius: 1.4rem 1.4rem 0 0 !important;
-        max-height: 88dvh !important;
-    }
 }
 
 @media (hover: hover) {
@@ -747,40 +693,6 @@ html[data-theme="oled"]
     .rd-ayah {
         break-inside: avoid !important;
         page-break-inside: avoid !important;
-    }
-}
-
-@media (max-width: 768px) {
-    .search-pro-input {
-        font-size: 1rem !important;
-        height: 3rem !important;
-    }
-
-    .search-pro-results {
-        max-height: calc(75dvh - 5rem) !important;
-        overflow-y: auto !important;
-        overscroll-behavior: contain !important;
-    }
-}
-
-.hp-stats {
-    overflow-x: auto !important;
-    scrollbar-width: none !important;
-}
-
-.hp-stats::-webkit-scrollbar {
-    display: none !important;
-}
-
-@media (max-width: 479px) {
-    .hp-stats > * {
-        flex: 0 0 auto !important;
-    }
-}
-
-@media (max-width: 767px) {
-    .network-status__text {
-        display: none !important;
     }
 }
 

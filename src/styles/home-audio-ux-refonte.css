@@ -165,16 +165,6 @@ button,
   line-height: 1.2 !important;
 }
 
-.app-root > .mp-header .mp-header__sub {
-  display: block !important;
-  max-width: 100% !important;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap !important;
-  color: var(--theme-text-muted, #64748b) !important;
-  letter-spacing: 0;
-}
-
 .app-root > .mp-header .mp-header__nav {
   justify-content: center !important;
   gap: 0.3rem;
@@ -197,11 +187,6 @@ button,
   min-width: 8.1rem !important;
   padding-inline: var(--space-3);
   gap: 0.48rem;
-}
-
-.app-root > .mp-header .mp-header__riwaya-switch {
-  height: 2.55rem !important;
-  background: color-mix(in srgb, var(--theme-panel-bg, #fff) 82%, transparent) !important;
 }
 
 .app-root > .mp-header .mp-header__seg,
@@ -375,12 +360,6 @@ html.dark [data-reciter-card="true"] {
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.34);
 }
 
-.quran-display-container,
-.quran-reading-page,
-.quran-page-shell {
-  scroll-padding-bottom: calc(var(--player-h, 0px) + var(--desktop-player-reserved-h, 0px) + 2rem);
-}
-
 .quran-display,
 .qc-reader-page,
 .qc-reading-content,
@@ -394,11 +373,6 @@ html.dark [data-reciter-card="true"] {
 .quran-reader-shell,
 .quran-display--platform {
   padding-bottom: calc(var(--player-h, 0px) + env(safe-area-inset-bottom, 0px) + 1.5rem);
-}
-
-.qc-reader-header {
-  top: 0;
-  min-width: 0;
 }
 
 .qc-reader-header [role="group"],
@@ -456,13 +430,6 @@ html.dark [data-reciter-card="true"] {
   background: linear-gradient(180deg, var(--theme-primary, #0b6235), var(--gold, #d4a820));
 }
 
-.qc-ayah-card.is-playing,
-.ayah-playing,
-.mp-ayah--playing {
-  box-shadow: inset 0 0 0 1px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.22),
-    0 14px 38px rgba(var(--theme-primary-rgb, 11, 98, 53), 0.12);
-}
-
 .mp-audio-player {
   contain: layout paint style;
   letter-spacing: 0;
@@ -481,40 +448,10 @@ html.dark [data-reciter-card="true"] {
   max-height: 128px;
 }
 
-.mp-audio-player--desktop.is-maximized.is-collapsed {
-  min-height: 338px;
-  max-height: min(452px, calc(100dvh - var(--header-h, 70px) - 28px));
-}
-
-.mp-audio-player--desktop.is-expanded {
-  max-height: calc(100dvh - var(--header-h, 70px) - 24px) !important;
-}
-
 .mp-audio-player--desktop[data-dragging="true"] {
   cursor: grabbing;
   opacity: 0.98;
   transform: scale(1.006);
-}
-
-.mp-player-drag-zone {
-  min-height: 42px;
-  margin: 0.55rem 0.75rem 0.15rem;
-  border-radius: var(--r-lg);
-  cursor: grab;
-  touch-action: none;
-  user-select: none;
-}
-
-.mp-player-drag-zone:active {
-  cursor: grabbing;
-}
-
-.mp-player-drag-zone span {
-  letter-spacing: 0.08em;
-}
-
-.mp-player-controls-strip {
-  border-radius: var(--r-lg);
 }
 
 .mp-player-play-btn,
@@ -532,21 +469,8 @@ html.dark [data-reciter-card="true"] {
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
-.mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-  min-height: 138px;
-  max-height: 138px;
-}
-
-.mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
-  max-height: min(72dvh, 620px);
-}
-
 .mp-audio-player--mobile:not(.mp-audio-player--dock) {
   min-height: 72px;
-}
-
-.mp-player-mobile-expanded {
-  max-height: calc(72dvh - 132px) !important;
 }
 
 .audio-player-modal__surface {
@@ -595,10 +519,6 @@ html.dark .audio-player-modal__surface {
     display: none !important;
   }
 
-  .app-root > .mp-header .mp-header__network {
-    display: none !important;
-  }
-
   .home-content-toolbar {
     top: calc(var(--header-h, 64px) + 0.4rem);
   }
@@ -640,11 +560,6 @@ html.dark .audio-player-modal__surface {
 
   .app-root > .mp-header .mp-header__actions {
     gap: 0.3rem;
-  }
-
-  .app-root > .mp-header .mp-header__riwaya-mobile {
-    margin-right: 0;
-    font-size: var(--ts-xs) !important;
   }
 
   .app-root > .mp-header .mp-header__action:not(.mp-header__search),
@@ -725,24 +640,6 @@ html.dark .audio-player-modal__surface {
   :root {
     --touch-target: 44px;
   }
-
-  .mp-player-mobile-meta {
-    width: 4.65rem !important;
-  }
-
-  .mp-player-mobile-secondary {
-    gap: 0.2rem;
-  }
-
-  .mp-player-mobile-main-controls {
-    gap: 0.22rem;
-    padding-inline: 0.28rem;
-  }
-}
-
-
-.app-root > .mp-header .mp-header__riwaya-mobile {
-  display: none !important;
 }
 
 .app-root > .mp-header .mp-header__bar {
@@ -760,15 +657,6 @@ html.dark .audio-player-modal__surface {
   max-height: none !important;
   padding-block: 0.42rem;
   padding-inline: clamp(0.85rem, 1.4vw, 1.15rem);
-}
-
-.app-root > .mp-header .mp-header__kicker {
-  order: 0;
-  font-size: var(--ts-2xs) !important;
-  font-weight: 850 !important;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: color-mix(in srgb, var(--theme-primary, #0b6235) 78%, var(--theme-text-muted, #64748b)) !important;
 }
 
 .app-root > .mp-header .mp-header__title,
@@ -799,16 +687,6 @@ html.dark .audio-player-modal__surface {
   height: 2.72rem !important;
   border-radius: var(--r-lg);
   font-weight: 850 !important;
-}
-
-.app-root > .mp-header .mp-header__riwaya-switch {
-  min-width: 10.5rem !important;
-  margin-right: 0;
-}
-
-.app-root > .mp-header .mp-header__riwaya-switch button {
-  min-width: 4.72rem !important;
-  font-weight: 800 !important;
 }
 
 .app-root > .mp-header .mp-header__more {
@@ -868,14 +746,6 @@ html.dark .audio-player-modal__surface {
   .app-root > .mp-header .mp-header__home-summary {
     width: min(100%, 20rem) !important;
   }
-
-  .app-root > .mp-header .mp-header__riwaya-switch {
-    min-width: 8.9rem !important;
-  }
-
-  .app-root > .mp-header .mp-header__riwaya-switch button {
-    min-width: 3.95rem !important;
-  }
 }
 
 @media (max-width: 900px) {
@@ -892,23 +762,11 @@ html.dark .audio-player-modal__surface {
   .app-root > .mp-header .mp-header__home-meta-clean {
     display: none !important;
   }
-
-  .app-root > .mp-header .mp-header__riwaya-switch {
-    display: none !important;
-  }
-
-  .app-root > .mp-header .mp-header__riwaya-mobile {
-    display: inline-flex !important;
-  }
 }
 
 @media (max-width: 720px) {
   .app-root > .mp-header .mp-header__bar {
     min-height: 3.25rem !important;
-  }
-
-  .app-root > .mp-header .mp-header__riwaya-mobile {
-    display: inline-flex !important;
   }
 
   .home-content-section {
@@ -954,14 +812,6 @@ html.dark .audio-player-modal__surface {
 
 .app-root .qc-reader-toolbar button[aria-pressed="true"] {
   box-shadow: 0 8px 18px color-mix(in srgb, var(--theme-primary, #0b6235) 14%, transparent);
-}
-
-.app-root .qc-reader-toolbar .scrollbar-none {
-  scrollbar-width: none !important;
-}
-
-.app-root .qc-reader-toolbar .scrollbar-none::-webkit-scrollbar {
-  display: none !important;
 }
 
 .app-root .qc-reader-toolbar .arabic-font-controls--compact {
@@ -1311,10 +1161,6 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
     display: none !important;
   }
 
-  .app-root > .mp-header .mp-header__network {
-    display: none !important;
-  }
-
   .app-root .app-view-home .home-content-toolbar {
     position: relative !important;
     top: auto !important;
@@ -1328,23 +1174,6 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
 
 }
 
-@media (max-width: 1024px) {
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
-    display: flex !important;
-    visibility: visible;
-    opacity: 1;
-    height: auto !important;
-    max-height: none !important;
-    overflow: visible;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
-    display: inline-flex !important;
-    visibility: visible;
-    opacity: 1;
-  }
-}
-
 
 @media (max-width: 1024px) {
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {
@@ -1356,35 +1185,6 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
     -webkit-backdrop-filter: none;
     contain: none;
     overflow: visible;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
-    position: absolute !important;
-    z-index: 4;
-    min-height: 0 !important;
-    padding: 0;
-    pointer-events: none;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
-    pointer-events: auto;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
-    display: none !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    padding-block: 0.15rem;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
-    max-height: min(64dvh, 30rem) !important;
-    border-radius: var(--r-xl);
-  }
-
-  .app-root .mp-player-mobile-expanded {
-    max-height: min(38dvh, 18rem) !important;
   }
 
   .app-root .audio-player-modal {
@@ -1486,31 +1286,6 @@ html body .app-root .app-view-home .hp-card--list .hp-card-ar {
 
   .app-root .audio-reciter-options__badge:first-child {
     display: none !important;
-  }
-}
-
-@media (hover: hover) {
-}
-
-@media (max-width: 1199px) {
-}
-
-@media (max-width: 680px) {
-}
-
-@media (max-width: 390px) {
-}
-
-@media (max-width: 380px) {
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    gap: 0.24rem;
-    padding-inline: 0.45rem;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    min-width: 2.35rem !important;
-    width: 2.35rem !important;
   }
 }
 
@@ -1839,11 +1614,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   padding-inline: clamp(0.72rem, 1.5vw, 1.1rem);
 }
 
-.app-root > .mp-header .mp-header__riwaya-switch {
-  min-height: 2.6rem !important;
-  border-radius: var(--r-lg);
-}
-
 .app-root > .mp-header .mp-header__riwaya-switch button,
 .app-root > .mp-header .mp-header__seg {
   min-height: 2.18rem !important;
@@ -1984,13 +1754,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     display: none !important;
   }
 
-  .app-root > .mp-header .mp-header__riwaya-mobile {
-    width: auto !important;
-    min-width: clamp(2.74rem, 2.5rem + 0.6vw, 3.18rem) !important;
-    padding-inline: 0.52rem;
-    font-size: clamp(0.68rem, 0.64rem + 0.12vw, 0.76rem) !important;
-  }
-
   .app-root > .mp-header .mp-header__title-btn,
   .app-root > .mp-header .mp-header__home-summary {
     min-height: clamp(2.45rem, 2.22rem + 0.48vw, 2.82rem) !important;
@@ -2004,80 +1767,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {
     border-radius: var(--r-lg);
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 4.7rem !important;
-    max-height: 4.7rem !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
-    inset: 0.36rem 0.48rem auto !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
-    width: 2.18rem !important;
-    min-width: 2.18rem !important;
-    height: 2.18rem !important;
-    min-height: 2.18rem !important;
-    border-radius: var(--r-md-lg);
-    font-size: var(--ts-xs) !important;
-    background: color-mix(in srgb, var(--theme-panel-bg-strong) 86%, var(--theme-primary) 14%) !important;
-    color: color-mix(in srgb, var(--theme-text) 88%, var(--theme-bg) 12%) !important;
-    box-shadow: 0 8px 20px rgba(2, 10, 18, 0.12);
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
-    height: 0.16rem !important;
-    margin: 0.42rem 3rem 0;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    min-height: 3.72rem !important;
-    padding: 0.52rem 0.5rem 0.42rem;
-    gap: 0.28rem;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    width: clamp(4.2rem, 15vw, 5rem) !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :first-child {
-    font-size: var(--ts-xs) !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :nth-child(2) {
-    font-size: var(--ts-2xs) !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    min-height: 2.52rem !important;
-    gap: 0.35rem;
-    padding: 0.18rem 0.38rem;
-    border-radius: var(--r-lg);
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 2.34rem !important;
-    min-width: 2.34rem !important;
-    height: 2.34rem !important;
-    min-height: 2.34rem !important;
-    border-radius: var(--r-md-lg);
-    font-size: var(--ts-xs) !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.72rem !important;
-    min-width: 2.72rem !important;
-    height: 2.72rem !important;
-    min-height: 2.72rem !important;
-    border-radius: var(--r-lg);
-    font-size: var(--ts-sm) !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    gap: 0.28rem;
   }
 }
 
@@ -2101,123 +1790,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   .app-root > .mp-header .mp-header__title-btn {
     padding-inline: 0.54rem;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 4.55rem !important;
-    max-height: 4.55rem !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    min-height: 3.58rem !important;
-  }
-
-  .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    display: none !important;
-  }
-}
-
-@media (max-width: 1180px) {
-  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn {
-    width: 2.62rem !important;
-    min-width: 2.62rem !important;
-    max-width: 2.62rem !important;
-    height: 2.62rem !important;
-    min-height: 2.62rem !important;
-    padding-inline: 0;
-    border-radius: var(--r-md-lg);
-    font-size: var(--ts-sm) !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__actions .mp-header__action.mp-header__search.hdr-v7__search-btn span {
-    display: none !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 4.5rem !important;
-    max-height: 4.5rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    display: flex !important;
-    height: 3.05rem !important;
-    min-height: 3.05rem !important;
-    max-height: 3.05rem !important;
-    align-items: center !important;
-    overflow: hidden;
-    padding-block: 0.28rem;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    height: 2.58rem !important;
-    min-height: 2.58rem !important;
-    max-height: 2.58rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 2.28rem !important;
-    min-width: 2.28rem !important;
-    height: 2.28rem !important;
-    min-height: 2.28rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.56rem !important;
-    min-width: 2.56rem !important;
-    height: 2.56rem !important;
-    min-height: 2.56rem !important;
-  }
-}
-
-@media (max-width: 520px) {
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 4.32rem !important;
-    max-height: 4.32rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    height: 2.88rem !important;
-    min-height: 2.88rem !important;
-    max-height: 2.88rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    height: 2.44rem !important;
-    min-height: 2.44rem !important;
-    max-height: 2.44rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 2.12rem !important;
-    min-width: 2.12rem !important;
-    height: 2.12rem !important;
-    min-height: 2.12rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.42rem !important;
-    min-width: 2.42rem !important;
-    height: 2.42rem !important;
-    min-height: 2.42rem !important;
-  }
-}
-
-@media (max-width: 1024px) {
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: max-content !important;
-    flex: 0 0 auto !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
   }
 }
 
@@ -2248,10 +1820,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     opacity: 1;
     min-width: var(--space-10) !important;
     min-height: var(--space-10) !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__riwaya-switch {
-    margin-inline-end: 0.25rem;
   }
 
   html body .app-root .qc-reader-toolbar > div:last-child {
@@ -2301,102 +1869,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     backdrop-filter: blur(8px) saturate(1.08);
     -webkit-backdrop-filter: blur(8px) saturate(1.08);
   }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 6.05rem !important;
-    max-height: 6.05rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head {
-    position: relative !important;
-    inset: auto !important;
-    height: var(--space-8) !important;
-    min-height: var(--space-8) !important;
-    padding: 0.42rem 0.72rem 0.12rem;
-    background: transparent !important;
-    pointer-events: none;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-head button {
-    width: 2.38rem !important;
-    min-width: 2.38rem !important;
-    height: 2.38rem !important;
-    min-height: 2.38rem !important;
-    background: color-mix(in srgb, var(--theme-panel-bg-strong) 96%, var(--theme-primary) 4%) !important;
-    pointer-events: auto;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-brand {
-    opacity: 0.9;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-progress {
-    height: 0.32rem !important;
-    margin: 0.16rem 0.82rem 0;
-    background: color-mix(in srgb, var(--theme-border) 52%, transparent 48%) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    height: 3.58rem !important;
-    min-height: 3.58rem !important;
-    max-height: 3.58rem !important;
-    display: grid !important;
-    grid-template-columns: minmax(4.6rem, 0.8fr) minmax(10.5rem, 1.45fr) auto !important;
-    align-items: center !important;
-    gap: 0.46rem;
-    padding: 0.34rem 0.72rem 0.58rem;
-    overflow: visible;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    display: flex !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :first-child {
-    font-size: var(--ts-xs) !important;
-    color: color-mix(in srgb, var(--theme-text) 94%, var(--theme-bg) 6%) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta > :nth-child(2) {
-    font-size: var(--ts-2xs) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    height: 2.9rem !important;
-    min-height: 2.9rem !important;
-    max-height: 2.9rem !important;
-    border-radius: var(--r-lg);
-    gap: 0.34rem;
-    padding: 0.26rem 0.42rem;
-    background: color-mix(in srgb, var(--theme-panel-bg-strong) 92%, var(--theme-bg) 8%) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 2.44rem !important;
-    min-width: 2.44rem !important;
-    height: 2.44rem !important;
-    min-height: 2.44rem !important;
-    border-radius: var(--r-md-lg);
-    font-size: var(--ts-xs) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 2.92rem !important;
-    min-width: 2.92rem !important;
-    height: 2.92rem !important;
-    min-height: 2.92rem !important;
-    border-radius: var(--r-lg);
-    font-size: var(--ts-base) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    display: flex !important;
-    gap: 0.34rem;
-  }
 }
 
 @media (max-width: 640px) {
@@ -2411,12 +1883,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     min-width: 44px !important;
     height: 44px !important;
     min-height: 44px !important;
-  }
-
-  html body .app-root > .mp-header .mp-header__riwaya-mobile {
-    width: auto !important;
-    min-width: 46px !important;
-    padding-inline: 0.38rem;
   }
 
   html body .app-root .qc-reader-toolbar > div:last-child {
@@ -2438,11 +1904,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     width: clamp(3.35rem, 17vw, 4.85rem) !important;
   }
 
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    width: 92px !important;
-    min-width: 92px !important;
-  }
-
   html body .app-root .mp-audio-player--mobile.mp-audio-player--dock .mp-player-options-trigger {
     width: var(--mp-device-touch) !important;
     min-width: var(--mp-device-touch) !important;
@@ -2450,14 +1911,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
     min-height: var(--mp-device-touch) !important;
     max-width: none !important;
     flex-shrink: 0 !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-options-trigger,
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: var(--mp-device-touch) !important;
-    min-width: var(--mp-device-touch) !important;
-    height: var(--mp-device-touch) !important;
-    min-height: var(--mp-device-touch) !important;
   }
 }
 
@@ -2582,14 +2035,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
 
   html body .app-root :is(.home-hero-shell, .home-content-section) {
     padding: clamp(0.58rem, 2.5vw, 0.78rem);
-  }
-
-  html body .app-root .app-view-home .home-hero-logo {
-    display: none !important;
-  }
-
-  html body .app-root .app-view-home .home-brand-row {
-    gap: 0;
   }
 
   html body .app-root .app-view-home :is(.hp-card, .surah-card, .home-top-cards-grid > *) {
@@ -2764,150 +2209,6 @@ body > .audio-player-modal .audio-settings-icon-btn {
   html body .app-root .sb-wrapper {
     width: calc(100vw - 1px) !important;
     max-width: calc(100vw - 1px) !important;
-  }
-}
-
-
-
-
-@media (min-width: 641px) and (max-width: 1024px) {
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: 5.2rem !important;
-    max-height: 5.2rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    display: flex !important;
-    flex-direction: row !important;
-    align-items: center !important;
-    height: auto !important;
-    min-height: 3.6rem !important;
-    max-height: none !important;
-    gap: var(--space-2);
-    padding: 0.4rem 0.75rem 0.55rem;
-    overflow: visible;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    display: flex !important;
-    flex-direction: column !important;
-    width: 5.5rem !important;
-    min-width: 5rem !important;
-    flex-shrink: 0 !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    flex: 1 1 auto !important;
-    min-width: 0 !important;
-    width: auto !important;
-    max-width: none !important;
-    height: 3rem !important;
-    min-height: 3rem !important;
-    max-height: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.4rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--r-lg);
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    display: flex !important;
-    flex-shrink: 0 !important;
-    gap: 0.35rem;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn),
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: var(--space-10) !important;
-    min-width: var(--space-10) !important;
-    height: var(--space-10) !important;
-    min-height: var(--space-10) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: 3rem !important;
-    min-width: 3rem !important;
-    height: 3rem !important;
-    min-height: 3rem !important;
-  }
-}
-
-
-@media (max-width: 640px) {
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-    min-height: auto !important;
-    max-height: none !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-controls {
-    display: grid !important;
-    grid-template-columns: 1fr auto !important;
-    grid-template-rows: auto auto !important;
-    grid-template-areas:
-      "meta secondary"
-      "controls controls" !important;
-    height: auto !important;
-    min-height: unset !important;
-    max-height: none !important;
-    gap: 0.3rem 0.4rem;
-    padding: 0.3rem 0.6rem 0.55rem;
-    overflow: visible;
-    align-items: center !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-meta {
-    grid-area: meta !important;
-    display: flex !important;
-    flex-direction: column !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls {
-    grid-area: controls !important;
-    width: 100% !important;
-    flex: unset !important;
-    height: 2.8rem !important;
-    min-height: 2.8rem !important;
-    max-height: none !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.4rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--r-md-lg);
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary {
-    grid-area: secondary !important;
-    display: flex !important;
-    gap: 0.3rem;
-    flex-shrink: 0 !important;
-  }
-
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls button:not(.mp-player-play-btn) {
-    width: 2.35rem !important;
-    min-width: 2.35rem !important;
-    height: 2.35rem !important;
-    min-height: 2.35rem !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-main-controls .mp-player-play-btn {
-    width: var(--space-11) !important;
-    min-width: var(--space-11) !important;
-    height: var(--space-11) !important;
-    min-height: var(--space-11) !important;
-  }
-
-  html body .app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed .mp-player-mobile-secondary > * {
-    width: 2.35rem !important;
-    min-width: 2.35rem !important;
-    height: 2.35rem !important;
-    min-height: 2.35rem !important;
   }
 }
 
