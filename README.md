@@ -16,7 +16,7 @@ Hafs & Warsh · Tajwid aux couleurs de Quran.com · 54 récitateurs · hors-lign
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Version](https://img.shields.io/badge/version-1.2.0-0f6a43)](https://github.com/mohamedeyaf820/mon-coran/releases)
 
-**[Ouvrir l'application](https://mon-coran.vercel.app)** ·
+**[Ouvrir l'application](https://mon-coran.vercel.app)** (miroir : [mon-coran-main.vercel.app](https://mon-coran-main.vercel.app)) ·
 **[Fonctionnalités](#-fonctionnalités)** ·
 **[Démarrer](#-démarrer-en-2-minutes)** ·
 **[Architecture](#-architecture)** ·
@@ -42,13 +42,14 @@ MushafPlus is a free, static Progressive Web App for reading and listening to th
 | 🎧 **Récitations** | 54 récitateurs (46 Hafs, 8 Warsh), lecture verset par verset ou sourate continue, suivi mot à mot, téléchargement hors-ligne validé. |
 | 📴 **Hors-ligne** | PWA installable, service worker, texte et audio en cache, tafsir français relisible hors ligne après une première lecture. |
 | 🔒 **Privé par conception** | Aucun compte, aucune synchronisation cloud. Verrouillage optionnel par phrase secrète (PBKDF2 600 000 itérations + AES). |
+| 🔎 **Recherche sans filtre de langue** | Un seul champ, au clavier comme à la voix : arabe, translittération (même collée, `kulhuallah`, `Bismillahirrahmanirrahim`), français ou anglais. La langue est reconnue automatiquement. |
 | 🌍 **Trilingue** | Français, anglais, arabe avec bascule RTL native — pas de miroir approximatif. |
 
 ---
 
 ## 📸 Aperçu
 
-Une seule application, trois formats : l'interface s'adapte au téléphone (barre de navigation du bas), à la tablette (portrait et paysage) et à l'ordinateur (en-tête complet).
+Une seule application, trois formats : l'interface s'adapte au téléphone (barre de navigation du bas), à la tablette (portrait et paysage) et à l'ordinateur (en-tête complet). Images mises à jour avec la version 1.2.0.
 
 ### 📱 Téléphone
 
@@ -56,7 +57,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
   <img src="docs/images/devices-phone.webp" alt="MushafPlus sur téléphone : accueil, mushaf avec Tajwid, liste avec traduction, 54 récitateurs, menu en mode sombre" width="100%">
 </p>
 <p align="center">
-  <img src="docs/images/devices-phone-2.webp" alt="MushafPlus sur téléphone : arabe RTL en sépia, recherche, réglages, bascule Hafs / Warsh" width="85%">
+  <img src="docs/images/devices-phone-2.webp" alt="MushafPlus sur téléphone : arabe RTL en sépia, recherche automatique, invocations, pages de transparence, réglages" width="100%">
 </p>
 
 ### 📲 Tablette
@@ -82,6 +83,10 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
   </tr>
   <tr>
     <td width="50%"><img src="docs/images/desktop-home.webp" alt="Accueil : reprise de lecture, verset du jour, sourates"><br><sub><b>Accueil</b> — reprise exacte de la dernière position, verset du jour</sub></td>
+    <td width="50%"><img src="docs/images/desktop-search-auto.webp" alt="Recherche « le tout miséricordieux » : traduction française reconnue automatiquement"><br><sub><b>Recherche</b> — « le tout miséricordieux » est reconnu comme une traduction, sans choisir de langue</sub></td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/images/desktop-about.webp" alt="Page À propos : intention, application, principes, hors-ligne"><br><sub><b>Transparence</b> — À propos, Confidentialité, Mentions légales et Sources</sub></td>
     <td width="50%"><img src="docs/images/desktop-settings.webp" alt="Réglages : langue, thèmes, mode nuit automatique"><br><sub><b>Réglages</b> — langue, trois thèmes, mode nuit, audio, confidentialité</sub></td>
   </tr>
 </table>
@@ -95,7 +100,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 - **Deux présentations** : *liste* (un verset par bloc, avec traduction et translittération) et *mushaf* (mise en page de page imprimée, plein écran inclus).
 - **Reprise exacte** là où vous vous êtes arrêté, y compris après rechargement ou hors-ligne.
 - **Cinq polices Hafs** (QPC Uthmani, IndoPak Nastaleeq, Scheherazade New, Amiri Quran, Noto Naskh) et deux polices Warsh, avec réglage de taille.
-- **Recherche** par référence (`2:255`), par texte arabe ou par mot, recherche vocale.
+- **Recherche sans choix de langue** : référence (`2:255`), nom de sourate, texte arabe, translittération (`kulhuallah`, `Bismillahirrahmanirrahim`), mot ou phrase en français ou en anglais (« le tout miséricordieux »). La langue est reconnue seule ; la dictée vocale écoute dans la langue de l'interface puis, si rien n'est trouvé, une seconde fois dans l'autre.
 - **Informations de sourate** : dossier éditorial, lieu de révélation, nombre de versets.
 
 ### 🎨 Tajwid
@@ -121,7 +126,8 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 ### 📱 Interface
 - **Mobile d'abord** : barre de navigation du bas, zones tactiles ≥ 44 px, en-tête qui s'efface en lecture.
 - **Trois thèmes** (jour, sépia, nuit), mode nuit automatique, cibles tactiles et contrastes testés.
-- Raccourcis clavier, plein écran, accessibilité vérifiée par axe-core.
+- **Pages d'information** (À propos, Confidentialité, Mentions légales, Sources) en cartes responsives dès 240 px, avec attributions de chaque source.
+- Lecteur audio compact (barre de progression, titre de sourate en calligraphie), raccourcis clavier, plein écran, accessibilité vérifiée par axe-core.
 
 ---
 
@@ -144,7 +150,7 @@ Mesures faites sur le build de production (réseau réel, Chromium) :
 
 | Mesure | Valeur |
 |---|---|
-| JS du point d'entrée | ≈ 143 kB (le français est embarqué, l'anglais et l'arabe se chargent à la demande) |
+| Premier chargement (point d'entrée) | ≈ 770 kB dont ≈ 409 kB de JS et ≈ 361 kB de CSS (≈ 192 kB compressés) ; le français est embarqué, l'anglais et l'arabe se chargent à la demande |
 | Premier verset visible (sourate 2) | ≈ 1 s |
 | Accueil : premier affichage | ≈ 0,3 s |
 | Défilement en mode page | ≈ 60 images/s |
@@ -235,8 +241,8 @@ npm run preview        # http://localhost:4173
 
 ## 🧪 Qualité
 
-- **≈ 520 tests unitaires et contrats** : intégrité du texte coranique et du Tajwid, chiffrement, crypto, budgets tactiles, parité des en-têtes de déploiement, i18n (parité des clés FR/EN/AR).
-- **≈ 60 fichiers de scénarios e2e** (≈ 285 tests) sur Chromium, Firefox, WebKit et en PWA hors-ligne : lecture, audio, téléchargements, responsive, RTL, accessibilité (axe-core), régression visuelle.
+- **545 tests unitaires et contrats** : intégrité du texte coranique et du Tajwid, chiffrement, crypto, budgets tactiles, parité des en-têtes de déploiement, i18n (parité des clés FR/EN/AR).
+- **71 fichiers de scénarios e2e** (325 tests sur Chromium) sur Chromium, Firefox, WebKit et en PWA hors-ligne : lecture, audio, téléchargements, responsive, RTL, accessibilité (axe-core), régression visuelle.
 - **CI** (GitHub Actions) : lint, tests avec couverture, build + budgets, audit des dépendances, vérification des données Warsh.
 - Preuves de non-régression CSS : [`scripts/snapshot-computed-styles.mjs`](scripts/snapshot-computed-styles.mjs) compare le style calculé de chaque élément entre deux builds.
 
@@ -244,7 +250,7 @@ npm run preview        # http://localhost:4173
 
 ## 🗺️ Feuille de route
 
-Les huit phases initiales (stabilisation, lecture fluide, audio modulaire, design system, accueil, récitateurs, sécurité, bibliothèque) sont **terminées**. Récemment : Tajwid fidèle à Quran.com sur toutes les polices Hafs, navigation mobile, téléchargements hors-ligne validés, dictionnaires par langue. Voir [ROADMAP.md](ROADMAP.md).
+Les huit phases initiales (stabilisation, lecture fluide, audio modulaire, design system, accueil, récitateurs, sécurité, bibliothèque) sont **terminées**. Récemment : Tajwid fidèle à Quran.com sur toutes les polices Hafs, navigation mobile, téléchargements hors-ligne validés, dictionnaires par langue. **Version 1.2.0 (octobre 2026)** : recherche sans filtre de langue, pages d'information refaites, lecteur compact et défilement plus stables, 2 700 règles CSS mortes supprimées. Voir [ROADMAP.md](ROADMAP.md).
 
 ---
 

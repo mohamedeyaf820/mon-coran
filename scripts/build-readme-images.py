@@ -203,8 +203,8 @@ def strip(items, name, width=1900, per_row=None, cap_size=38):
 
 strip([("home-mobile", "Accueil"), ("reader-mushaf-mobile", "Mushaf · Tajwid"), ("reader-mobile", "Liste · traduction"),
        ("audio-mobile", "54 récitateurs"), ("menu-mobile", "Menu · mode sombre")], "devices-phone.webp", width=2400, cap_size=42)
-strip([("reader-arabic-mobile", "Arabe · RTL · sépia"), ("search-mobile", "Recherche"), ("settings-mobile", "Réglages"),
-       ("menu-mobile", "Hafs / Warsh")], "devices-phone-2.webp", width=2000, cap_size=40)
+strip([("reader-arabic-mobile", "Arabe · RTL · sépia"), ("search-auto-mobile", "Recherche automatique"), ("duas-mobile", "Invocations"),
+       ("about-mobile", "Transparence"), ("settings-mobile", "Réglages")], "devices-phone-2.webp", width=2400, cap_size=38)
 
 # --- 3. tablets ---------------------------------------------------------------
 TW, TH = 2400, 1010
@@ -235,7 +235,7 @@ save(desk, "devices-desktop.webp")
 
 # --- 5. single framed desktop shots -------------------------------------------
 for name, crop in (("home-desktop", 0), ("reader-mushaf-desktop", PLAYER), ("reader-warsh", PLAYER), ("reader-mushaf-dark", PLAYER),
-                   ("audio-desktop", 0), ("search-desktop", 0), ("settings-desktop", 0)):
+                   ("audio-desktop", 0), ("search-desktop", 0), ("search-auto-desktop", 0), ("about-desktop", 0), ("settings-desktop", 0)):
     if not (RAW / f"{name}.png").exists():
         continue
     win, radius = browser(load(name, crop), 1500)
