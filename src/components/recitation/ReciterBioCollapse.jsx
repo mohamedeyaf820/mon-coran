@@ -4,7 +4,11 @@ import { getReciterBio } from "../../data/reciters";
 import { useReciterProfile } from "../../hooks/useReciterProfile";
 
 export default function ReciterBioCollapse({ lang, text, reciter }) {
-  const [open, setOpen] = useState(true);
+  // Where the bio sits above the surah list (phones and tablets), it starts folded:
+  // the surahs are the reason the reader opened this page.
+  const [open, setOpen] = useState(
+    () => typeof window === "undefined" || !window.matchMedia || window.matchMedia("(min-width: 961px)").matches,
+  );
   const contentRef = useRef(null);
   const [contentHeight, setContentHeight] = useState(0);
   const contentId = useId();

@@ -50,7 +50,9 @@ const LIMITS = {
   // sober tajweed filters, line-measure clamp contract, mirrored furniture).
   // 2026-09-21: raised to 1258 kB for concurrent-session reader CSS landed in the
   // shared tree during the palette migration (measured 1254.3 kB).
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1258),
+  // 2026-10-07: 1265 kB for the Invocations hero (one set of inks in every theme)
+  // and the reciter page order on phones, measured 1262.2 kB.
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1265),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(
