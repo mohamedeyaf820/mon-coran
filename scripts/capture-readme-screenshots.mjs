@@ -37,6 +37,11 @@ const SHOTS = [
   { name: "reader-tablet-wide", url: "/surah/2", viewport: TABLET_WIDE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true },
   { name: "audio-desktop", url: "/", viewport: DESKTOP, settings: { showHome: true }, openAudioTab: true },
   { name: "search-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSearch: true },
+  { name: "search-auto-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSearch: true, query: "le tout miséricordieux" },
+  { name: "search-auto-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "dark" }, mobile: true, reveal: true, mobileTool: "search", query: "Bismillahirrahmanirrahim" },
+  { name: "about-desktop", url: "/about", viewport: DESKTOP, settings: { showHome: false } },
+  { name: "about-mobile", url: "/privacy", viewport: PHONE, settings: { showHome: false }, mobile: true },
+  { name: "duas-mobile", url: "/duas", viewport: PHONE, settings: { showHome: false }, mobile: true },
   { name: "settings-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSettings: true },
 ];
 
@@ -78,6 +83,10 @@ for (const shot of SHOTS) {
     }
   } catch (error) {
     console.error(`[shot] ${shot.name}: overlay not opened (${error.message.split("\n")[0]})`);
+  }
+  if (shot.query) {
+    await page.locator("#quran-search-input").fill(shot.query).catch(() => {});
+    await page.waitForTimeout(4500);
   }
   await page.waitForTimeout(1200);
   await page.screenshot({ path: `${OUT}/${shot.name}.png`, animations: "disabled" });
