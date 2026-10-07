@@ -201,13 +201,6 @@ export function isAllowedExternalUrl(url) {
   }
 }
 
-export function openExternalUrl(url, target = "_blank", features = "noopener,noreferrer") {
-  if (typeof window === "undefined") return false;
-  if (!isAllowedExternalUrl(url)) return false;
-  window.open(url, target, features);
-  return true;
-}
-
 const SAFE_LINK_PROTOCOLS = new Set(["https:", "http:", "mailto:", "tel:"]);
 
 /**

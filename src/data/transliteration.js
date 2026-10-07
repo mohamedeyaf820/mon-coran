@@ -404,20 +404,3 @@ export function arabicToLatin(text, riwaya = 'hafs') {
     .toLowerCase();
 }
 
-/**
- * Check if a Latin query matches Arabic text (fuzzy phonetic match).
- * Converts the Arabic text to Latin and checks if the query appears within it.
- */
-export function phoneticMatch(latinQuery, arabicText) {
-  if (!latinQuery || !arabicText) return false;
-  const normalized = arabicToLatin(arabicText);
-  const query = latinQuery.toLowerCase().replace(/\s+/g, ' ').trim();
-  return normalized.includes(query);
-}
-
-/**
- * Get the common terms dictionary (useful for autocomplete).
- */
-export function getCommonTerms() {
-  return { ...COMMON_TERMS };
-}

@@ -98,29 +98,6 @@
     box-shadow: var(--app-shadow-soft);
 }
 
-.app-view-reading .quran-display--platform .qc-ayah-block {
-    padding: clamp(0.76rem, 1.2vw, 0.96rem) clamp(0.58rem, 0.95vw, 0.84rem);
-    border-radius: calc(var(--app-radius-lg) + 0.15rem);
-    border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--theme-panel-bg-strong) 96%, transparent 4%),
-        color-mix(in srgb, var(--theme-panel-bg) 90%, transparent 10%)
-    );
-}
-
-.app-root.focus-reading
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block {
-    padding-block: clamp(0.86rem, 1.4vw, 1.08rem);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--theme-bg) 96%, transparent 4%),
-        color-mix(in srgb, var(--theme-surface) 94%, transparent 6%)
-    );
-}
-
 .app-view-reading .quran-display--platform .qc-ayah-text-ar {
     line-height: 2.08;
 }
@@ -574,10 +551,6 @@
     .app-view-reading .quran-display--platform {
         padding-inline: 0.72rem;
         padding-block: 0.85rem 2.6rem;
-    }
-
-    .app-view-reading .quran-display--platform .qc-ayah-block {
-        padding-inline: 0.7rem;
     }
 
     .ayah-actions__meta,

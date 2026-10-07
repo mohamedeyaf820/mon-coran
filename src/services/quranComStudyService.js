@@ -371,10 +371,6 @@ const TRANSLATION_RESOURCES = {
   nl: 209,
 };
 
-export function getQuranComVerseUrl(surah, ayah) {
-  return `https://quran.com/${Number(surah)}/${Number(ayah)}`;
-}
-
 export async function getVerseTranslation({
   surah,
   ayah,

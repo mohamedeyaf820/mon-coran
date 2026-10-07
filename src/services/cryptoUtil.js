@@ -451,18 +451,3 @@ export function decryptDataWithMeta(ciphertext) {
   return empty;
 }
 
-export function decryptData(ciphertext) {
-  return decryptDataWithMeta(ciphertext).data;
-}
-
-export function migrateToDeviceKey(storageKey, decryptedData) {
-  if (!storageKey || decryptedData == null || hasEncryptionPassphraseConfigured()) {
-    return false;
-  }
-  try {
-    localStorage.setItem(storageKey, encryptData(decryptedData));
-    return true;
-  } catch {
-    return false;
-  }
-}

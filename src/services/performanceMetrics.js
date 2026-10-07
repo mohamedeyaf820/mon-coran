@@ -184,12 +184,3 @@ export function clearPerformanceReport() {
   }
 }
 
-export function destroyPerformanceMetricsForTests() {
-  observers.forEach((observer) => observer.disconnect?.());
-  observers = [];
-  initialized = false;
-  lcpValue = 0;
-  clsValue = 0;
-  inpValue = 0;
-  flushed = { lcp: null, cls: null, inp: null };
-}

@@ -28,27 +28,6 @@
     box-shadow: none;
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    display: grid !important;
-    grid-template-columns: 52px minmax(0, 1fr);
-    align-items: start !important;
-    gap: clamp(0.9rem, 2vw, 1.35rem);
-    width: 100%;
-    padding: clamp(1.55rem, 2.2vw, 2.25rem) 0;
-    border: 0;
-    border-bottom: 1px solid var(--qcom-reader-line);
-    border-radius: 0;
-    background: transparent !important;
-    box-shadow: none;
-}
-
-.app-root .quran-display--platform .rd-ayah.active,
-.app-root .quran-display--platform .rd-ayah.is-active,
-.app-root .quran-display--platform .rd-ayah.playing,
-.app-root .quran-display--platform .rd-ayah.is-playing {
-    background: linear-gradient(90deg, transparent, rgba(var(--primary-rgb), 0.055), transparent) !important;
-}
-
 .app-root .quran-display--platform .qc-ayah-text-ar {
     margin: 0;
     color: var(--qcom-reader-ink) !important;
@@ -125,12 +104,6 @@
         --qcom-ar-leading: 2;
         --qcom-ar-word-spacing: 0.045em;
     }
-
-    .app-root .quran-display--platform .rd-ayah {
-        grid-template-columns: 42px minmax(0, 1fr);
-        gap: 0.75rem;
-        padding-block: 1.25rem;
-    }
 }
 
 @media (max-width: 768px) {
@@ -153,11 +126,6 @@
         --qcom-ar-size: var(--quran-font-size, clamp(1.48rem, 8.4vw, 2.14rem));
         --qcom-ar-leading: 1.92;
         --qcom-ar-word-spacing: 0.025em;
-    }
-
-    .app-root .quran-display--platform .rd-ayah {
-        grid-template-columns: 1fr;
-        gap: 0.55rem;
     }
 }
 
@@ -326,20 +294,6 @@
 
 .app-root .quran-display--platform .surah-ayahs-list:not(.qcom-continuous-list) {
     border-color: var(--reader-border);
-}
-
-.app-root .quran-display--platform .rd-ayah {
-    border-bottom-color: color-mix(in srgb, var(--reader-border) 74%, transparent) !important;
-}
-
-.app-root .quran-display--platform .rd-ayah:hover {
-    background: linear-gradient(90deg, transparent, var(--reader-hover), transparent) !important;
-}
-
-.app-root .quran-display--platform .rd-ayah.is-active,
-.app-root .quran-display--platform .rd-ayah.playing,
-.app-root .quran-display--platform .rd-ayah.is-playing {
-    background: linear-gradient(90deg, transparent, var(--reader-active), transparent) !important;
 }
 
 .app-root .quran-display--platform .qcom-continuous-list,
@@ -1061,53 +1015,6 @@ html body .app-root .quran-display--platform .mushaf-text-block .quran-arabic-te
     box-shadow: none;
 }
 
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block {
-    max-width: 860px !important;
-    margin: 0 auto;
-    padding: clamp(0.95rem, 1.8vw, 1.45rem) 0.15rem;
-    border: 0;
-    border-bottom: 1px solid var(--qcom-page-line, var(--border));
-    border-radius: 0;
-    background: transparent !important;
-    box-shadow: none;
-    color: var(--qcom-page-ink, var(--text-primary)) !important;
-    transform: none;
-}
-
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block:hover,
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block.is-active,
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block.playing,
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block.is-playing {
-    border-bottom-color: color-mix(in srgb, var(--primary) 34%, var(--qcom-page-line, var(--border))) !important;
-    background: color-mix(in srgb, var(--primary) 4%, transparent) !important;
-    box-shadow: none;
-    transform: none;
-}
-
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block > .flex:first-child {
-    margin-bottom: 0.75rem;
-}
-
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block > .flex:first-child > div:first-child {
-    border-color: var(--qcom-page-line, var(--border));
-    background: transparent !important;
-    color: var(--qcom-page-muted, var(--text-muted)) !important;
-    font-size: 0.68rem !important;
-    letter-spacing: 0;
-    text-transform: none;
-}
-
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block .rd-arabic {
-    margin: 0 0 0.85rem;
-    color: var(--qcom-page-ink, var(--text-quran)) !important;
-    font-size: var(--qcom-reader-font-size) !important;
-    line-height: 2.05 !important;
-}
-
-.app-root .quran-display--platform .rd-ayah.qc-ayah-block :is(.ayah-supplement, .ayah-translation, .translation-text, .transliteration) {
-    color: var(--qcom-page-muted, var(--text-secondary)) !important;
-}
-
 .app-root .quran-display--platform > .reading-progress-bar {
     opacity: 0;
 }
@@ -1283,13 +1190,6 @@ html body .app-root .quran-display--platform .mushaf-container .cpv-verse--playi
     animation: none;
 }
 
-@media (prefers-reduced-motion: reduce) {
-    .app-root .quran-display--platform .rd-ayah.playing {
-        animation: none;
-        background-color: rgba(var(--primary-rgb), 0.15) !important;
-    }
-}
-
 @media (max-width: 640px) {
     html body .app-root .quran-display--platform .cpv-container.mushaf-page-wrapper {
         padding: 1.15rem 0.9rem 1.5rem;
@@ -1454,24 +1354,6 @@ html body .app-root .quran-display--platform .surah-ayahs-list {
     box-shadow: 0 10px 34px rgba(28, 25, 23, 0.055);
 }
 
-html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
-    max-width: 880px !important;
-    margin: 0 auto;
-    border-width: 0 0 1px;
-    border-color: rgba(229, 231, 235, 0.86);
-    border-radius: 0;
-    background: transparent !important;
-    box-shadow: none;
-    padding: clamp(1.45rem, 2.2vw, 2.15rem) clamp(1.2rem, 2.8vw, 2.35rem);
-}
-
-html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block:hover,
-html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block.is-active {
-    background: rgba(232, 245, 238, 0.46) !important;
-    box-shadow: none;
-    transform: none;
-}
-
 html body .app-root .quran-display--platform .rd-arabic.qc-ayah-text-ar {
     margin-bottom: 1.35rem;
     font-size: max(2.45rem, var(--quran-font-size)) !important;
@@ -1491,10 +1373,6 @@ html body .app-root .quran-display--platform .rd-arabic.qc-ayah-text-ar :is(.ver
 
     html body .app-root .quran-display--platform .surah-ayahs-list {
         border-radius: 14px;
-    }
-
-    html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
-        padding: 1.25rem 1rem;
     }
 
     html body .app-root .quran-display--platform .rd-arabic.qc-ayah-text-ar {
@@ -1885,36 +1763,6 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
     font-family: var(--qd-font-family, inherit);
 }
 
-.quran-display--platform .qc-ayah-block {
-    border-radius: 1.5rem;
-    border-color: var(--quran-platform-border);
-    background: var(--quran-platform-surface-soft);
-    box-shadow:
-        0 16px 32px rgba(15, 22, 19, 0.07),
-        0 1px 0 rgba(255, 255, 255, 0.18) inset;
-}
-
-.quran-display--platform .qc-ayah-block:hover {
-    transform: translateY(-1px);
-    border-color: color-mix(
-        in srgb,
-        var(--gold, #b8860b) 42%,
-        var(--quran-platform-border) 58%
-    );
-}
-
-.quran-display--platform .qc-ayah-block.is-active {
-    box-shadow:
-        0 18px 36px rgba(var(--primary-rgb), 0.12),
-        0 1px 0 rgba(255, 255, 255, 0.16) inset;
-}
-
-.quran-display--platform .qc-ayah-block.is-playing {
-    box-shadow:
-        0 22px 42px rgba(212, 168, 32, 0.14),
-        0 1px 0 rgba(255, 255, 255, 0.2) inset;
-}
-
 .quran-display--platform .qc-ayah-text-ar {
     line-height: calc(var(--arabic-reading-line-height, 2.46) - 0.16);
     letter-spacing: 0.002em;
@@ -1970,34 +1818,11 @@ html body .app-root .quran-display--platform .qc-verse-card:focus-within {
         border-radius: 1.05rem;
     }
 
-    .quran-display--platform .qc-ayah-block {
-        border-radius: 1.18rem;
-    }
-
     .quran-display--platform .qc-ayah-text-ar {
         line-height: calc(
             var(--arabic-reading-line-height-mobile, 2.22) - 0.01
         );
         word-spacing: var(--arabic-reading-word-spacing-mobile, 0.052em);
-    }
-}
-
-@media (max-width: 420px) {
-    .quran-mode-pane--page .mp-basmala,
-    .quran-display--platform .bismillah-text {
-        line-height: calc(
-            var(--arabic-reading-line-height-mobile, 2.22) - 0.02
-        );
-        letter-spacing: 0.004em;
-    }
-}
-
-@media (max-width: 360px) {
-    .quran-mode-pane--page .mp-basmala,
-    .quran-display--platform .bismillah-text {
-        line-height: calc(
-            var(--arabic-reading-line-height-mobile, 2.22) - 0.05
-        );
     }
 }
 

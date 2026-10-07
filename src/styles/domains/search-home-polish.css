@@ -1035,13 +1035,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     color: color-mix(in srgb, var(--reader-flow-ink-dark) 86%, #d4a820 14%) !important;
 }
 
-.app-root .quran-display--platform .cpv-basmala,
-.app-root .quran-display--platform .mp-basmala {
-    color: var(--reader-flow-ink-dark) !important;
-    font-size: clamp(1.7rem, 1.12rem + 1.6vw, 3rem) !important;
-    line-height: 2.05 !important;
-}
-
 .app-root .quran-display--platform .cpv-surah-header,
 .app-root .quran-display--platform .cpv-page-sep,
 .app-root .quran-display--platform .cpv-closure {
@@ -1052,12 +1045,6 @@ html[data-theme="dark"] .search-pro__close:hover {
     background: var(--reader-flow-bg-dark);
     border-color: rgba(148, 163, 184, 0.12);
     border-radius: 18px;
-}
-
-.app-root .quran-display--platform .rd-ayah {
-    background: transparent !important;
-    border-color: rgba(148, 163, 184, 0.08);
-    box-shadow: none;
 }
 
 .app-root .quran-display--platform .qc-ayah-text-ar {

@@ -90,10 +90,8 @@ test("warsh coordinates: the documented divergence anchor stays exact", () => {
 test("warsh coordinates: all action surfaces hand AyahActions the mapped number", () => {
   const modal = readSource("src/components/QuranDisplay/AyahActionsModal.jsx");
   const qcWrapper = readSource("src/components/QuranDisplay/QCVerseActions.jsx");
-  const footer = readSource("src/components/Quran/AyahBlockFooter.jsx");
   assert.match(modal, /const storageVerseNumber = ayahData\?\.hafsNumber \?\? verseNumber;/);
   assert.match(qcWrapper, /ayah=\{ayahData\?\.hafsNumber \?\? ayah\}/);
-  assert.match(footer, /ayah=\{ayah\.hafsNumber \?\? ayah\.numberInSurah\}/);
 });
 
 /* ── 4. The data layer always attaches the mapping for Warsh ────────────── */

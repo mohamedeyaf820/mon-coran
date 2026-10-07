@@ -88,46 +88,6 @@
 .app-root.premium-plus
     .app-view-reading
     .quran-display--platform
-    .qc-ayah-block {
-    border-color: color-mix(in srgb, var(--theme-border) 54%, transparent 46%);
-    background: linear-gradient(
-        180deg,
-        color-mix(in srgb, var(--theme-panel-bg-strong) 97%, transparent 3%),
-        color-mix(in srgb, var(--theme-panel-bg) 92%, transparent 8%)
-    );
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-active,
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-playing {
-    border-color: color-mix(
-        in srgb,
-        var(--theme-border-strong) 44%,
-        transparent 56%
-    );
-    background: linear-gradient(
-        180deg,
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg-strong) 84%,
-            rgba(var(--theme-primary-rgb), 0.12) 16%
-        ),
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg) 90%,
-            rgba(var(--theme-primary-rgb), 0.1) 10%
-        )
-    );
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
     .qc-ayah-text-ar {
     color: var(--theme-arabic);
 }
@@ -776,40 +736,9 @@
     gap: 0.92rem;
 }
 
-.app-root.premium-plus .app-view-reading .quran-display--platform .rd-ayah {
-    border-radius: 1rem;
-    border-color: color-mix(in srgb, var(--theme-border) 62%, transparent 38%);
-    background:
-        radial-gradient(
-            circle at 10% 0%,
-            rgba(var(--theme-primary-rgb), 0.1),
-            transparent 55%
-        ),
-        color-mix(in srgb, var(--theme-panel-bg-strong) 91%, transparent 9%);
-    box-shadow: 0 12px 24px rgba(2, 8, 22, 0.09);
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .rd-ayah:hover {
-    border-color: color-mix(in srgb, var(--theme-primary) 40%, transparent 60%);
-    box-shadow: 0 18px 30px rgba(var(--theme-primary-rgb), 0.16);
-}
-
 .app-root.premium-plus .app-view-reading .quran-display--platform .rd-arabic {
     color: color-mix(in srgb, var(--theme-text) 88%, #ffffff 12%);
     text-shadow: 0 1px 2px rgba(0, 0, 0, 0.16);
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block {
-    padding: var(--reading-card-pad-y) var(--reading-card-pad-x);
-    border-radius: 1rem;
-    border-color: color-mix(in srgb, var(--theme-border) 58%, transparent 42%);
-    box-shadow: 0 8px 18px rgba(2, 8, 22, 0.06);
 }
 
 .app-root.premium-plus
@@ -864,22 +793,6 @@
     width: 1.98rem;
     height: 1.98rem;
     font-size: 0.76rem;
-}
-
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-active,
-.app-root.premium-plus
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-playing {
-    border-color: color-mix(
-        in srgb,
-        var(--theme-border-strong) 48%,
-        transparent 52%
-    );
-    box-shadow: 0 12px 24px rgba(var(--theme-primary-rgb), 0.14);
 }
 
 .app-root.premium-plus .hp-grid.hp-grid--surah {
@@ -985,14 +898,6 @@
 
     .app-root.premium-plus .hp-grid.hp-grid--surah .hp-card-ar {
         font-size: 1.26rem;
-    }
-
-    .app-root.premium-plus
-        .app-view-reading
-        .quran-display--platform
-        .qc-ayah-block {
-        padding: 0.48rem 0.5rem;
-        border-radius: 0.9rem;
     }
 
     .app-root.premium-plus

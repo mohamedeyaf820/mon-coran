@@ -441,7 +441,6 @@ test("surah headings keep an accessible Arabic title while calligraphic selector
   const header = source("src/components/Quran/SurahReaderHeader.jsx");
   const headerStyles = source("src/styles/surah-reader-header.css");
   const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
-  const inlineHeader = source("src/components/Quran/MushafInlineHeader.jsx");
   const appHeader = source("src/components/Header.jsx");
   const hero = source("src/components/Home/HeroSection.jsx");
   const surahCards = source("src/components/Home/HomePrimitives.jsx");
@@ -454,10 +453,7 @@ test("surah headings keep an accessible Arabic title while calligraphic selector
   assert.match(cleanHeader, /getSurahLigature\(surahNum\)/);
   assert.match(cleanHeader, /className="cpv-surah-name-ligature font-surah-names"[\s\S]*?dir="ltr"[\s\S]*?aria-hidden="true"/);
   assert.doesNotMatch(cleanHeader, /document\.fonts/);
-  assert.match(inlineHeader, /aria-label=\{`سورة \$\{surahNameAr\}`\}/);
-  assert.match(inlineHeader, /getSurahLigature\(surahNum\)/);
   assert.doesNotMatch(cleanHeader, /cpv-surah-prefix/);
-  assert.doesNotMatch(inlineHeader, /mp-surah-prefix/);
   assert.match(appHeader, /getSurahLigature\(activeSurahNum\)/);
   assert.match(appHeader, /className="font-surah-names"[\s\S]*?aria-hidden="true"/);
   // The phone swap to the compact lockup must not drop the masthead face.
@@ -641,7 +637,6 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   const mushafBook = source("src/styles/mushaf-book.css");
   const mushafPage = source("src/components/QuranDisplay/MushafFlowPage.jsx");
   const verseView = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
-  const supplement = source("src/components/Quran/AyahBlockSupplement.jsx");
 
   assert.equal((theme.match(/--brand-gold:/g) || []).length, 3);
   assert.match(theme, /--gold: var\(--brand-gold, var\(--theme-accent\)\)/);
@@ -664,7 +659,6 @@ test("the visual system separates brand, gold, Warsh and transliteration roles",
   assert.doesNotMatch(mushafPage, /marginInlineEnd|wordSpacing/);
   assert.match(readingPolish, /"Iowan Old Style", "Palatino Linotype", Georgia, serif/);
   assert.match(verseView, /className="qc-ayah-transliteration"/);
-  assert.match(supplement, /className="ayah-transliteration" dir="ltr"/);
 });
 
 test("the application-wide design system owns themes, surfaces and responsive fallbacks", () => {

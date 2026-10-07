@@ -57,7 +57,6 @@ const TRANSLATION_RESOURCE_IDS = {
   fr: 136,
 };
 
-
 function buildVerseParams(extra = {}, legacy = false) {
   const includeWords = extra.words === true || extra.words === "true";
   const params = new URLSearchParams({
@@ -474,7 +473,3 @@ export async function fetchQuranComTranslations(pathPrefix, langs = ["fr"], sign
   );
 }
 
-export function getQuranComPageFontFamily(page, version = "v2") {
-  const normalizedVersion = version === "v1" ? "v1" : version === "v4" ? "v4" : "v2";
-  return `qcf-${normalizedVersion}-p${Number(page) || 1}`;
-}
