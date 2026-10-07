@@ -139,6 +139,7 @@ export default {
     verseLabel: 'الآية',
     bookmarkVerse: 'وضع إشارة مرجعية',
     verseActionsHint: 'اضغط على رقم الآية لفتح إجراءاتها',
+    fontFallback: 'تعذّر تحميل خط الهندي (الشبكة): يُستخدم خط حفص في الأثناء.',
     juzLabel: 'الجزء {n}',
     juzWord: 'جزء',
     ayahAbbr: 'آية',

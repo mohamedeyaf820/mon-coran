@@ -425,6 +425,13 @@ export function appReducer(state, action) {
     case "SET_FONT_SIZE":
       return { ...state, quranFontSize: clampQuranFontSize(action.payload, state.quranFontSize) };
 
+    // A face that cannot be loaded (network) is replaced for display only: the
+    // choice kept per riwaya is untouched, so it comes back when the face does.
+    case "SET_FONT_FALLBACK": {
+      const fallbackFont = normalizeFontId(action.payload, state.riwaya);
+      return state.fontFamily === fallbackFont ? state : { ...state, fontFamily: fallbackFont };
+    }
+
     case "SET_FONT_FAMILY":
       {
         const normalizedFont = normalizeFontId(action.payload, state.riwaya);

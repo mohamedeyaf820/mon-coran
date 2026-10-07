@@ -14,6 +14,7 @@ import {
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
 import { handleVerseEnded } from "./audioHandoff.js";
+import { armAutoRetry, cancelAutoRetry } from "./audioAutoRetry.js";
 import { createBasmalaPreroll } from "./basmalaPreroll.js";
 import { expandAyahsToAudioFiles, keepsSameAudioVerseSet } from "../utils/audioPlaylist.js";
 import {
@@ -135,6 +136,8 @@ class AudioService {
     this.onEnd = null;
     this.onTimeUpdate = null;
     this.onError = null;
+    this._autoRetryCount = 0;
+    this._autoRetryCancel = null;
     this.onNetworkState = null;
     this.onBasmala = null;
 
@@ -1078,6 +1081,7 @@ class AudioService {
       if (position > 0 && Number.isFinite(position)) this._pendingSeekSec = position;
       this._applyPendingSeek();
       this.onNetworkState?.("playing");
+      this._autoRetryCount = 0;
       this._notifyPlay(activeItem);
       this._emitAyahChange(activeItem);
 
@@ -1095,6 +1099,7 @@ class AudioService {
       // Keep current ayah on error (don't skip ahead and desync highlighting)
       this.isPlaying = false;
       this._notifyPause(this.currentAyah);
+      armAutoRetry(this, index, position, commandId, err);
       if (throwOnError) {
         throw err;
       }
@@ -1289,6 +1294,7 @@ class AudioService {
   destroy() {
     this._releaseMediaSession();
     this._channel?.close();
+    cancelAutoRetry(this);
     if (typeof window !== "undefined") window.removeEventListener?.("mushafplus-playback-claim", this._boundOtherAudio);
     this._releaseNativePlayback();
     if (this._rafId) {

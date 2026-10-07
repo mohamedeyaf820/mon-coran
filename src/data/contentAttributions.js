@@ -122,9 +122,9 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
   {
     id: "fonts",
     category: "font",
-    name: "Quran Foundation, KFGQPC et Scheherazade New",
-    usage: "Rendu typographique Hafs, Warsh et IndoPak.",
-    rights: "Les polices distantes restent soumises à leur fournisseur. Les fichiers locaux sans notice de licence jointe sont signalés comme droits à vérifier avant redistribution.",
+    name: "Quran Foundation, KFGQPC, QuranWBW (IndoPak) et Scheherazade New",
+    usage: "Rendu typographique Hafs, Warsh et IndoPak. La police IndoPak (AlQuran IndoPak, d’Ayman Siddiqui, d’après Al Qalam et KFGQPC) est chargée à la demande depuis le CDN de Quran Foundation; sans réseau, le lecteur affiche le texte Hafs à la place.",
+    rights: "Les polices distantes restent soumises à leur fournisseur; la police IndoPak n’est pas redistribuée par MushafPlus, sa licence l’interdit sans accord écrit de QuranWBW. Les fichiers locaux sans notice de licence jointe sont signalés comme droits à vérifier avant redistribution.",
     url: "https://verses.quran.foundation/",
   },
   {
