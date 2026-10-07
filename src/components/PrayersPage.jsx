@@ -281,10 +281,12 @@ export default function PrayersPage() {
                 <article key={dua.id} className="prayers-dua-card">
                   <p className="prayers-dua-arabic" dir="rtl" lang="ar">{dua.arabic}</p>
                   {dua.transliteration ? (
-                    <p className="prayers-dua-translit">{dua.transliteration}</p>
+                    <p className="prayers-dua-translit" dir="ltr">{dua.transliteration}</p>
                   ) : null}
                   <p className="prayers-dua-translation">
-                    {lang === "fr" ? dua.fr : dua.en}
+                    <span className="prayers-dua-translation__text" lang={lang === "fr" ? "fr" : "en"} dir="ltr">
+                      {lang === "fr" ? dua.fr : dua.en}
+                    </span>
                     {lang === "ar" ? (
                       <small className="prayers-dua-lang-note">{t("prayers.duasLangNote", lang)}</small>
                     ) : null}

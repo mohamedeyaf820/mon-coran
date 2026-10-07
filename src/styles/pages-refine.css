@@ -1,31 +1,99 @@
-/* ==========================================================================
-   Page-level coherence fixes found while reviewing every page
+/* Page-level coherence fixes (duas dark search, library tabs, settings notes, hero surface). Loaded last. */
 
-   - Duas, dark themes: the search icon and the "other categories" toggle took
-     a near-black colour on a near-black card (unreadable), and the field was a
-     box inside a box.
-   Loaded last (see deferredStyles.js).
-   ========================================================================== */
+/* ── Invocations hero: one dark surface, one set of inks, every theme ───── */
+/* The hero is the brand surface in all three themes, so its text is light in
+   all three: the colours below do not depend on which legacy light-card rule
+   happens to apply. One white search pill, outlined chips, a clear toggle. */
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero {
+  --hero-ink: #f8fbf9;
+  --hero-soft: rgba(248, 251, 249, 0.8);
+  --hero-line: rgba(255, 255, 255, 0.24);
+  color: var(--hero-ink) !important;
+  gap: 1rem;
+  padding: clamp(1.1rem, 3vw, 1.6rem) !important;
+}
 
-html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap {
-  width: min(100%, 36rem);
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero :is(.duas-title, .duas-categories-toggle) {
+  color: var(--hero-ink) !important;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-title {
+  font-size: clamp(1.35rem, 3.6vw, 1.9rem);
+  line-height: 1.15;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-subtitle {
+  max-width: 40rem;
+  color: var(--hero-soft) !important;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero :is(.duas-back-btn, .duas-cat-btn) {
+  min-height: 44px;
+  border: 1px solid var(--hero-line) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: var(--hero-ink) !important;
+  box-shadow: none !important;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-cat-btn.active {
+  border-color: transparent !important;
+  background: var(--hero-ink) !important;
+  color: #0b4f2c !important;
+  font-weight: 800;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-search-wrap {
+  width: min(100%, 34rem);
+  min-height: 48px;
   padding: 0 1rem !important;
+  border: 0 !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.96) !important;
+  box-shadow: none !important;
 }
 
-html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap svg {
-  color: var(--text-secondary, #a9b8ae) !important;
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-search-wrap:focus-within {
+  box-shadow: 0 0 0 3px rgba(240, 209, 122, 0.6) !important;
 }
 
-html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap .duas-search {
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-search-wrap svg {
+  color: #4b5a52 !important;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-search {
   flex: 1 1 auto;
   min-width: 0;
   border: 0 !important;
   background: transparent !important;
+  color: #17211c !important;
   box-shadow: none !important;
 }
 
-html[data-theme="dark"] body .app-root[data-view="duas"] .duas-categories-toggle {
-  color: var(--text-secondary, #a9b8ae) !important;
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-search::placeholder {
+  color: #5d6b64;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-categories-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  min-height: 44px;
+  opacity: 0.9;
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-categories-toggle::after {
+  content: "";
+  width: 0.45rem;
+  height: 0.45rem;
+  border-inline-end: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero .duas-categories-toggle[aria-expanded="true"]::after {
+  transform: translateY(1px) rotate(-135deg);
 }
 
 /* ── Library: the three tabs fit a phone ─────────────────────────────────── */
@@ -52,4 +120,47 @@ html body .settings-drawer .settings-notification-note {
   font-size: 0.8rem !important;
   font-weight: 600 !important;
   line-height: 1.5 !important;
+}
+
+/* ── One hero surface for the whole app ──────────────────────────────────── */
+html[data-theme] body .app-root.app-root[data-view="duas"] .duas-hero,
+html[data-theme] body .app-root.app-root .prayers-hero {
+  background: var(--brand-hero-bg) !important;
+  border-radius: clamp(1rem, 1.5vw, 1.35rem) !important;
+}
+
+/* ── Reciter page, phones and tablets: bio on top, folded; list right after ─── */
+/* An open bio and the "download the whole Quran" card pushed the first surah
+   below the fold (y = 720 of 844 on a phone). The bio stays on top but folded
+   (see ReciterBioCollapse), the download card is one slim row. */
+@media (max-width: 960px) {
+  html body .reciter-detail .reciter-detail__layout {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  /* flex: none, or the column shrinks its children over each other */
+  html body .reciter-detail .reciter-detail__aside { order: 1; flex: none; margin-bottom: 0.75rem; }
+  html body .reciter-detail .reciter-detail__library { order: 2; flex: none; }
+
+  html body .reciter-detail .reciter-detail__section-heading { margin-bottom: 0.5rem; }
+
+  html body .reciter-detail .full-quran-download {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  html body .reciter-detail .full-quran-download__eyebrow,
+  html body .reciter-detail .full-quran-download__content > p,
+  html body .reciter-detail .full-quran-download__meta span:last-child {
+    display: none;
+  }
+
+  html body .reciter-detail .full-quran-download { grid-template-columns: auto minmax(0, 1fr) auto !important; }
+  html body .reciter-detail .full-quran-download__actions { grid-column: auto !important; width: auto; }
+  html body .reciter-detail .full-quran-download__primary { flex: 0 0 auto; width: auto !important; min-width: 0; padding-inline: 0.8rem; }
 }

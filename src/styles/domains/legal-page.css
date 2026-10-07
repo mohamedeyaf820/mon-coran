@@ -266,7 +266,7 @@
 .legal-page__table-wrap thead th { background: color-mix(in srgb, var(--bg-card) 88%, var(--legal-accent) 12%); color: var(--text-muted); font-size: max(0.68rem, 11px); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
 .legal-page__table-wrap tbody th { color: var(--text-primary); font-weight: 700; }
 .legal-page__table-wrap td { color: var(--text-secondary); }
-.legal-page__table-wrap code { padding: 0.12rem 0.4rem; border-radius: 0.4rem; background: rgba(var(--primary-rgb), 0.09); color: var(--legal-accent); font: 700 0.78rem/1.4 ui-monospace, monospace; overflow-wrap: anywhere; }
+.legal-page__table-wrap code { padding: 0.12rem 0.4rem; border-radius: 0.4rem; background: rgba(var(--primary-rgb), 0.09); color: var(--primary-ink, var(--legal-accent)); font: 700 0.78rem/1.4 ui-monospace, monospace; overflow-wrap: anywhere; }
 .legal-page__cta { display: inline-flex; min-height: 44px; max-width: 100%; align-items: center; gap: 0.5rem; margin-top: 0.9rem; padding: 0.55rem 1.1rem; border: 1px solid var(--legal-accent); border-radius: 0.85rem; background: var(--legal-accent); color: var(--on-primary, #fff); font-size: 0.86rem; font-weight: 750; text-align: start; }
 .legal-page__cta:hover { filter: brightness(1.06); }
 

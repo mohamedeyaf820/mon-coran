@@ -180,13 +180,9 @@ test("mobile recitation collection and reciter library stay clear and valid", as
 
   const modal = page.locator(".reciter-detail");
   await expect(modal).toBeVisible();
-  const audioRow = modal.locator(".reciter-detail__source-row", { hasText: "Source audio" }).first();
-  await expect(audioRow).toBeVisible();
-  await expect(audioRow.locator("strong")).not.toBeEmpty();
-  const portraitRow = modal.locator(".reciter-detail__source-row", { hasText: "Portrait" }).first();
-  if (await portraitRow.count()) {
-    await expect(portraitRow.locator("a")).not.toBeEmpty();
-  }
+  // Providers and portrait credits are on the Sources page, not in this sheet.
+  await expect(modal.locator(".reciter-detail__sources")).toHaveCount(0);
+  await expect(modal.locator(".reciter-detail__aside")).toBeVisible();
   const modalBox = await modal.boundingBox();
   expect(modalBox?.x || 0).toBeGreaterThanOrEqual(0);
   expect(modalBox?.y || 0).toBeGreaterThanOrEqual(0);

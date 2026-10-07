@@ -83,13 +83,12 @@ test("surah information opens as an accessible responsive dossier", () => {
   assert.match(styles, /overscroll-behavior: contain/);
 });
 
-test("reciter cards keep technical providers in the detail view", () => {
+test("reciter cards and the detail view keep technical providers out (they live on the Sources page)", () => {
   const cards = source("src/components/Home/ContentSection.jsx");
   const details = source("src/components/recitation/ReciterDetailPage.jsx");
 
   assert.doesNotMatch(cards, /getReciterSourceInfo/);
-  assert.match(details, /getReciterSourceInfo/);
-  assert.match(details, /reciter-detail__sources/);
+  assert.doesNotMatch(details, /getReciterSourceInfo|reciter-detail__sources/);
 });
 
 test("verse action modal renders a reduced, responsive action grid", () => {
