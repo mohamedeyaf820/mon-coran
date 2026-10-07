@@ -340,7 +340,7 @@ body {
     --line-height-ui: 1.6;
 
 
-    --header-h: 68px;
+    --header-h: 80px;
     --header-h-mobile: 46px;
     --player-h: 80px;
     --sidebar-w: 320px;
@@ -568,7 +568,7 @@ body {
     --gold-rgb: 154, 104, 0;
 
 
-    --header-h: 64px;
+    --header-h: 80px;
     --sidebar-w: 290px;
     --header-bg: var(--parchment-2);
     --header-border: rgba(187, 150, 90, 0.4);
