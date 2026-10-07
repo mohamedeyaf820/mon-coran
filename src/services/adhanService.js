@@ -34,10 +34,6 @@ export function getAdhanSource(id) {
   return ADHAN_SOURCES.find((source) => source.id === id) || null;
 }
 
-export function hasAdhanSources() {
-  return ADHAN_SOURCES.length > 0;
-}
-
 async function openCache() {
   if (typeof caches === "undefined") return null;
   try {
@@ -80,17 +76,6 @@ export async function downloadAdhan(sourceId) {
     } catch {
       return false;
     }
-  }
-}
-
-export async function removeCachedAdhan(sourceId) {
-  const source = getAdhanSource(sourceId);
-  const cache = await openCache();
-  if (!source || !cache) return false;
-  try {
-    return await cache.delete(source.url);
-  } catch {
-    return false;
   }
 }
 

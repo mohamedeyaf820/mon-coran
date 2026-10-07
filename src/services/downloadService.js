@@ -304,20 +304,6 @@ export async function verifyFullQuranDownloadForReciter({ reciter, riwaya = "haf
   return { ...getFullQuranDownloadSummary(reciter, riwaya), verified: true };
 }
 
-export function getDownloadedSurahs(reciterId = null, riwaya = null) {
-  const progress = loadProgress();
-  return Object.entries(progress)
-    .filter(([key, value]) => {
-      if (value?.status !== "done") return false;
-      const [entryRiwaya, entryReciterId] = key.split(":");
-      if (riwaya && entryRiwaya !== riwaya) return false;
-      if (reciterId && entryReciterId !== reciterId) return false;
-      return true;
-    })
-    .map(([, value]) => value.surahNum)
-    .filter((value, index, all) => all.indexOf(value) === index);
-}
-
 export function getOfflineAudioEntries() {
   return Object.values(loadProgress())
     .filter((entry) => entry && typeof entry === "object")
@@ -352,26 +338,11 @@ export async function getVerifiedOfflineAudioEntries() {
   return result;
 }
 
-export function isOfflineDownloadActive(key) {
-  return activeDownloads.has(key);
-}
-
 export function cancelOfflineDownload(key) {
   const controller = activeDownloads.get(key);
   if (!controller) return false;
   controller.abort();
   return true;
-}
-
-export function getSurahDownloadStatus(surahNum, reciterId = null, riwaya = null) {
-  const progress = loadProgress();
-  if (reciterId && riwaya) {
-    return progress[buildProgressKey({ surahNum, reciterId, riwaya })]?.status || null;
-  }
-  const statuses = Object.values(progress).filter(
-    (entry) => Number(entry?.surahNum) === Number(surahNum),
-  );
-  return statuses[0]?.status || null;
 }
 
 export function getSurahDownloadEntry(surahNum, reciterId, riwaya) {
@@ -915,35 +886,3 @@ export async function getCacheSize() {
   }
 }
 
-export async function downloadSurah(surahMeta, reciterCdn, cdnType = "everyayah", onProgress) {
-  return downloadSurahForReciter(
-    {
-      surahMeta,
-      riwaya: "hafs",
-      reciter: {
-        id: reciterCdn,
-        cdn: reciterCdn,
-        cdnType,
-        nameEn: reciterCdn,
-      },
-    },
-    onProgress,
-  );
-}
-
-export async function removeSurahCache(
-  surahMeta,
-  reciterCdn,
-  cdnType = "everyayah",
-) {
-  return removeSurahCacheForReciter({
-    surahMeta,
-    riwaya: "hafs",
-    reciter: {
-      id: reciterCdn,
-      cdn: reciterCdn,
-      cdnType,
-      nameEn: reciterCdn,
-    },
-  });
-}

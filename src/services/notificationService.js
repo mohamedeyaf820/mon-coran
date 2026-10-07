@@ -154,18 +154,3 @@ export function schedulePrayerNotifications(items, { now = Date.now() } = {}) {
   return () => timers.forEach((id) => window.clearTimeout(id));
 }
 
-/** Turns today's "HH:MM" timings into Date objects in device-local time. */
-export function prayerDatesFromTimings(timings, keys, day = new Date()) {
-  const dates = [];
-  for (const key of keys) {
-    const entry = timings?.[key];
-    const match = /^(\d{1,2}):(\d{2})$/.exec(String(entry?.hhmm || ""));
-    if (!match) continue;
-    const date = new Date(day);
-    date.setHours(Number(match[1]), Number(match[2]), 0, 0);
-    dates.push({ key, hhmm: entry.hhmm, date });
-  }
-  return dates;
-}
-
-

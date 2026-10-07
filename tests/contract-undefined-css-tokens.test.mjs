@@ -28,14 +28,12 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
  */
 const DEFERRED = new Set([
   "--accent-gold",
-  "--ayah-idx",
   "--color-gold-rgb",
   "--error-rgb",
   "--font-display",
   "--font-home-ui",
   "--font-mono",
   "--font-reading",
-  "--font-serif",
   "--qc-verse-max-width",
   "--qc-verse-padding-x",
   "--qc-verse-padding-y",

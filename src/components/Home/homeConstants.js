@@ -14,27 +14,6 @@ export const HOME_INITIAL_SURAHS     = 48;
 export const HOME_INITIAL_SURAHS_LOW = 24;
 export const HOME_SURAHS_BATCH       = 36;
 
-export const HOME_DEFERRED_SECTION_STYLE = {
-  contentVisibility: "auto",
-  containIntrinsicSize: "1px 360px",
-};
-export const HOME_FOOTER_SECTION_STYLE = {
-  contentVisibility: "auto",
-  containIntrinsicSize: "1px 280px",
-};
-
-/* ─── Accès rapide ────────────────────────────────────────────────────────── */
-export const QUICK_ACCESS = [
-  { n: 1,   icon: "fa-mosque",         label_fr: "Al-Fatiha",  label_en: "The Opening"  },
-  { n: 18,  icon: "fa-mountain-sun",   label_fr: "Al-Kahf",    label_en: "The Cave"     },
-  { n: 36,  icon: "fa-star-and-crescent", label_fr: "Ya-Sin",  label_en: "Ya-Sin"       },
-  { n: 55,  icon: "fa-leaf",           label_fr: "Ar-Rahman",  label_en: "The Merciful" },
-  { n: 67,  icon: "fa-moon",           label_fr: "Al-Mulk",    label_en: "Sovereignty"  },
-  { n: 112, icon: "fa-infinity",       label_fr: "Al-Ikhlas",  label_en: "Sincerity"    },
-  { n: 113, icon: "fa-sun",            label_fr: "Al-Falaq",   label_en: "The Dawn"     },
-  { n: 114, icon: "fa-shield-halved",  label_fr: "An-Nas",     label_en: "Mankind"      },
-];
-
 /* ─── Significations anglaises des sourates ──────────────────────────────── */
 export const SURAH_EN_MEANINGS = {
   1:   "The Opening",

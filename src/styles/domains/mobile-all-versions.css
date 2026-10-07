@@ -455,15 +455,6 @@
     }
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    cursor: pointer;
-}
-
-.app-root .quran-display--platform .rd-ayah:focus-visible {
-    outline: 2px solid rgba(var(--primary-rgb), 0.42);
-    outline-offset: 3px;
-}
-
 /* Reduced motion: the action row appears in place instead of sliding. The
    reveal is decoration on a control the reader already asked for; the ayah
    text, its markers and its states are not touched. */
@@ -857,63 +848,6 @@
     height: 4px;
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    gap: clamp(0.72rem, 1vw, 1rem);
-    padding: clamp(0.92rem, 1.35vw, 1.28rem) clamp(0.88rem, 1.55vw, 1.45rem);
-    border-radius: 0.88rem !important;
-    border-color: color-mix(
-        in srgb,
-        var(--border) 70%,
-        transparent 30%
-    ) !important;
-    background: linear-gradient(
-        180deg,
-        color-mix(
-            in srgb,
-            var(--bg-card) 90%,
-            rgba(var(--primary-rgb), 0.05) 10%
-        ),
-        color-mix(
-            in srgb,
-            var(--bg-primary) 94%,
-            rgba(var(--primary-rgb), 0.03) 6%
-        )
-    ) !important;
-    box-shadow:
-        0 8px 20px rgba(2, 8, 23, 0.055),
-        inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
-}
-
-.app-root .quran-display--platform .rd-ayah:hover {
-    transform: translateY(-1px);
-    border-color: rgba(var(--primary-rgb), 0.34) !important;
-    box-shadow:
-        0 14px 26px rgba(var(--primary-rgb), 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
-}
-
-.app-root .quran-display--platform .rd-ayah.active,
-.app-root .quran-display--platform .rd-ayah.playing {
-    border-color: color-mix(
-        in srgb,
-        var(--primary) 42%,
-        var(--border) 58%
-    ) !important;
-    background: linear-gradient(
-        180deg,
-        color-mix(
-            in srgb,
-            var(--bg-card) 82%,
-            rgba(var(--primary-rgb), 0.15) 18%
-        ),
-        color-mix(
-            in srgb,
-            var(--bg-primary) 88%,
-            rgba(var(--primary-rgb), 0.08) 12%
-        )
-    ) !important;
-}
-
 .app-root .quran-display--platform .rd-arabic {
     max-width: 34em;
     margin-inline: auto;
@@ -976,11 +910,6 @@
     .app-root .quran-display--platform .surah-ayahs-list {
         padding: 0.48rem;
         border-radius: 0.9rem;
-    }
-
-    .app-root .quran-display--platform .rd-ayah {
-        padding: 0.82rem 0.72rem;
-        border-radius: 0.74rem !important;
     }
 
     .app-root .quran-display--platform .rd-arabic {

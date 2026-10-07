@@ -31,11 +31,6 @@ export function ensureLocale(lang) {
   return pendingLocales.get(lang);
 }
 
-/** For useSyncExternalStore: lets a screen re-render when a late locale arrives. */
-export const subscribeLocales = (listener) => {
-  localeListeners.add(listener);
-  return () => localeListeners.delete(listener);
-};
 export const getLocaleVersion = () => localeVersion;
 
 /**
@@ -121,11 +116,5 @@ export function t(key, lang = 'fr', count) {
 
   return safeKey;
 }
-
-export const LANGUAGES = [
-  { code: 'fr', label: 'Français', dir: 'ltr' },
-  { code: 'en', label: 'English', dir: 'ltr' },
-  { code: 'ar', label: 'العربية', dir: 'rtl' },
-];
 
 export default LOCALES_MAP;

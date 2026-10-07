@@ -59,18 +59,6 @@ function getOrCreateAudio() {
 let _onPageHide = null;
 let _onOtherAudio = null;
 
-// Reset the shared instance so tests and long sessions start clean.
-export function resetWordAudio() {
-  releaseAudioElement(_audioInstance);
-  if (_onPageHide && typeof window !== "undefined") {
-    window.removeEventListener("pagehide", _onPageHide);
-    window.removeEventListener("mushafplus-playback-claim", _onOtherAudio);
-  }
-  _onPageHide = null;
-  _onOtherAudio = null;
-  _audioInstance = null;
-}
-
 export function getWordAudioUrl(surah, ayah, wordPosition) {
   if (!surah || !ayah || !wordPosition) return null;
   const s = String(surah).padStart(3, "0");
