@@ -99,8 +99,13 @@ export default function Header({ immersiveHidden = false }) {
       const el = headerRef.current;
       if (!el) return;
       const h = Math.ceil(el.getBoundingClientRect().height);
-      if (h > 0) {
-        document.documentElement.style.setProperty("--header-h", `${h}px`);
+      // The desktop header measures 80px in every theme and --header-h defaults to
+      // 80px (tailwind.css): the first measurement changes nothing, where a smaller
+      // default restyled the whole page and moved the content 12px after first paint.
+      // Writing the property on the root restyles everything, so only write a change.
+      const value = `${h}px`;
+      if (h > 0 && document.documentElement.style.getPropertyValue("--header-h") !== value) {
+        document.documentElement.style.setProperty("--header-h", value);
       }
     };
 
