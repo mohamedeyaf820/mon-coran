@@ -129,11 +129,10 @@ html[data-theme] body .app-root.app-root .prayers-hero {
   border-radius: clamp(1rem, 1.5vw, 1.35rem) !important;
 }
 
-/* ── Reciter page, phones and tablets: the surah list comes first ────────── */
-/* The bio and the "download the whole Quran" card pushed the first surah below
-   the fold (y = 720 of 844 on a phone): choosing another surah took a long
-   scroll. The list now leads, the bio and the sources follow it, and the
-   download card is one slim row. */
+/* ── Reciter page, phones and tablets: bio on top, folded; list right after ─── */
+/* An open bio and the "download the whole Quran" card pushed the first surah
+   below the fold (y = 720 of 844 on a phone). The bio stays on top but folded
+   (see ReciterBioCollapse), the download card is one slim row. */
 @media (max-width: 960px) {
   html body .reciter-detail .reciter-detail__layout {
     display: flex;
@@ -142,9 +141,8 @@ html[data-theme] body .app-root.app-root .prayers-hero {
   }
 
   /* flex: none, or the column shrinks its children over each other */
-  html body .reciter-detail .reciter-detail__library { order: 1; flex: none; }
-  html body .reciter-detail .reciter-detail__aside { order: 2; flex: none; margin-top: 0.75rem; }
-  html body .reciter-detail .reciter-detail__sources { order: 3; flex: none; }
+  html body .reciter-detail .reciter-detail__aside { order: 1; flex: none; margin-bottom: 0.75rem; }
+  html body .reciter-detail .reciter-detail__library { order: 2; flex: none; }
 
   html body .reciter-detail .reciter-detail__section-heading { margin-bottom: 0.5rem; }
 

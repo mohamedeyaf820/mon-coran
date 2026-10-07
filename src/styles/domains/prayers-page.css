@@ -304,6 +304,10 @@
     color: var(--text-primary);
 }
 
+.prayers-dua-translation__text {
+    display: block;
+}
+
 .prayers-dua-lang-note {
     display: block;
     margin-top: 0.2rem;

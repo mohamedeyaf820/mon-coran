@@ -332,92 +332,6 @@
     line-height: 1.72;
 }
 
-.reciter-detail__sources {
-    grid-column: 1 / -1;
-    display: grid;
-    gap: 0.4rem;
-    margin-top: 1.25rem;
-    border: 1px solid var(--border);
-    background: var(--theme-bg-alt);
-    padding: 1.1rem 1.15rem;
-}
-
-.reciter-detail__sources h3 {
-    display: flex;
-    align-items: center;
-    gap: 0.42rem;
-    margin: 0;
-    color: var(--text-primary);
-    font-size: 0.7rem;
-    font-weight: 820;
-}
-
-.reciter-detail__source-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-}
-
-.reciter-detail__source-links a {
-    display: inline-flex;
-    align-items: center;
-    min-height: 44px;
-    border: 1px solid rgba(var(--primary-rgb), 0.17);
-    border-radius: 999px;
-    background: rgba(var(--primary-rgb), 0.06);
-    padding: 0.4rem 0.85rem;
-    color: var(--primary);
-    font-size: 0.65rem;
-    font-weight: 760;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .reciter-detail__source-links a:hover {
-        background: rgba(var(--primary-rgb), 0.12);
-    }
-}
-
-.reciter-detail__source-row {
-    display: grid;
-    grid-template-columns: 16px minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 0.42rem;
-    min-width: 0;
-    color: var(--text-muted);
-    font-size: 0.68rem;
-}
-
-.reciter-detail__source-row svg {
-    color: var(--primary);
-}
-
-.reciter-detail__source-row span,
-.reciter-detail__source-row strong,
-.reciter-detail__source-row a {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-.reciter-detail__source-row strong,
-.reciter-detail__source-row a {
-    color: var(--text-secondary);
-    font-weight: 780;
-}
-
-.reciter-detail__source-row a {
-    text-decoration: underline;
-    text-decoration-color: color-mix(in srgb, var(--primary) 34%, transparent);
-    text-underline-offset: 0.18em;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .reciter-detail__source-row a:hover {
-        color: var(--primary);
-        text-decoration-color: currentColor;
-    }
-}
-
 .reciter-detail__library {
     display: flex;
     min-width: 0;
@@ -1183,44 +1097,6 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
         font-size: 0.64rem;
     }
 
-    .reciter-detail__sources {
-        grid-template-columns: minmax(0, 1fr) auto;
-        gap: 0.3rem 0.45rem;
-        margin-top: 0.55rem;
-        padding: 0.55rem;
-    }
-
-    .reciter-detail__sources h3 {
-        min-width: 0;
-        font-size: 0.64rem;
-    }
-
-    .reciter-detail__source-links {
-        justify-content: flex-end;
-    }
-
-    .reciter-detail__source-links a {
-        min-height: 44px;
-        padding: 0 0.42rem;
-        font-size: 0.62rem;
-    }
-
-    .reciter-detail__source-row {
-        grid-column: 1 / -1;
-        grid-template-columns: 14px minmax(0, 1fr);
-        gap: 0.32rem;
-        font-size: 0.62rem;
-    }
-
-    .reciter-detail__source-row > span {
-        display: none;
-    }
-
-    .reciter-detail__source-row > :is(strong, a) {
-        min-height: 0;
-        text-align: end;
-    }
-
     .recitation-library__count {
         display: none;
     }
@@ -1419,11 +1295,6 @@ html[data-theme="dark"] .recitation-action-btn--download.is-offline {
 .reciter-detail__bio {
     border-radius: 18px !important;
     background: color-mix(in srgb, var(--theme-bg-alt) 65%, var(--theme-surface)) !important;
-}
-
-.reciter-detail__sources {
-    border-radius: 16px;
-    background: color-mix(in srgb, var(--theme-bg-alt) 65%, transparent) !important;
 }
 
 /* ─── Full Quran download — is-ready state ─── */

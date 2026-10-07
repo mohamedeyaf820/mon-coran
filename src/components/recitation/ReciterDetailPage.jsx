@@ -2,9 +2,7 @@ import React from "react";
 import {
   BookOpen,
   Headphones,
-  ImageIcon,
   ListMusic,
-  RadioTower,
   UserRound,
   X,
 } from "lucide-react";
@@ -15,15 +13,9 @@ import ReciterRadioButton from "./ReciterRadioButton";
 import SurahRecitationList from "./SurahRecitationList";
 import FullQuranDownloadCard from "./FullQuranDownloadCard";
 import { cn } from "../../lib/utils";
-import { isSafeLinkHref } from "../../lib/security";
-import {
-  getReciterProfileSource,
-  getReciterSourceInfo,
-  getReciterVisual,
-} from "../../data/reciters";
+import { getReciterVisual } from "../../data/reciters";
 import {
   preloadReciterProfiles,
-  useReciterProfile,
 } from "../../hooks/useReciterProfile";
 
 export function preloadReciterDetailData() {
@@ -47,16 +39,7 @@ export default function ReciterDetailPage({
   closeBtnRef,
 }) {
   const isRtl = lang === "ar";
-  const sourceInfo = getReciterSourceInfo(reciter);
   const visual = getReciterVisual(reciter);
-  const researchedProfile = useReciterProfile(reciter?.id);
-  const biographySource =
-    researchedProfile?.bioSource || getReciterProfileSource(reciter);
-  const profileSources = researchedProfile?.verificationSources?.length
-    ? researchedProfile.verificationSources
-    : biographySource
-      ? [biographySource]
-      : [];
   const riwayaLabel = reciter.verifiedWarsh ? "Warsh" : isRtl ? "حفص" : "Hafs";
   const audioModeLabel =
     reciter.audioMode === "surah"
@@ -154,49 +137,6 @@ export default function ReciterDetailPage({
             onOpenSurahIntent={onOpenSurahIntent}
           />
         </main>
-
-        <section
-          className="reciter-detail__sources"
-          aria-label={labelFor(lang, "Sources", "Sources", "المصادر")}
-        >
-          <h3>
-            <BookOpen className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-            {labelFor(lang, "Sources vérifiées", "Verified sources", "المصادر المتحققة")}
-          </h3>
-          <div className="reciter-detail__source-links">
-            {profileSources.map((source) => (
-              <a
-                key={source.url}
-                href={isSafeLinkHref(source.url) ? source.url : undefined}
-                target="_blank"
-                rel="noreferrer"
-                title={source.url}
-              >
-                {source.provider}
-              </a>
-            ))}
-          </div>
-          {sourceInfo ? (
-            <div className="reciter-detail__source-row">
-              <RadioTower className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-              <span>{labelFor(lang, "Source audio", "Audio source", "مصدر الصوت")}</span>
-              <strong>{sourceInfo.label}</strong>
-            </div>
-          ) : null}
-          {visual.attribution ? (
-            <div className="reciter-detail__source-row">
-              <ImageIcon className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
-              <span>{labelFor(lang, "Portrait", "Portrait", "الصورة")}</span>
-              <a
-                href={isSafeLinkHref(visual.attribution.url) ? visual.attribution.url : undefined}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {visual.attribution.provider}
-              </a>
-            </div>
-          ) : null}
-        </section>
       </div>
     </div>
   );

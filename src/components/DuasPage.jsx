@@ -304,8 +304,9 @@ export default function DuasPage() {
                         )
                       )}
                     </p>
-                    {dua.transliteration && <p className="dua-translit">{dua.transliteration}</p>}
-                    <p className="dua-translation">
+                    {dua.transliteration && <p className="dua-translit" dir="ltr">{dua.transliteration}</p>}
+                    {/* French or English text is Latin script: left-to-right even on the Arabic page, or its final full stop lands at the wrong end of the line. */}
+                    <p className="dua-translation" lang={lang === "fr" ? "fr" : "en"} dir="ltr">
                       {lang === "ar" ? dua.en : lang === "fr" ? dua.fr : dua.en}
                     </p>
                   </div>
