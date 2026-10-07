@@ -218,11 +218,21 @@ function CompactPlayer(props) {
           <span className="simple-player__compact-meta-text">
             <span className="simple-player__compact-title-row">
               <strong className="simple-player__compact-title">{title}</strong>
-              {currentArabicName && (
+              {props.surahNum ? (
+                <span
+                  className="simple-player__compact-ar-badge simple-player__compact-ar-badge--glyph font-surah-names"
+                  dir="ltr"
+                  lang="en"
+                  role="img"
+                  aria-label={currentArabicName || undefined}
+                >
+                  <span aria-hidden="true">{String(props.surahNum).padStart(3, "0")}</span>
+                </span>
+              ) : currentArabicName ? (
                 <span className="simple-player__compact-ar-badge" dir="rtl" lang="ar">
                   {currentArabicName}
                 </span>
-              )}
+              ) : null}
             </span>
             {audioFailed ? (
               <span

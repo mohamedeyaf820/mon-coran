@@ -1,0 +1,64 @@
+/* ==========================================================================
+   Search modal — one field for every language
+
+   The modal no longer asks which language to search in: Arabic, a Latin
+   transliteration, French and English are told apart from what is typed or
+   said. This layer finishes the design around that:
+   - the hint and the three example queries sit on the modal, not in a second
+     boxed card, and the examples are pills with a full touch target;
+   - the microphone is a plain round button (the language chip is gone);
+   - the results line says which kind of query was understood.
+   Loaded after home-content-refine.css (see deferredStyles.js).
+   ========================================================================== */
+
+html body .search-pro-overlay .search-pro__empty {
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0.5rem 0.25rem 0.25rem !important;
+}
+
+html body .search-pro-overlay .search-pro__empty p {
+  max-width: 34rem;
+  margin-inline: auto !important;
+  line-height: 1.55 !important;
+  text-align: center;
+}
+
+html body .search-pro-overlay .search-pro__suggestions {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem !important;
+  margin-top: 0.75rem !important;
+}
+
+html body .search-pro-overlay .search-pro__suggestions button {
+  min-width: 44px;
+  min-height: 44px !important;
+  border-radius: 999px !important;
+  padding: 0 1rem !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+html body .search-pro-overlay .search-pro__voice-btn {
+  border-radius: 999px !important;
+}
+
+html body .search-pro-overlay .search-pro__results-head {
+  flex-wrap: wrap;
+}
+
+html body .search-pro-overlay .search-pro__results-head .search-pro__detected {
+  display: inline-flex;
+  align-items: center;
+  min-height: 1.6rem;
+  border-radius: 999px;
+  padding: 0 0.65rem;
+  background: rgba(var(--theme-primary-rgb, 16, 185, 129), 0.12);
+  color: var(--text-primary, var(--theme-text, #0f172a));
+  font-size: 0.72rem;
+  font-weight: 750;
+}

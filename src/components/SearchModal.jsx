@@ -28,27 +28,25 @@ import { getJuzForAyah } from "../data/juz";
 import {
   containsArabic,
   findSurahByName,
+  guessLatinQueryKind,
+  latinSourceOrder,
   parseSearchReference,
   sanitizeSearchQuery,
 } from "../utils/searchIntelligence";
 import { prepareSearchQuery } from "../services/searchWorkerService";
 import { startPerformanceTimer } from "../services/performanceMetrics";
-import useVoiceSearch, { getVoiceLanguageTag } from "../hooks/useVoiceSearch";
+import useVoiceSearch from "../hooks/useVoiceSearch";
 
-const VOICE_MODE_STORAGE_KEY = "mushaf-voice-language";
-const VOICE_MODES = ["arabic", "fr", "en"];
-
-function interfaceVoiceMode(lang) {
-  return lang === "ar" ? "arabic" : lang === "en" ? "en" : "fr";
+// The recogniser hears one language per session. There is no language to pick:
+// it starts in the language of the interface, and when what it heard finds
+// nothing it listens once more in Arabic (or in French from an Arabic
+// interface), so Arabic recitation and French or English words both come through.
+function interfaceVoiceTag(lang) {
+  return lang === "ar" ? "ar-SA" : lang === "en" ? "en-US" : "fr-FR";
 }
 
-function readStoredVoiceMode() {
-  try {
-    const stored = localStorage.getItem(VOICE_MODE_STORAGE_KEY);
-    return VOICE_MODES.includes(stored) ? stored : null;
-  } catch {
-    return null;
-  }
+function fallbackVoiceTag(lang) {
+  return lang === "ar" ? "fr-FR" : "ar-SA";
 }
 
 // Never surface a raw error message: it leaks internals and reads as a crash.
@@ -105,31 +103,25 @@ export default function SearchModal() {
     [reference, namedSurah],
   );
 
-  // The recogniser hears one language per session, so this is a user choice,
-  // not a guess from the text already typed: dictating an Arabic Quran word into
-  // a French session returns nothing and reads as a broken microphone.
-  const [voiceMode, setVoiceMode] = useState(
-    () => readStoredVoiceMode() || interfaceVoiceMode(lang),
-  );
+  const [voiceTag, setVoiceTag] = useState(() => interfaceVoiceTag(lang));
   const [voiceInterim, setVoiceInterim] = useState("");
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(VOICE_MODE_STORAGE_KEY, voiceMode);
-    } catch {
-      /* private mode: the choice just does not persist */
-    }
-  }, [voiceMode]);
+  const [voiceNote, setVoiceNote] = useState("");
+  const [pendingListen, setPendingListen] = useState(false);
+  // What came out of the last dictation, and whether the second listen was used.
+  const voiceTurnRef = useRef({ fromVoice: false, retried: false });
+  const completedQueryRef = useRef("");
+  const completedCountRef = useRef(0);
 
   const handleVoiceTranscript = useCallback((transcript) => {
     const sanitized = sanitizeSearchQuery(transcript);
     setVoiceInterim("");
     if (!sanitized) return;
+    voiceTurnRef.current = { ...voiceTurnRef.current, fromVoice: true };
     setQuery(sanitized);
   }, []);
 
   const voiceSearch = useVoiceSearch({
-    language: getVoiceLanguageTag(voiceMode),
+    language: voiceTag,
     onTranscript: handleVoiceTranscript,
     onInterim: setVoiceInterim,
   });
@@ -184,7 +176,9 @@ export default function SearchModal() {
             search(candidate, riwaya, null, ctrl.signal),
           );
         } else {
-          const translationLanguages = lang === "en" ? ["en", "fr"] : ["fr", "en"];
+          // Both translations are always asked, next to the transliteration: the
+          // language of the query is guessed only to decide which answer leads.
+          const translationLanguages = ["fr", "en"];
           const translationPlans = await Promise.all(
             translationLanguages.map((translationLanguage) =>
               prepareSearchQuery(sanitized, translationLanguage),
@@ -209,15 +203,13 @@ export default function SearchModal() {
               ),
             ),
           ]);
-          const successfulAttempt = attempts.find(
-            (attempt) => attempt.status === "fulfilled" && attempt.value.length > 0,
+          const bySource = { phonetic: attempts[0], fr: attempts[1], en: attempts[2] };
+          const leading = latinSourceOrder(guessLatinQueryKind(sanitized), lang).find(
+            (source) => bySource[source]?.status === "fulfilled" && bySource[source].value.length > 0,
           );
-          if (successfulAttempt?.status === "fulfilled") {
-            bestMatches = successfulAttempt.value;
-            const attemptIndex = attempts.indexOf(successfulAttempt);
-            bestMode = attemptIndex === 0
-              ? "phonetic"
-              : translationLanguages[attemptIndex - 1];
+          if (leading) {
+            bestMatches = bySource[leading].value;
+            bestMode = leading;
           } else if (attempts.every((attempt) => attempt.status === "rejected")) {
             throw attempts[0].reason;
           }
@@ -225,6 +217,8 @@ export default function SearchModal() {
 
         if (requestId !== searchRequestIdRef.current) return;
 
+        completedQueryRef.current = sanitized;
+        completedCountRef.current = bestMatches.length;
         startTransition(() => {
           setResults(bestMatches);
           setResultMode(bestMode);
@@ -313,16 +307,11 @@ export default function SearchModal() {
     close();
   };
 
+  // One example of each kind of query the search understands on its own.
   const suggestionItems = [
-    {
-      value: "الرحمن",
-    },
-    {
-      value: "bismillah",
-    },
-    {
-      value: "miséricorde",
-    },
+    { value: "الرحمن" },
+    { value: "kulhuallah" },
+    { value: lang === "en" ? "the most merciful" : "le tout miséricordieux" },
   ];
 
   const applySuggestion = (suggestion) => {
@@ -352,6 +341,44 @@ export default function SearchModal() {
     return duaResults.filter((dua) => !quranRefs.has(`${dua.surah}:${dua.ayah}`));
   }, [duaResults, filteredResults]);
   const activeResultCount = filteredResults.length + visibleDuaResults.length;
+
+  // A dictation that found nothing is listened to once more in the other
+  // language, without asking the user to choose one.
+  useEffect(() => {
+    const turn = voiceTurnRef.current;
+    const sanitized = sanitizeSearchQuery(query);
+    if (!turn.fromVoice || turn.retried || !sanitized) return;
+    if (loading || error || jumpTarget || voiceSearch.isListening || voiceSearch.isStarting) return;
+    if (completedQueryRef.current !== sanitized) return;
+    if (completedCountRef.current > 0 || visibleDuaResults.length > 0) return;
+    voiceTurnRef.current = { fromVoice: false, retried: true };
+    setVoiceNote(t(voiceTag === "ar-SA" ? "search.voiceRetryFr" : "search.voiceRetryAr", lang));
+    setVoiceTag(fallbackVoiceTag(lang));
+    setPendingListen(true);
+  }, [query, loading, error, jumpTarget, visibleDuaResults, voiceSearch.isListening, voiceSearch.isStarting, voiceTag, lang]);
+
+  useEffect(() => {
+    if (!pendingListen) return;
+    setPendingListen(false);
+    voiceSearch.toggle();
+  }, [pendingListen, voiceSearch]);
+
+  const handleMicClick = () => {
+    if (voiceSearch.isListening) {
+      voiceSearch.toggle();
+      return;
+    }
+    voiceTurnRef.current = { fromVoice: false, retried: false };
+    setVoiceNote("");
+    const own = interfaceVoiceTag(lang);
+    if (voiceTag !== own) {
+      // The language is applied when the session starts: wait for the new tag.
+      setVoiceTag(own);
+      setPendingListen(true);
+      return;
+    }
+    voiceSearch.toggle();
+  };
 
   const referenceDisplay = useMemo(() => {
     if (!jumpTarget) return null;
@@ -460,14 +487,14 @@ export default function SearchModal() {
                       <button
                         type="button"
                         className={`search-pro__voice-btn${voiceSearch.isListening ? " is-listening" : ""}`}
-                        onClick={voiceSearch.toggle}
+                        onClick={handleMicClick}
                         onKeyDown={(event) => event.stopPropagation()}
-                        aria-label={`${t(
+                        aria-label={t(
                           voiceSearch.isListening
                             ? "search.voiceStop"
                             : "search.voiceStart",
                           lang,
-                        )} — ${t(`search.voiceLangFull.${voiceMode}`, lang)}`}
+                        )}
                         aria-pressed={voiceSearch.isListening}
                         title={t(
                           voiceSearch.isListening
@@ -488,12 +515,6 @@ export default function SearchModal() {
                               : "search.voiceStartShort",
                             lang,
                           )}
-                        </span>
-                        <span
-                          className="search-pro__voice-lang"
-                          aria-hidden="true"
-                        >
-                          {t(`search.voiceLang.${voiceMode}`, lang)}
                         </span>
                       </button>
                       <button
@@ -532,33 +553,9 @@ export default function SearchModal() {
                           aria-live="polite"
                         >
                           <span aria-hidden="true" />
-                          {voiceInterim || t("search.voiceListening", lang)}
+                          {voiceInterim || voiceNote || t("search.voiceListening", lang)}
                         </p>
                       )}
-
-                      {/* The recogniser hears one language at a time, so the
-                          recovery for "nothing detected" is usually the other
-                          one - offer it here rather than sending the user away. */}
-                      <div
-                        className="search-pro__voice-langs"
-                        role="group"
-                        aria-label={t("search.voiceLangGroup", lang)}
-                      >
-                        {VOICE_MODES.map((mode) => (
-                          <button
-                            key={mode}
-                            type="button"
-                            className={`search-pro__voice-lang-option${mode === voiceMode ? " is-active" : ""}`}
-                            onClick={() => {
-                              setVoiceMode(mode);
-                              voiceSearch.clearError();
-                            }}
-                            aria-pressed={mode === voiceMode}
-                          >
-                            {t(`search.voiceLangFull.${mode}`, lang)}
-                          </button>
-                        ))}
-                      </div>
                     </div>
                   )}
 
@@ -656,6 +653,11 @@ export default function SearchModal() {
                         <strong>
                           {t("search.resultsCount", lang, activeResultCount)}
                         </strong>
+                        {filteredResults.length > 0 && (
+                          <span className="search-pro__detected">
+                            {t(`search.detected.${resultMode}`, lang)}
+                          </span>
+                        )}
                       </div>
                     )}
 

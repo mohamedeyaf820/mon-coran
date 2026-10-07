@@ -1736,7 +1736,7 @@ html[data-theme="sepia"] header.mp-header {
     border-bottom-color: rgba(139, 107, 62, 0.16);
 }
 
-html[data-theme="sepia"] footer:not(.home-resume-panel__actions),
+html[data-theme="sepia"] footer:not(.mp-footer-v2):not(.home-resume-panel__actions):not(.sip-overview__footer):not(.legal-page__actions):not(.prayers-dua-source),
 html[data-theme="sepia"] .app-footer {
     background: linear-gradient(
         180deg,

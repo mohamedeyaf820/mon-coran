@@ -11,11 +11,11 @@
       "trust": ["Hafs & Warsh", "Recitations & tajweed"],
       "sections": [
         ["Purpose", "Bring Hafs and Warsh texts, translations, recitations, Tajweed, bookmarks and notes into a calm reading environment."],
-        ["What's inside", "Paginated Mushaf or continuous-flow reading, two riwayas, translations, verse-by-verse recitations, search, bookmarks, notes, playlists and memorization tools."],
+        ["What's inside", "Paginated Mushaf or continuous-flow reading, two riwayas (Hafs and Warsh), translations, tafsir, verse-by-verse recitations with offline download, coloured tajweed, search, bookmarks, notes, playlists, memorization tools, prayer times with adhan and supplications from Hisn al-Muslim."],
         ["Principles", "Text integrity, clear attribution, local privacy, accessibility and continuous improvement. Teaching features support reading; they do not replace a qualified teacher."],
         ["Offline", "MushafPlus installs as a web app and keeps working offline once texts and recitations are cached on the device."],
         ["Project lead", "Mohamed Eyaf leads MushafPlus. Code, changes and reports are available in the public repository."],
-        ["Corrections and version", "Version 1.1.0, updated 2026-08-20. Reports are reviewed, documented and shipped in a later release."]
+        ["Corrections and version", "Version {version}, updated {date}. Reports are reviewed, documented and shipped in a later release."]
       ],
       "highlights": [
         ["Hafs and Warsh", "Two riwayas, each with its own text and recitations."],
@@ -28,9 +28,9 @@
       "intro": "MushafPlus works without an account or public profile. Personal reading data is stored in your browser.",
       "trust": ["No account", "No trackers"],
       "sections": [
-        ["Stored locally", "Preferences, last position, bookmarks and notes use localStorage or IndexedDB. Downloaded recitations are kept in the browser's storage. A local passphrase lock can be enabled."],
+        ["Stored locally", "Preferences, last position, bookmarks and notes use localStorage or IndexedDB. Downloaded recitations are kept in the browser's storage. A local log of errors and performance measurements also stays on the device and is never sent. A local passphrase lock can be enabled."],
         ["No account, no trackers", "MushafPlus uses no analytics, advertising or third-party trackers, and sends no usage statistics to a server."],
-        ["External services", "Text, translations, tafsir and audio may be requested from third-party APIs or CDNs, which receive the network data needed to answer the request. For prayer times, the coordinates you choose (your position or a city), rounded to about 10 m, are sent to the Aladhan service."],
+        ["External services", "Text, translations, tafsir, recitations and prayer times come from third-party services named in Sources (Quran.com, AlQuran Cloud, QuranEnc, EveryAyah, Quranpedia, MP3Quran, Aladhan…). They receive the network data needed to answer a web request, including the IP address. For prayer times, the coordinates you choose (your position or a city), rounded to about 10 m, are sent to the Aladhan service. An error report reaches GitHub only when you publish it yourself."],
         ["Permissions", "Microphone access starts only when you intentionally launch voice search, and no voice recording is kept. Location is requested only when you ask for it in the Prayer tab of the settings. Notifications turn on only at your request."],
         ["Your data, your control", "In the settings, in the Data tab, you can export bookmarks, notes, playlists and settings as JSON, or permanently erase all local data. No automatic cloud sync is performed."],
         ["Data retention", "Data stays on the device until you delete it or clear browser storage. The offline cache refreshes with each update."]
@@ -46,6 +46,7 @@
         "columns": ["Data", "Location", "What you can do"],
         "rows": [
           ["Settings and reading position", "localStorage", "Export, protect, erase everything"],
+          ["Error log and performance measurements", "localStorage", "Erase everything"],
           ["Bookmarks, notes and playlists", "IndexedDB", "Export as JSON, erase everything"],
           ["Texts and translations already read", "IndexedDB (cache)", "Clear the cache"],
           ["Downloaded recitations", "Cache Storage", "Delete the downloads"],
@@ -60,10 +61,10 @@
       "trust": ["Independent project", "Personal use"],
       "sections": [
         ["Publisher and contact", "MushafPlus is an independent project led by Mohamed Eyaf. Requests and corrections are handled through GitHub Issues."],
-        ["Hosting and availability", "The configured canonical address is mon-coran.vercel.app. Production and preview builds are distributed on Vercel infrastructure, which processes the technical logs required for security and service availability."],
+        ["Hosting and availability", "The configured canonical address is mon-coran.vercel.app. The app is deployed on Vercel; development preview builds are also published on Netlify. The hosts process the technical logs required for security and service availability."],
         ["Terms of use", "The app is provided free of charge for personal reading and study. You agree to respect content providers' rights and not to reuse any text, translation or recitation in violation of its license."],
         ["Responsibility", "The app does not replace a certified Mushaf edition, a qualified teacher, or religious, medical or legal advice."],
-        ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners' rights."],
+        ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners' rights. The source code is viewable on GitHub; the repository declares no licence, so check it before any reuse."],
         ["Warranty and changes", "The service is provided \"as is\", from third-party sources that may change. This page may be updated; its version follows the app."]
       ],
       "highlights": [
@@ -77,9 +78,9 @@
       "intro": "Each content family is linked to its provider, with a compatible fallback when needed.",
       "trust": ["Text & translation", "Recitations"],
       "sections": [
-        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support Quran text, translations, metadata and integrity checks. The French Al-Mukhtasar tafsir (Tafsir Center for Quranic Studies) is loaded from QuranEnc.com: the surah being read is requested, then kept on the device; the other tafsirs come from Quran.com."],
-        ["Translations", "The French (Montada 2017) and English (Pickthall 1930) translations are tied to their edition and presented as approximate meanings, not exegesis."],
-        ["Recitations", "EveryAyah, the Quran.com audio CDN and QuranPedia (Warsh) supply verse-by-verse recitations by reciter and riwaya; QuranicAudio acts as a fallback mirror."],
+        ["Text and structure", "Quran Foundation / Quran.com, AlQuran Cloud and Tanzil support Quran text, translations, metadata and integrity checks. The Warsh text comes from public GitHub datasets pinned to an exact version and verified before use. The French Al-Mukhtasar tafsir (Tafsir Center for Quranic Studies) is loaded from QuranEnc.com: the surah being read is requested, then kept on the device; the other tafsirs come from Quran.com."],
+        ["Translations", "In Hafs reading, French is the Montada Islamic Foundation edition and English is Saheeh International (via Quran.com). In Warsh reading, French is the Montada edition (2017) and English is Pickthall (1930). Spanish (Cortes), German (Abu Rida), Turkish (Diyanet) and Urdu (Junagarhi) come from AlQuran Cloud. Each translation is tied to its edition and presented as an approximate meaning, not as exegesis."],
+        ["Recitations", "EveryAyah, the Quran.com audio CDN and QuranPedia (Warsh) supply verse-by-verse recitations by reciter and riwaya; MP3Quran supplies a few whole-surah recitations. QuranicAudio acts as a fallback mirror."],
         ["Warsh", "Warsh text and audio catalogues are kept separate from Hafs and explicitly labelled."],
         ["Fonts and portraits", "Quran fonts and portraits remain attributed; a neutral avatar is used when a photo is unavailable or unverified."],
         ["Verification and reporting", "Each source is tested and documented, with an automatic fallback to a compatible mirror when one is unavailable. Attribution errors can be reported, reviewed and corrected."]
@@ -106,11 +107,11 @@
       "trust": ["حفص وورش", "تلاوات وتجويد"],
       "sections": [
         ["الغاية", "جمع نصي حفص وورش والترجمات والتلاوات وأحكام التجويد والعلامات والملاحظات في بيئة قراءة هادئة."],
-        ["محتوى التطبيق", "قراءة بالمصحف المصفح أو بتدفق مستمر، وروايتان، وترجمات، وتلاوات آية بآية، وبحث، وعلامات، وملاحظات، وقوائم استماع، وأدوات للحفظ."],
+        ["محتوى التطبيق", "قراءة بالمصحف المصفح أو بتدفق مستمر، وروايتان (حفص وورش)، وترجمات، وتفسير، وتلاوات آية بآية مع تنزيل للاستماع دون اتصال، وتجويد ملوّن، وبحث، وعلامات، وملاحظات، وقوائم استماع، وأدوات للحفظ، وأوقات الصلاة مع الأذان، وأدعية من حصن المسلم."],
         ["المبادئ", "سلامة النص ووضوح المصادر والخصوصية المحلية وإتاحة الاستخدام والتحسين المستمر. تكمل الأدوات التعليمية القراءةَ ولا تحل محل معلّم مؤهل."],
         ["دون اتصال", "يُثبَّت MushafPlus كتطبيق ويب ويواصل العمل دون اتصال بعد تخزين النصوص والتلاوات مؤقتاً على الجهاز."],
         ["مسؤول المشروع", "يدير Mohamed Eyaf مشروع MushafPlus، والكود والتغييرات والبلاغات منشورة في المستودع العام."],
-        ["التصحيحات والإصدار", "الإصدار 1.1.0، آخر تحديث 2026-08-20. تُراجع البلاغات وتوثق قبل نشرها."]
+        ["التصحيحات والإصدار", "الإصدار {version}، آخر تحديث {date}. تُراجع البلاغات وتوثق قبل نشرها."]
       ],
       "highlights": [
         ["حفص وورش", "روايتان، لكل منهما نصها وتلاواتها."],
@@ -123,9 +124,9 @@
       "intro": "يعمل MushafPlus بلا حساب أو ملف عام، وتُحفظ بيانات القراءة الشخصية في المتصفح.",
       "trust": ["بلا حساب", "بلا متتبعات"],
       "sections": [
-        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات في localStorage أو IndexedDB، وتُحفظ التلاوات المنزّلة في تخزين المتصفح، ويمكن تفعيل قفل محلي بعبارة سرية."],
+        ["التخزين المحلي", "تُحفظ التفضيلات وآخر موضع والعلامات والملاحظات في localStorage أو IndexedDB، وتُحفظ التلاوات المنزّلة في تخزين المتصفح. ويبقى سجل محلي للأخطاء وقياسات الأداء على الجهاز ولا يُرسل أبداً. ويمكن تفعيل قفل محلي بعبارة سرية."],
         ["لا حساب ولا متتبعات", "لا يستخدم MushafPlus أي خدمة لتحليل الزوار أو إعلانات أو متتبعات خارجية، ولا يرسل أي إحصاءات استخدام إلى خادم."],
-        ["الخدمات الخارجية", "قد يُطلب النص والترجمات والتفسير والصوت من واجهات أو شبكات خارجية تستقبل بيانات الاتصال اللازمة للرد على الطلب. ولأوقات الصلاة تُرسل الإحداثيات التي تختارها (موقعك أو مدينة)، مقرّبة إلى نحو 10 أمتار، إلى خدمة Aladhan."],
+        ["الخدمات الخارجية", "تأتي النصوص والترجمات والتفاسير والتلاوات وأوقات الصلاة من خدمات خارجية مذكورة في صفحة المصادر (Quran.com وAlQuran Cloud وQuranEnc وEveryAyah وQuranpedia وMP3Quran وAladhan…). وتستقبل هذه الخدمات بيانات الاتصال اللازمة لأي طلب ويب، ومنها عنوان IP. ولأوقات الصلاة تُرسل الإحداثيات التي تختارها (موقعك أو مدينة)، مقرّبة إلى نحو 10 أمتار، إلى خدمة Aladhan. ولا يصل بلاغ الخطأ إلى GitHub إلا عندما تنشره بنفسك."],
         ["الأذونات", "لا يُطلب الميكروفون إلا عند تشغيل البحث الصوتي اختيارياً، ولا يُحتفظ بأي تسجيل صوتي. ولا يُطلب الموقع إلا عندما تطلبه من تبويب الصلاة في الإعدادات، ولا تُفعَّل الإشعارات إلا بطلبك."],
         ["بياناتك تحت سيطرتك", "يمكنك من الإعدادات، في تبويب البيانات، تصدير العلامات والملاحظات وقوائم الاستماع والإعدادات بصيغة JSON، أو حذف جميع البيانات المحلية نهائياً. لا تتم أي مزامنة سحابية تلقائية."],
         ["مدة الاحتفاظ", "تبقى البيانات على الجهاز حتى تحذفها أو تفرّغ مساحة تخزين المتصفح، وتُحدَّث الذاكرة المؤقتة دون اتصال مع كل إصدار."]
@@ -141,6 +142,7 @@
         "columns": ["البيانات", "المكان", "ما يمكنك فعله"],
         "rows": [
           ["الإعدادات وموضع القراءة", "localStorage", "التصدير، والحماية، وحذف كل شيء"],
+          ["سجل الأخطاء وقياسات الأداء", "localStorage", "حذف كل شيء"],
           ["العلامات والملاحظات وقوائم الاستماع", "IndexedDB", "التصدير بصيغة JSON وحذف كل شيء"],
           ["النصوص والترجمات التي قرأتها", "IndexedDB (ذاكرة مؤقتة)", "تفريغ الذاكرة المؤقتة"],
           ["التلاوات المنزّلة", "Cache Storage", "حذف التنزيلات"],
@@ -155,10 +157,10 @@
       "trust": ["مشروع مستقل", "استخدام شخصي"],
       "sections": [
         ["النشر والتواصل", "MushafPlus مشروع مستقل يديره Mohamed Eyaf، وتُستقبل البلاغات عبر GitHub Issues."],
-        ["الاستضافة والتوفر", "العنوان الأساسي المضبوط هو mon-coran.vercel.app، وتُنشر نسخ الإنتاج والمعاينة على بنية Vercel التي تعالج السجلات التقنية اللازمة للأمان وتوفر الخدمة."],
+        ["الاستضافة والتوفر", "العنوان الأساسي المضبوط هو mon-coran.vercel.app. يُنشر التطبيق على Vercel، وتُنشر كذلك نسخ معاينة للتطوير على Netlify. وتعالج الجهتان المستضيفتان السجلات التقنية اللازمة للأمان وتوفر الخدمة."],
         ["شروط الاستخدام", "يُقدَّم التطبيق مجاناً للاستخدام الشخصي في القراءة والدراسة. تلتزم باحترام حقوق مزودي المحتوى وعدم إعادة استخدام أي نص أو ترجمة أو تلاوة بما يخالف ترخيصها."],
         ["المسؤولية", "لا يحل التطبيق محل مصحف معتمد أو معلّم مؤهل أو فتوى أو استشارة طبية أو قانونية."],
-        ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها."],
+        ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها. والشفرة المصدرية متاحة للاطلاع على GitHub، ولا يعلن المستودع عن ترخيص، فراجعه قبل أي إعادة استخدام."],
         ["الضمان والتحديث", "تُقدَّم الخدمة كما هي اعتماداً على مصادر خارجية قد تتغير، وقد تُحدَّث هذه الصفحة ويتبع إصدارها إصدار التطبيق."]
       ],
       "highlights": [
@@ -172,9 +174,9 @@
       "intro": "ترتبط كل فئة محتوى بمصدرها وقد يستخدم بديل متوافق عند تعذر المصدر الأساسي.",
       "trust": ["نص وترجمة", "تلاوات"],
       "sections": [
-        ["النص والبنية", "تدعم Quran Foundation وAlQuran Cloud وTanzil النص والكلمات والترجمات والبيانات والتحقق. ويُحمَّل التفسير الفرنسي «المختصر» (مركز تفسير للدراسات القرآنية) من QuranEnc.com: تُطلب السورة المقروءة ثم تُحفظ على الجهاز، وبقية التفاسير من Quran.com."],
-        ["الترجمات", "ترتبط الترجمة الفرنسية (مونتادا 2017) والإنجليزية (بكثول 1930) بطبعتهما وتُقدَّم كمعاني تقريبية لا كتفسير."],
-        ["التلاوات", "توفر EveryAyah وCDN الصوتي لـQuran.com وQuranPedia (ورش) التلاوات آية بآية بحسب القارئ والرواية، ويعمل QuranicAudio مرآةً احتياطية."],
+        ["النص والبنية", "تدعم Quran Foundation / Quran.com وAlQuran Cloud وTanzil النص والترجمات والبيانات والتحقق. ويأتي نص ورش من مجموعات بيانات عامة على GitHub مثبّتة على إصدار محدد ويُتحقق منها قبل الاستخدام. ويُحمَّل التفسير الفرنسي «المختصر» (مركز تفسير للدراسات القرآنية) من QuranEnc.com: تُطلب السورة المقروءة ثم تُحفظ على الجهاز، وبقية التفاسير من Quran.com."],
+        ["الترجمات", "في قراءة حفص الترجمة الفرنسية هي طبعة مؤسسة المنتدى الإسلامي والإنجليزية Saheeh International (عبر Quran.com)، وفي قراءة ورش الفرنسية طبعة المنتدى (2017) والإنجليزية بكثول (1930). وتأتي الإسبانية (كورتيس) والألمانية (أبو رضا) والتركية (ديانت) والأردية (جوناكري) من AlQuran Cloud. وترتبط كل ترجمة بطبعتها وتُقدَّم كمعانٍ تقريبية لا كتفسير."],
+        ["التلاوات", "توفر EveryAyah وCDN الصوتي لـQuran.com وQuranPedia (ورش) التلاوات آية بآية بحسب القارئ والرواية، وتوفر MP3Quran بعض تلاوات السور كاملة، ويعمل QuranicAudio مرآةً احتياطية."],
         ["ورش", "يُفصل نص ورش وصوته عن حفص مع إظهار الرواية والمصدر."],
         ["الخطوط والصور", "تبقى الخطوط والصور منسوبة إلى مزوديها ويستخدم رمز محايد عند غياب صورة موثقة."],
         ["التحقق والإبلاغ", "يُختبر كل مصدر وتُوثَّق بياناته مع تحويل تلقائي إلى مرآة متوافقة عند تعذر المصدر، ويمكن الإبلاغ عن خطأ في النسب لمراجعته وتصحيحه."]

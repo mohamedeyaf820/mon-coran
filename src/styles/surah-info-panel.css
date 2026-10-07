@@ -538,3 +538,32 @@
     transition: none;
   }
 }
+
+/* ── Calligraphic surah name (the ligature font used across the app) ─────── */
+
+/* The name sits in a cartouche on the trailing side of the header: a tinted
+   plate with a hairline, large enough for the calligraphy to read. */
+.sip-header .sip-header__arabic--glyph {
+  display: grid;
+  min-width: clamp(5.5rem, 16vw, 8rem);
+  max-width: none;
+  place-items: center;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-primary, #fff)) !important;
+  color: var(--primary);
+  font-family: "surahnames", var(--font-quran, serif);
+  font-size: clamp(2.2rem, 7vw, 3.4rem);
+  line-height: 1.15;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .sip-header .sip-header__arabic--glyph {
+    min-width: 4.6rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.8rem;
+    font-size: clamp(1.9rem, 11vw, 2.4rem);
+  }
+}

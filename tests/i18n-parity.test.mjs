@@ -65,10 +65,6 @@ test("new accessibility labels resolve without falling back to their keys", () =
 // them with a literal "[AR]" placeholder left in the copy.
 const ARABIC_AUTONYMS = new Set([
   "app.name",
-  "search.voiceLang.fr",
-  "search.voiceLang.en",
-  "search.voiceLangFull.fr",
-  "search.voiceLangFull.en",
 ]);
 
 test("every Arabic value is written in Arabic", () => {

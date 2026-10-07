@@ -56,7 +56,11 @@ test("search modal exposes an accessible voice control and live feedback", () =>
   // The dictation language used to be inferred from containsArabic(query), i.e.
   // from text the user had already typed rather than the speech about to arrive.
   assert.doesNotMatch(source, /searchMode:\s*containsArabic\(query\)/);
-  assert.match(source, /language:\s*getVoiceLanguageTag\(voiceMode\)/);
+  // There is no language picker: the session starts in the interface language
+  // and a dictation that finds nothing is retried once in the other language.
+  assert.match(source, /language:\s*voiceTag/);
+  assert.doesNotMatch(source, /voiceMode|VOICE_MODES|search-pro__voice-lang/);
+  assert.match(source, /voiceRetry/);
   // Interim results are the only feedback while speaking; without them the mic
   // looks dead and the user stops talking.
   assert.match(source, /onInterim:\s*setVoiceInterim/);

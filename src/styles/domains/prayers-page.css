@@ -112,7 +112,9 @@
     padding: 2.5rem 1.5rem;
     border-radius: 1.25rem;
     border: 1px solid var(--theme-border);
-    background: var(--mp-surface-raised, var(--theme-surface));
+    /* The raised surface token is a flat grey in the dark themes: use the card
+       colour every other page uses so the empty state belongs to the app. */
+    background: var(--bg-card, var(--mp-surface-raised, var(--theme-surface)));
     color: var(--text-muted);
 }
 
@@ -451,8 +453,19 @@
     }
 
     .prayers-hero {
-        flex-direction: column;
+        flex-flow: row wrap;
+        align-items: stretch;
         padding: 1.25rem 1.25rem 1.5rem;
+    }
+
+    /* Title on its own line, the two actions side by side under it. */
+    .prayers-hero-head {
+        flex: 1 1 100%;
+    }
+
+    .prayers-back-btn {
+        flex: 1 1 0;
+        justify-content: center;
     }
 
     .prayers-week-grid {

@@ -344,12 +344,11 @@ export default function ContentSection({
           >
             <Radio size={13} className="opacity-70" />
             {lang === "ar" ? "الصوتيات" : lang === "en" ? "Audio" : "Audio"}
+            {/* "New" marker: inline after the label, so it can never float away from
+                its tab (the old corner badge was clipped by the tab's own box). */}
             {showAudioDiscovery && activeTab !== "audio" && (
-              <span
-                className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--primary)]"
-                aria-hidden="true"
-              >
-                <span className="absolute inset-0 animate-ping rounded-full bg-[var(--primary)] opacity-75" />
+              <span className="home-tab-dot" aria-hidden="true">
+                <span className="home-tab-dot__ping" />
               </span>
             )}
           </button>

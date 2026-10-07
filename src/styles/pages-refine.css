@@ -1,0 +1,55 @@
+/* ==========================================================================
+   Page-level coherence fixes found while reviewing every page
+
+   - Duas, dark themes: the search icon and the "other categories" toggle took
+     a near-black colour on a near-black card (unreadable), and the field was a
+     box inside a box.
+   Loaded last (see deferredStyles.js).
+   ========================================================================== */
+
+html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap {
+  width: min(100%, 36rem);
+  padding: 0 1rem !important;
+}
+
+html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap svg {
+  color: var(--text-secondary, #a9b8ae) !important;
+}
+
+html[data-theme="dark"] body .app-root[data-view="duas"] .duas-search-wrap .duas-search {
+  flex: 1 1 auto;
+  min-width: 0;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+html[data-theme="dark"] body .app-root[data-view="duas"] .duas-categories-toggle {
+  color: var(--text-secondary, #a9b8ae) !important;
+}
+
+/* ── Library: the three tabs fit a phone ─────────────────────────────────── */
+/* "Listes audio" was cut to "Listes au…" at 390px: the icon is the first thing
+   to give way, the label and the count stay. */
+@media (max-width: 440px) {
+  html body .library-modal .library-tabs button {
+    gap: 0.3rem;
+    padding-inline: 0.3rem;
+    font-size: 0.8rem;
+  }
+
+  html body .library-modal .library-tabs button > svg {
+    display: none;
+  }
+}
+
+/* ── Settings: notes under a switch are sentences, not labels ────────────── */
+/* A legacy rule upper-cases every paragraph directly under a "section": the
+   "notifications are blocked" warning was shouted in bold capitals. */
+html body .settings-drawer .settings-notification-note {
+  text-transform: none !important;
+  letter-spacing: 0 !important;
+  font-size: 0.8rem !important;
+  font-weight: 600 !important;
+  line-height: 1.5 !important;
+}

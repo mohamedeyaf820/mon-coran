@@ -8,13 +8,32 @@
   width: 100%;
   margin: clamp(1.5rem, 4vw, 3rem) auto 0;
   padding: 0 clamp(0.75rem, 3vw, 1.5rem);
-  padding-bottom: max(6.5rem, calc(var(--player-h, 88px) + env(safe-area-inset-bottom, 20px) + 2rem)) !important;
+  /* The scroller already reserves the player and the bottom bar. */
+  padding-bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px)) !important;
 }
 
+.mp-footer-v2 { position: relative; }
+
+/* The footer is a full-width band of its own, like quran.com's: the shell's
+   background is painted sideways far past its box, and the surrounding
+   scroller (overflow-x: hidden) cuts it at the screen edge. */
 .mp-footer-v2__shell {
+  position: relative;
   width: min(100%, 72rem);
   margin-inline: auto;
-  border-block-start: 1px solid var(--border);
+  padding-inline: 0;
+  background: var(--bg-secondary);
+  box-shadow: 0 0 0 100vmax var(--bg-secondary);
+  clip-path: inset(-1px -100vmax -100vmax);
+}
+.mp-footer-v2__shell::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 4%, var(--primary) 50%, transparent 96%);
+  content: "";
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 /* ── The verse: a quiet quotation above the directory ────────────────── */
@@ -91,11 +110,15 @@
 
 .mp-footer-v2__about { display: grid; align-content: start; gap: 0.75rem; min-width: 0; }
 .mp-footer-v2__wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
   color: var(--text-primary);
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 800;
   letter-spacing: -0.02em;
 }
+.mp-footer-v2__logo { display: inline-block; width: 2.1rem; height: 2.1rem; flex: none; overflow: hidden; border-radius: 0.65rem; }
 .mp-footer-v2__wordmark b { color: var(--primary); font-weight: 800; }
 .mp-footer-v2__about h2 {
   margin: 0;
@@ -115,11 +138,15 @@
 
 .mp-footer-v2__group { min-width: 0; }
 .mp-footer-v2__group h2 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin: 0 0 0.6rem;
   color: var(--text-primary);
   font-size: 0.95rem;
   font-weight: 750;
 }
+.mp-footer-v2__group h2::before { width: 0.9rem; height: 3px; border-radius: 2px; background: var(--primary); content: ""; }
 .mp-footer-v2__group ul { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; }
 
 /* Links and panel buttons share one look. Each target is at least 44px tall,
@@ -145,10 +172,11 @@
 }
 .mp-footer-v2 .mp-footer-v2__group a:hover,
 .mp-footer-v2 .mp-footer-v2__group button:hover {
+  padding-inline-start: 0.35rem;
   color: var(--primary);
-  text-decoration: underline;
-  text-underline-offset: 3px;
 }
+.mp-footer-v2 .mp-footer-v2__group a,
+.mp-footer-v2 .mp-footer-v2__group button { transition: color 160ms ease, padding 160ms ease; }
 .mp-footer-v2 a:focus-visible,
 .mp-footer-v2 button:focus-visible,
 .mp-footer-v2 select:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
@@ -156,11 +184,11 @@
 /* ── Fine print and tools ─────────────────────────────────────────────── */
 .mp-footer-v2__bottom {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem 1.5rem;
-  padding: 1.25rem 0 0;
+  padding: 1.1rem 0 1.25rem;
   border-block-start: 1px solid var(--border);
 }
 

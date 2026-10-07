@@ -205,6 +205,89 @@ const AR_TO_LAT = {
   ' ': ' ',
 };
 
+/* ─── Run-together phrases ─── */
+// People write a phrase as one word ("kulhuallah", "bismillahirrahmanirrahim")
+// and the letter-by-letter table cannot recover the words from that. These are
+// the Quranic words such phrases are made of, with the article the verse has.
+const PHRASE_WORDS = {
+  bismi: 'بسم', bism: 'بسم', hu: 'هو', huwa: 'هو', kul: 'قل', ahad: 'أحد',
+  lah: 'الله', lahu: 'له', lilah: 'لله', hamdu: 'الحمد', alhamdu: 'الحمد',
+  rahman: 'الرحمن', rahim: 'الرحيم', rab: 'رب', alamin: 'العالمين',
+  alamina: 'العالمين', malik: 'مالك', yawm: 'يوم', din: 'الدين',
+  iyaka: 'إياك', nabudu: 'نعبد', nastain: 'نستعين', ihdina: 'اهدنا',
+  sirat: 'الصراط', mustakim: 'المستقيم', samad: 'الصمد', falak: 'الفلق',
+  nas: 'الناس', lam: 'لم', yalid: 'يلد', walam: 'ولم', yulad: 'يولد',
+  yakun: 'يكن', kufuwan: 'كفوا', la: 'لا', ilaha: 'إله', ila: 'إلا',
+  muhammad: 'محمد', rasul: 'رسول', subhan: 'سبحان', akbar: 'أكبر',
+  ina: 'إن', inna: 'إن', alazina: 'الذين', amanu: 'آمنوا', wa: 'و',
+  min: 'من', fi: 'في', ma: 'ما', an: 'عن', ya: 'يا', ayuha: 'أيها',
+  kursi: 'الكرسي', hay: 'الحي', kayum: 'القيوم', nur: 'نور', shaytan: 'الشيطان',
+  lalamin: 'العالمين', lalamina: 'العالمين', ayatulkursi: 'آية الكرسي',
+  rajim: 'الرجيم', aouzou: 'أعوذ', audu: 'أعوذ', billah: 'بالله',
+};
+
+// Spelling variants collapse to one form so "kul"/"qul", "allah"/"allaah" and
+// the doubled letter of an assimilated article ("birrahman") meet in the middle.
+const foldRunTogether = (s) =>
+  s.toLowerCase()
+    .replace(/[’'`ʿʾ-]/g, '')
+    .replace(/q/g, 'k').replace(/ou/g, 'u').replace(/dh/g, 'z')
+    .replace(/([a-z])\1+/g, '$1');
+
+let runTogetherLexicon = null;
+function getRunTogetherLexicon() {
+  if (runTogetherLexicon) return runTogetherLexicon;
+  const lexicon = new Map();
+  const add = (word, arabic) => {
+    const key = foldRunTogether(word);
+    if (key && !lexicon.has(key)) lexicon.set(key, arabic);
+  };
+  for (const [word, arabic] of Object.entries(PHRASE_WORDS)) add(word, arabic);
+  for (const [word, arabic] of Object.entries(COMMON_TERMS)) {
+    if (/^[a-z]+$/.test(word)) add(word, arabic);
+  }
+  runTogetherLexicon = lexicon;
+  return lexicon;
+}
+
+const CASE_VOWELS = new Set(['a', 'i', 'u']);
+
+/**
+ * Split one run-together Latin word into known Quranic words.
+ * Returns null unless the whole word is covered.
+ */
+function segmentRunTogether(word) {
+  const folded = foldRunTogether(word);
+  if (folded.length < 4) return null;
+  const lexicon = getRunTogetherLexicon();
+  const best = new Array(folded.length + 1).fill(null);
+  best[0] = { cost: 0, parts: [] };
+  for (let end = 1; end <= folded.length; end += 1) {
+    for (let start = 0; start < end; start += 1) {
+      const prev = best[start];
+      if (!prev) continue;
+      const piece = folded.slice(start, end);
+      let cost;
+      let arabic = null;
+      if (lexicon.has(piece)) {
+        cost = 1;
+        arabic = lexicon.get(piece);
+      } else if (piece.length === 1 && CASE_VOWELS.has(piece) && start > 0) {
+        // The case ending of the word before: carries no letter of its own.
+        cost = 0.4;
+      } else {
+        continue;
+      }
+      const total = prev.cost + cost;
+      if (!best[end] || total < best[end].cost) {
+        best[end] = { cost: total, parts: arabic ? [...prev.parts, arabic] : prev.parts };
+      }
+    }
+  }
+  const found = best[folded.length];
+  return found && found.parts.length > 0 ? found.parts.join(' ') : null;
+}
+
 /**
  * Convert Latin text to Arabic script (best-effort).
  * Checks dictionary first, then converts character by character.
@@ -220,7 +303,7 @@ export function latinToArabic(text) {
   const words = lower.split(/\s+/);
   const converted = words.map(word => {
     if (COMMON_TERMS[word]) return COMMON_TERMS[word];
-    return convertWordToArabic(word);
+    return segmentRunTogether(word) || convertWordToArabic(word);
   });
 
   return converted.join(' ');

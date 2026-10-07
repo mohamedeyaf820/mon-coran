@@ -180,9 +180,9 @@ export default {
     inputLabel: 'Text to search for in the Quran',
     voiceStart: 'Search with your voice', voiceStop: 'Stop listening',
     voiceStartShort: 'Dictate', voiceStopShort: 'Stop', voiceListening: 'Listening… Speak now.',
-    voiceLangGroup: 'Dictation language',
-    voiceLang: { arabic: 'ع', fr: 'FR', en: 'EN' },
-    voiceLangFull: { arabic: 'العربية', fr: 'Français', en: 'English' },
+    detected: { arabic: 'Arabic text', phonetic: 'Transliteration recognised', fr: 'French translation', en: 'English translation' },
+    voiceRetryAr: 'Nothing found: listening again in Arabic…',
+    voiceRetryFr: 'Nothing found: listening again in French…',
     voiceErrors: {
       secureContext: 'Open the app using an HTTPS address to use the microphone.',
       unsupported: 'Voice search is not supported by this browser.',
@@ -200,7 +200,7 @@ export default {
     submit: 'Search',
     resultsAria: 'Search results',
     listAria: 'Search results',
-    emptyHint: 'Type a word, a verse, or use the microphone.',
+    emptyHint: 'Type or speak in Arabic, French or English: the language is recognised automatically.',
     resultsCount: { one: '{count} result', other: '{count} results' },
     openInReading: 'Open in reading',
     errors: {
