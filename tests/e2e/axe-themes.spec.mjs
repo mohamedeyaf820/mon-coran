@@ -20,6 +20,8 @@ const SCREENS = [
   { name: "prayers", path: "/prieres", ready: ".prayers-page, [data-view='prayers']" },
   { name: "duas", path: "/duas", ready: "[class*=dua]" },
   { name: "legal", path: "/about", ready: ".legal-page" },
+  // The storage table's <code> cells sat at 4.3:1 in the dark theme (accent green on its own tint).
+  { name: "privacy", path: "/privacy", ready: ".legal-page__table-wrap code" },
 ];
 
 for (const combo of COMBOS) {
