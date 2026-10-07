@@ -14,7 +14,7 @@ Hafs & Warsh · Tajwid aux couleurs de Quran.com · 54 récitateurs · hors-lign
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
-[![Version](https://img.shields.io/badge/version-1.1.0-0f6a43)](https://github.com/mohamedeyaf820/mon-coran/releases)
+[![Version](https://img.shields.io/badge/version-1.2.0-0f6a43)](https://github.com/mohamedeyaf820/mon-coran/releases)
 
 **[Ouvrir l'application](https://mon-coran.vercel.app)** ·
 **[Fonctionnalités](#-fonctionnalités)** ·
