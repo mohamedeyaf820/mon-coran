@@ -11,6 +11,9 @@ for (const [width, lang] of [[390, 'fr'], [820, 'ar']]) {
         showHome: false, sidebarOpen: false, lang, riwaya: 'hafs', displayMode: 'surah', mushafLayout: 'list',
         lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 },
       }));
+      // The coach mark leaves the flow after 8 s and gives its height back to the
+      // scroll position; this test measures the chrome alone.
+      localStorage.setItem('mushaf-plus-verse-actions-hint-dismissed', '1');
       const NativeAudio = window.Audio;
       const elements = [];
       window.Audio = function (...args) { const audio = new NativeAudio(...args); elements.push(audio); return audio; };
@@ -52,7 +55,9 @@ for (const [width, lang] of [[390, 'fr'], [820, 'ar']]) {
     await expect.poll(() => page.evaluate(() => window.__chromeMedia?.paused)).toBe(false);
     await page.evaluate(() => { window.__initialChromeMedia = window.__chromeMedia; });
     await reveal();
-    await page.locator('#main-content').evaluate(node => node.scrollTo({ top: 400, behavior: 'instant' }));
+    // The chrome follows the reader's own gesture, not scrolls the page makes by itself.
+    await page.mouse.move(width / 2, 400);
+    await page.mouse.wheel(0, 400);
     await expect.poll(() => page.locator('#main-content').evaluate(node => node.scrollTop)).toBeGreaterThan(0);
     const before = await page.locator('#main-content').evaluate(node => node.scrollTop);
     await expect(nav).toBeHidden({ timeout: 6000 });

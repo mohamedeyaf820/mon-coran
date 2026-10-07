@@ -279,30 +279,6 @@
 .legal-page__facts dd { margin: 0.2rem 0 0; color: var(--text-primary); font-size: 0.92rem; font-weight: 650; overflow-wrap: anywhere; }
 .legal-page__facts dd a { color: var(--legal-accent); text-decoration: underline; text-underline-offset: 3px; }
 
-
-.surah-directory { padding: clamp(.7rem, 2vw, 1.2rem); border: 1px solid var(--border); border-radius: 1.35rem; background: color-mix(in srgb, var(--bg-card) 95%, var(--legal-accent) 5%); box-shadow: 0 18px 50px rgba(15, 23, 42, .06); }
-.surah-directory__toolbar { display: grid; grid-template-columns: auto minmax(15rem, 1fr) auto; align-items: end; gap: .75rem; padding: .25rem .25rem 1rem; }
-.surah-directory__toolbar > div:first-child p { margin: 0 0 .25rem; color: var(--legal-accent); font: 800 .67rem/1 ui-monospace, monospace; letter-spacing: .08em; }
-.surah-directory__toolbar h2 { margin: 0; font-size: 1.18rem; }
-.surah-directory__search { display: flex; min-height: 46px; align-items: center; gap: .55rem; padding: 0 .85rem; border: 1px solid var(--border); border-radius: .85rem; background: var(--bg-primary); color: var(--text-muted); }
-.surah-directory__search:focus-within { border-color: rgba(var(--primary-rgb), .5); box-shadow: 0 0 0 3px rgba(var(--primary-rgb), .09); }
-.surah-directory__search input { width: 100%; border: 0; outline: 0; background: transparent; color: var(--text-primary); font-size: .84rem; }
-.surah-directory__filters { display: flex; gap: .25rem; padding: .25rem; border: 1px solid var(--border); border-radius: .85rem; background: var(--bg-primary); }
-.surah-directory__filters button { min-height: 36px; padding: .35rem .62rem; border-radius: .62rem; color: var(--text-muted); font-size: .69rem; font-weight: 750; }
-.surah-directory__filters button.is-active { background: var(--legal-accent); color: var(--on-primary, #fff); box-shadow: 0 5px 14px rgba(var(--primary-rgb), .18); }
-.surah-directory__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .55rem; margin: 0; padding: 0; list-style: none; }
-.surah-directory__grid a { position: relative; display: grid; grid-template-columns: 2.7rem minmax(0, 1fr) auto; grid-template-areas: "num names arabic" "num meta open"; align-items: center; gap: .2rem .7rem; min-height: 6.2rem; padding: .8rem; border: 1px solid var(--border); border-radius: .95rem; background: color-mix(in srgb, var(--bg-primary) 92%, transparent); transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background-color .18s ease; }
-.surah-directory__grid a:hover { z-index: 1; transform: translateY(-2px); border-color: rgba(var(--primary-rgb), .36); background: color-mix(in srgb, var(--bg-card) 91%, var(--legal-accent) 9%); box-shadow: 0 12px 28px rgba(15, 23, 42, .08); }
-.surah-directory__number { grid-area: num; display: grid; width: 2.7rem; height: 2.7rem; place-items: center; border: 1px solid rgba(var(--primary-rgb), .23); border-radius: .8rem; color: var(--legal-accent); font: 800 .68rem/1 ui-monospace, monospace; }
-.surah-directory__names { grid-area: names; min-width: 0; display: grid; }
-.surah-directory__names strong { overflow: hidden; color: var(--text-primary); font-size: .79rem; text-overflow: ellipsis; white-space: nowrap; }
-.surah-directory__names small { overflow: hidden; color: var(--text-muted); font-size: .63rem; text-overflow: ellipsis; white-space: nowrap; }
-.surah-directory__arabic { grid-area: arabic; color: var(--text-primary); font-family: var(--font-arabic-title, var(--font-quran)); font-size: 1.16rem; line-height: 1.5; }
-.surah-directory__meta { grid-area: meta; color: var(--text-muted); font-size: .6rem; }
-.surah-directory__open { grid-area: open; display: inline-flex; align-items: center; gap: .2rem; color: var(--legal-accent); font-size: .62rem; font-weight: 750; }
-.surah-directory__empty { display: grid; min-height: 15rem; place-items: center; align-content: center; gap: .6rem; color: var(--text-muted); text-align: center; }
-.surah-directory__empty p { margin: 0; }
-
 .legal-report-modal { width: min(calc(100% - 1rem), 34rem); border-radius: 1.25rem; }
 .legal-report-overlay { padding: max(.5rem, env(safe-area-inset-top)) .5rem max(.5rem, env(safe-area-inset-bottom)); }
 .legal-report { display: grid; gap: .85rem; padding: .75rem 1.25rem 1.25rem; color: var(--text-primary); }
@@ -372,10 +348,6 @@ html[data-theme="oled"] .legal-page__hero { box-shadow: 0 18px 44px -24px rgba(0
 
 @media (max-width: 900px) {
   .legal-page__hero-layout { grid-template-columns: minmax(0, 1fr); gap: 0.75rem; }
-  .surah-directory__toolbar { grid-template-columns: 1fr 1fr; }
-  .surah-directory__search { grid-column: 1 / -1; grid-row: 2; }
-  .surah-directory__filters { justify-self: end; }
-  .surah-directory__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .legal-page__actions { grid-template-columns: minmax(0, 1fr); }
   .legal-page__actions nav { justify-content: flex-start; }
 }
@@ -401,14 +373,6 @@ html[data-theme="oled"] .legal-page__hero { box-shadow: 0 18px 44px -24px rgba(0
   .legal-page__table-wrap td { padding: 0.3rem 0.9rem; border: 0; }
   .legal-page__table-wrap td:last-child { padding-bottom: 0.8rem; }
   .legal-page__table-wrap td::before { display: block; margin-bottom: 0.1rem; color: var(--text-muted); content: attr(data-label); font-size: max(0.66rem, 10px); font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; }
-
-  .surah-directory { padding: 0.55rem; border-radius: 1rem; }
-  .surah-directory__toolbar { grid-template-columns: 1fr; align-items: stretch; }
-  .surah-directory__search { grid-column: auto; grid-row: auto; }
-  .surah-directory__filters { justify-self: stretch; }
-  .surah-directory__filters button { flex: 1; }
-  .surah-directory__grid { grid-template-columns: 1fr; gap: 0.42rem; }
-  .surah-directory__grid a { min-height: 5.6rem; }
 }
 
 @media (max-width: 640px) {

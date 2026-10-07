@@ -42,18 +42,6 @@
   cursor: grabbing;
 }
 
-.app-root .mp-player-drag-zone {
-  min-height: 2.35rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--theme-border, rgba(148, 163, 184, 0.22)) 42%, transparent);
-  background: rgba(255, 255, 255, 0.045) !important;
-}
-
-.app-root .mp-player-drag-zone span,
-.app-root .mp-player-mobile-brand span {
-  font-size: 0.58rem !important;
-  letter-spacing: 0.16em !important;
-}
-
 .app-root .mp-audio-player--mobile.mp-audio-player--dock {
   left: max(0.75rem, env(safe-area-inset-left)) !important;
   right: max(0.75rem, env(safe-area-inset-right)) !important;
@@ -63,44 +51,12 @@
   border-radius: 1.35rem 1.35rem 0 0 !important;
 }
 
-.app-root .mp-audio-player--mobile.mp-audio-player--dock.is-collapsed {
-  max-height: 10.75rem;
-}
-
-.app-root .mp-audio-player--mobile.mp-audio-player--dock.is-expanded {
-  max-height: min(62vh, 34rem);
-}
-
-.app-root .mp-player-mobile-expanded {
-  max-height: min(38vh, 21.5rem) !important;
-  overscroll-behavior: contain;
-  scrollbar-gutter: stable;
-}
-
-.app-root .mp-player-mobile-controls {
-  min-height: 3.65rem !important;
-}
-
-.app-root .mp-player-mobile-main-controls,
-.app-root .mp-player-controls-strip {
-  min-width: 0;
-}
-
 @media (max-width: 430px) {
   .app-root .mp-audio-player--mobile.mp-audio-player--dock {
     left: 0.45rem !important;
     right: 0.45rem !important;
     max-height: min(60vh, 30rem);
   }
-
-  .app-root .mp-player-mobile-meta {
-    width: 4.55rem !important;
-  }
-}
-
-.settings-overlay {
-  align-items: stretch;
-  justify-content: flex-end !important;
 }
 
 .settings-backdrop {
@@ -160,15 +116,6 @@
   color: var(--text-primary);
 }
 
-.settings-reciter-option__meta {
-  margin-top: 0.1rem;
-  color: var(--text-muted);
-  font-size: 0.68rem;
-  font-weight: 650;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-}
-
 .settings-reciter-avatar {
   display: inline-flex;
   align-items: center;
@@ -189,9 +136,6 @@
 }
 
 @media (max-width: 680px) {
-  .settings-overlay {
-    align-items: flex-end;
-  }
 
   .settings-drawer {
     width: 100vw !important;

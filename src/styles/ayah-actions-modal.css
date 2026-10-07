@@ -245,47 +245,6 @@
   line-height: 1.15;
 }
 
-.ayah-actions-modal .ayah-action-card__state {
-  align-self: start;
-  padding: 0.18rem 0.32rem;
-  border-radius: 999px;
-  background: rgba(var(--primary-rgb), 0.1);
-  color: var(--primary);
-  font-size: 0.54rem;
-  font-weight: 800;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.ayah-actions-modal .ayah-actions__utility {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.5rem;
-  padding-top: 0.1rem;
-}
-
-.ayah-actions-modal .ayah-actions__utility-btn {
-  min-height: 42px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.55rem 0.7rem;
-  border-radius: 0.8rem;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.72rem;
-  font-weight: 700;
-}
-
-.ayah-actions-modal .ayah-actions__utility-btn:hover,
-.ayah-actions-modal .ayah-actions__utility-btn.is-active {
-  border-color: rgba(var(--primary-rgb), 0.3);
-  background: rgba(var(--primary-rgb), 0.08);
-  color: var(--primary);
-}
-
 @keyframes ayahActionsPanelIn {
   from { opacity: 0; transform: translateY(10px) scale(0.985); }
   to { opacity: 1; transform: translateY(0) scale(1); }
@@ -367,19 +326,6 @@
     height: 30px;
     border-radius: 9px;
   }
-
-  .ayah-actions-modal .ayah-action-card__state {
-    position: absolute;
-    inset-block-start: 0.32rem;
-    inset-inline-end: 0.34rem;
-    max-width: 54px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-
-  .ayah-actions-modal .ayah-actions__utility-btn {
-    min-height: 44px;
-  }
 }
 
 @keyframes ayahActionsSheetIn {
@@ -426,14 +372,6 @@ html body .app-root .ayah-actions-modal .ayah-action-card__label {
   white-space: nowrap !important;
 }
 
-html body .app-root .ayah-actions-modal .ayah-action-card__state {
-  width: auto !important;
-  height: auto !important;
-  writing-mode: horizontal-tb !important;
-  background: rgba(var(--primary-rgb), 0.1) !important;
-  color: var(--primary) !important;
-}
-
 html body .app-root .ayah-actions-modal .ayah-actions__badge {
   width: auto !important;
   height: auto !important;
@@ -451,24 +389,6 @@ html body .app-root .ayah-actions-modal .ayah-actions__badge svg {
   width: 12px !important;
   height: 12px !important;
   flex: 0 0 12px !important;
-}
-
-html body .app-root .ayah-actions-modal .ayah-actions__utility-btn {
-  width: 100% !important;
-  max-width: none !important;
-  height: auto !important;
-  min-height: 44px !important;
-  writing-mode: horizontal-tb !important;
-  border: 1px solid color-mix(in srgb, var(--border) 72%, transparent 28%) !important;
-  background: color-mix(in srgb, var(--bg-secondary) 66%, var(--bg-card) 34%) !important;
-  color: var(--text-secondary) !important;
-  white-space: nowrap !important;
-}
-
-html body .app-root .ayah-actions-modal .ayah-actions__utility-btn.is-active {
-  border-color: rgba(var(--primary-rgb), 0.36) !important;
-  background: rgba(var(--primary-rgb), 0.12) !important;
-  color: var(--primary) !important;
 }
 
 @media (max-width: 640px) {

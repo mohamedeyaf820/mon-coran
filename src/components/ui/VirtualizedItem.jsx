@@ -101,18 +101,44 @@ export default function VirtualizedItem({
     );
   }, [rootMargin, rootRef]);
 
+  // What the node occupied the last time it was measured. The reader turns
+  // placeholders into real verses ahead of the viewport; one that sits above
+  // it and comes out taller or shorter than its estimate would push everything
+  // below it (the verse being read) up or down, and scroll anchoring is off on
+  // the main shell. The difference is given back to the scroll position.
+  const lastHeightRef = useRef(null);
+
   useLayoutEffect(() => {
     const node = nodeRef.current;
-    if (!node || !shouldRender) return undefined;
+    if (!node) return undefined;
+    const root = rootRef?.current || node.closest(".app-main-shell");
 
-    const measure = () => rememberHeight(cacheKey, node.getBoundingClientRect().height);
+    if (!shouldRender) {
+      lastHeightRef.current = node.getBoundingClientRect().height;
+      return undefined;
+    }
+
+    const measure = () => {
+      const rect = node.getBoundingClientRect();
+      const previous = lastHeightRef.current;
+      lastHeightRef.current = rect.height;
+      rememberHeight(cacheKey, rect.height);
+      if (!root || previous == null) return;
+      const change = rect.height - previous;
+      if (Math.abs(change) < 1) return;
+      // Only an item that ends above the top edge of the scroller moves what
+      // the reader sees; the ones in view or below grow into free space.
+      if (rect.bottom <= root.getBoundingClientRect().top + 1) {
+        root.scrollTop += change;
+      }
+    };
     measure();
     if (typeof ResizeObserver === "undefined") return undefined;
 
     const observer = new ResizeObserver(measure);
     observer.observe(node);
     return () => observer.disconnect();
-  }, [cacheKey, shouldRender]);
+  }, [cacheKey, shouldRender, rootRef]);
 
   return (
     <Element

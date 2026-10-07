@@ -91,6 +91,17 @@ export default function AudioPlayer() {
   const [networkState, setNetworkState] = useState("idle");
   const [basmalaActive, setBasmalaActive] = useState(false);
   const networkStateTimerRef = useRef(null);
+  // Audio that was asked for and is on its way (loading, or the basmala that
+  // opens a surah): the reading chrome keeps the player in sight meanwhile.
+  const pendingFlagsRef = useRef({ net: false, basmala: false });
+  const announcePending = (key, value) => {
+    pendingFlagsRef.current[key] = value;
+    window.dispatchEvent(
+      new CustomEvent("mushafplus-audio-pending", {
+        detail: pendingFlagsRef.current.net || pendingFlagsRef.current.basmala,
+      }),
+    );
+  };
   const [optionsModalOpen, setOptionsModalOpen] = useState(false);
   const [reciterSwitchingId, setReciterSwitchingId] = useState(null);
   const [eqPreset, setEqPreset] = useState("flat");
@@ -297,6 +308,10 @@ export default function AudioPlayer() {
     };
     audioService.onNetworkState = (st) => {
       const next = st || "idle";
+      // The reading chrome must not tuck the player away between the tap on
+      // play and the first sound (seconds on a slow link), only to bring it
+      // back when the audio starts.
+      announcePending("net", next === "loading" || next === "buffering");
       clearTimeout(networkStateTimerRef.current);
       if (next === "loading" || next === "buffering") {
         // Between two ayahs the next file usually arrives within a few
@@ -309,7 +324,10 @@ export default function AudioPlayer() {
     };
     // The pre-roll is not a verse, so the reader must keep showing the verse
     // that is coming — only the track label changes for those few seconds.
-    audioService.onBasmala = (active) => setBasmalaActive(Boolean(active));
+    audioService.onBasmala = (active) => {
+      announcePending("basmala", Boolean(active));
+      setBasmalaActive(Boolean(active));
+    };
     return () => {
       if (audioErrorTimerRef.current) {
         clearTimeout(audioErrorTimerRef.current);

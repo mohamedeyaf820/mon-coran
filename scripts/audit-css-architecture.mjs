@@ -38,7 +38,10 @@ const LIMITS = {
   // (reading-ux-refonte.css and reading-platform.css), so the campaign is not a
   // pure addition. 3384 selectors are still reported removable against the
   // production app: that purge is the way to bring this ceiling back down.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1810),
+  // 2026-10-07: 2,600 rules naming classes that no source mentions anywhere were
+  // removed (scripts/prune-dead-css.mjs; the shipped sheets did not change):
+  // 1,373 kB measured, ceiling 1,400 kB.
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1400),
   // 2026-09-20: retained raised after the purge safelist fix brought back the
   // [dir=]/[lang=] RTL rules that PurgeCSS v8 had been silently dropping.
   // 2026-09-21: +1 kB for the retained portal rules of the same cartouche,
@@ -47,9 +50,7 @@ const LIMITS = {
   // sober tajweed filters, line-measure clamp contract, mirrored furniture).
   // 2026-09-21: raised to 1258 kB for concurrent-session reader CSS landed in the
   // shared tree during the palette migration (measured 1254.3 kB).
-  // 2026-10-06 (search modal): raised to 1270 kB, measured 1261.0 kB; the old
-  // dictation-language rules were removed, the automatic-search layer was added.
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1270),
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1258),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

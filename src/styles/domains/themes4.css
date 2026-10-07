@@ -856,37 +856,6 @@
     position: relative;
 }
 
-.hdr.hdr--themes4 .hdr__brand,
-.hdr.hdr--themes4 .hdr__home-panel,
-.hdr.hdr--themes4 .hdr__nav-shell,
-.hdr.hdr--themes4 .hdr__home-chip,
-.hdr.hdr--themes4 .hdr__action-cluster,
-.hdr.hdr--themes4 .hdr__nav-center,
-.hdr.hdr--themes4 .hdr__nav-arrow,
-.hdr.hdr--themes4 .hdr__btn,
-.hdr.hdr--themes4 .hdr__riwaya-toggle,
-.hdr.hdr--themes4 .network-status {
-    background: var(--theme-panel-bg-strong) !important;
-    border-color: var(--theme-panel-border) !important;
-    box-shadow: none !important;
-}
-
-.hdr.hdr--themes4 .hdr__btn--menu-main,
-.hdr.hdr--themes4 .hdr__btn-duas,
-.hdr.hdr--themes4 .hdr__riwaya-btn--active {
-    background: linear-gradient(
-        135deg,
-        color-mix(in srgb, var(--theme-primary) 88%, #ffffff 12%),
-        color-mix(in srgb, var(--theme-primary) 70%, var(--theme-text) 30%)
-    ) !important;
-    border-color: color-mix(
-        in srgb,
-        var(--theme-primary) 76%,
-        var(--theme-text) 24%
-    ) !important;
-    color: var(--theme-text-inverse) !important;
-}
-
 [data-theme] .sidebar.sidebar--themes4 .sidebar-search-input:focus,
 .modal-search-input:focus,
 .modal-inline-input:focus,
@@ -940,68 +909,6 @@
     color: var(--player-text-strong) !important;
 }
 
-.audio-player__play,
-.audio-player__play--desktop,
-.audio-player__play--mobile,
-.audio-player__play--mini {
-    background: linear-gradient(
-        135deg,
-        var(--player-accent) 0%,
-        var(--player-accent-deep) 100%
-    ) !important;
-    border-color: color-mix(
-        in srgb,
-        var(--player-accent) 70%,
-        var(--theme-border-strong) 30%
-    ) !important;
-    color: var(--theme-text-inverse) !important;
-}
-
-.audio-player__meta-chip,
-.audio-player__advanced-toggle,
-.audio-player__search-input,
-.audio-player__number-input,
-.audio-player__slider,
-.audio-player__volume,
-.audio-player__network-badge,
-.audio-player__utility,
-.player-reciter-btn {
-    background: var(--player-panel-bg) !important;
-    border-color: var(--player-border) !important;
-    color: var(--player-text-soft) !important;
-}
-
-.audio-player__status-title,
-.audio-player__title {
-    color: var(--player-text-strong) !important;
-}
-
-.audio-player__arabic-title {
-    color: var(--theme-arabic) !important;
-}
-
-.audio-player__status-subtitle,
-.audio-player__subtitle,
-.audio-player__status-ayah,
-.audio-player__ayah-preview {
-    color: var(--player-text-soft) !important;
-}
-
-.audio-player__utility:hover,
-.player-reciter-btn:hover {
-    background: color-mix(
-        in srgb,
-        var(--player-panel-bg) 78%,
-        rgba(var(--theme-primary-rgb), 0.2) 22%
-    ) !important;
-    border-color: color-mix(
-        in srgb,
-        var(--player-border) 62%,
-        rgba(var(--theme-primary-rgb), 0.38) 38%
-    ) !important;
-    color: var(--player-text-strong) !important;
-}
-
 .settings-header,
 .settings-nav,
 .settings-card,
@@ -1009,14 +916,6 @@
     background: var(--theme-panel-bg-strong) !important;
     border-color: var(--theme-panel-border) !important;
     color: var(--theme-text) !important;
-}
-
-.theme-swatch-btn.active,
-.display-mode-card.active,
-.settings-reciter-item.active,
-.settings-tool-card:hover {
-    border-color: var(--theme-border-strong) !important;
-    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.12) !important;
 }
 
 @media (max-width: 768px) {
@@ -1039,67 +938,12 @@ body,
     opacity: 0.34 !important;
 }
 
-.hdr.hdr--themes4 {
-    position: sticky;
-    top: 0;
-    z-index: 380;
-    backdrop-filter: blur(10px) saturate(125%);
-    -webkit-backdrop-filter: blur(10px) saturate(125%);
-}
-
-.hdr.hdr--themes4 .hdr__main {
-    width: min(100%, 1700px);
-    margin-inline: auto;
-}
-
 [data-theme] .sidebar.sidebar--themes4 {
     top: var(--header-h, 64px) !important;
     height: calc(100dvh - var(--header-h, 64px)) !important;
 }
 
-.audio-player__ayah-preview,
-.audio-player__status-ayah {
-    color: color-mix(
-        in srgb,
-        var(--player-text-strong) 84%,
-        var(--player-text-soft) 16%
-    ) !important;
-}
-
-.audio-player__arabic-title {
-    text-wrap: balance;
-}
-
-.player-reciter-btn {
-    min-height: 2.7rem;
-}
-
-.reciter-cdn-badge {
-    background: var(--player-chip-bg) !important;
-    border-color: var(--player-chip-border) !important;
-    color: var(--player-chip-text) !important;
-}
-
 @media (max-width: 1280px) {
-    .hdr.hdr--themes4 .hdr__main {
-        flex-wrap: wrap;
-        gap: 0.52rem;
-        align-items: stretch;
-    }
-
-    .hdr.hdr--themes4 .hdr__center {
-        order: 3;
-        flex: 1 1 100%;
-    }
-
-    .hdr.hdr--themes4 .hdr__actions {
-        flex-wrap: wrap;
-        justify-content: flex-end;
-    }
-
-    .hdr.hdr--themes4 .hdr__home-meta {
-        display: none;
-    }
 
     .app-view-reading {
         padding-inline: 0 !important;
@@ -1111,18 +955,9 @@ body,
         padding-inline: 0.48rem !important;
     }
 
-    .hdr.hdr--themes4 .hdr__actions {
-        width: 100%;
-        justify-content: space-between;
-    }
-
     [data-theme] .sidebar.sidebar--themes4 {
         width: min(90vw, 350px) !important;
         max-width: 350px !important;
-    }
-
-    .notes-panel-desk {
-        display: none !important;
     }
 }
 
@@ -1134,78 +969,9 @@ body,
         gap: 0.45rem;
         padding: 0.58rem 0.64rem !important;
     }
-
-    .quran-display--platform .mushaf-layout-toggle-bar {
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
-        padding: 0.34rem;
-    }
-
-    .quran-display--platform .mushaf-layout-btn {
-        flex: 0 0 auto;
-    }
 }
 
 @media (max-width: 768px) {
-    .hdr.hdr--themes4 .hdr__main {
-        border-radius: 0.85rem !important;
-        padding: 0.42rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__brand {
-        min-width: 0;
-    }
-
-    .hdr.hdr--themes4 .hdr__nav-sub,
-    .hdr.hdr--themes4 .hdr__home-subtitle {
-        display: none !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__actions {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
-    .hdr.hdr--themes4 .hdr__action-cluster--status {
-        grid-column: 1 / -1;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn--labeled,
-    .hdr.hdr--themes4 .hdr__btn-duas,
-    .hdr.hdr--themes4 .hdr__riwaya-toggle {
-        flex: 1 1 0 !important;
-        min-width: 0 !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn--labeled,
-    .hdr.hdr--themes4 .hdr__btn-duas {
-        width: auto !important;
-        height: 2.72rem !important;
-        justify-content: center !important;
-        gap: 0.44rem !important;
-        padding-inline: 0.84rem !important;
-        border-radius: 0.95rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn-label {
-        align-items: center;
-        font-size: 0.67rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__riwaya-toggle {
-        justify-content: stretch !important;
-    }
-
-    .hdr.hdr--themes4 .network-status {
-        min-height: 2.72rem !important;
-        justify-content: center !important;
-        padding-inline: 0.82rem !important;
-    }
-
-    .hdr.hdr--themes4 .network-status .status-label {
-        display: inline-flex !important;
-        font-size: 0.65rem !important;
-    }
 
     [data-theme] .sidebar.sidebar--themes4 {
         width: min(92vw, 330px) !important;
@@ -1239,17 +1005,6 @@ body,
 }
 
 @media (max-width: 560px) {
-    .hdr.hdr--themes4 .hdr__brand-name {
-        display: block !important;
-        max-width: 8.2rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 0.94rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__theme-dot {
-        display: inline-block !important;
-    }
 
     [data-theme] .sidebar.sidebar--themes4 {
         width: 100vw !important;
@@ -1267,49 +1022,9 @@ body,
             var(--arabic-reading-line-height-mobile, 2.22) + 0.01
         );
     }
-
-    .audio-player--mobile.audio-player--mini {
-        left: 0.52rem !important;
-        right: 0.52rem !important;
-        bottom: calc(env(safe-area-inset-bottom, 0px) + 0.52rem) !important;
-    }
-
-    .audio-player--mobile.audio-player--sheet {
-        padding-bottom: env(safe-area-inset-bottom, 0px);
-    }
 }
 
 @media (max-width: 420px) {
-    .hdr.hdr--themes4 .hdr__btn,
-    .hdr.hdr--themes4 .hdr__nav-arrow {
-        width: 2.22rem !important;
-        height: 2.22rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn--labeled {
-        width: auto !important;
-        min-width: 0 !important;
-        height: 2.58rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn-label {
-        font-size: 0.62rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__riwaya-btn {
-        min-width: 1.9rem !important;
-        padding-inline: 0.38rem !important;
-        font-size: 0.66rem !important;
-    }
-
-    .audio-player__mobile-bar {
-        padding-inline: 0.58rem !important;
-        min-height: 3.3rem !important;
-    }
-
-    .audio-player__status {
-        width: 4.5rem !important;
-    }
 
     .quran-display--platform .qc-ayah-text-ar {
         font-size: clamp(1.96rem, 8.9vw, 2.3rem);
@@ -1325,97 +1040,6 @@ body,
         line-height: calc(
             var(--arabic-reading-line-height-mobile, 2.22) - 0.04
         );
-    }
-}
-
-@media (max-width: 768px) {
-    .hdr.hdr--themes4 .hdr__center,
-    .hdr.hdr--themes4 .hdr__action-cluster--status,
-    .hdr.hdr--themes4 .hdr__btn-duas,
-    .hdr.hdr--themes4 .hdr__btn--theme {
-        display: none !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__main {
-        flex-wrap: nowrap !important;
-        align-items: center !important;
-        gap: 0.55rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__left {
-        flex: 1 1 auto;
-        min-width: 0;
-    }
-
-    .hdr.hdr--themes4 .hdr__actions {
-        display: flex !important;
-        width: auto !important;
-        margin-inline-start: auto;
-        align-items: center !important;
-        justify-content: flex-end !important;
-        gap: 0.4rem !important;
-        flex-wrap: nowrap !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__action-cluster {
-        width: auto !important;
-        min-width: 0 !important;
-        flex: 0 0 auto !important;
-        align-items: center !important;
-        justify-content: center !important;
-        gap: 0.3rem !important;
-        padding: 0.22rem !important;
-        flex-wrap: nowrap !important;
-        border-radius: 0.88rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__action-cluster--primary,
-    .hdr.hdr--themes4 .hdr__action-cluster--tools {
-        display: flex !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn--labeled {
-        width: 2.58rem !important;
-        min-width: 2.58rem !important;
-        height: 2.58rem !important;
-        padding-inline: 0 !important;
-        gap: 0 !important;
-        border-radius: 0.88rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__btn-label {
-        display: none !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__riwaya-toggle {
-        width: auto !important;
-        flex: 0 0 auto !important;
-        padding: 0.2rem !important;
-        gap: 0.12rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__riwaya-btn {
-        flex: 0 0 auto !important;
-        min-width: 2.35rem !important;
-        padding-inline: 0.58rem !important;
-        font-size: 0.7rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__brand {
-        padding-inline-end: 0.5rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__brand-name {
-        display: block !important;
-        max-width: 7.8rem;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        font-size: 0.96rem !important;
-    }
-
-    .hdr.hdr--themes4 .hdr__theme-dot {
-        display: none !important;
     }
 }
 

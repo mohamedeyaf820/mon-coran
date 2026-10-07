@@ -204,10 +204,6 @@
     touch-action: none;
 }
 
-.mp-player-mobile-expanded {
-    scrollbar-gutter: stable both-edges;
-}
-
 .audio-player-modal__surface button,
 .mp-audio-player button {
     min-width: 2.25rem;
@@ -218,14 +214,6 @@
         left: 0.5rem !important;
         right: 0.5rem !important;
         width: auto !important;
-    }
-
-    .mp-player-mobile-meta {
-        min-width: 0 !important;
-    }
-
-    .mp-player-mobile-secondary {
-        flex: 0 0 auto;
     }
 }
 
@@ -423,14 +411,6 @@ html {
     }
 }
 
-.scroll-x-swipe {
-    overflow-x: auto;
-    scrollbar-width: none !important;
-}
-.scroll-x-swipe::-webkit-scrollbar {
-    display: none !important;
-}
-
 @media (max-width: 1024px) {
     .sidebar {
         position: fixed !important;
@@ -472,10 +452,6 @@ html {
         gap: 0.35rem;
         padding: 0.35rem 0.5rem;
         min-height: 3.5rem !important;
-    }
-
-    .app-root .mp-header__network {
-        display: none !important;
     }
 
     .app-root .mp-header__center {
@@ -520,11 +496,6 @@ html {
         font-size: 0.95rem !important;
         font-weight: 700 !important;
     }
-
-    .app-root .mp-header__kicker,
-    .app-root .mp-header__sub {
-        display: none !important;
-    }
 }
 
 @media (max-width: 480px) {
@@ -547,21 +518,6 @@ html {
         height: auto !important;
         padding: 0.5rem 0.75rem calc(0.4rem + env(safe-area-inset-bottom, 0px));
         box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.2);
-    }
-
-    .audio-player-modal__controls-row,
-    .mp-player-controls-strip {
-        flex-wrap: nowrap !important;
-        gap: 0.35rem;
-    }
-
-    .audio-player-modal__volume-container {
-        display: none !important;
-    }
-
-    .audio-player-modal__meta,
-    .mp-player-mobile-meta {
-        max-width: 32% !important;
     }
 }
 
@@ -598,14 +554,6 @@ html {
         padding: 0.55rem;
         overflow-x: clip;
     }
-
-    .app-root .app-view-home .home-hero-compact,
-    .app-root.premium-plus .app-view-home .home-hero-compact {
-        box-sizing: border-box !important;
-        width: 100% !important;
-        max-width: 100% !important;
-        min-width: 0 !important;
-    }
 }
 
 @media (min-width: 641px) and (max-width: 1024px) {
@@ -614,34 +562,11 @@ html {
     }
 }
 
-@media (min-width: 1025px) {
-}
-
 @media (max-width: 768px) {
     .modal-overlay,
     .search-pro-overlay {
         align-items: flex-end !important;
         padding: 0;
-    }
-
-    .settings-nav {
-        display: flex !important;
-        flex-direction: row !important;
-        overflow-x: auto;
-        padding: 0.5rem;
-        border-inline-end: none !important;
-        border-bottom: 1px solid var(--border);
-        width: 100% !important;
-    }
-
-    .settings-nav button {
-        white-space: nowrap !important;
-    }
-
-    .settings-row {
-        flex-direction: column !important;
-        align-items: stretch !important;
-        gap: 0.6rem;
     }
 
     .settings-theme-grid {
@@ -834,18 +759,11 @@ html body .app-root .quran-display--platform .qc-verse-card p {
         flex-wrap: nowrap !important;
         overflow-x: auto;
     }
-
-    .reader-toolbar__navigator {
-        flex-shrink: 0 !important;
-    }
 }
 
 @media (max-width: 480px) {
     .qc-ayah-text-ar {
         font-size: clamp(24px, 7vw, 36px) !important;
-    }
-    .qc-reading-view {
-        padding-inline: 0.75rem;
     }
     .qc-verse-card {
         padding-inline: 0.75rem;
@@ -875,12 +793,6 @@ html {
 
 .app-main-shell {
     scrollbar-gutter: auto !important;
-}
-
-.app-root .notes-fab {
-    position: fixed !important;
-    z-index: var(--z-fab) !important;
-    flex: none !important;
 }
 
 @media (max-width: 1024px) {
@@ -922,71 +834,9 @@ html {
         margin: 0;
     }
 
-    .app-root .mp-player-mobile-head {
-        padding-inline: clamp(0.58rem, 2vw, 0.95rem);
-    }
-
-    .app-root .mp-player-mobile-controls {
-        display: grid !important;
-        grid-template-columns: minmax(4.8rem, 0.72fr) minmax(0, 1.35fr) auto;
-        gap: clamp(0.28rem, 1.4vw, 0.55rem);
-        min-width: 0 !important;
-        padding: 0.42rem clamp(0.48rem, 1.8vw, 0.85rem)
-            calc(0.5rem + env(safe-area-inset-bottom, 0px));
-    }
-
-    .app-root .mp-player-mobile-meta {
-        width: auto !important;
-        min-width: 0 !important;
-    }
-
-    .app-root .mp-player-mobile-main-controls {
-        min-width: 0 !important;
-        gap: clamp(0.2rem, 1vw, 0.38rem);
-        padding-inline: clamp(0.22rem, 1vw, 0.42rem);
-    }
-
-    .app-root .mp-player-mobile-secondary {
-        min-width: max-content;
-        gap: clamp(0.18rem, 0.8vw, 0.32rem);
-    }
-
     .app-root .mp-player-minimized-row,
     .app-root .mp-player-minimized-meta {
         min-width: 0 !important;
-    }
-}
-
-@media (max-width: 420px) {
-    .app-root .mp-player-mobile-controls {
-        grid-template-columns: minmax(0, 1fr) auto;
-    }
-
-    .app-root .mp-player-mobile-meta {
-        display: none !important;
-    }
-
-    .app-root .mp-player-mobile-main-controls {
-        justify-content: space-between !important;
-    }
-
-    .app-root .mp-player-mobile-main-controls :is(.h-8.w-8, .h-9.w-9) {
-        width: 2rem !important;
-        height: 2rem !important;
-        min-width: 2rem !important;
-        min-height: 2rem !important;
-    }
-
-    .app-root .mp-player-mobile-main-controls .mp-player-play-btn {
-        width: 2.28rem !important;
-        height: 2.28rem !important;
-        min-width: 2.28rem !important;
-        min-height: 2.28rem !important;
-    }
-
-    .app-root .mp-player-mobile-secondary button {
-        min-width: 2rem !important;
-        min-height: 2rem !important;
     }
 }
 
@@ -2300,10 +2150,6 @@ html[data-theme="dark"]
 @media (max-width: 480px) {
     .mp-audio-player--mobile {
         padding: 0.5rem 0.35rem;
-    }
-
-    .mp-player-mobile-meta {
-        font-size: 0.72rem !important;
     }
 
     .mp-player-play-btn {

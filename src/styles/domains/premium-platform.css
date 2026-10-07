@@ -53,28 +53,6 @@
     padding-bottom: clamp(1.4rem, 3vw, 2.4rem);
 }
 
-.app-root.is-memorizing .app-view-reading::before {
-    background:
-        radial-gradient(
-            circle at 10% 0%,
-            color-mix(
-                in srgb,
-                var(--theme-surface) 82%,
-                rgba(var(--theme-primary-rgb), 0.18) 18%
-            ),
-            transparent 30%
-        ),
-        radial-gradient(
-            circle at 92% 4%,
-            color-mix(
-                in srgb,
-                var(--theme-panel-bg-strong) 88%,
-                rgba(var(--theme-primary-rgb), 0.12) 12%
-            ),
-            transparent 28%
-        );
-}
-
 .app-view-reading .quran-display--platform {
     margin-inline: auto;
     max-width: min(100%, 1180px);
@@ -99,13 +77,6 @@
     );
     box-shadow:
         0 30px 80px rgba(2, 8, 23, 0.18),
-        0 1px 0 rgba(255, 255, 255, 0.08) inset;
-}
-
-.app-root.is-memorizing .app-view-reading .quran-display--platform {
-    border-color: color-mix(in srgb, var(--gold) 30%, transparent 70%);
-    box-shadow:
-        0 28px 68px rgba(92, 66, 23, 0.16),
         0 1px 0 rgba(255, 255, 255, 0.08) inset;
 }
 
@@ -150,43 +121,8 @@
     );
 }
 
-.app-root.is-memorizing
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-active,
-.app-root.is-memorizing
-    .app-view-reading
-    .quran-display--platform
-    .qc-ayah-block.is-playing {
-    border-color: color-mix(in srgb, var(--gold) 42%, transparent 58%);
-    background: linear-gradient(
-        180deg,
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg-strong) 84%,
-            rgba(var(--theme-primary-rgb), 0.16) 16%
-        ),
-        color-mix(
-            in srgb,
-            var(--theme-panel-bg) 90%,
-            rgba(var(--theme-primary-rgb), 0.12) 10%
-        )
-    );
-}
-
-.app-view-reading .quran-display--platform .qc-ayah-container {
-    gap: clamp(0.56rem, 0.95vw, 0.76rem);
-}
-
 .app-view-reading .quran-display--platform .qc-ayah-text-ar {
     line-height: 2.08;
-}
-
-.app-view-reading .quran-display--platform .qc-ayah-translation {
-    max-width: 68ch;
-    margin-top: 0.46rem;
-    font-size: clamp(0.84rem, 0.72rem + 0.22vw, 0.94rem);
-    color: color-mix(in srgb, var(--theme-text) 82%, var(--theme-bg) 18%);
 }
 
 .app-view-reading .quran-display--platform .qc-ayah-transliteration {
@@ -195,77 +131,6 @@
     background: color-mix(in srgb, var(--theme-chip-bg) 84%, transparent 16%);
     border: 1px solid
         color-mix(in srgb, var(--theme-chip-border) 76%, transparent 24%);
-}
-
-.app-view-reading .quran-display--platform .qc-ayah-actions-panel {
-    margin-inline-start: 0;
-    margin-top: 0.42rem;
-    padding-top: 0.42rem;
-    border-top: 1px solid
-        color-mix(in srgb, var(--theme-border-strong) 24%, transparent 76%);
-}
-
-.quran-loading,
-.quran-error {
-    min-height: min(70vh, 760px);
-    padding: clamp(1rem, 2vw, 1.5rem);
-    display: grid;
-    place-items: center;
-}
-
-.loading-skeleton,
-.quran-error {
-    width: min(100%, 820px);
-    border-radius: calc(var(--app-radius-xl) + 0.25rem);
-    border: 1px solid var(--app-shell-border);
-    background: linear-gradient(
-        160deg,
-        color-mix(in srgb, var(--theme-panel-bg-strong) 94%, transparent 6%),
-        color-mix(in srgb, var(--theme-panel-bg) 88%, transparent 12%)
-    );
-    box-shadow: var(--app-shadow-panel);
-}
-
-.loading-skeleton {
-    padding: clamp(1.2rem, 2vw, 1.6rem);
-}
-
-.quran-error {
-    gap: 1.1rem;
-    padding: clamp(1.6rem, 3vw, 2.4rem);
-}
-
-.quran-error i {
-    width: 4rem;
-    height: 4rem;
-    display: grid;
-    place-items: center;
-    border-radius: 1.25rem;
-    background: color-mix(in srgb, var(--theme-chip-bg) 86%, transparent 14%);
-    border: 1px solid
-        color-mix(in srgb, var(--theme-chip-border) 74%, transparent 26%);
-    color: var(--theme-primary);
-    opacity: 1;
-}
-
-.quran-error p,
-.quran-error .quran-error-network-msg,
-.quran-error .quran-error-detail {
-    max-width: 60ch;
-    margin: 0;
-    color: var(--theme-text-soft);
-}
-
-.quran-error .quran-error-detail {
-    font-size: 0.82rem;
-    color: var(--theme-text-muted);
-}
-
-.quran-error-actions .btn,
-.quran-error-actions button {
-    min-height: var(--app-btn-h);
-    padding-inline: 1rem;
-    border-radius: 999px;
 }
 
 .modal-overlay {
@@ -278,57 +143,10 @@
         rgba(4, 10, 20, 0.72);
 }
 
-.search-modal-shell .modal-header,
-.modal .modal-header {
-    position: relative;
-    z-index: 1;
-}
-
-.search-modal-shell .modal-header::after,
-.modal .modal-header::after {
-    content: "";
-    position: absolute;
-    inset: auto 0 -0.1rem;
-    height: 1px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        color-mix(in srgb, var(--theme-border-strong) 46%, transparent 54%),
-        transparent
-    );
-}
-
 .search-modal-shell .modal-close,
 .modal .modal-close {
     border-radius: 1rem;
     border-color: color-mix(in srgb, var(--theme-border) 70%, transparent 30%);
-}
-
-.search-modal-shell .modal-empty,
-.modal .modal-empty {
-    border-radius: var(--app-radius-lg);
-    border: 1px solid
-        color-mix(in srgb, var(--theme-border) 58%, transparent 42%);
-    background: color-mix(
-        in srgb,
-        var(--theme-panel-bg-strong) 88%,
-        transparent 12%
-    );
-    box-shadow: var(--app-shadow-soft);
-}
-
-.search-modal-shell .modal-error {
-    margin: 0 0 1rem;
-    padding: 0.95rem 1rem;
-    border-radius: 1.1rem;
-    border: 1px solid rgba(248, 113, 113, 0.24);
-    background: linear-gradient(
-        145deg,
-        rgba(127, 29, 29, 0.18),
-        rgba(69, 10, 10, 0.1)
-    );
-    color: #fecaca;
-    box-shadow: var(--app-shadow-soft);
 }
 
 .toast-notification {
@@ -375,13 +193,6 @@
     box-shadow: var(--app-shadow-soft);
 }
 
-.ayah-actions__meta {
-    display: flex;
-    justify-content: space-between;
-    gap: 0.38rem;
-    align-items: start;
-}
-
 .ayah-actions__kicker {
     display: inline-flex;
     align-items: center;
@@ -391,22 +202,6 @@
     text-transform: uppercase;
     letter-spacing: 0.11em;
     color: var(--theme-text-muted);
-}
-
-.ayah-actions__verse {
-    margin-top: 0.08rem;
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    gap: 0.2rem;
-    color: var(--theme-text);
-    font-size: 0.68rem;
-    font-weight: 600;
-}
-
-.ayah-actions__verse-ar {
-    color: var(--theme-arabic);
-    font-size: 0.72rem;
 }
 
 .ayah-actions__badges {
@@ -541,54 +336,6 @@
     line-height: 1.08;
 }
 
-.ayah-action-card__desc {
-    position: relative;
-    z-index: 1;
-    color: var(--theme-text-muted);
-    font-size: 0.66rem;
-    line-height: 1.1;
-}
-
-.ayah-action-card__state {
-    position: relative;
-    z-index: 1;
-    color: var(--theme-primary);
-    font-size: 0.48rem;
-    font-weight: 700;
-}
-
-.ayah-actions__utility {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.24rem;
-}
-
-.ayah-actions__utility-btn {
-    min-height: 1.4rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.22rem;
-    padding: 0.2rem 0.42rem;
-    border-radius: 999px;
-    border: 1px solid
-        color-mix(in srgb, var(--theme-border) 56%, transparent 44%);
-    background: color-mix(
-        in srgb,
-        var(--theme-panel-bg-strong) 78%,
-        transparent 22%
-    );
-    color: var(--theme-text-soft);
-    font-weight: 600;
-    font-size: 0.62rem;
-    line-height: 1;
-}
-
-.ayah-actions__utility-btn.is-active {
-    color: var(--gold);
-    border-color: color-mix(in srgb, var(--theme-primary) 46%, transparent 54%);
-}
-
 .ayah-action-sheet-backdrop {
     position: fixed;
     inset: 0;
@@ -661,13 +408,6 @@
     font-size: 0.82rem;
 }
 
-.ayah-action-sheet__copy {
-    margin: 0;
-    color: var(--theme-text-soft);
-    font-size: 0.78rem;
-    line-height: 1.48;
-}
-
 .ayah-actions__sheet-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
@@ -737,51 +477,6 @@
 .ayah-action-sheet__close:focus-visible {
     outline: none;
     box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.24);
-}
-
-.ayah-action-sheet .share-btn__label {
-    flex: 1;
-    min-width: 0;
-    text-wrap: pretty;
-    white-space: normal;
-    overflow-wrap: normal;
-    word-break: normal;
-}
-
-.ayah-action-sheet--share .share-btn--whatsapp svg {
-    background: rgba(37, 211, 102, 0.18);
-    color: #20b75f;
-}
-
-.ayah-action-sheet--share .share-btn--telegram svg {
-    background: rgba(39, 166, 229, 0.2);
-    color: #1d8fc8;
-}
-
-.ayah-action-sheet--share .share-btn--x svg {
-    background: rgba(136, 146, 176, 0.2);
-    color: color-mix(in srgb, var(--theme-text) 82%, #8f9dbf 18%);
-}
-
-.ayah-action-sheet--share .share-btn--facebook svg {
-    background: rgba(24, 119, 242, 0.18);
-    color: #1877f2;
-}
-
-.ayah-action-sheet--share .share-btn--email svg {
-    background: rgba(89, 126, 175, 0.2);
-    color: #4f78aa;
-}
-
-.ayah-action-sheet--share .share-btn--copy svg {
-    background: rgba(191, 152, 61, 0.2);
-    color: #b3872a;
-}
-
-.ayah-action-sheet--share .share-btn--image svg,
-.ayah-action-sheet--share .share-btn--card svg,
-.ayah-action-sheet--share .share-btn--native svg {
-    background: rgba(var(--theme-primary-rgb), 0.16);
 }
 
 .ayah-actions__textarea {
@@ -857,10 +552,6 @@
     line-height: 1.42;
 }
 
-.ayah-action-sheet--share .ayah-actions__sheet-grid {
-    grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
-}
-
 .ayah-action-sheet--playlist .ayah-actions__sheet-grid {
     grid-template-columns: repeat(auto-fit, minmax(146px, 1fr));
 }
@@ -914,14 +605,6 @@
         font-size: 0.8rem;
     }
 
-    .ayah-action-card__desc {
-        display: none;
-    }
-
-    .ayah-action-card__state {
-        font-size: 0.58rem;
-    }
-
     .ayah-action-sheet {
         position: fixed;
         left: 0.75rem;
@@ -936,10 +619,6 @@
     .ayah-actions__sheet-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
-
-    .ayah-action-sheet--share .ayah-actions__sheet-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
 }
 
 @media (max-width: 540px) {
@@ -951,10 +630,6 @@
         padding-inline: 0.6rem;
     }
 
-    .ayah-action-sheet--share .ayah-actions__sheet-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-
     .ayah-action-sheet {
         gap: 0.56rem;
         padding: 0.68rem;
@@ -962,10 +637,6 @@
 
     .ayah-action-sheet__title {
         font-size: 0.92rem;
-    }
-
-    .ayah-action-sheet__copy {
-        font-size: 0.74rem;
     }
 
     .ayah-action-sheet .share-btn,
@@ -996,10 +667,6 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    .ayah-actions__verse {
-        font-size: 0.72rem;
-    }
-
     .ayah-actions__badge {
         padding: 0.3rem 0.5rem;
         font-size: 0.62rem;
@@ -1018,17 +685,5 @@
 
     .ayah-action-card__label {
         font-size: 0.76rem;
-    }
-
-    .ayah-actions__utility-btn {
-        flex: 1 1 calc(50% - 0.3rem);
-        min-height: 1.86rem;
-        font-size: 0.74rem;
-        padding: 0.34rem 0.56rem;
-    }
-
-    .quran-error,
-    .loading-skeleton {
-        border-radius: 1.35rem;
     }
 }
