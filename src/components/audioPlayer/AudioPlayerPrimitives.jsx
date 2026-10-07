@@ -10,22 +10,6 @@ const COVER_SIZE_CLASSES = {
   52: "w-[52px] h-[52px]",
 };
 
-const WAVE_HEIGHT_CLASSES = [
-  "h-[22%]",
-  "h-[26.62%]",
-  "h-[31.23%]",
-  "h-[35.85%]",
-  "h-[40.46%]",
-  "h-[45.08%]",
-  "h-[49.69%]",
-  "h-[54.31%]",
-  "h-[58.92%]",
-  "h-[63.54%]",
-  "h-[68.15%]",
-  "h-[72.77%]",
-  "h-[77.38%]",
-];
-
 export function ReciterPhoto({ src, className = "", style }) {
   const [failed, setFailed] = useState(false);
 
@@ -87,31 +71,6 @@ export function ProgressRail({ progress, className = "", showThumb = false }) {
           />
         )}
       </svg>
-    </div>
-  );
-}
-
-export function Waveform({ progress }) {
-  const COUNT = 32;
-  return (
-    <div className="flex h-8 w-full items-end justify-center gap-0.5 rounded-xl border border-white/10 bg-white/[0.05] px-2 py-2 shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
-      {Array.from({ length: COUNT }).map((_, i) => {
-        const pct = i / COUNT;
-        const filled = pct <= progress;
-        const seedIndex = (i * 7 + 3) % 13;
-        return (
-          <div
-            key={i}
-            className={cn(
-              "min-w-[2px] flex-1 rounded-full origin-bottom",
-              WAVE_HEIGHT_CLASSES[seedIndex],
-              filled
-                ? "bg-gradient-to-b from-[var(--gold-bright)] to-[var(--gold)]"
-                : "bg-white/12",
-            )}
-          />
-        );
-      })}
     </div>
   );
 }
@@ -190,39 +149,3 @@ export function ReciterAvatar({ reciter, active = false, loading = false }) {
   );
 }
 
-export function IconBtn({
-  onClick,
-  title,
-  active,
-  children,
-  size = "md",
-  className = "",
-}) {
-  const base =
-    size === "sm"
-      ? "w-9 h-9 text-[0.72rem]"
-      : size === "lg"
-        ? "w-12 h-12 text-base"
-        : "w-10 h-10 text-[0.82rem]";
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={title}
-      aria-label={title}
-      className={cn(
-        base,
-        "flex items-center justify-center rounded-full cursor-pointer outline-none transition-all duration-150",
-        active
-          ? "bg-[color-mix(in_srgb,var(--gold)_25%,transparent_75%)] text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_88%,#ffffff_12%)] border border-[color-mix(in_srgb,var(--gold)_45%,transparent_55%)]"
-          : "bg-[color-mix(in_srgb,var(--theme-panel-bg-strong)_78%,transparent_22%)] text-[color-mix(in_srgb,var(--theme-text)_88%,var(--theme-bg)_12%)] border border-[color-mix(in_srgb,var(--theme-border)_62%,transparent_38%)]",
-        "hover:bg-[color-mix(in_srgb,var(--gold)_18%,transparent_82%)] hover:text-[color-mix(in_srgb,var(--gold-bright,#f5d785)_90%,#ffffff_10%)] hover:border-[color-mix(in_srgb,var(--gold)_35%,transparent_65%)] hover:scale-105",
-        "active:scale-95",
-        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[color-mix(in_srgb,var(--gold)_50%,transparent_50%)]",
-        className,
-      )}
-    >
-      {children}
-    </button>
-  );
-}

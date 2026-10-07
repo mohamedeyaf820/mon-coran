@@ -169,7 +169,6 @@ test("home mushaf totals quote the active riwaya", async () => {
   );
   for (const file of [
     "src/components/Home/HomePrimitives.jsx",
-    "src/components/Home/StatsStrip.jsx",
     "src/components/recitation/SurahRecitationRow.jsx",
     "src/components/Sidebar.jsx",
   ]) {

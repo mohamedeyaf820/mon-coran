@@ -18,7 +18,6 @@ import {
   fetchQuranComTranslations,
 } from './quranComAPI';
 
-
 // Direct call to AlQuran Cloud public API (supports CORS).
 // No backend proxy needed — the app is a pure static SPA.
 const BASE = 'https://api.alquran.cloud/v1';
@@ -32,10 +31,6 @@ const EDITIONS = {
   // This fallback is only used if the local Warsh data fails to load.
   warsh: ['quran-uthmani', 'quran-uthmani-min'],
 };
-
-// Flag to track when Warsh text falls back to Hafs script
-let lastWarshFallback = false;
-export function wasWarshTextFallback() { return lastWarshFallback; }
 
 const TRANSLATION_EDITIONS = {
   fr: 'fr.hamidullah',
@@ -81,9 +76,6 @@ const CACHE_MAX_SIZE = 500;
 // Shared network fetches are keyed by URL. A screen may stop waiting without
 // cancelling a request that can still populate the cache for the next screen.
 const inflight = new Map();
-
-// Current AbortController for cancellable navigations
-let currentAbort = null;
 
 import { dbGet, dbPruneByPrefix, dbSet, getDB } from './dbService';
 import { normalizeArabicSearchText } from '../utils/searchIntelligence';
@@ -173,18 +165,6 @@ function validateApiDataShape(url, data) {
   }
 
   return data;
-}
-
-/**
- * Create a new AbortController, cancelling the previous one.
- * This prevents stale requests from slower navigations.
- */
-export function abortPendingRequests() {
-  if (currentAbort) {
-    currentAbort.abort();
-  }
-  currentAbort = new AbortController();
-  return currentAbort.signal;
 }
 
 function pruneCache() {
@@ -472,7 +452,6 @@ async function searchArabicLocally(query, surahNum = null, signal) {
 async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal, options = {}) {
   if (USE_QURAN_COM_TEXT && canLoadFromQuranCom(pathPrefix, riwaya)) {
     try {
-      lastWarshFallback = false;
       const data = await fetchQuranComText(pathPrefix, signal, options);
       if (!Array.isArray(data?.ayahs) || data.ayahs.length) return data;
       throw new Error('Empty Quran.com text payload');
@@ -484,9 +463,6 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal, opt
 
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
-
-  // Track Warsh fallback (text is always Hafs orthography for Warsh)
-  lastWarshFallback = (riwaya === 'warsh');
 
   for (const edition of editions) {
     try {
@@ -582,57 +558,7 @@ export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {
   return fetchTranslations(`surah/${surahNum}`, langs, signal);
 }
 
-/**
- * Fetch surah text + multiple translations in parallel
- */
-export async function getSurahFull(surahNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
-  const needsHafsForTranslit = riwaya === 'warsh';
-
-  const promises = [
-    getSurahText(surahNum, riwaya, signal),
-    getSurahTranslation(surahNum, transLangs, signal),
-  ];
-
-  if (needsHafsForTranslit) {
-    promises.push(getSurahText(surahNum, 'hafs', signal));
-  }
-
-  const results = await Promise.allSettled(promises);
-
-  if (results[0].status !== 'fulfilled') {
-    throw results[0].reason || new Error('Arabic text fetch failed');
-  }
-
-  const arabic = results[0].value;
-  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
-
-  if (needsHafsForTranslit && results[2].status === 'fulfilled') {
-    const hafs = results[2].value;
-    if (arabic.ayahs && hafs.ayahs) {
-      const hafsByKey = new Map(
-        hafs.ayahs.map((ayah) => [
-          `${ayah.surah?.number}:${ayah.numberInSurah}`,
-          ayah,
-        ]),
-      );
-      arabic.ayahs = arabic.ayahs.map((a) => {
-        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
-        return {
-          ...a,
-          hafsText: hafsAyah?.text || null
-        };
-      });
-    }
-  }
-
-  return { arabic, translations };
-}
-
 /* ── Single Ayah ─────────────────────────────── */
-
-export async function getAyah(surahNum, ayahNum, riwaya = 'hafs', signal) {
-  return fetchWithEditionFallback(`ayah/${surahNum}:${ayahNum}`, riwaya, signal);
-}
 
 /* ── Juz ─────────────────────────────────────── */
 
@@ -652,49 +578,6 @@ export async function getPage(pageNum, riwaya = 'hafs', signal) {
 
 export async function getPageTranslation(pageNum, langs = ['fr'], signal) {
   return fetchTranslations(`page/${pageNum}`, langs, signal);
-}
-
-export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
-  const needsHafsForTranslit = riwaya === 'warsh';
-
-  const promises = [
-    getPage(pageNum, riwaya, signal),
-    getPageTranslation(pageNum, transLangs, signal),
-  ];
-
-  if (needsHafsForTranslit) {
-    promises.push(getPage(pageNum, 'hafs', signal));
-  }
-
-  const results = await Promise.allSettled(promises);
-
-  if (results[0].status !== 'fulfilled') {
-    throw results[0].reason || new Error('Arabic page fetch failed');
-  }
-
-  const arabic = results[0].value;
-  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
-
-  if (needsHafsForTranslit && results[2].status === 'fulfilled') {
-    const hafs = results[2].value;
-    if (arabic.ayahs && hafs.ayahs) {
-      const hafsByKey = new Map(
-        hafs.ayahs.map((ayah) => [
-          `${ayah.surah?.number}:${ayah.numberInSurah}`,
-          ayah,
-        ]),
-      );
-      arabic.ayahs = arabic.ayahs.map((a) => {
-        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
-        return {
-          ...a,
-          hafsText: hafsAyah?.text || null
-        };
-      });
-    }
-  }
-
-  return { arabic, translations };
 }
 
 /* ── Search ──────────────────────────────────── */

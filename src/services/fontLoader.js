@@ -232,24 +232,7 @@ export async function ensureQcfPageFontLoaded(page, version = "v2") {
   return ensureFontLoaded(`qcf-${version}-p${normalizePage(page)}`);
 }
 
-export async function warmQcfPageFonts(pages = [], version = "v2", { radius = 0 } = {}) {
-  const targets = new Set();
-  (Array.isArray(pages) ? pages : [pages]).forEach((page) => {
-    const base = normalizePage(page);
-    targets.add(base);
-    for (let offset = 1; offset <= radius; offset += 1) {
-      targets.add(normalizePage(base - offset));
-      targets.add(normalizePage(base + offset));
-    }
-  });
-
-  return Promise.all([...targets].map((page) => ensureQcfPageFontLoaded(page, version)));
-}
-
 export function isFontMarkedLoaded(fontId) {
   return loadedFontIds.has(fontId) || [...loadedFontIds].some((id) => id.startsWith(`${fontId}:`));
 }
 
-export function hasFontLoadFailed(fontId) {
-  return failedFontIds.has(fontId);
-}

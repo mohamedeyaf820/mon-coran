@@ -61,10 +61,6 @@ export const THEMES = [
 
 const THEME_IDS = new Set(THEME_ORDER);
 
-export function getThemeMeta(themeId) {
-  return THEMES.find((theme) => theme.id === themeId) || THEMES[0];
-}
-
 export function normalizeThemeId(value, fallback = "light") {
   if (typeof value !== "string") return fallback;
   if (THEME_IDS.has(value)) return value;

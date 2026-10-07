@@ -1954,11 +1954,6 @@ input:focus-visible {
     background: rgba(255, 255, 255, 0.04);
 }
 
-.ayah-block.active:not(.playing) {
-    background: rgba(var(--primary-rgb), 0.05) !important;
-    box-shadow: inset 4px 0 0 var(--primary);
-}
-
 [dir="rtl"] .ayah-block.active:not(.playing) {
     box-shadow: inset -4px 0 0 var(--primary);
 }
@@ -2141,9 +2136,6 @@ input:focus-visible {
             0 0 22px rgba(212, 168, 32, 0.22),
             inset 0 0 0 1px rgba(212, 168, 32, 0.25);
     }
-}
-.qc-ayah-block.is-playing {
-    border-radius: 8px;
 }
 
 :root {
@@ -4156,35 +4148,6 @@ body {
     gap: clamp(0.45rem, 0.85vw, 0.72rem);
 }
 
-.app-root .quran-display--platform .quran-mode-pane--page .qc-ayah-block,
-.app-root .quran-display--platform .quran-mode-pane--juz .qc-ayah-block {
-    padding: clamp(0.42rem, 0.72vw, 0.66rem) clamp(0.44rem, 0.72vw, 0.62rem);
-}
-
-.app-root .quran-display--platform .quran-mode-pane--surah .qc-ayah-block {
-    padding: clamp(0.48rem, 0.82vw, 0.72rem) clamp(0.46rem, 0.76vw, 0.66rem);
-}
-
-.app-root .qc-ayah-block {
-    border-radius: 1rem;
-    border-color: var(--ux-panel-border);
-    background: linear-gradient(
-        155deg,
-        color-mix(in srgb, var(--bg-card) 92%, transparent 8%),
-        color-mix(
-            in srgb,
-            var(--bg-card) 86%,
-            rgba(var(--primary-rgb), 0.08) 14%
-        )
-    );
-    box-shadow: 0 10px 22px rgba(var(--primary-rgb), 0.09);
-}
-
-.app-root .qc-ayah-block:hover {
-    transform: translateY(-0.5px);
-    box-shadow: 0 14px 26px rgba(var(--primary-rgb), 0.14);
-}
-
 .app-root .qc-ayah-text-ar {
     line-height: 1.98;
     font-size: clamp(1.3rem, 1.05rem + 0.56vw, 1.78rem);
@@ -4320,26 +4283,6 @@ body {
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.app-root .quran-display--platform .rd-header,
-.app-root .quran-display--platform .rd-page-frame,
-.app-root .quran-display--platform .rd-ayah,
-.app-root .quran-display--platform .rd-actions,
-.app-root .quran-display--platform .play-surah-bar .btn-play-surah {
-    border-color: var(--ux-panel-border);
-}
-
-.app-root .quran-display--platform .rd-ayah.active,
-.app-root .quran-display--platform .rd-ayah.playing,
-.app-root .quran-display--platform .qc-ayah-block.is-active,
-.app-root .quran-display--platform .qc-ayah-block.is-playing {
-    background: linear-gradient(
-        160deg,
-        rgba(var(--primary-rgb), 0.16),
-        rgba(var(--primary-rgb), 0.07)
-    );
-    box-shadow: 0 18px 30px rgba(var(--primary-rgb), 0.18);
-}
-
 .app-root .mp-audio-player--desktop {
     max-width: min(360px, calc(100vw - 1.4rem));
 }
@@ -4397,18 +4340,6 @@ body {
     .quran-mode-pane--surah
     .surah-ayahs-list::before {
     display: none;
-}
-
-.app-root .quran-display--platform .quran-mode-pane--surah .rd-ayah {
-    border-bottom: 1px solid
-        color-mix(in srgb, var(--ux-panel-border) 84%, transparent 16%);
-    border-radius: 0;
-    background: transparent;
-    box-shadow: none;
-}
-
-.app-root .quran-display--platform .quran-mode-pane--surah .rd-ayah:last-child {
-    border-bottom: none;
 }
 
 .app-root
@@ -4525,10 +4456,6 @@ body {
         min-height: 2.15rem;
         padding: 0.38rem 0.92rem;
         font-size: 0.83rem;
-    }
-
-    .app-root .quran-display--platform .quran-mode-pane--surah .rd-ayah {
-        padding: 1rem 0.1rem;
     }
 
     .app-root
@@ -4775,10 +4702,6 @@ body {
     .app-root .app-main-shell {
         padding-inline: max(0.38rem, env(safe-area-inset-left, 0px))
             max(0.38rem, env(safe-area-inset-right, 0px));
-    }
-
-    .app-root .quran-display--platform .qc-ayah-block {
-        border-radius: 0.88rem;
     }
 
     .app-root .quran-display--platform .ayah-actions-inline {
@@ -6273,62 +6196,6 @@ body {
     }
 }
 
-.ayah-block {
-    cursor: pointer;
-    border: none;
-    border-bottom: 1px solid var(--border-light);
-    overflow-wrap: break-word;
-    word-break: break-word;
-    content-visibility: auto;
-    contain-intrinsic-size: auto 120px;
-    line-height: var(--line-height-quran);
-}
-
-.ayah-block:last-child {
-    border-bottom: none;
-}
-
-.ayah-block::before {
-    content: "";
-    position: absolute;
-    inset-inline-start: 0;
-    top: 20%;
-    bottom: 20%;
-    width: 3px;
-    border-radius: 0 3px 3px 0;
-    background: var(--primary);
-    opacity: 0;
-    transform: scaleY(0.4);
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-    pointer-events: none;
-}
-
-.ayah-block:hover::before {
-    opacity: 0.5;
-    transform: scaleY(1);
-}
-
-.ayah-block:hover {
-    background: var(--ayah-hover);
-}
-
-.ayah-block:focus-visible {
-    background: var(--ayah-hover);
-}
-
-.ayah-block.active {
-    background: var(--primary-light);
-    box-shadow: inset 3px 0 0 var(--primary);
-}
-
-.ayah-block.active::before {
-    opacity: 1;
-    transform: scaleY(1);
-    background: linear-gradient(180deg, var(--gold, #b8860b), var(--primary));
-}
-
 @keyframes glow-play {
     0%,
     100% {
@@ -6372,63 +6239,6 @@ body {
     border-radius: 0;
 }
 
-.ayah-block.playing::before {
-    opacity: 1;
-    transform: scaleY(1);
-    background: linear-gradient(
-        180deg,
-        var(--gold-bright, #d4a820) 0%,
-        var(--gold, #b8860b) 100%
-    );
-    width: 4px;
-    top: 10%;
-    bottom: 10%;
-    box-shadow: 0 0 8px rgba(184, 134, 11, 0.5);
-    animation: sb-indicator-pulse 2s ease-in-out infinite;
-}
-
-.surah-ayahs-list:has(.ayah-block.playing) .ayah-block:not(.playing) {
-    opacity: 0.5;
-    transition: opacity 0.4s ease;
-}
-
-.surah-ayahs-list:has(.ayah-block.playing) .ayah-block:not(.playing):hover {
-    opacity: 0.82;
-}
-
-.ayah-block.playing::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    border-radius: inherit;
-    background: linear-gradient(
-        100deg,
-        transparent 20%,
-        rgba(212, 168, 32, 0.12) 40%,
-        rgba(255, 220, 100, 0.18) 50%,
-        rgba(212, 168, 32, 0.12) 60%,
-        transparent 80%
-    );
-    background-size: 600px 100%;
-    animation: ayah-shimmer 3.8s ease-in-out infinite;
-}
-
-.ayah-block.playing .ayah-number::after {
-    content: "♪";
-    font-family: inherit;
-    font-weight: 900;
-    display: block;
-    color: var(--gold);
-    font-size: 0.58rem;
-    opacity: 0.85;
-    margin-top: 0.25rem;
-    animation: pulse 2.5s ease infinite;
-    filter: drop-shadow(0 0 4px rgba(184, 134, 11, 0.45));
-    text-align: center;
-    line-height: 1;
-}
-
 .ayah-number {
     display: inline-flex;
     align-items: center;
@@ -6455,30 +6265,6 @@ body {
     box-shadow: 0 1px 3px rgba(184, 134, 11, 0.1);
 }
 
-.ayah-block:hover .ayah-number {
-    opacity: 1;
-    background: rgba(184, 134, 11, 0.18);
-    border-color: rgba(184, 134, 11, 0.35);
-    transform: scale(1.08);
-    box-shadow: 0 2px 8px rgba(184, 134, 11, 0.2);
-}
-
-.ayah-block.playing .ayah-number {
-    opacity: 1;
-    background: linear-gradient(
-        135deg,
-        var(--gold-bright, #d4a820),
-        var(--gold)
-    );
-    color: #fff;
-    border-color: var(--gold);
-    animation: hp-pulse-gold 2.5s ease-in-out infinite;
-    box-shadow:
-        0 2px 10px rgba(184, 134, 11, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    transform: scale(1.05);
-}
-
 .ayah-text-ar {
     direction: rtl;
     text-align: right;
@@ -6499,24 +6285,6 @@ body {
     word-break: break-word;
     max-width: 100%;
     transition: color 0.2s ease;
-}
-
-.surah-ayahs-list:has(.ayah-block.playing)
-    .ayah-block:not(.playing)
-    .ayah-text-ar {
-    filter: opacity(0.72);
-    transition: filter 0.3s ease;
-}
-
-.surah-ayahs-list:has(.ayah-block.playing)
-    .ayah-block:not(.playing):hover
-    .ayah-text-ar {
-    filter: opacity(0.9);
-}
-
-.ayah-block.playing .ayah-text-ar {
-    filter: none;
-    text-shadow: 0 0 40px rgba(184, 134, 11, 0.06);
 }
 
 .ayah-transliteration {
@@ -6828,10 +6596,6 @@ body {
         padding: 1rem 1.15rem 2rem;
     }
 
-    .ayah-block {
-        padding: 0.85rem 0.7rem;
-    }
-
     .mushaf-page {
         padding: 1.5rem 1.75rem;
         border-radius: var(--r-lg);
@@ -6841,10 +6605,6 @@ body {
 @media (max-width: 640px) {
     .quran-display {
         padding: 0.9rem 0.72rem 2.35rem;
-    }
-
-    .ayah-block {
-        padding: 0.92rem 0.95rem;
     }
 
     .ayah-text-ar {
@@ -6881,10 +6641,6 @@ body {
         bottom: calc(var(--player-h) + 0.75rem);
     }
 
-    .qc-ayah-block {
-        padding: 1rem 0;
-    }
-
     .qc-ayah-text-ar {
         font-size: 1.08em;
         line-height: 2.42;
@@ -6902,10 +6658,6 @@ body {
         padding: 0.5rem 0.5rem 1.25rem;
     }
 
-    .ayah-block {
-        padding: 0.55rem 0.35rem;
-    }
-
     .mushaf-page {
         padding: 0.75rem 0.6rem;
         outline-offset: -4px;
@@ -6916,10 +6668,6 @@ body {
     .quran-display {
         max-width: 980px;
         padding: 2.25rem 3rem 4rem;
-    }
-
-    .surah-ayahs-list .ayah-block {
-        padding: 1.35rem 2.25rem;
     }
 
     .mushaf-page {
@@ -6977,10 +6725,6 @@ body {
         border: none;
         box-shadow: none;
         border-radius: 0;
-        page-break-inside: avoid;
-    }
-
-    .ayah-block {
         page-break-inside: avoid;
     }
 }
@@ -7289,115 +7033,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.mp-header-side {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 64px;
-    gap: 0.1rem;
-}
-
-.mp-header-side--end {
-    direction: ltr;
-}
-
-.mp-header-label {
-    font-family: var(--font-ui);
-    font-size: 0.6rem;
-    font-weight: 600;
-    color: var(--mp-gold);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    opacity: 0.85;
-}
-
-.mp-header-value {
-    font-family: var(--font-ui);
-    font-size: 0.88rem;
-    font-weight: 800;
-    color: var(--mp-text);
-    line-height: 1;
-}
-
-.mp-header-value-end {
-    font-weight: 500;
-    font-size: 0.78em;
-    opacity: 0.7;
-}
-
-.mp-header-center {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.mp-ornament {
-    font-size: 1.6rem;
-    color: var(--mp-gold);
-    line-height: 1;
-    opacity: 0.7;
-    text-shadow: 0 1px 3px rgba(184, 134, 11, 0.2);
-}
-
-.mp-surah-title {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.1rem;
-}
-
-.mp-surah-name-ar {
-    font-family: var(
-        --font-surah-display,
-        "Amiri Quran",
-        "Amiri",
-        serif
-    ) !important;
-    font-size: 1.8rem;
-    font-weight: 500;
-    color: #8b621f;
-    direction: rtl;
-    line-height: 1.32;
-    letter-spacing: 0.012em;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.09);
-    font-feature-settings:
-        "liga" 1,
-        "calt" 1,
-        "kern" 1;
-    font-variant-ligatures: contextual;
-    text-rendering: optimizeLegibility;
-}
-
-.mp-surah-name-tr {
-    font-family: var(--font-ui);
-    font-size: 0.62rem;
-    font-weight: 700;
-    color: var(--mp-gold);
-    text-transform: uppercase;
-    letter-spacing: 0.14em;
-    opacity: 0.75;
-}
-
-.mp-basmala {
-    display: block;
-    text-align: center;
-    font-size: 1.08em;
-    color: var(--mp-text);
-    padding-bottom: 0.6em;
-    font-feature-settings: "liga" 1;
-    line-height: 2.2;
-    letter-spacing: 0.02em;
-}
-
-.quran-mode-pane--page .mp-basmala {
-    font-size: 1.15em;
-    padding-bottom: 1em;
-    margin-bottom: 0.5rem;
-}
-
 @keyframes mp-ayah-pulse {
     0%,
     100% {
@@ -7414,34 +7049,10 @@ body {
     .mp-header {
         padding: 0.45rem 1rem 0.4rem;
     }
-
-    .mp-surah-name-ar {
-        font-size: 1.15rem;
-    }
-}
-
-.ayah-block {
-    position: relative;
-    border-radius: var(--r-md);
-    padding: 0.5rem 0.65rem 0.6rem;
-    margin: 0 -0.65rem;
-    transition:
-        background 0.2s,
-        box-shadow 0.2s;
-    outline: none;
-}
-
-.ayah-block.playing {
-    background: var(--ayah-playing-bg);
-    box-shadow: inset 3px 0 0 var(--gold);
 }
 
 [dir="rtl"] .ayah-block.playing {
     box-shadow: inset -3px 0 0 var(--gold);
-}
-
-.ayah-block:focus-visible {
-    box-shadow: var(--focus-ring);
 }
 
 .quran-display {
@@ -7453,67 +7064,6 @@ body {
     margin: 0 auto;
     width: 100%;
     scroll-behavior: auto;
-}
-
-.qc-ayah-block {
-    position: relative;
-    padding: 1.8rem 0 1.7rem;
-    border-bottom: 1px solid rgba(var(--primary-rgb), 0.065);
-    cursor: pointer;
-    transition:
-        background 0.2s ease,
-        box-shadow 0.2s ease;
-    outline: none;
-}
-
-.qc-ayah-block::before {
-    content: "";
-    position: absolute;
-    inset-inline-start: 0;
-    top: 50%;
-    transform: translateY(-50%) scaleY(0.3);
-    height: 60%;
-    width: 3px;
-    border-radius: 999px;
-    opacity: 0;
-    transition:
-        opacity 0.2s ease,
-        transform 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.qc-ayah-block:hover {
-    background: rgba(var(--primary-rgb), 0.022);
-}
-.qc-ayah-block:hover::before {
-    background: linear-gradient(
-        180deg,
-        transparent,
-        rgba(var(--primary-rgb), 0.5),
-        transparent
-    );
-    opacity: 1;
-    transform: translateY(-50%) scaleY(1);
-}
-.qc-ayah-block.is-active::before {
-    transform: translateY(-50%) scaleY(1);
-}
-.qc-ayah-block.is-playing::before {
-    background: linear-gradient(
-        180deg,
-        transparent,
-        rgba(212, 168, 32, 0.9),
-        var(--gold, #c9a33d),
-        rgba(212, 168, 32, 0.9),
-        transparent
-    );
-    opacity: 1;
-    transform: translateY(-50%) scaleY(1);
-    box-shadow: 0 0 10px rgba(212, 168, 32, 0.45);
-}
-
-.qc-ayah-block:focus-visible {
-    box-shadow: inset 0 0 0 2px rgba(var(--primary-rgb), 0.35);
-    border-radius: 4px;
 }
 
 .qc-ayah-text-ar {
@@ -7535,11 +7085,6 @@ body {
         text-shadow 0.22s ease;
 }
 
-.qc-ayah-block.is-playing .qc-ayah-text-ar {
-    color: color-mix(in srgb, var(--text-quran) 92%, var(--gold) 8%);
-    text-shadow: 0 0 28px rgba(212, 168, 32, 0.08);
-}
-
 .qc-ayah-transliteration {
     margin-top: 0.65rem;
     padding: 0.45rem 0.85rem 0.45rem 0.85rem;
@@ -7554,17 +7099,6 @@ body {
     background: rgba(var(--primary-rgb), 0.025);
     border: 1px dashed rgba(var(--primary-rgb), 0.12);
     transition: opacity 0.2s ease;
-}
-
-.qc-ayah-block:hover .qc-ayah-transliteration {
-    opacity: 0.9;
-}
-
-.qc-ayah-block.is-playing .qc-ayah-transliteration {
-    opacity: 1;
-    background: rgba(212, 168, 32, 0.04);
-    border-color: rgba(212, 168, 32, 0.18);
-    color: color-mix(in srgb, var(--text-muted) 85%, var(--gold) 15%);
 }
 
 [data-theme="dark"] .qc-ayah-transliteration {
@@ -7602,10 +7136,6 @@ body {
 .app-root.focus-reading .quran-nav,
 .app-root.focus-reading .chunk-nav-bar {
     border-color: rgba(var(--primary-rgb), 0.06);
-}
-
-.app-root.focus-reading .qc-ayah-block {
-    padding-block: 2rem;
 }
 
 .app-root.focus-reading .qc-ayah-text-ar {
@@ -7700,35 +7230,6 @@ body {
     --cpv-gold: #9a6e1a;
     --cpv-shadow: 0 4px 20px rgba(100, 65, 0, 0.14);
 }
-
-.mp-basmala-wrap {
-    text-align: center;
-    padding-bottom: 0.2em;
-}
-
-.mp-basmala-translation {
-    font-family: var(--font-ui);
-    font-size: 0.72rem;
-    font-style: italic;
-    color: var(--mp-gold);
-    opacity: 0.78;
-    text-align: center;
-    direction: ltr;
-    margin: 0;
-    padding: 0.2rem 1rem 0.7rem;
-    line-height: 1.6;
-    letter-spacing: 0.01em;
-}
-
-.surah-ayahs-list:has(.qc-ayah-block.is-playing)
-    .qc-ayah-block:not(.is-playing) {
-    opacity: 0.48;
-    transition: opacity 0.4s ease;
-}
-.surah-ayahs-list:has(.qc-ayah-block.is-playing)
-    .qc-ayah-block:not(.is-playing):hover {
-    opacity: 0.88;
-}
 [dir="rtl"] .qc-ayah-translation {
     border-inline-start: none;
     border-inline-end: 2.5px solid rgba(var(--primary-rgb), 0.22);
@@ -7747,17 +7248,6 @@ body {
     }
     50% {
         text-shadow: 0 0 28px rgba(212, 168, 32, 0.22);
-    }
-}
-
-.qc-ayah-block {
-    animation: ayahFadeIn 0.35s both;
-    animation-delay: calc(var(--ayah-idx, 0) * 25ms);
-}
-
-@media (max-width: 768px) {
-    .qc-ayah-block {
-        padding: 0.6rem 0.5rem;
     }
 }
 
@@ -7792,11 +7282,6 @@ body {
     }
 }
 
-.qc-ayah-block.is-playing {
-    animation: ayahPlayPulse 2.5s ease-in-out infinite;
-    background: var(--emerald-tint);
-}
-
 @keyframes ayahFadeIn {
     from {
         opacity: 0;
@@ -7806,16 +7291,6 @@ body {
         opacity: 1;
         transform: none;
     }
-}
-
-.qc-ayah-block.is-active {
-    background: var(--emerald-pale);
-    border-radius: var(--radius-lg);
-    border-color: var(--emerald-tint);
-}
-.qc-ayah-block.is-active::before {
-    opacity: 1;
-    background: var(--gold);
 }
 
 @keyframes ayahNumRing {

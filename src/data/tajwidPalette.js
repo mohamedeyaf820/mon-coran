@@ -26,8 +26,6 @@ export const QURAN_COM_TAJWID_SOURCE = Object.freeze({
   unicodeMapping: "MushafPlus semantic adaptation of Quran.com V4 visual groups",
 });
 
-export const TAJWID_FONT_PALETTES = Object.freeze({ light: 0, dark: 1, sepia: 2 });
-
 export const TAJWID_VISUAL_GROUPS = Object.freeze([
   { id: "silent", quranComId: "edgham" },
   { id: "madd-normal", quranComId: "mad-2" },
@@ -74,12 +72,3 @@ export const TAJWID_RULE_GROUPS = Object.freeze({
   "madd-necessary": "madd-necessary",
 });
 
-/**
- * The shipped reading inks are Quran.com's published swatches, unchanged in
- * every theme: --tajwid-palette-* equals --quran-com-tajwid-* (themes4.css).
- */
-export const TAJWID_CONTRAST_ADAPTATIONS = Object.freeze({
-  light: Object.freeze([]),
-  sepia: Object.freeze([]),
-  dark: Object.freeze([]),
-});

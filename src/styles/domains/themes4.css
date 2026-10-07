@@ -865,32 +865,6 @@
     box-shadow: 0 0 0 4px rgba(var(--theme-primary-rgb), 0.14) !important;
 }
 
-.quran-display--platform .qc-ayah-block:hover,
-.quran-display--platform .qc-ayah-block.is-active,
-.quran-display--platform .qc-ayah-block.is-playing,
-.ayah-block.playing {
-    border-color: color-mix(
-        in srgb,
-        var(--theme-border-strong) 80%,
-        transparent 20%
-    ) !important;
-    background: color-mix(
-        in srgb,
-        var(--theme-panel-bg-strong) 78%,
-        rgba(var(--theme-primary-rgb), 0.22) 22%
-    ) !important;
-}
-
-.app-view-reading .surah-header-name,
-.app-view-reading .qc-header-name-ar,
-.app-view-reading .mp-surah-name-ar,
-.app-view-reading .cpv-surah-header-name,
-.app-view-reading .bismillah-text,
-.app-view-reading .bismillah-text-clean,
-.app-view-reading .cpv-basmala {
-    color: var(--theme-arabic) !important;
-}
-
 .mp-footer .group:hover,
 .mp-footer button:hover {
     border-color: color-mix(
@@ -988,10 +962,6 @@ body,
 
     .surah-ayahs-list {
         border-radius: 1rem;
-    }
-
-    .ayah-block {
-        padding: 1rem 0.95rem;
     }
 
     .mp-footer {

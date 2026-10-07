@@ -812,13 +812,6 @@ export async function restoreRawPrivateDataSnapshot(snapshot) {
   }
 }
 
-export function updateSetting(key, value) {
-  const settings = getSettings();
-  settings[key] = value;
-  saveSettings(settings);
-  return settings;
-}
-
 /**
  * Patches the stored settings instead of replacing the whole blob. Callers
  * that persist a subset of keys (reading position, one audio preference) must
@@ -848,19 +841,9 @@ export function savePosition(surah, ayah, page) {
   return settings.lastPosition;
 }
 
-export function getPosition() {
-  return getSettings().lastPosition;
-}
-
 function clampSyncOffset(ms) {
   const n = Number(ms) || 0;
   return Math.max(-500, Math.min(500, n));
-}
-
-export function getSyncOffsetMs(riwaya, reciterId) {
-  const settings = getSettings();
-  const key = `${riwaya}:${reciterId}`;
-  return clampSyncOffset(settings.syncOffsetsMs?.[key] ?? 0);
 }
 
 export function setSyncOffsetMs(riwaya, reciterId, offsetMs) {

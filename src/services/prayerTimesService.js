@@ -32,10 +32,6 @@ export function normalizePrayerMethod(value, lang = "fr") {
   return lang === "fr" ? 12 : 3;
 }
 
-export function isValidPrayerMethod(value) {
-  return VALID_METHOD_IDS.has(Number(value));
-}
-
 export function sanitizePrayerLocation(value) {
   if (!value || typeof value !== "object") return null;
   const latitude = Number(value.latitude);

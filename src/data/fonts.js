@@ -397,10 +397,6 @@ export function getAyahTextForFont(ayah, fontId, riwaya = "hafs") {
   );
 }
 
-export function hasNativeAyahMarker(text) {
-  return NATIVE_AYAH_MARKER_RE.test(String(text || ""));
-}
-
 export function formatAyahMarkerNumber(value, fontId, riwaya = "hafs") {
   const normalizedId = normalizeFontId(fontId, riwaya);
   const config = AYAH_MARKER_BY_FONT[normalizedId] || AYAH_MARKER_BY_FONT[DEFAULT_FONT_ID];
@@ -455,5 +451,4 @@ export function appendNativeAyahMarker(
   const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
   return `${cleanedValue}\u202F${marker}`;
 }
-
 

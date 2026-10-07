@@ -10,7 +10,6 @@ import {
   getWarshPageVerses,
   getWarshSurahFormatted,
 } from "../../services/warshService";
-import { startPerformanceTimer } from "../../services/performanceMetrics";
 import { READER_LOAD, createReaderDataError } from "./readerLoadError.js";
 
 export function describeArabicDataSource(arabicData, riwaya) {
@@ -125,19 +124,6 @@ export async function loadArabicData({
     }
     throw error;
   }
-}
-
-export function preloadArabicData(options) {
-  const finishMetric = startPerformanceTimer("riwaya_preload_ms");
-  return loadArabicData({ ...options, signal: undefined })
-    .then((value) => {
-      finishMetric();
-      return value;
-    })
-    .catch(() => {
-      finishMetric();
-      return null;
-    });
 }
 
 export function ensureRequestedRiwaya(ayahs, riwaya) {

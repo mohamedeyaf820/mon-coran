@@ -376,10 +376,6 @@ html
     margin-inline: auto;
 }
 
-html body .app-root .quran-display--platform .rd-ayah.qc-ayah-block {
-    max-width: 1080px !important;
-}
-
 
 .app-root .quran-display--platform .qc-surah-header-wrap {
     width: min(100%, 1080px) !important;

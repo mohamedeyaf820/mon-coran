@@ -18,23 +18,6 @@
     padding: 0;
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    gap: 0.9rem;
-    margin: 0;
-    padding: clamp(1.05rem, 1.8vw, 1.55rem) 0;
-    transform: none;
-    contain-intrinsic-size: 1px 210px;
-}
-
-.app-root .quran-display--platform .rd-ayah:hover {
-    box-shadow: none;
-}
-
-.app-root .quran-display--platform .rd-ayah.active,
-.app-root .quran-display--platform .rd-ayah.playing {
-    box-shadow: none;
-}
-
 .app-root .quran-display--platform .rd-ayah-ref,
 .app-root .quran-display--platform .ayah-actions-inline__ref {
     display: inline-flex;
@@ -452,10 +435,6 @@
     background: color-mix(in srgb, var(--bg-primary) 92%, transparent 8%);
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    padding-inline: clamp(0.28rem, 1.2vw, 1rem);
-}
-
 html[data-split-view="on"]
     .app-root
     .quran-display--platform
@@ -480,15 +459,6 @@ html[data-split-view="on"]
     .rd-ayah-body
     .rd-supplement-panel {
     margin-top: 0.2rem;
-}
-
-.app-root
-    .quran-display--platform
-    .rd-ayah.is-translation-reading
-    .rd-arabic {
-    order: 2;
-    opacity: 0.72;
-    font-size: clamp(1.22rem, 1.02rem + 1vw, 1.85rem) !important;
 }
 
 @media (max-width: 760px) {
@@ -1171,10 +1141,6 @@ html[data-split-view="on"]
     display: none !important;
 }
 
-.app-root .quran-display--platform .rd-ayah {
-    padding-block: clamp(1rem, 1.45vw, 1.45rem);
-}
-
 .app-root .quran-display--platform .rd-arabic {
     margin-bottom: 0.72rem;
     padding-inline: clamp(0.15rem, 0.8vw, 0.65rem);
@@ -1216,11 +1182,6 @@ html[data-split-view="on"]
 
     .app-root .quran-display--platform .surah-ayahs-list {
         width: 100% !important;
-    }
-
-    .app-root .quran-display--platform .rd-ayah {
-        padding-block: 0.92rem;
-        gap: 0.5rem;
     }
 
     .app-root .quran-display--platform .rd-arabic {
