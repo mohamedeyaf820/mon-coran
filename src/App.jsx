@@ -276,6 +276,7 @@ export default function App() {
 
   // Synchronisation URL ↔ état de navigation
   useUrlSync({
+    lang,
     showHome,
     showDuas,
     duasRoute,
@@ -310,6 +311,7 @@ export default function App() {
   }, [
     showHome,
     showDuas,
+    state.duasRoute,
     showPrayers,
     displayMode,
     currentSurah,

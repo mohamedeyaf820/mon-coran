@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
 import { getSurahAyahCount } from "../data/surahs.js";
 import { getWarshSurahAyahCount } from "../constants/warshSource.js";
+import { localizePath, splitLocale } from "../utils/localePath.js";
 
-function buildRoute({
+function buildBaseRoute({
   routeNotFound,
   legalPage,
   showHome,
@@ -53,6 +54,16 @@ function buildRoute({
   return { targetPath: "/", routeKey: "home" };
 }
 
+/** The route of the state, with the reading language in the address (/en/..., /ar/...; French stays at the root). */
+function buildRoute({ lang, ...state }) {
+  const route = buildBaseRoute(state);
+  // A not-found address is kept as typed, prefix included.
+  if (state.routeNotFound) return route;
+  return { ...route, targetPath: localizePath(route.targetPath, lang) };
+}
+
+const withoutTrailingSlash = (path) => splitLocale(path).path.replace(/(.)\/$/, "$1");
+
 /**
  * Synchronise React navigation state with the browser URL.
  *
@@ -61,6 +72,7 @@ function buildRoute({
  * - URL -> state: read the URL on initial load and on browser back/forward.
  */
 export function useUrlSync({
+  lang = "fr",
   showHome,
   showDuas,
   duasRoute = "",
@@ -80,6 +92,7 @@ export function useUrlSync({
 
   useEffect(() => {
     const { targetPath, routeKey } = buildRoute({
+      lang,
       routeNotFound,
       legalPage,
       showHome,
@@ -96,6 +109,20 @@ export function useUrlSync({
     if (isFirstRender.current) {
       isFirstRender.current = false;
       lastRouteKey.current = routeKey;
+      // A visit without a language prefix shows the reader's saved language:
+      // put that language in the address (same page, no history entry).
+      if (
+        typeof window !== "undefined" &&
+        window.location.pathname !== targetPath &&
+        !routeNotFound &&
+        withoutTrailingSlash(window.location.pathname) === withoutTrailingSlash(targetPath)
+      ) {
+        window.history.replaceState(
+          null,
+          "",
+          `${targetPath}${window.location.search}${window.location.hash}`,
+        );
+      }
       return;
     }
 
@@ -112,6 +139,7 @@ export function useUrlSync({
 
     lastRouteKey.current = routeKey;
   }, [
+    lang,
     showHome,
     showDuas,
     duasRoute,
@@ -144,7 +172,13 @@ export function useUrlSync({
  * Read the current URL path and return partial AppContext state.
  */
 export function parseRoutePath(pathname = "/") {
-  const path = String(pathname || "/").split(/[?#]/, 1)[0];
+  const { lang, path } = splitLocale(String(pathname || "/").split(/[?#]/, 1)[0]);
+  const route = parseLocalRoutePath(path);
+  // The address names a language: it wins over the saved one.
+  return lang ? { ...route, lang } : route;
+}
+
+function parseLocalRoutePath(path) {
 
   const legalMatch = path.match(/^\/(surahs|about|privacy|legal|sources)\/?$/);
   if (legalMatch) {

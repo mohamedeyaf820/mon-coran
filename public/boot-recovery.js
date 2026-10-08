@@ -148,7 +148,12 @@
     clearRetryFlagSoon();
     setTimeout(function () {
       var root = document.getElementById("root");
-      if (root && root.childElementCount === 0) {
+      // An empty root, or the crawler shell still in place (React replaces it on
+      // mount), means the app never booted.
+      if (
+        root &&
+        (root.childElementCount === 0 || root.querySelector(":scope > [data-seo-shell]"))
+      ) {
         cleanupAndReload();
       }
     }, 3500);
