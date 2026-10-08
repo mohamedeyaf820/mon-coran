@@ -65,7 +65,9 @@ export default function useKaraokeWordIndex({
 
   useEffect(() => {
     if (!enabled) return undefined;
-    const updateFromSegments = (timeSec = audioService.currentTime || 0) => {
+    const updateFromSegments = (rawTimeSec = audioService.currentTime || 0) => {
+      // Word timings are relative to their verse, whichever way it is played.
+      const timeSec = audioService.verseClock?.().time ?? rawTimeSec;
       const segments = Array.isArray(audioService.currentAyah?.segments)
         ? audioService.currentAyah.segments
         : [];

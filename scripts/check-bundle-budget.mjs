@@ -46,7 +46,17 @@ const LIMITS = {
   // table and the grouped sources register (the chunk is lazy, 33.7 kB); the
   // footer gained its link groups; the settings tabs were split into files and
   // gained the live preview and the downloads list. None of it is in the boot graph.
-  js: Number(process.env.BUDGET_JS_KB || 1460),
+  // 2026-10-08: 1474.2 kB measured with the prayer-times redesign (place and
+  // method pickers, region table, ~100 offline cities that also name a GPS
+  // position), ceiling 1480 kB. Lazy chunks except ~2 kB of copy and state.
+  // 2026-10-08 (invocations + audio): 1525.3 kB measured, ceiling 1535 kB. The
+  // Rabbana (40 verses with their meanings) and khatm pages join the lazy Duas
+  // chunk; whole-surah playback adds a routing module, the chapter-timeline
+  // loader and the listening-mode setting (the player chunk is lazy too).
+  // 2026-10-08 (verse card studio): 1539.1 kB measured, ceiling 1545 kB. Six more
+  // palettes, four frames and four background motifs, drawn by their own module
+  // (cardOrnaments.js) in the lazy share chunk; none of it is in the boot graph.
+  js: Number(process.env.BUDGET_JS_KB || 1545),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -65,7 +75,17 @@ const LIMITS = {
   // 2026-10-06 (information pages): 2459.7 kB measured, +25 kB of headroom.
   // 2026-10-07: 2485.2 kB measured after the player/scroll stability work
   // (pending-audio event, scroll compensation, hint fold), ceiling 2490 kB.
-  total: Number(process.env.BUDGET_TOTAL_KB || 2490),
+  // 2026-10-08: 2512.5 kB measured with the prayer-times redesign (place and
+  // method pickers, offline cities, region table), ceiling 2520 kB.
+  // 2026-10-08 (invocations hub): 2524.0 kB measured (+11.5 kB) for the Hisn
+  // al-Muslim library views, the hub and the hub copy in three languages. All of it
+  // sits in the lazy Duas chunk; the 267 invocations themselves are JSON under
+  // /data/hisn/, outside the bundle. Ceiling 2535 kB.
+  // 2026-10-08 (Rabbana, khatm, whole-surah audio): 2572.2 kB measured (+37 kB,
+  // all JS, see the JS line), ceiling 2580 kB.
+  // 2026-10-08 (verse card studio): 2587.1 kB measured (+7 kB: the JS above and the
+  // studio's group and tile rules), ceiling 2595 kB.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2595),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

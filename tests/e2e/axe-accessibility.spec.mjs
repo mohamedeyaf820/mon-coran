@@ -64,6 +64,20 @@ test("Axe: invocations", async ({ page }) => {
   await expectNoSeriousViolations(page, "Invocations");
 });
 
+for (const [name, path, ready] of [
+  ["invocations : chapitres de la Citadelle", "/duas/hisn", ".hisn-row"],
+  ["invocations : un chapitre avec ses sources", "/duas/hisn/27", ".dua-sources"],
+  ["invocations : invocations du Coran", "/duas/coran", ".dua-card-v5"],
+  ["invocations : les 40 Rabbana", "/duas/rabbana", ".dua-card-v5"],
+  ["invocations : fin de lecture du Coran", "/duas/khatm", ".dua-info-card"],
+]) {
+  test(`Axe: ${name}`, async ({ page }) => {
+    await page.goto(path);
+    await expect(page.locator(ready).first()).toBeVisible({ timeout: 30_000 });
+    await expectNoSeriousViolations(page, name);
+  });
+}
+
 test("Axe: lecteur en arabe (RTL)", async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem(

@@ -23,7 +23,7 @@ function seedArabic() {
     JSON.stringify({
       timings: { Fajr: at(-180), Sunrise: at(-150), Dhuhr: at(-60), Asr: at(45), Maghrib: at(150), Isha: at(210) },
       hijri: "12 Rabi' al-Awwal 1448",
-      timezone: "Europe/Paris",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       methodName: "UOIF",
       latitude: 48.85,
       longitude: 2.35,
@@ -58,7 +58,7 @@ async function expectLatinLeftToRight(locator, lang) {
 }
 
 test("duas: the English translation and the transliteration read left-to-right on the Arabic page", async ({ page }) => {
-  await page.goto("/duas");
+  await page.goto("/duas/coran");
   const translation = page.locator(".dua-translation").first();
   await expect(translation).toBeVisible({ timeout: 30_000 });
   await expectLatinLeftToRight(translation, "en");

@@ -7,10 +7,8 @@ import { bindEngineMediaSession, syncEngineMediaSession, updateEngineMetadata } 
  */
 
 import { getAdaptiveAudioPreloadCount } from "../utils/networkPolicy.js";
-import {
-  getSurahStreamProgressForAyah,
-  resolveSurahStreamAyah,
-} from "../utils/surahStreamSync.js";
+import { getSurahStreamSeekSeconds, resolveSurahStreamAyah } from "../utils/surahStreamSync.js";
+import { ensureTimeline, fallBackToVerseFiles, seekTimedVerse, surahTwinFor, verseClock } from "./audioSurahRoute.js";
 
 import { isTrustedAudioUrl, filterAyahAudioGaps } from "./audioSources.js";
 import { handleVerseEnded } from "./audioHandoff.js";
@@ -24,6 +22,7 @@ import {
   reportPausedState,
 } from "./audioSession.js";
 import {
+  SURAH_TIMED_CDN,
   buildLatencyKey,
   buildPlaylistSignature,
   buildUrl,
@@ -96,6 +95,13 @@ class AudioService {
     this._playlistSignature = "";
     this._playlistIndexByAyahKey = new Map();
     this._pendingSurahStreamAyah = null;
+    // Voices that exist verse by verse and as one recording per surah: "auto"
+    // plays a whole surah as that single recording (gapless, steady in the
+    // background) and keeps verse files for everything that works verse by verse.
+    this.playbackMode = "auto"; // "auto" | "surah" | "verse"
+    this._timedOrigin = null; // { cdn, cdnType, recitationId } of the verse files behind a timed surah
+    this._timedFailures = new Set(); // "recitation:surah" whose timeline could not be used this session
+    this._startOffsetSec = 0;
     this._playRequestedAt = 0;
     this._hasCapturedLatency = false;
     this._reciterLatencyByKey = Object.create(null);
@@ -213,11 +219,17 @@ class AudioService {
 
   /* ── Playlist Management ───────────────────── */
 
-  loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah", { autoRestart = true } = {}) {
+  loadPlaylist(ayahs, reciterCdn, cdnType = "everyayah", { autoRestart = true, mode } = {}) {
     const requestedAyahs = Array.isArray(ayahs) ? ayahs : [];
     ayahs = filterAyahAudioGaps(requestedAyahs, cdnType, reciterCdn);
     this.playlistGapCount = Math.max(0, requestedAyahs.length - ayahs.length);
     this._playlistSourceAyahs = ayahs.map((ayah) => ({ ...ayah }));
+    const twinId = surahTwinFor(this, ayahs, reciterCdn, cdnType, mode);
+    const timedOrigin = twinId ? { cdn: reciterCdn, cdnType, recitationId: twinId } : null;
+    if (timedOrigin) {
+      reciterCdn = `qdc:${twinId}`;
+      cdnType = SURAH_TIMED_CDN;
+    }
     const preparedAyahs = AudioService.normalizePlaylistAyahs(
       expandAyahsToAudioFiles(ayahs, cdnType),
       cdnType,
@@ -270,6 +282,8 @@ class AudioService {
     const previousPlaylist = this.playlist;
     const wasPlaying = this.isPlaying;
     const previousSrc = this._resolvedOriginalUrl || this.audio.src;
+    const previousCdnType = this._currentCdnType;
+    this._timedOrigin = timedOrigin;
     this._playlistSignature = nextSignature;
     this._currentReciterCdn = reciterCdn || "";
     this._currentCdnType = cdnType || "everyayah";
@@ -338,8 +352,13 @@ class AudioService {
     // stop the stale audio and immediately restart with the new reciter's URL.
     if (wasPlaying && preservedIndex >= 0 && autoRestart) {
       const newUrl = this.playlist[preservedIndex].url;
+      // A position in a verse file means nothing in a surah file, and the other way round.
+      const changedKind = AudioService.isSurahStreamCdn(previousCdnType) !== AudioService.isSurahStreamCdn(cdnType);
+      if (changedKind && cdnType === SURAH_TIMED_CDN && previousCurrent?.ayah) {
+        this._pendingSurahStreamAyah = { surah: Number(previousCurrent.surah), ayah: Number(previousCurrent.ayah) };
+      }
       if (previousSrc && previousSrc !== newUrl) {
-        const savedTime = this.audio.currentTime;
+        const savedTime = changedKind ? 0 : this.audio.currentTime;
         this._loadAndPlay(preservedIndex)
           .then(() => {
             // Seek back to the same position if it's meaningful and valid
@@ -387,7 +406,7 @@ class AudioService {
     return queuedSwitch;
   }
 
-  async _switchReciterNow(reciterCdn, cdnType = "everyayah") {
+  async _switchReciterNow(reciterCdn, cdnType = "everyayah", { mode } = {}) {
     if (!reciterCdn) {
       return false;
     }
@@ -418,7 +437,8 @@ class AudioService {
             quranComAudioTiming: null,
           }));
 
-    this.loadPlaylist(sourceAyahs, reciterCdn, cdnType, { autoRestart: false });
+    this.loadPlaylist(sourceAyahs, reciterCdn, cdnType, { autoRestart: false, mode });
+    const effectiveCdnType = this._currentCdnType;
 
     if (!snapshotAyah) {
       if (wasPlaying) {
@@ -431,7 +451,7 @@ class AudioService {
       (item) => item.surah === snapshotAyah.surah && item.ayah === snapshotAyah.ayah,
     );
     const fallbackSurahIndex =
-      targetIndex >= 0 || !AudioService.isSurahStreamCdn(cdnType)
+      targetIndex >= 0 || !AudioService.isSurahStreamCdn(effectiveCdnType)
         ? targetIndex
         : this.playlist.findIndex((item) => item.surah === snapshotAyah.surah);
     const resolvedTargetIndex = fallbackSurahIndex;
@@ -444,13 +464,17 @@ class AudioService {
 
     this.playlistIndex = resolvedTargetIndex;
     this.currentAyah = this.playlist[resolvedTargetIndex];
+    // Whole-surah recording: land on the verse that was playing.
+    if (AudioService.isSurahStreamCdn(effectiveCdnType) && snapshotAyah.ayah && targetIndex < 0) {
+      this._pendingSurahStreamAyah = { surah: Number(snapshotAyah.surah), ayah: Number(snapshotAyah.ayah) };
+    }
 
     if (!wasPlaying) return true;
 
     await this._loadAndPlay(resolvedTargetIndex, { throwOnError: true });
     if (
       !AudioService.isSurahStreamCdn(previousCdnType) &&
-      !AudioService.isSurahStreamCdn(cdnType) &&
+      !AudioService.isSurahStreamCdn(effectiveCdnType) &&
       snapshotTime > 0 &&
       Number.isFinite(this.audio.duration) &&
       snapshotTime < this.audio.duration - 0.2
@@ -570,6 +594,7 @@ class AudioService {
   }
 
   next() {
+    if (seekTimedVerse(this, 1)) return;
     if (this.playlistIndex < this.playlist.length - 1) {
       this._loadAndPlay(this.playlistIndex + 1);
     } else {
@@ -586,6 +611,7 @@ class AudioService {
   }
 
   prev() {
+    if (seekTimedVerse(this, -1)) return;
     if (this.playlistIndex > 0) {
       this._loadAndPlay(this.playlistIndex - 1);
     } else if (this.playlist.length > 0) {
@@ -934,6 +960,11 @@ class AudioService {
         this.audio.preload = "auto";
         this.audio.src = url;
         this.audio.load();
+        // Before the metadata is in, currentTime is the position playback starts
+        // at: a whole-surah recording opens on the requested verse, not on verse 1.
+        if (this._startOffsetSec > 0) {
+          try { this.audio.currentTime = this._startOffsetSec; } catch { /* seek after load instead */ }
+        }
 
         // Request playback once. Its promise settles when the browser is ready
         // or rejects when playback is unavailable or permission is denied.
@@ -977,7 +1008,17 @@ class AudioService {
     preloadAhead(this, startIndex, count);
   }
 
-  loadAndPlay(index) { return this._loadAndPlay(index); }
+  /**
+   * Start a playlist item. `hint.ayah` says which verse of a whole-surah
+   * recording to land on; verse-by-verse items already are one verse.
+   */
+  loadAndPlay(index, hint) {
+    const item = this.playlist[index];
+    if (hint?.ayah && item && AudioService.isSurahStreamCdn(this._currentCdnType) && item.ayah == null) {
+      this._pendingSurahStreamAyah = { surah: Number(item.surah), ayah: Number(hint.ayah) };
+    }
+    return this._loadAndPlay(index);
+  }
 
   _candidateUrls(item) { return candidateUrls(item); }
 
@@ -1017,6 +1058,16 @@ class AudioService {
 
     try {
       this.onNetworkState?.("loading");
+      if (this._currentCdnType === SURAH_TIMED_CDN) {
+        const timed = await ensureTimeline(this, item);
+        if (commandId !== this._commandId) return;
+        if (!timed) {
+          fallBackToVerseFiles(this, item);
+          return;
+        }
+        const wanted = this._pendingSurahStreamAyah?.surah === Number(item.surah) ? this._pendingSurahStreamAyah.ayah : null;
+        this._startOffsetSec = (wanted && getSurahStreamSeekSeconds(item, wanted)) || 0;
+      }
       if (!(await this._basmala.before(item)) || commandId !== this._commandId) return;
       let candidateUrls = this._candidateUrls(item);
       // The lookup was usually made while the previous verse played. A verse
@@ -1045,6 +1096,7 @@ class AudioService {
         throw lastErr || new Error("Audio load failed for all URL candidates");
       }
       item.url = loadedUrl;
+      this._startOffsetSec = 0;
       let activeItem = item;
       if (AudioService.isSurahStreamCdn(this._currentCdnType)) {
         const pending =
@@ -1056,12 +1108,9 @@ class AudioService {
           Number.isFinite(this.audio.duration) &&
           this.audio.duration > 0
         ) {
-          const progress = getSurahStreamProgressForAyah(
-            this._playlistSourceAyahs,
-            item.surah,
-            pending.ayah,
-          );
-          if (progress !== null) this.audio.currentTime = progress * this.audio.duration;
+          const seekTo = getSurahStreamSeekSeconds(item, pending.ayah);
+          // The element usually started there already (see _loadResolvedUrlWithRetry).
+          if (seekTo !== null && Math.abs(this.audio.currentTime - seekTo) > 0.5) this.audio.currentTime = seekTo;
         }
         activeItem = resolveSurahStreamAyah(
           this._playlistSourceAyahs,
@@ -1085,6 +1134,11 @@ class AudioService {
       this._notifyPlay(activeItem);
       this._emitAyahChange(activeItem);
 
+      // A list of several surahs: know where the next one's verses are before it starts.
+      if (this._currentCdnType === SURAH_TIMED_CDN && this.playlist[index + 1]) {
+        void ensureTimeline(this, this.playlist[index + 1]);
+      }
+
       // Preload next tracks (3 ahead for smoother continuous playback)
       this._preloadAhead(index + 1, 3);
       void this._prepareNextSource(index);
@@ -1106,6 +1160,40 @@ class AudioService {
     }
   }
 
+
+  /* ── Whole-surah recording with verse timing (audioSurahRoute.js) ─ */
+
+  /** "auto" | "surah" | "verse": takes effect now for the loaded list. */
+  setPlaybackMode(mode) {
+    const next = mode === "surah" || mode === "verse" ? mode : "auto";
+    if (next === this.playbackMode) return Promise.resolve(false);
+    this.playbackMode = next;
+    return this._reloadForRoute();
+  }
+
+  /** True when the loaded list plays this voice, as verse files or as its whole-surah twin. */
+  isLoadedFor(reciterCdn, cdnType = "everyayah") {
+    const loaded = this._timedOrigin ?? { cdn: this._currentReciterCdn, cdnType: this._currentCdnType };
+    return loaded.cdn === reciterCdn && loaded.cdnType === cdnType;
+  }
+
+  /** Whether the loaded list is one recording per surah rather than verse files. */
+  get isWholeSurahPlayback() {
+    return this._currentCdnType === SURAH_TIMED_CDN;
+  }
+
+  /** Leave the whole-surah recording for verse files (loops, tartil need them). */
+  async enterVerseMode() {
+    return this._timedOrigin ? this._reloadForRoute("verse") : false;
+  }
+
+  async _reloadForRoute(mode) {
+    if (this.playlist.length === 0 || this._oneShotMode) return false;
+    const origin = this._timedOrigin ?? { cdn: this._currentReciterCdn, cdnType: this._currentCdnType };
+    return this._switchReciterNow(origin.cdn, origin.cdnType, { mode });
+  }
+
+  verseClock() { return verseClock(this); }
 
   _releaseObjectUrl() {
     if (this._objectUrl) URL.revokeObjectURL(this._objectUrl);

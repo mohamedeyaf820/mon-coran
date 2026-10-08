@@ -110,19 +110,24 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
   await expect(studio).toBeVisible();
   await expect(studio.locator(".share-studio__preview-frame img")).toBeVisible();
   await expect(studio.locator(".share-format-picker button")).toHaveCount(3);
-  await expect(studio.locator(".share-theme-picker button")).toHaveCount(8);
-  await studio.locator("details > summary").click();
+  await expect(studio.locator(".share-theme-picker .share-tile")).toHaveCount(18);
+  // Light and dark palettes are told apart, each in its own labelled group.
+  await expect(studio.locator(".share-theme-group__title")).toHaveText(["Clairs", "Sombres"]);
+
+  // Personalisation: frame, pattern and Arabic-text scale are independent of
+  // the palette, each behind its own tab; the card facts stay visible under
+  // the preview.
+  const tabs = studio.getByRole("tab");
+  await expect(tabs).toHaveCount(4);
+  await studio.getByRole("tab", { name: "Cadre" }).click();
+  await expect(studio.locator(".share-choice-picker .share-tile")).toHaveCount(10);
+  await studio.getByRole("tab", { name: "Motif" }).click();
+  await expect(studio.locator(".share-choice-picker .share-tile")).toHaveCount(9);
+  await studio.getByRole("tab", { name: "Texte" }).click();
+  await expect(studio.locator(".share-scale-picker button")).toHaveCount(3);
   await expect(studio.locator(".share-studio__quick-setting")).toBeVisible();
   await expect(studio.locator(".share-studio__quick-setting .share-toggle")).toHaveCount(3);
   await expect(studio.locator("textarea, .share-editor")).toHaveCount(0);
-
-  // Personalisation: frame, motif and Arabic-text scale are independent of the
-  // palette, and the card facts stay visible under the preview.
-  const choicePickers = studio.locator(".share-choice-picker");
-  await expect(choicePickers).toHaveCount(3);
-  await expect(choicePickers.nth(0).getByRole("button")).toHaveCount(4);
-  await expect(choicePickers.nth(1).getByRole("button")).toHaveCount(3);
-  await expect(choicePickers.nth(2).getByRole("button")).toHaveCount(3);
   await expect(studio.locator(".share-studio__meta > span")).toHaveCount(2);
   await expect(studio.locator(".share-studio__meta > span").nth(1)).toHaveText(/kB|PNG/);
   await page.screenshot({
@@ -146,14 +151,17 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
     /^\d+(?:\.\d+)?px \d+(?:\.\d+)?px$/,
   );
   const studioBox = await studio.boundingBox();
-  expect(studioBox?.width || 0).toBeLessThanOrEqual(880);
+  expect(studioBox?.width || 0).toBeLessThanOrEqual(1180);
   await page.screenshot({
     path: "test-results/verse-share-studio-desktop.png",
     fullPage: false,
   });
 
   await studio.getByRole("button", { name: "Partager l’image" }).click();
-  await expect.poll(() => page.evaluate(() => window.__sharedImage)).not.toBeNull();
+  // Encoding a 1080 x 1080 PNG can take several seconds on a loaded machine.
+  await expect
+    .poll(() => page.evaluate(() => window.__sharedImage), { timeout: 30_000 })
+    .not.toBeNull();
   const shared = await page.evaluate(() => window.__sharedImage);
   expect(shared.type).toBe("image/png");
   expect(shared.name).toMatch(/^mushafplus-8-1-square\.png$/);

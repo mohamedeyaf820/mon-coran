@@ -1,0 +1,515 @@
+/*
+ * Invocations hub: quick adhkar, browse tiles, Hisn al-Muslim chapter rows,
+ * the sources block of a card and the pager between chapters.
+ * Cards, hero and search keep their rules in duas-page.css. Logical
+ * properties only, so the Arabic page needs no mirrored copy of any rule.
+ */
+
+.duas-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.9rem;
+}
+
+.duas-section-title {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: 1.05rem;
+    font-weight: 800;
+    letter-spacing: -0.01em;
+    color: var(--text);
+}
+
+/* The title only takes focus from the script after a page change: it is not a control, so no ring. */
+html body .app-root .duas-title:focus,
+html body .app-root .duas-title:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+.duas-subtitle__arabic {
+    font-family: var(--font-quran);
+    font-size: 1.25rem;
+    line-height: 1.8;
+}
+
+a.duas-back-btn,
+a.duas-empty-reset {
+    text-decoration: none;
+}
+
+a.duas-empty-reset {
+    display: inline-flex;
+    align-items: center;
+}
+
+.duas-status {
+    margin: 0;
+    padding: 2rem 0;
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+
+.duas-empty__hint {
+    max-width: 32rem;
+    font-size: 0.85rem;
+}
+
+.duas-results-copy--note {
+    margin-top: 0.15rem;
+    font-size: 0.82rem;
+}
+
+.duas-results-note {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.duas-search-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ── Today's adhkar ─────────────────────────────────────────────────── */
+
+.duas-quick {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.75rem;
+}
+
+.duas-quick__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    min-height: 5rem;
+    height: 100%;
+    padding: 0.8rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg-card, var(--bg-primary));
+    color: var(--text);
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 700;
+    line-height: 1.25;
+    text-align: center;
+    text-decoration: none;
+    transition:
+        border-color 0.18s,
+        box-shadow 0.18s;
+}
+
+.duas-quick__item svg {
+    color: var(--gold);
+}
+
+.duas-quick__item:hover {
+    border-color: rgba(var(--primary-rgb), 0.35);
+    box-shadow: var(--shadow-md);
+}
+
+.duas-quick__item:focus-visible,
+.duas-tile:focus-visible,
+.hisn-row:focus-visible,
+.hisn-pager__link:focus-visible,
+.dua-source-link:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+/* ── Browse tiles ───────────────────────────────────────────────────── */
+
+.duas-tiles {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 19rem), 1fr));
+    gap: 1rem;
+}
+
+.duas-tile {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+        "icon title chevron"
+        "icon meta chevron";
+    column-gap: 0.9rem;
+    align-items: center;
+    min-height: 5.5rem;
+    height: 100%;
+    padding: 1rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 1rem;
+    background: var(--bg-card, var(--bg-primary));
+    color: var(--text);
+    text-decoration: none;
+    transition:
+        border-color 0.18s,
+        box-shadow 0.18s;
+}
+
+.duas-tile:hover {
+    border-color: rgba(var(--primary-rgb), 0.35);
+    box-shadow: var(--shadow-md);
+}
+
+.duas-tile__icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.9rem;
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--primary);
+}
+
+.duas-tile__icon--quran {
+    background: rgba(184, 134, 11, 0.12);
+    color: color-mix(in srgb, var(--gold) 72%, var(--text) 28%);
+}
+
+.duas-tile__title {
+    grid-area: title;
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.duas-tile__meta {
+    grid-area: meta;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.82rem;
+    line-height: 1.4;
+}
+
+.duas-tile__chevron {
+    grid-area: chevron;
+    color: var(--text-muted);
+}
+
+/* ── Hisn al-Muslim chapter rows ────────────────────────────────────── */
+
+.hisn-rows {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 21rem), 1fr));
+    gap: 0.5rem 0.75rem;
+}
+
+.hisn-rows > li {
+    display: flex;
+}
+
+.hisn-rows > li > .hisn-row {
+    flex: 1;
+}
+
+.hisn-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 3.5rem;
+    padding: 0.7rem 1rem;
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    background: var(--bg-card, var(--bg-primary));
+    color: var(--text);
+    text-decoration: none;
+    transition:
+        border-color 0.18s,
+        background-color 0.18s;
+}
+
+.hisn-row:hover {
+    border-color: rgba(var(--primary-rgb), 0.35);
+    background: var(--hover-bg, var(--bg-secondary));
+}
+
+.hisn-row__text {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.hisn-row__title {
+    font-family: var(--font-ui);
+    font-size: 1rem;
+    font-weight: 700;
+    line-height: 1.35;
+    color: var(--text);
+    text-align: left;
+}
+
+.hisn-row__title--arabic {
+    font-family: var(--font-quran);
+    font-size: 1.2rem;
+    font-weight: 400;
+    line-height: 1.8;
+}
+
+.hisn-row__ar {
+    font-family: var(--font-quran);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    text-align: left;
+}
+
+.app-root[data-dir="rtl"] :is(.hisn-row__title, .hisn-row__ar) {
+    text-align: right;
+}
+
+.hisn-row__count {
+    flex: none;
+    display: grid;
+    place-items: center;
+    min-width: 1.9rem;
+    height: 1.9rem;
+    padding: 0 0.4rem;
+    border-radius: 9999px;
+    background: rgba(var(--primary-rgb), 0.08);
+    color: var(--primary);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 800;
+}
+
+.hisn-row__chevron {
+    flex: none;
+    color: var(--text-muted);
+}
+
+/* ── Previous / next chapter ────────────────────────────────────────── */
+
+.hisn-pager {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-top: 0.5rem;
+}
+
+.hisn-pager__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    max-width: 48%;
+    min-height: 2.75rem;
+    padding: 0.5rem 0.9rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    color: var(--primary);
+    font-family: var(--font-ui);
+    font-size: 0.86rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.hisn-pager__link span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.hisn-pager__link:hover {
+    border-color: var(--primary);
+    background: var(--hover-bg, var(--bg-secondary));
+}
+
+/* ── Card additions: repetition and sources ─────────────────────────── */
+
+.dua-repeat-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    min-height: 1.9rem;
+    padding: 0.26rem 0.65rem;
+    border: 1px solid rgba(var(--primary-rgb), 0.14);
+    border-radius: 9999px;
+    background: rgba(var(--primary-rgb), 0.08);
+    color: var(--primary);
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 800;
+}
+
+.dua-notice {
+    margin: 0;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+.dua-card-footer--sources {
+    justify-content: flex-start;
+}
+
+.dua-sources {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;
+    padding-top: 0.75rem;
+    border-top: 1px dashed var(--border);
+}
+
+.dua-sources__title {
+    margin: 0;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.dua-sources__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem 0.6rem;
+}
+
+.dua-sources__label {
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.78rem;
+    font-weight: 700;
+}
+
+.dua-sources__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 0.75rem;
+}
+
+.dua-sources__list > li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.dua-source-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.3rem 0.75rem;
+    border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--border));
+    border-radius: 0.65rem;
+    background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
+    color: var(--primary);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        border-color 0.16s,
+        background-color 0.16s,
+        color 0.16s;
+}
+
+.dua-source-link:hover {
+    border-color: var(--primary);
+    background: var(--primary);
+    color: #fff;
+}
+
+.dua-source-link--static {
+    cursor: default;
+}
+
+.dua-source-meta {
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+}
+
+.dua-sources__none {
+    margin: 0;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.8rem;
+    line-height: 1.5;
+}
+
+/* ── Cards: use the width of the screen, whatever the number of cards ───── */
+
+.duas-page .gallery-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr));
+    align-items: start;
+}
+
+/* One card alone (a chapter of one invocation) stays a readable column, not a strip. */
+.duas-page .gallery-grid > .dua-card-v5:only-child {
+    width: 100%;
+    max-width: 52rem;
+}
+
+.dua-head-main {
+    min-width: 0;
+    flex: 1;
+}
+
+.dua-ref-pill {
+    max-width: 100%;
+    min-width: 0;
+}
+
+.dua-ref-pill > span {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+/* ── Compact screens ────────────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    .duas-quick {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .duas-tiles {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .hisn-pager {
+        flex-direction: column;
+    }
+
+    .hisn-pager__link {
+        max-width: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .duas-quick__item,
+    .duas-tile,
+    .hisn-row,
+    .dua-source-link {
+        transition: none;
+    }
+}

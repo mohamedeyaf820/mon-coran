@@ -7,8 +7,12 @@ import { QURANCDN_EVERYAYAH_MAP } from "./audioSources.js";
 
 const pad3 = (n) => String(n).padStart(3, "0");
 
+/** "surah-timed": the whole-surah recording of a voice that also has verse files;
+ *  its file and verse positions come from the Quran.com chapter API at play time. */
+export const SURAH_TIMED_CDN = "surah-timed";
+
 export function isSurahStreamCdn(cdnType = "everyayah") {
-  return cdnType === "mp3quran-surah";
+  return cdnType === "mp3quran-surah" || cdnType === SURAH_TIMED_CDN;
 }
 
 export function normalizePlaylistAyahs(ayahs, cdnType = "everyayah") {
@@ -40,6 +44,7 @@ export function hafsFileNumber(ayah) {
 export function buildUrl(reciterCdn, ayah, cdnType = "everyayah") {
   const isObject = typeof ayah === "object" && ayah !== null;
   const surah = (isObject && (ayah.surah || ayah.surahNumber)) || 1;
+  if (cdnType === SURAH_TIMED_CDN) return "";
   if (isSurahStreamCdn(cdnType)) {
     return `${reciterCdn}${pad3(surah)}.mp3`;
   }
@@ -79,6 +84,7 @@ export function basmalaPrerollUrl(reciterCdn, cdnType, surah) {
 }
 
 export function buildUrlCandidates(reciterCdn, ayah, cdnType = "everyayah") {
+  if (cdnType === SURAH_TIMED_CDN) return [];
   const primary = buildUrl(reciterCdn, ayah, cdnType);
   if (cdnType === "everyayah") {
     const mirror = primary.includes("://everyayah.com/")

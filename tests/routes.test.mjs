@@ -45,5 +45,17 @@ test("prayer tracking and duas routes resolve explicitly", () => {
     showHome: false,
     showDuas: true,
     showPrayers: false,
+    duasRoute: "",
   });
+});
+
+test("invocation sub-pages resolve to a duas route and reject unknown ones", () => {
+  const duas = (duasRoute) => ({ showHome: false, showDuas: true, showPrayers: false, duasRoute });
+  assert.deepEqual(parseRoutePath("/duas/hisn"), duas("/hisn"));
+  assert.deepEqual(parseRoutePath("/duas/hisn/27"), duas("/hisn/27"));
+  assert.deepEqual(parseRoutePath("/duas/hisn/27/"), duas("/hisn/27"));
+  assert.deepEqual(parseRoutePath("/duas/coran"), duas("/coran"));
+  for (const path of ["/duas/unknown", "/duas/hisn/abc", "/duas/hisn/27/extra", "/duas/hisn/12345"]) {
+    assert.equal(parseRoutePath(path).routeNotFound, true, path);
+  }
 });

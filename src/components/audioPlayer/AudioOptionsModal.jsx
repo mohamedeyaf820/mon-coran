@@ -50,6 +50,9 @@ export default function AudioOptionsModal(props) {
     setSyncOffsetMs,
     stop,
     surahRepeatCount,
+    audioPlaybackMode,
+    setAudioPlaybackMode,
+    reciterHasBothModes,
     syncOffsetMs,
     tartilMode,
     volume,
@@ -186,6 +189,9 @@ export default function AudioOptionsModal(props) {
               setSyncOffsetMs={setSyncOffsetMs}
               stop={stop}
               surahRepeatCount={surahRepeatCount}
+              audioPlaybackMode={audioPlaybackMode}
+              setAudioPlaybackMode={setAudioPlaybackMode}
+              reciterHasBothModes={reciterHasBothModes}
               syncOffsetMs={syncOffsetMs}
               volume={volume}
             />

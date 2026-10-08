@@ -143,6 +143,16 @@ function makeLabels(lang) {
       lang === "fr" ? "D\u00e9part A" : lang === "ar" ? "\u0628\u062f\u0627\u064a\u0629 \u0623" : "Start A",
     abRepeatTo:
       lang === "fr" ? "Fin B" : lang === "ar" ? "\u0646\u0647\u0627\u064a\u0629 \u0628" : "End B",
+    listenMode: lang === "fr" ? "Mode d’écoute" : lang === "ar" ? "وضع الاستماع" : "Listening mode",
+    modeAuto: lang === "fr" ? "Auto" : lang === "ar" ? "تلقائي" : "Auto",
+    modeSurah: lang === "fr" ? "Sourate complète" : lang === "ar" ? "السورة كاملة" : "Full surah",
+    modeVerse: lang === "fr" ? "Verset par verset" : lang === "ar" ? "آية آية" : "Verse by verse",
+    listenHint:
+      lang === "fr"
+        ? "Auto : la sourate se lit d’un seul tenant, sans coupure même écran verrouillé. La lecture passe verset par verset pour la répétition A-B, le mode Tartil et les extraits (page, juz)."
+        : lang === "ar"
+          ? "تلقائي: تُقرأ السورة دفعة واحدة دون انقطاع حتى والشاشة مقفلة، وتنتقل التلاوة آية آية عند تكرار أ-ب ووضع الترتيل والمقاطع (صفحة، جزء)."
+          : "Auto: the surah plays in one piece, with no break even when the screen is locked. Playback goes verse by verse for A-B repeat, Tartil mode and extracts (page, juz).",
   };
 }
 
@@ -179,6 +189,9 @@ export default function PlaybackSettingsPanel(props) {
     syncOffsetMs,
     tartilMode,
     volume,
+    audioPlaybackMode,
+    setAudioPlaybackMode,
+    reciterHasBothModes,
   } = props;
 
   const labels = makeLabels(lang);
@@ -234,6 +247,32 @@ export default function PlaybackSettingsPanel(props) {
         </div>
       </div>
 
+      {reciterHasBothModes ? (
+        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className={playerSectionLabelClass} id="audio-listen-mode-label">{labels.listenMode}</span>
+          </div>
+          <div className="audio-settings-pills flex flex-wrap items-center gap-2" role="group" aria-labelledby="audio-listen-mode-label">
+            {[
+              ["auto", labels.modeAuto],
+              ["surah", labels.modeSurah],
+              ["verse", labels.modeVerse],
+            ].map(([value, text]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={audioPlaybackMode === value}
+                onClick={() => setAudioPlaybackMode(value)}
+                className={playerOptionPillClass(audioPlaybackMode === value)}
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+          <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>{labels.listenHint}</p>
+        </div>
+      ) : null}
+
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
           <span className={playerSectionLabelClass}>{labels.surahRepeat}</span>
@@ -256,19 +295,19 @@ export default function PlaybackSettingsPanel(props) {
               className={playerNumberInputClass}
             />
           </label>
-          <button type="button" onClick={() => setSurahRepeatSetting(1)} className={playerOptionPillClass(surahRepeatCount === 1)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(1)} aria-pressed={surahRepeatCount === 1} className={playerOptionPillClass(surahRepeatCount === 1)}>
             {labels.once}
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(3)} className={playerOptionPillClass(surahRepeatCount === 3)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(3)} aria-pressed={surahRepeatCount === 3} className={playerOptionPillClass(surahRepeatCount === 3)}>
             x3
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(5)} className={playerOptionPillClass(surahRepeatCount === 5)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(5)} aria-pressed={surahRepeatCount === 5} className={playerOptionPillClass(surahRepeatCount === 5)}>
             x5
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(10)} className={playerOptionPillClass(surahRepeatCount === 10)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(10)} aria-pressed={surahRepeatCount === 10} className={playerOptionPillClass(surahRepeatCount === 10)}>
             x10
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(0)} className={playerOptionPillClass(surahRepeatCount === 0)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(0)} aria-pressed={surahRepeatCount === 0} className={playerOptionPillClass(surahRepeatCount === 0)}>
             {labels.infinite}
           </button>
         </div>
@@ -362,6 +401,7 @@ export default function PlaybackSettingsPanel(props) {
               key={id}
               type="button"
               onClick={() => handleApplyEqPreset(id)}
+              aria-pressed={eqPreset === id}
               className={playerOptionPillClass(eqPreset === id)}
             >
               {label}

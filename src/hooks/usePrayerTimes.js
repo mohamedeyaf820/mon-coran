@@ -1,5 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { fetchTodayTimings, getNextPrayer, localDayKey } from "../services/prayerTimesService";
+import {
+  fetchTodayTimings,
+  getNextPrayer,
+  localDayKey,
+  zoneOffsetFromDevice,
+  zonedWallClock,
+} from "../services/prayerTimesService";
 
 /**
  * Owns the prayer-times fetch lifecycle for the home surface: cache-first
@@ -66,7 +72,11 @@ export function usePrayerTimes({ enabled, location, method, offsets, now }) {
             ? "ready"
             : "loading";
 
-  const next = status === "ready" ? getNextPrayer(data.timings, now) : null;
+  // The times are the location's wall times: judge "next" on its clock.
+  const placeNow = status === "ready" ? zonedWallClock(now, data.timezone) : now;
+  const next = status === "ready" ? getNextPrayer(data.timings, placeNow) : null;
+  // Minutes the place's clock is ahead of the device's (0 for a reader on site).
+  const offsetMinutes = status === "ready" ? zoneOffsetFromDevice(now, data.timezone) : 0;
 
-  return { status, data, error, next, refresh: load, loading };
+  return { status, data, error, next, placeNow, offsetMinutes, refresh: load, loading };
 }

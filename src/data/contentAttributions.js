@@ -138,10 +138,18 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
   {
     id: "hisn-almuslim-duas",
     category: "duas",
-    name: "Hisn al-Muslim (Citadelle du Musulman) et versets du Coran",
-    usage: "Invocations de la page Invocations; chacune indique sa référence (par exemple Bukhari 6312).",
-    rights: "Textes religieux traditionnels; la provenance de chaque traduction n’est pas documentée dans ce dépôt, signalez toute erreur.",
-    url: "https://sunnah.com/hisn",
+    name: "Hisn al-Muslim (Citadelle du Musulman), Saïd ibn ʿAlī al-Qahtani",
+    usage: "Texte arabe, titres de chapitre et nombre de répétitions des 267 invocations de la Citadelle du musulman (132 chapitres), servis par des fichiers locaux. Les versets cités sont rattachés à leur sourate et à leur verset.",
+    rights: "Texte arabe repris de l’API publique de hisnmuslim.com, qui n’énonce pas de conditions de réutilisation : l’autorisation reste à confirmer auprès de son exploitant. Les traductions française et anglaise sont celles de MushafPlus, établies à partir de l’arabe et non relues par un spécialiste; signalez toute erreur.",
+    url: "https://www.hisnmuslim.com/",
+  },
+  {
+    id: "hadith-references",
+    category: "duas",
+    name: "Références de hadiths — fawazahmed0/hadith-api et sunnah.com",
+    usage: "Numéro de hadith retrouvé en comparant le texte arabe de chaque invocation avec Sahih al-Bukhari, Sahih Muslim, Abu Dawud, Tirmidhi, Nasa’i et Ibn Majah; les degrés affichés (Al-Albani, etc.) sont ceux du jeu de données. Le lien ouvre le hadith sur sunnah.com.",
+    rights: "Jeu de données sous licence Unlicense; sunnah.com reste soumis à ses propres conditions. Une référence indique que la formulation figure dans ce hadith, pas que le livre cite ce hadith : une invocation peut apparaître dans plusieurs, et certaines n’ont aucune référence retrouvée.",
+    url: "https://github.com/fawazahmed0/hadith-api",
   },
   {
     id: "adhan-ejaz215",

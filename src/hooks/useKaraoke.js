@@ -45,8 +45,10 @@ export function useKaraoke({ isFirstAyah, wordCount, calibration }) {
         return;
       }
 
-      const dur = audioService.duration || 0;
-      const t = audioService.currentTime || 0;
+      // Inside the verse: a whole-surah recording runs on the surah's clock.
+      const clock = audioService.verseClock?.() ?? { time: audioService.currentTime, duration: audioService.duration };
+      const dur = clock.duration || 0;
+      const t = clock.time || 0;
 
       if (dur > 0) {
         const prevT = lastTimeRef.current;

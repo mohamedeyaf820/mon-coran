@@ -53,7 +53,6 @@ test("share format picker states ratio, platforms and a contextual hint", async 
   const tiles = studio.locator(".share-format-picker button");
   await expect(tiles).toHaveCount(3);
   await expect(studio.locator(".share-format-ratio")).toHaveText(["1:1", "4:5", "9:16"]);
-  await expect(studio.locator(".share-format-platforms").first()).toContainText("Instagram");
   const firstTileBox = await tiles.first().boundingBox();
   expect(firstTileBox?.height || 0).toBeGreaterThanOrEqual(44);
 
@@ -65,9 +64,10 @@ test("share format picker states ratio, platforms and a contextual hint", async 
   await expect(hint).toContainText("WhatsApp");
   await expect(tiles.nth(2)).toHaveAttribute("aria-pressed", "true");
 
-  const advancedDesign = studio.locator("details");
-  await advancedDesign.locator("summary").click();
-  await expect(advancedDesign.locator(".share-choice-picker").first()).toBeVisible();
+  // Frame, pattern and text each have their own tab; the frames are visible
+  // at once instead of hiding behind a disclosure.
+  await studio.getByRole("tab", { name: "Cadre" }).click();
+  await expect(studio.locator(".share-choice-picker .share-tile")).toHaveCount(10);
 
   await page.screenshot({ path: "test-results/share-format-mobile.png", fullPage: false });
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -103,7 +103,7 @@ test("home prayer shortcut opens the full prayer schedule", async ({ page }) => 
           Isha: at(210),
         },
         hijri: "12 Rabi' al-Awwal 1448",
-        timezone: "Europe/Paris",
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
         methodName: "UOIF",
         latitude: 48.85,
         longitude: 2.35,

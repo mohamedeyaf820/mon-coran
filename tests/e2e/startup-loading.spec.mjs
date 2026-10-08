@@ -81,7 +81,12 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // Raised 9 -> 11 with the language split: the French dictionary (the fallback
   // of every key, 32.9 kB) and a 1.2 kB helper became shared chunks of the boot
   // graph, while English and Arabic moved out of it. Entry JS fell 236 -> 143 kB.
-  expect(initialModulePreloads.length).toBeLessThanOrEqual(11);
+  // Raised 11 -> 12 with the invocations library (2026-10-08): the 7 kB Arabic
+  // search normaliser, which used to sit inside the IndexedDB chunk, is now also
+  // imported by the lazy invocations chunks, so the bundler gives it a chunk of
+  // its own. Same bytes in the boot graph (measured against a build of HEAD: the
+  // IndexedDB chunk went 10.6 -> 3.4 kB, the normaliser 0 -> 7.2 kB), one more request.
+  expect(initialModulePreloads.length).toBeLessThanOrEqual(12);
   expect(logoBody.byteLength).toBeLessThan(40 * 1024);
 
   const parsedRequests = requests.map((url) => new URL(url));

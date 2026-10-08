@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MushafPlus — 3 concepts visuels (phase 0)</title>
+<!--
+  Maquettes jetables, hors production. Elles ne sont reliées à aucun bundle.
+  Le texte arabe vient de src/data/offlineQuranFallback.js (Al-Fatiha, Hafs).
+  Polices : public/fonts/uthmanic-hafs-v18.woff2 (même fichier que l'app).
+  Palettes dérivées de src/data/themes.js. Mouvement coupé sous prefers-reduced-motion.
+-->
+<style>
+@font-face{font-family:"QPC Hafs";src:url("../../public/fonts/uthmanic-hafs-v18.woff2") format("woff2");font-display:block}
+*{box-sizing:border-box;margin:0}
+body{font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;background:#10141a;color:#e9eef3;padding:24px 16px 64px}
+h1{font-size:1.4rem;max-width:60rem;margin:0 auto 4px}
+.lead{max-width:60rem;margin:0 auto 24px;color:#9fb0c0}
+.concept{max-width:60rem;margin:0 auto 56px}
+.concept h2{font-size:1.15rem;margin-bottom:2px}
+.concept .why{color:#9fb0c0;margin-bottom:16px;max-width:46rem}
+.row{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+figure{width:300px;max-width:100%}
+.cap{font-size:.78rem;color:#9fb0c0;margin-top:6px;text-align:center}
+.phone{width:min(100%,300px);aspect-ratio:390/760;border-radius:34px;border:1px solid #2b3540;overflow:hidden;position:relative;isolation:isolate}
+.ar{font-family:"QPC Hafs","Amiri Quran","Scheherazade New",serif;direction:rtl}
+button{font:inherit}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.replay{margin:10px 0 0;padding:10px 16px;min-height:44px;border-radius:10px;border:1px solid #3a4756;background:#18202a;color:#e9eef3;cursor:pointer}
+.replay:focus-visible{outline:3px solid #42d3b0;outline-offset:2px}
+
+/* ─────────── A · Enluminure ─────────── */
+.A{--bg:#0b2a20;--gold:#d2ad5b;--gold2:#8f7230;--ink:#f6efdc;--card:#0f3a2c;background:var(--bg);color:var(--ink)}
+.A .pad{padding:22px 18px}
+.A .eyebrow{font-size:.62rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.A .hero{margin:46px 18px 0;border:1px solid var(--gold2);border-radius:22px;padding:22px 16px;background:
+  radial-gradient(circle at 100% 0,rgba(210,173,91,.16),transparent 55%),var(--card);position:relative}
+.A .hero::before{content:"";position:absolute;inset:6px;border:1px solid rgba(210,173,91,.35);border-radius:17px;pointer-events:none}
+.A .hero h3{font-size:1.45rem;line-height:1.15;margin:8px 0 12px;font-weight:600}
+.A .resume{font-size:.8rem;color:#cdd9c9}
+.A .cta{margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border-radius:12px;background:var(--gold);color:#241a05;font-weight:700}
+.A .open{display:grid;place-items:center;height:100%;padding:34px 20px;text-align:center}
+.A .frame{width:100%;aspect-ratio:3/4.1;position:relative;display:grid;place-items:center;align-content:center;gap:18px;padding:30px 18px}
+.A .frame svg.border{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.A .frame rect{fill:none;stroke:var(--gold);stroke-width:1.4;stroke-dasharray:1500;stroke-dashoffset:0}
+.A .frame rect.in{stroke:var(--gold2);stroke-width:1}
+.A .t-ar{font-size:2.6rem;line-height:1.3;color:var(--gold)}
+.A .t-lat{font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:#cdd9c9}
+.A .basmala{font-size:1.5rem;line-height:2;color:var(--ink)}
+.A .rosette{width:34px;height:34px;display:inline-grid;place-items:center;font-size:.8rem;color:var(--gold);border:1px solid var(--gold);transform:rotate(45deg);margin:0 6px}
+.A .rosette span{transform:rotate(-45deg)}
+@media (prefers-reduced-motion:no-preference){
+  .A.play rect{animation:draw 1.6s cubic-bezier(.3,.7,.2,1) both}
+  .A.play rect.in{animation-delay:.25s}
+  .A.play .t-ar{animation:rise .9s .9s both cubic-bezier(.2,.8,.2,1)}
+  .A.play .t-lat{animation:rise .7s 1.2s both}
+  .A.play .basmala{animation:rise 1s 1.5s both}
+}
+@keyframes draw{from{stroke-dashoffset:1500}}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+
+/* ─────────── B · Lumière du jour ─────────── */
+.B{--sky1:#f6d9a8;--sky2:#f3eadb;--ink:#2a1d0c;--accent:#9a4b13;background:linear-gradient(180deg,var(--sky1),var(--sky2) 55%);color:var(--ink);transition:background .6s}
+.B[data-hour="fajr"]{--sky1:#cfe3f0;--sky2:#f1f6f8;--accent:#0b6235}
+.B[data-hour="maghrib"]{--sky1:#f2a76c;--sky2:#f7dcc0;--accent:#8a2f1a}
+.B[data-hour="isha"]{--sky1:#0d1a33;--sky2:#142645;--ink:#eef3fb;--accent:#42d3b0}
+.B .arc{position:absolute;left:0;right:0;top:34px;height:130px}
+.B .arc svg{width:100%;height:100%}
+.B .arc path{fill:none;stroke:currentColor;stroke-opacity:.28;stroke-width:1.4;stroke-dasharray:3 5}
+.B .arc .sun{fill:var(--accent)}
+.B .when{position:absolute;top:178px;left:0;right:0;text-align:center}
+.B .when small{display:block;font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;opacity:.7}
+.B .when strong{font-size:1.25rem;font-weight:600}
+.B .card{position:absolute;left:16px;right:16px;bottom:18px;border-radius:20px;padding:18px;background:rgba(255,255,255,.55);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.6)}
+.B[data-hour="isha"] .card{background:rgba(255,255,255,.07);border-color:rgba(255,255,255,.14)}
+.B .card .ar{font-size:1.55rem;line-height:2;text-align:center}
+.B .card p.m{font-size:.78rem;opacity:.75;text-align:center;margin-top:4px}
+.B .cta{margin-top:12px;min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:var(--accent);color:#fff;font-weight:700}
+.B[data-hour="isha"] .cta{color:#06231c}
+.B .read{padding:56px 22px 20px;height:100%;display:flex;flex-direction:column}
+.B .bar{height:3px;border-radius:2px;background:rgba(0,0,0,.12);overflow:hidden}
+.B .bar i{display:block;height:100%;width:34%;background:var(--accent)}
+.B .read .ar{font-size:1.7rem;line-height:2.3;margin-top:22px}
+.B .read h3{font-size:1.1rem;margin-top:14px}
+.B .read .meta{font-size:.74rem;opacity:.7}
+.B .tabs{display:flex;gap:6px;margin:0 0 12px}
+.B .tabs button{flex:1;min-height:44px;border-radius:10px;border:1px solid rgba(0,0,0,.18);background:rgba(255,255,255,.4);color:inherit;cursor:pointer;font-size:.74rem}
+.B .tabs button[aria-pressed=true]{background:var(--accent);color:#fff;border-color:transparent}
+.B[data-hour="isha"] .tabs button{border-color:rgba(255,255,255,.2);background:rgba(255,255,255,.06)}
+.B[data-hour="isha"] .tabs button[aria-pressed=true]{color:#06231c}
+.tabsout{display:flex;gap:6px;max-width:300px;margin-bottom:10px}
+.tabsout button{flex:1;min-height:44px;border-radius:10px;border:1px solid #3a4756;background:#18202a;color:#e9eef3;cursor:pointer;font-size:.78rem}
+.tabsout button[aria-pressed=true]{background:#42d3b0;color:#06231c;border-color:transparent}
+.tabsout button:focus-visible{outline:3px solid #fff;outline-offset:2px}
+
+/* ─────────── C · Page vivante ─────────── */
+.C{--paper:#f3e8cf;--ink:#241505;--rule:#7c4a17;background:var(--paper);color:var(--ink)}
+.C::before{content:"";position:absolute;inset:0;z-index:-1;background:
+  repeating-linear-gradient(0deg,rgba(124,74,23,.035) 0 1px,transparent 1px 3px),
+  radial-gradient(120% 80% at 0 50%,rgba(124,74,23,.12),transparent 40%)}
+.C .runhead{display:flex;justify-content:space-between;padding:44px 18px 6px;font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--rule);border-bottom:1px solid rgba(124,74,23,.35);margin:0 14px}
+.C .page{padding:18px 20px;display:grid;gap:6px}
+.C .sura{border:1.5px solid var(--rule);border-radius:6px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;position:relative}
+.C .sura::after{content:"";position:absolute;inset:3px;border:1px solid rgba(124,74,23,.4);border-radius:3px;pointer-events:none}
+.C .sura .ar{font-size:1.5rem}
+.C .sura small{font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--rule)}
+.C .line{font-size:1.38rem;line-height:2.3;text-align:justify;text-align-last:center}
+.C .num{display:inline-grid;place-items:center;width:1.3em;height:1.3em;border:1px solid var(--rule);border-radius:50%;font-size:.55em;margin:0 .25em;color:var(--rule);vertical-align:.1em}
+.C .margin{position:absolute;bottom:16px;left:16px;right:16px;display:flex;justify-content:space-between;align-items:center;font-size:.66rem;color:var(--rule)}
+.C .margin b{display:grid;place-items:center;min-width:44px;min-height:44px;border-radius:50%;border:1px solid var(--rule);font-weight:600}
+.C .home{padding:46px 22px;display:grid;gap:16px}
+.C .home h3{font-size:1.5rem;line-height:1.15;font-weight:600}
+.C .book{border:1.5px solid var(--rule);border-radius:8px;padding:16px;background:rgba(255,255,255,.35);position:relative}
+.C .book::before{content:"";position:absolute;inset:4px;border:1px solid rgba(124,74,23,.35);border-radius:5px;pointer-events:none}
+.C .book .ar{font-size:1.4rem;line-height:2;text-align:center}
+.C .book .m{font-size:.74rem;text-align:center;color:var(--rule)}
+.C .cta{min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:8px;background:var(--rule);color:#fff7e8;font-weight:700}
+@media (prefers-reduced-motion:no-preference){
+  .C.play .page{animation:turn .9s cubic-bezier(.2,.7,.2,1) both;transform-origin:0 50%}
+}
+@keyframes turn{from{opacity:0;transform:perspective(900px) rotateY(-14deg) translateX(-8px)}}
+</style>
+</head>
+<body>
+<h1>MushafPlus : trois directions visuelles</h1>
+<p class="lead">Phase 0 du plan Awwwards/Apple. Même contenu dans les trois : l'accueil « reprendre la lecture » et l'ouverture d'Al-Fatiha. Chaque maquette est jetable et se compare sur l'idée, pas sur le pixel. Texte arabe tiré du dépôt, jamais animé : seuls les ornements et le chrome bougent.</p>
+
+<!-- A -->
+<section class="concept" aria-labelledby="ha">
+  <h2 id="ha">A · Enluminure</h2>
+  <p class="why">Le langage graphique est celui du manuscrit : or sur vert profond, double filet, rosette de verset. Le chargement devient la cérémonie d'ouverture. Risque : tomber dans le « doré générique » si les ornements ne sont pas dessinés sur mesure. Contraste or sur vert à mesurer (le texte coranique reste en crème, jamais en or).</p>
+  <div class="row">
+    <figure><div class="phone A pad" aria-label="Accueil, concept A">
+      <div class="hero">
+        <span class="eyebrow">Hafs · reprendre</span>
+        <h3>Al-Baqara<br><span class="ar" style="font-size:1.1rem;color:var(--gold)">البقرة</span></h3>
+        <p class="resume">Verset 142 · il y a 2 h · page 22 sur 604</p>
+        <div class="cta">Reprendre la lecture</div>
+      </div>
+      <p class="eyebrow" style="margin:22px 18px 8px">Verset du jour</p>
+      <p class="ar" style="font-size:1.3rem;line-height:2.1;padding:0 18px;text-align:center;color:var(--ink)">الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ</p>
+    </div><figcaption class="cap">Accueil</figcaption></figure>
+    <figure><div class="phone A" id="a-open" aria-label="Ouverture de sourate, concept A">
+      <div class="open"><div class="frame">
+        <svg class="border" viewBox="0 0 300 410" preserveAspectRatio="none" aria-hidden="true"><rect x="4" y="4" width="292" height="402" rx="14"/><rect class="in" x="14" y="14" width="272" height="382" rx="9"/></svg>
+        <div><div class="t-ar ar">الفاتحة</div><div class="t-lat">Al-Fatiha · 7 versets</div></div>
+        <p class="basmala ar">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+      </div></div>
+    </div><figcaption class="cap">Ouverture de sourate (1,6 s, rejouable)</figcaption>
+    <button class="replay" data-replay="a-open">Rejouer l'ouverture</button></figure>
+  </div>
+</section>
+
+<!-- B -->
+<section class="concept" aria-labelledby="hb">
+  <h2 id="hb">B · Lumière du jour</h2>
+  <p class="why">Toute l'interface suit l'heure de prière : ciel pâle à l'aube, ambre à Dhuhr, orange à Maghrib, nuit à Isha. L'arc du soleil sert aussi de progression de lecture. S'appuie sur ce qui existe déjà (horaires de prière, thèmes jour/nuit). Risque : cohérence entre 4 ambiances ; chaque ciel doit passer axe en contraste.</p>
+  <div class="tabsout" role="group" aria-label="Heure simulée">
+    <button aria-pressed="false" data-hour="fajr">Fajr</button>
+    <button aria-pressed="true" data-hour="dhuhr">Dhuhr</button>
+    <button aria-pressed="false" data-hour="maghrib">Maghrib</button>
+    <button aria-pressed="false" data-hour="isha">Isha</button>
+  </div>
+  <div class="row">
+    <figure><div class="phone B" id="b-home" data-hour="dhuhr" aria-label="Accueil, concept B">
+      <div class="arc" aria-hidden="true"><svg viewBox="0 0 300 130" preserveAspectRatio="none"><path d="M10 124 Q150 -60 290 124"/><circle class="sun" cx="150" cy="32" r="11"/></svg></div>
+      <div class="when"><small>Prochaine prière · Asr</small><strong>dans 2 h 14</strong></div>
+      <div class="card">
+        <p class="ar">الرَّحْمَٰنِ الرَّحِيمِ</p>
+        <p class="m">Verset du jour · Al-Fatiha 1:3</p>
+        <div class="cta">Reprendre · Al-Baqara 142</div>
+      </div>
+    </div><figcaption class="cap">Accueil</figcaption></figure>
+    <figure><div class="phone B" id="b-read" data-hour="dhuhr" aria-label="Lecture, concept B">
+      <div class="read">
+        <div class="bar" role="progressbar" aria-valuenow="34" aria-valuemin="0" aria-valuemax="100" aria-label="Progression"><i></i></div>
+        <h3>Al-Fatiha</h3><p class="meta">Mecquoise · 7 versets</p>
+        <p class="ar">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<br>الرَّحْمَٰنِ الرَّحِيمِ</p>
+      </div>
+    </div><figcaption class="cap">Lecture : le ciel s'efface derrière le texte</figcaption></figure>
+  </div>
+</section>
+
+<!-- C -->
+<section class="concept" aria-labelledby="hc">
+  <h2 id="hc">C · Page vivante</h2>
+  <p class="why">On ne « consulte » pas une app, on tourne la page d'un mushaf : papier, filets, en-tête courant, numéro de page en marge. Le chrome se fond dans les marges. C'est la piste la plus calme et la plus proche du produit actuel (thème Parchemin). Risque : moins spectaculaire au premier regard ; il faut compenser par la finesse du mouvement.</p>
+  <div class="row">
+    <figure><div class="phone C" aria-label="Accueil, concept C">
+      <div class="home">
+        <p style="font-size:.66rem;letter-spacing:.14em;text-transform:uppercase;color:var(--rule)">Hafs · Juz 2</p>
+        <h3>Où vous en étiez</h3>
+        <div class="book"><p class="ar">سَيَقُولُ السُّفَهَاءُ</p><p class="m">Al-Baqara · verset 142 · page 22</p></div>
+        <div class="cta">Tourner la page</div>
+      </div>
+    </div><figcaption class="cap">Accueil</figcaption></figure>
+    <figure><div class="phone C" id="c-page" aria-label="Page de lecture, concept C">
+      <div class="runhead"><span>Juz 1</span><span>Al-Fatiha</span></div>
+      <div class="page">
+        <div class="sura"><small>7 versets</small><span class="ar">الفاتحة</span></div>
+        <p class="line ar">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<span class="num">١</span> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ<span class="num">٢</span></p>
+        <p class="line ar">الرَّحْمَٰنِ الرَّحِيمِ<span class="num">٣</span> مَالِكِ يَوْمِ الدِّينِ<span class="num">٤</span></p>
+      </div>
+      <div class="margin"><span>Page 1 / 604</span><b>1</b><span>Hafs</span></div>
+    </div><figcaption class="cap">Lecture : tourne comme une page (0,9 s)</figcaption>
+    <button class="replay" data-replay="c-page">Rejouer la page</button></figure>
+  </div>
+</section>
+
+<script>
+// Rejouer les animations : retirer puis remettre la classe "play".
+document.querySelectorAll('[data-replay]').forEach(function(b){
+  b.addEventListener('click',function(){
+    var el=document.getElementById(b.dataset.replay);
+    el.classList.remove('play'); void el.offsetWidth; el.classList.add('play');
+  });
+});
+['a-open','c-page'].forEach(function(id){document.getElementById(id).classList.add('play')});
+// B : simulateur d'heure.
+document.querySelectorAll('.tabsout button').forEach(function(b){
+  b.addEventListener('click',function(){
+    document.querySelectorAll('.tabsout button').forEach(function(x){x.setAttribute('aria-pressed',x===b)});
+    ['b-home','b-read'].forEach(function(id){document.getElementById(id).dataset.hour=b.dataset.hour});
+  });
+});
+</script>
+</body>
+</html>

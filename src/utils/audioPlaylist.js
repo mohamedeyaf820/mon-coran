@@ -161,7 +161,7 @@ export function keepsSameAudioVerseSet(previous, next) {
  */
 export function expandAyahsToAudioFiles(ayahs, cdnType = "everyayah") {
   if (!Array.isArray(ayahs)) return [];
-  if (cdnType === "quranpedia" || cdnType === "mp3quran-surah") return ayahs;
+  if (cdnType === "quranpedia" || cdnType === "mp3quran-surah" || cdnType === "surah-timed") return ayahs;
 
   let previousFile = null;
   let changed = false;

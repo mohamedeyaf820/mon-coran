@@ -13,9 +13,9 @@ const COPY = {
     duasTitle: "Douas en arabe avec traduction",
     duasDescription:
       "Découvrez une sélection de douas en arabe avec traduction française et références.",
-    prayersTitle: "Mes prières — suivi quotidien",
+    prayersTitle: "Horaires de prière",
     prayersDescription:
-      "Suivez vos cinq prières quotidiennes, leurs horaires et vos rappels, entièrement conservés sur votre appareil.",
+      "Les cinq prières du jour pour votre ville et la prochaine en un coup d’œil. Rappels et suivi facultatifs, conservés sur votre appareil.",
     page: "Page",
     juz: "Juz",
     ayah: "verset",
@@ -34,9 +34,9 @@ const COPY = {
     duasTitle: "Duas in Arabic with translation",
     duasDescription:
       "Explore a selection of duas with Arabic text, translation and references.",
-    prayersTitle: "My prayers — daily tracker",
+    prayersTitle: "Prayer times",
     prayersDescription:
-      "Track your five daily prayers, their times and reminders, kept entirely on your device.",
+      "Today’s five prayers for your city and the next one at a glance. Optional reminders and tracking, kept on your device.",
     page: "Page",
     juz: "Juz",
     ayah: "verse",
@@ -54,9 +54,9 @@ const COPY = {
       "اقرأ واستمع وتدبّر القرآن الكريم عبر الإنترنت مع أحكام التجويد والترجمات وروايتي حفص وورش على MushafPlus.",
     duasTitle: "أدعية بالنص العربي والترجمة",
     duasDescription: "مجموعة من الأدعية بالنص العربي والترجمة والمراجع.",
-    prayersTitle: "متابعة الصلوات اليومية",
+    prayersTitle: "مواقيت الصلاة",
     prayersDescription:
-      "تتبع صلواتك الخمس ومواقيتها وتذكيراتك، محفوظة بالكامل على جهازك.",
+      "صلوات اليوم الخمس لمدينتك والصلاة القادمة في لمحة. التذكيرات والمتابعة اختيارية ومحفوظة على جهازك.",
     page: "صفحة",
     juz: "الجزء",
     ayah: "الآية",

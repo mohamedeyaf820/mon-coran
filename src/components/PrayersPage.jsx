@@ -5,23 +5,58 @@ import {
   Circle,
   Clock,
   Home,
+  Info,
   Loader2,
+  LocateFixed,
   MapPin,
   MoonStar,
+  RefreshCw,
   Settings2,
   Sparkles,
+  Sunrise,
 } from "lucide-react";
 import "../styles/domains/prayers-page.css";
 import { useApp } from "../context/AppContext";
 import { t } from "../i18n";
 import { usePrayerTimes } from "../hooks/usePrayerTimes";
-import { PRAYER_KEYS, localDayKey } from "../services/prayerTimesService";
+import {
+  PRAYER_KEYS,
+  PRAYER_METHODS,
+  formatCountdown,
+  localDayKey,
+  normalizePrayerMethod,
+} from "../services/prayerTimesService";
+import { nearestPrayerCity } from "../data/prayerCities";
+import PrayerLocationPicker from "./prayers/PrayerLocationPicker";
+import PrayerMethodPicker from "./prayers/PrayerMethodPicker";
 import { POST_ADHAN_DUAS } from "../data/adhanDuas";
 
+// The Arabic locale is a lazy chunk, absent while the app reads in French or
+// English: the Arabic name beside each prayer must not depend on it.
+const ARABIC_NAMES = { Fajr: "الفجر", Dhuhr: "الظهر", Asr: "العصر", Maghrib: "المغرب", Isha: "العشاء" };
+
+const cityNameIn = (city, lang) => (lang === "ar" ? city.ar : lang === "en" ? city.en : city.fr);
+
+function formatCoordinates(location) {
+  const lat = `${Math.abs(location.latitude).toFixed(2)}° ${location.latitude >= 0 ? "N" : "S"}`;
+  const lon = `${Math.abs(location.longitude).toFixed(2)}° ${location.longitude >= 0 ? "E" : "W"}`;
+  return `${lat}, ${lon}`;
+}
+
+function formatOffset(minutes) {
+  const sign = minutes > 0 ? "+" : "−";
+  const abs = Math.abs(minutes);
+  const hours = Math.floor(abs / 60);
+  const rest = abs % 60;
+  return `${sign}${hours}${rest ? `:${String(rest).padStart(2, "0")}` : ""} h`;
+}
+
 /**
- * « Mes prières » — a private mirror of the reader's five daily prayers.
- * Marks are stored locally and encrypted; the page deliberately builds no
- * score, it only shows what was tapped today, this week, this month.
+ * « Horaires de prière » — today's five prayers for the reader's place, then,
+ * only if they opt in, a private mirror of what they prayed. Choosing the
+ * place happens here (position or city), not in Settings. Marks are stored
+ * locally and encrypted; the page deliberately builds no score, it only shows
+ * what was tapped today, this week, this month.
  */
 export default function PrayersPage() {
   const { state, set } = useApp();
@@ -30,6 +65,7 @@ export default function PrayersPage() {
   const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
   const [now, setNow] = useState(() => new Date());
   const [view, setView] = useState("day");
+  const [changingPlace, setChangingPlace] = useState(false);
   const panelRendered = Boolean(state.prayerLocation) && (view === "day" || Boolean(state.prayerTrackingEnabled));
   const [log, setLog] = useState({});
   const prayer = usePrayerTimes({
@@ -82,6 +118,30 @@ export default function PrayersPage() {
 
   const todayEntries = log[localDayKey(now)] || {};
   const timings = prayer.status === "ready" ? prayer.data.timings : null;
+  const clock = prayer.placeNow || now;
+  const nowMinutes = clock.getHours() * 60 + clock.getMinutes();
+  // A chosen city keeps its name; a GPS position is named after the closest
+  // listed city (no geocoding request) or, failing that, shown as coordinates.
+  const placeName = (() => {
+    const location = state.prayerLocation;
+    if (!location) return "";
+    if (location.label) return location.label;
+    const near = nearestPrayerCity(location.latitude, location.longitude);
+    return near
+      ? t("prayers.nearCity", lang).replace("{city}", cityNameIn(near.city, lang))
+      : t("prayers.positionAt", lang).replace("{coordinates}", formatCoordinates(location));
+  })();
+  const isMyPosition = Boolean(state.prayerLocation) && !state.prayerLocation.label;
+  // The place as a plain noun phrase, for sentences ("the times of …").
+  const placeShort = (() => {
+    const location = state.prayerLocation;
+    if (!location) return "";
+    if (location.label) return location.label;
+    const near = nearestPrayerCity(location.latitude, location.longitude);
+    return near ? cityNameIn(near.city, lang) : t("prayers.thisPosition", lang);
+  })();
+  const methodEntry = PRAYER_METHODS.find((item) => item.id === normalizePrayerMethod(state.prayerMethod, lang));
+  const methodName = methodEntry ? methodEntry[lang] || methodEntry.fr : "";
 
   const week = useMemo(() => {
     const days = [];
@@ -153,7 +213,7 @@ export default function PrayersPage() {
 
       {/* Only the selected tab owns a panel, and only once the page has what it
           needs to draw one: a reference to an absent id is invalid ARIA. */}
-      <div className="prayers-view-switch" role="tablist" aria-label={t("prayers.switchAria", lang)}>
+      {state.prayerLocation ? <div className="prayers-view-switch" role="tablist" aria-label={t("prayers.switchAria", lang)}>
         {[
           { id: "day", icon: Clock },
           { id: "week", icon: CalendarDays },
@@ -187,22 +247,15 @@ export default function PrayersPage() {
             <span>{t(`prayers.views.${id}`, lang)}</span>
           </button>
         ))}
-      </div>
+      </div> : null}
 
       {!state.prayerLocation ? (
-        <div className="prayers-empty card">
-          <MapPin size={18} aria-hidden="true" />
-          <h2>{t("prayers.noLocationTitle", lang)}</h2>
+        <section className="prayers-empty prayers-onboarding card" aria-labelledby="prayers-onboarding-title">
+          <MapPin size={22} aria-hidden="true" />
+          <h2 id="prayers-onboarding-title">{t("prayers.noLocationTitle", lang)}</h2>
           <p>{t("prayers.noLocationBody", lang)}</p>
-          <button
-            type="button"
-            className="prayers-enable-btn"
-            onClick={() => set({ settingsActiveTab: "prayer", settingsOpen: true })}
-          >
-            <Settings2 size={14} aria-hidden="true" />
-            <span>{t("prayers.goSettings", lang)}</span>
-          </button>
-        </div>
+          <PrayerLocationPicker lang={lang} set={set} methodAuto={state.prayerMethodAuto !== false} autoDetect />
+        </section>
       ) : view !== "day" && !state.prayerTrackingEnabled ? (
         <div className="prayers-empty card">
           <Sparkles size={18} aria-hidden="true" />
@@ -213,6 +266,61 @@ export default function PrayersPage() {
         </div>
       ) : view === "day" ? (
         <section id="prayers-panel-day" role="tabpanel" aria-labelledby="prayers-tab-day" className="prayers-day" aria-label={t("prayers.views.day", lang)}>
+          <div className="prayers-place">
+            <span className="prayers-place__name">
+              {isMyPosition ? <LocateFixed size={16} aria-hidden="true" /> : <MapPin size={16} aria-hidden="true" />}
+              <span>{placeName}</span>
+            </span>
+            <button
+              type="button"
+              className="prayers-place__change"
+              aria-expanded={changingPlace}
+              aria-controls="prayers-place-panel"
+              onClick={() => setChangingPlace((open) => !open)}
+            >
+              {t(changingPlace ? "prayers.closePlace" : "prayers.changePlace", lang)}
+            </button>
+          </div>
+          {changingPlace ? (
+            <div id="prayers-place-panel" className="prayers-place__panel card">
+              <PrayerLocationPicker
+                lang={lang}
+                set={set}
+                currentLabel={state.prayerLocation.label}
+                methodAuto={state.prayerMethodAuto !== false}
+                onDone={() => setChangingPlace(false)}
+              />
+            </div>
+          ) : null}
+
+          {prayer.status === "ready" && prayer.offsetMinutes ? (
+            <p className="prayers-zone-note" role="note">
+              {t("prayers.otherTimezone", lang)
+                .replace("{place}", placeShort)
+                .replace("{offset}", formatOffset(prayer.offsetMinutes))}
+            </p>
+          ) : null}
+
+          {prayer.status === "ready" ? (
+            <section className="prayers-next" aria-labelledby="prayers-next-label">
+              {prayer.next ? (
+                <>
+                  <p id="prayers-next-label" className="prayers-next__label">{t("prayer.next", lang)}</p>
+                  <p className="prayers-next__main">
+                    <strong>{t(`prayer.names.${prayer.next.key}`, lang)}</strong>
+                    <span className="prayers-next__time" dir="ltr">{prayer.next.hhmm}</span>
+                  </p>
+                  <p className="prayers-next__countdown">{formatCountdown(prayer.next.minutesUntil, lang)}</p>
+                </>
+              ) : (
+                <>
+                  <p id="prayers-next-label" className="prayers-next__label">{t("prayer.today", lang)}</p>
+                  <p className="prayers-next__done">{t("prayer.afterIsha", lang)}</p>
+                </>
+              )}
+            </section>
+          ) : null}
+
           <div className="prayers-day-head">
             <time dateTime={now.toISOString()}>
               {now.toLocaleDateString(locale, { weekday: "long", day: "numeric", month: "long" })}
@@ -225,25 +333,55 @@ export default function PrayersPage() {
               {t("prayer.loading", lang)}
             </p>
           ) : null}
+          {prayer.status === "offline" || prayer.status === "error" ? (
+            <div className="prayers-problem" role="alert">
+              <p>{t(prayer.status === "offline" ? "prayer.offline" : "prayer.error", lang)}</p>
+              <button type="button" className="prayers-problem__retry" onClick={prayer.refresh}>
+                <RefreshCw size={15} aria-hidden="true" />
+                <span>{t("prayer.retry", lang)}</span>
+              </button>
+            </div>
+          ) : null}
+          {prayer.data?.stale ? <p className="prayers-hint">{t("prayer.stale", lang)}</p> : null}
           <ul className="prayers-day-list">
-            {PRAYER_KEYS.map((key) => {
+            {PRAYER_KEYS.flatMap((key) => {
               const entry = todayEntries[key];
               const prayed = entry?.p === true;
               const time = timings?.[key]?.hhmm;
-              return (
-                <li key={key} className={`prayers-day-row${prayed ? " is-done" : ""}`}>
+              const isNext = prayer.next?.key === key;
+              const isPast = Boolean(timings?.[key]) && !isNext && timings[key].minutes <= nowMinutes;
+              const rows = [];
+              if (key === "Dhuhr") {
+                rows.push(
+                  <li key="Sunrise" className="prayers-day-sun">
+                    <span className="prayers-day-name">
+                      <Sunrise size={15} aria-hidden="true" />
+                      <span>{t("prayer.names.Sunrise", lang)}</span>
+                    </span>
+                    <span className="prayers-day-time" dir="ltr">{timings?.Sunrise?.hhmm || "—"}</span>
+                    <small className="prayers-day-sun__note">{t("prayer.sunriseNote", lang)}</small>
+                  </li>,
+                );
+              }
+              rows.push(
+                <li
+                  key={key}
+                  className={`prayers-day-row${prayed ? " is-done" : ""}${isNext ? " is-next" : ""}${isPast ? " is-past" : ""}`}
+                  aria-current={isNext ? "time" : undefined}
+                >
                   <span className="prayers-day-name">
                     <strong>{t(`prayer.names.${key}`, lang)}</strong>
                     {lang !== "ar" ? (
                       <span className="prayers-day-name-ar" dir="rtl" lang="ar">
-                        {t(`prayer.names.${key}`, "ar")}
+                        {ARABIC_NAMES[key]}
                       </span>
                     ) : null}
+                    {isNext ? <span className="prayers-day-badge">{t("prayers.nextBadge", lang)}</span> : null}
                   </span>
                   <span className="prayers-day-time" dir="ltr">{time || "—"}</span>
-                  <span className="prayers-day-flag">
-                    {!prayed && entry?.s === 1 ? t("prayers.notYet", lang) : null}
-                  </span>
+                  {!prayed && entry?.s === 1 ? (
+                    <span className="prayers-day-flag">{t("prayers.notYet", lang)}</span>
+                  ) : null}
                   {state.prayerTrackingEnabled ? <button
                     type="button"
                     className={`prayers-mark-btn${prayed ? " is-on" : ""}`}
@@ -256,10 +394,38 @@ export default function PrayersPage() {
                     {prayed ? <Check size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}
                     <span>{prayed ? t("prayers.prayed", lang) : t("prayers.markPrayed", lang)}</span>
                   </button> : null}
-                </li>
+                </li>,
               );
+              return rows;
             })}
           </ul>
+          <PrayerMethodPicker
+            lang={lang}
+            set={set}
+            location={state.prayerLocation}
+            methodId={state.prayerMethod}
+            auto={state.prayerMethodAuto !== false}
+          />
+          <details className="prayers-how">
+            <summary>
+              <Info size={16} aria-hidden="true" />
+              <span>{t("prayers.howTitle", lang)}</span>
+            </summary>
+            <ol>
+              <li>{t("prayers.howPlace", lang)}</li>
+              <li>{t("prayers.howNext", lang)}</li>
+              <li>{t("prayers.howMethod", lang).replace("{method}", methodName)}</li>
+              <li>{t("prayers.howMore", lang)}</li>
+            </ol>
+            <button
+              type="button"
+              className="prayers-how__settings"
+              onClick={() => set({ settingsActiveTab: "prayer", settingsOpen: true })}
+            >
+              <Settings2 size={15} aria-hidden="true" />
+              <span>{t("prayers.howSettings", lang)}</span>
+            </button>
+          </details>
           {state.prayerTrackingEnabled ? (
             <p className="prayers-private-note">{t("prayers.privateNote", lang)}</p>
           ) : (

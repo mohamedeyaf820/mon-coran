@@ -32,7 +32,7 @@ function seed(state) {
         Isha: at(210),
       },
       hijri: "12 Rabi' al-Awwal 1448",
-      timezone: "Europe/Paris",
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
       methodName: "UOIF",
       latitude: 48.85,
       longitude: 2.35,

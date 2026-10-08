@@ -31,7 +31,7 @@ import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
 
 // Mirrors PRAYER_METHODS in prayerTimesService (kept out of the boot graph:
 // storageService loads at startup, the timings API client must not).
-const VALID_PRAYER_METHOD_IDS = [1, 2, 3, 4, 5, 12];
+const VALID_PRAYER_METHOD_IDS = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23];
 
 function normalizePrayerMethodSetting(value, lang) {
   const parsed = Number(value);
@@ -315,6 +315,11 @@ function isValidClockTime(value) {
   return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
 }
 
+/** Whole surah in one recording, verse files, or decided per playlist. */
+function sanitizeAudioPlaybackMode(value) {
+  return value === "surah" || value === "verse" ? value : "auto";
+}
+
 function sanitizeAudioPlayerSkin(value) {
   return VALID_AUDIO_PLAYER_SKINS.includes(value) ? value : "orbit";
 }
@@ -419,8 +424,10 @@ const DEFAULT_SETTINGS = {
   nightTheme: "dark",
   dayTheme: "light",
   surahRepeatCount: 1,
+  audioPlaybackMode: "auto",
   prayerTimesEnabled: false,
   prayerMethod: 12,
+  prayerMethodAuto: true,
   prayerLocation: null,
   prayerReminders: false,
   prayerTimeOffsets: { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
@@ -557,8 +564,15 @@ export function getSettings() {
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
           : DEFAULT_SETTINGS.surahRepeatCount,
+      audioPlaybackMode: sanitizeAudioPlaybackMode(parsed?.audioPlaybackMode),
       prayerTimesEnabled: Boolean(parsed?.prayerTimesEnabled),
       prayerMethod: normalizePrayerMethodSetting(parsed?.prayerMethod, parsed?.lang),
+      // A reader who already has a place and a method keeps them until they ask
+      // the app to follow their region; a new reader starts automatic.
+      prayerMethodAuto:
+        parsed?.prayerMethodAuto !== undefined
+          ? Boolean(parsed.prayerMethodAuto)
+          : !sanitizePrayerLocation(parsed?.prayerLocation),
       prayerLocation: sanitizePrayerLocation(parsed?.prayerLocation),
       prayerReminders: Boolean(parsed?.prayerReminders),
       prayerTimeOffsets: sanitizePrayerOffsetsSetting(parsed?.prayerTimeOffsets),
@@ -703,12 +717,17 @@ function sanitizeSettings(settings) {
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))
         : DEFAULT_SETTINGS.surahRepeatCount,
+    audioPlaybackMode: sanitizeAudioPlaybackMode(safeInput.audioPlaybackMode),
     karaokeFollow:
       safeInput.karaokeFollow !== undefined
         ? Boolean(safeInput.karaokeFollow)
         : true,
     prayerTimesEnabled: Boolean(safeInput.prayerTimesEnabled),
     prayerMethod: normalizePrayerMethodSetting(safeInput.prayerMethod, safeInput.lang),
+    prayerMethodAuto:
+      safeInput.prayerMethodAuto !== undefined
+        ? Boolean(safeInput.prayerMethodAuto)
+        : !sanitizePrayerLocation(safeInput.prayerLocation),
     prayerLocation: sanitizePrayerLocation(safeInput.prayerLocation),
     prayerReminders: Boolean(safeInput.prayerReminders),
     prayerTimeOffsets: sanitizePrayerOffsetsSetting(safeInput.prayerTimeOffsets),

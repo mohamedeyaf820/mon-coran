@@ -6,13 +6,28 @@ import { encryptData, decryptDataWithMeta } from "./cryptoUtil.js";
 export const PRAYER_KEYS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
 export const DISPLAYED_TIME_KEYS = ["Fajr", "Sunrise", "Dhuhr", "Asr", "Maghrib", "Isha"];
 
+// Aladhan method ids. `fajr` / `isha` are the sun angles below the horizon;
+// `ishaMin` replaces the Isha angle when the method fixes Isha a set number of
+// minutes after Maghrib. `where` says in plain words who follows the method.
 export const PRAYER_METHODS = [
-  { id: 12, fr: "UOIF (France)", en: "UOIF (France)", ar: "اتحاد المنظمات الإسلامية في فرنسا" },
-  { id: 2, fr: "ISNA (Amérique du N.)", en: "ISNA (North America)", ar: "الجمعية الإسلامية لأمريكا الشمالية" },
-  { id: 3, fr: "Ligue islamique mondiale", en: "Muslim World League", ar: "رابطة العالم الإسلامي" },
-  { id: 4, fr: "Umm al-Qura (Makkah)", en: "Umm al-Qura (Makkah)", ar: "أم القرى (مكة)" },
-  { id: 5, fr: "Autorité égyptienne", en: "Egyptian Authority", ar: "الهيئة المصرية العامة للمساحة" },
-  { id: 1, fr: "Karachi (Asr hanafite)", en: "Karachi (Hanafi Asr)", ar: "كراتشي (العصر حنفي)" },
+  { id: 12, fr: "UOIF (France)", en: "UOIF (France)", ar: "اتحاد المنظمات الإسلامية في فرنسا", fajr: 12, isha: 12, where: { fr: "France, Belgique, Suisse romande", en: "France, Belgium, French-speaking Switzerland", ar: "فرنسا وبلجيكا وسويسرا الفرنسية" } },
+  { id: 4, fr: "Umm al-Qura (La Mecque)", en: "Umm al-Qura (Makkah)", ar: "أم القرى (مكة)", fajr: 18.5, ishaMin: 90, where: { fr: "Arabie saoudite, La Mecque et Médine", en: "Saudi Arabia, Makkah and Madinah", ar: "السعودية، مكة والمدينة" } },
+  { id: 3, fr: "Ligue islamique mondiale", en: "Muslim World League", ar: "رابطة العالم الإسلامي", fajr: 18, isha: 17, where: { fr: "Europe, Asie, méthode par défaut", en: "Europe, Asia, the default method", ar: "أوروبا وآسيا، الطريقة الافتراضية" } },
+  { id: 2, fr: "ISNA (Amérique du N.)", en: "ISNA (North America)", ar: "الجمعية الإسلامية لأمريكا الشمالية", fajr: 15, isha: 15, where: { fr: "États-Unis, Canada", en: "United States, Canada", ar: "الولايات المتحدة وكندا" } },
+  { id: 5, fr: "Autorité égyptienne", en: "Egyptian Authority", ar: "الهيئة المصرية العامة للمساحة", fajr: 19.5, isha: 17.5, where: { fr: "Égypte, Afrique, Syrie, Liban", en: "Egypt, Africa, Syria, Lebanon", ar: "مصر وإفريقيا وسوريا ولبنان" } },
+  { id: 1, fr: "Karachi (Pakistan)", en: "Karachi (Pakistan)", ar: "كراتشي (باكستان)", fajr: 18, isha: 18, where: { fr: "Pakistan, Inde, Bangladesh, Afghanistan", en: "Pakistan, India, Bangladesh, Afghanistan", ar: "باكستان والهند وبنغلاديش وأفغانستان" } },
+  { id: 21, fr: "Maroc", en: "Morocco", ar: "المغرب", fajr: 19, isha: 17 },
+  { id: 19, fr: "Algérie", en: "Algeria", ar: "الجزائر", fajr: 18, isha: 17 },
+  { id: 18, fr: "Tunisie", en: "Tunisia", ar: "تونس", fajr: 18, isha: 18 },
+  { id: 13, fr: "Turquie (Diyanet)", en: "Turkey (Diyanet)", ar: "تركيا (ديانت)", fajr: 18, isha: 17 },
+  { id: 23, fr: "Jordanie", en: "Jordan", ar: "الأردن", fajr: 18, isha: 18, where: { fr: "Jordanie, Palestine", en: "Jordan, Palestine", ar: "الأردن وفلسطين" } },
+  { id: 9, fr: "Koweït", en: "Kuwait", ar: "الكويت", fajr: 18, isha: 17.5 },
+  { id: 10, fr: "Qatar", en: "Qatar", ar: "قطر", fajr: 18, ishaMin: 90 },
+  { id: 8, fr: "Golfe (Émirats, Oman)", en: "Gulf (Emirates, Oman)", ar: "الخليج (الإمارات وعُمان)", fajr: 19.5, ishaMin: 90 },
+  { id: 17, fr: "Malaisie (JAKIM)", en: "Malaysia (JAKIM)", ar: "ماليزيا (جاكيم)", fajr: 20, isha: 18 },
+  { id: 20, fr: "Indonésie (Kemenag)", en: "Indonesia (Kemenag)", ar: "إندونيسيا (وزارة الشؤون الدينية)", fajr: 20, isha: 18 },
+  { id: 11, fr: "Singapour (MUIS)", en: "Singapore (MUIS)", ar: "سنغافورة", fajr: 20, isha: 18 },
+  { id: 22, fr: "Portugal (Lisbonne)", en: "Portugal (Lisbon)", ar: "البرتغال (لشبونة)", fajr: 18, ishaMin: 77 },
 ];
 
 const VALID_METHOD_IDS = new Set(PRAYER_METHODS.map((method) => method.id));
@@ -274,6 +289,71 @@ export async function fetchTodayTimings({ latitude, longitude, method, offsets, 
   }
   const fresh = await networkPromise;
   return { ...adjust(fresh), stale: false, refreshing: false };
+}
+
+/**
+ * The wall clock of `timeZone` as a Date whose local fields read that time.
+ * The API returns times in the location's timezone, so "what is next" must be
+ * judged on the location's clock, not the device's: a reader in France looking
+ * at Makkah is three hours apart. Falls back to the device clock when the zone
+ * is missing or unknown.
+ */
+export function zonedWallClock(date, timeZone) {
+  if (!timeZone) return date;
+  try {
+    const parts = Object.fromEntries(
+      new Intl.DateTimeFormat("en-GB", {
+        timeZone,
+        hourCycle: "h23",
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+        .formatToParts(date)
+        .map((part) => [part.type, part.value]),
+    );
+    return new Date(
+      Number(parts.year),
+      Number(parts.month) - 1,
+      Number(parts.day),
+      Number(parts.hour),
+      Number(parts.minute),
+      Number(parts.second),
+    );
+  } catch {
+    return date;
+  }
+}
+
+/** Minutes the location's clock is ahead of the device clock (0 when equal). */
+export function zoneOffsetFromDevice(date, timeZone) {
+  const zoned = zonedWallClock(date, timeZone);
+  const delta = Math.round((zoned.getTime() - date.getTime()) / 60000);
+  // Both clocks are read as device-local wall time, so the DST of the device
+  // cancels out except around its own transitions; round to a quarter hour.
+  return Math.round(delta / 15) * 15;
+}
+
+/**
+ * The same times read on the device clock, for reminders: a notification must
+ * fire when the device clock reaches the prayer, whichever place was chosen.
+ */
+export function timingsOnDeviceClock(timings, timeZone, date = new Date()) {
+  const offset = zoneOffsetFromDevice(date, timeZone);
+  if (!timings || !offset) return timings;
+  const shifted = {};
+  for (const [key, entry] of Object.entries(timings)) {
+    const minutes = (((entry.minutes - offset) % 1440) + 1440) % 1440;
+    shifted[key] = {
+      ...entry,
+      minutes,
+      hhmm: `${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`,
+    };
+  }
+  return shifted;
 }
 
 /** Next prayer among the five (Sunrise excluded), or null after Isha. */

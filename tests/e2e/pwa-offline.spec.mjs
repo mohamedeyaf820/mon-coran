@@ -230,3 +230,41 @@ test("PWA: an explicitly downloaded recitation is served while offline", async (
     { status: 206, bytes: 3, range: 'bytes 7-9/10' },
   ]);
 });
+
+test("PWA: a visited Hisn al-Muslim chapter stays readable offline, with its translation and sources", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      showDuas: true,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/duas/hisn/28");
+  const firstCard = page.locator(".dua-card-v5").first();
+  await expect(firstCard).toBeVisible({ timeout: 30_000 });
+
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(firstCard).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  // One more online load, now controlled: the JSON files go through the worker and are kept.
+  await page.reload();
+  await expect(firstCard).toBeVisible({ timeout: 30_000 });
+  const onlineTitle = (await page.locator(".duas-title").textContent())?.trim();
+  const onlineTranslation = (await page.locator(".dua-translation").first().textContent())?.trim();
+  expect(onlineTitle).toBe("Avant de dormir");
+  expect(onlineTranslation?.length).toBeGreaterThan(20);
+  await page.waitForTimeout(500);
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".dua-card-v5").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".duas-title")).toHaveText(onlineTitle);
+  await expect(page.locator(".dua-translation").first()).toHaveText(onlineTranslation);
+  await expect(page.locator(".dua-sources").first()).toBeVisible();
+});
