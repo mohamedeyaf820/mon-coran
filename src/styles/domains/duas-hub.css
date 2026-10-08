@@ -121,6 +121,7 @@ a.duas-empty-reset {
 .duas-tile:focus-visible,
 .hisn-row:focus-visible,
 .hisn-pager__link:focus-visible,
+.dua-sources__title:focus-visible,
 .dua-source-link:focus-visible {
     outline: none;
     box-shadow: var(--focus-ring);
@@ -362,23 +363,25 @@ a.duas-empty-reset {
 }
 
 .dua-sources {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
     width: 100%;
-    padding-top: 0.75rem;
     border-top: 1px dashed var(--border);
 }
 
 .dua-sources__title {
-    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 44px;
+    list-style: none;
+    cursor: pointer;
     color: var(--text-muted);
-    font-family: var(--font-ui);
-    font-size: 0.72rem;
+    font-size: max(0.8rem, 12px);
     font-weight: 800;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
 }
+
+.dua-sources__title::-webkit-details-marker { display: none; }
+.dua-sources[open] > summary svg { transform: rotate(180deg); }
+.dua-sources__content { display: grid; gap: 0.5rem; padding-block: 0.5rem; }
 
 .dua-sources__group {
     display: flex;
