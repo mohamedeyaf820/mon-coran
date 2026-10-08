@@ -1310,15 +1310,7 @@ html body > .audio-player-modal--simple .audio-settings-actions button {
    button. Selectors carry #root so they win over the layers above.
    ========================================================================== */
 
-html body #root .app-root .mp-audio-player.simple-player--compact {
-  border-top: 0 !important;
-  background: color-mix(in srgb, var(--bg-card) 95%, transparent) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
-  backdrop-filter: blur(14px) saturate(140%);
-  box-shadow: 0 -12px 28px -16px rgba(0, 0, 0, 0.34), 0 -1px 0 color-mix(in srgb, var(--border) 85%, transparent) !important;
-}
-
-/* Progress: a full-width 4px line on the top edge; the thumb only shows on focus. */
+/* Compact progress keeps its full width; the thumb appears on focus. */
 html body #root .app-root .mp-audio-player.simple-player--compact .simple-player__timeline {
   width: 100% !important;
   margin: 0 !important;
@@ -1389,69 +1381,90 @@ html body #root .app-root .mp-audio-player.simple-player--compact .mp-player-min
   box-shadow: none !important;
 }
 
-/* ==========================================================================
-   Phone mini player: a floating card above the bottom bar
-
-   The docked bar used to sit flush on top of the navigation: two full-width
-   sheets with rounded top corners stacked, the nav's curve cut into the
-   player's last line (the reciter name touched it) and the two surfaces read
-   as one noisy block. On phones the minimized player is now its own card with
-   a gap to the bar (or to the screen edge when the bar is away). The progress
-   line moves to the bottom edge of the card, the chevron loses its ring so the
-   play button is the single primary control. Height stays within the 70 px
-   reserved in AudioPlayer.jsx (`--player-h`). Tablets keep their own card.
-   ========================================================================== */
-
+/* One card treatment in compact and expanded states on every viewport.
+   Placement stays with the shell; playback/immersive transitions stay intact. */
+html body #root .app-root .audio-player-simple.simple-player {
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-lg, 1rem) !important;
+  background: var(--bg-card) !important;
+  box-shadow: var(--shadow-md) !important;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box !important;
+  height: auto !important;
+  max-height: none !important;
+  padding-bottom: 0 !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__timeline {
+  order: 2;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__progress {
+  height: 3px !important;
+  min-height: 3px !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row {
+  min-height: 3.7rem !important;
+  gap: .7rem !important;
+  padding: .4rem .6rem .4rem .7rem !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-row > .audio-cover-art {
+  width: 2.6rem !important;
+  height: 2.6rem !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-meta {
+  text-align: start !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-actions > button:not(.simple-player__play--compact) {
+  border-color: transparent !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__transport .simple-player__play {
+  border-radius: 50% !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__header-actions .simple-player__icon-button {
+  width: 44px !important;
+  max-width: none !important;
+  height: 44px !important;
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__title,
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__reciter {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: .875rem;
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__title {
+  font-size: 1rem;
+  line-height: 1.35;
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__header {
+  border-bottom: 1px solid var(--border);
+}
+html body #root .app-root .audio-player-simple.simple-player--open .simple-player__transport {
+  border-top: 1px solid var(--border);
+}
+@media (max-width: 1024px) {
+  html body #root .app-root .audio-player-simple.simple-player--mobile-open {
+    padding-bottom: 0 !important;
+  }
+  html body #root .app-root .audio-player-simple .simple-player__mobile-meta > strong {
+    font-size: .9rem;
+  }
+  html body #root .app-root .audio-player-simple .simple-player__mobile-meta > span:last-child {
+    font-size: .75rem;
+  }
+}
 @media (max-width: 599px) {
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock.simple-player--compact:not(.simple-player--mobile-open) {
-    right: max(0.5rem, env(safe-area-inset-right)) !important;
-    bottom: calc(var(--mobile-nav-h, 0px) + max(0.4rem, env(safe-area-inset-bottom, 0px))) !important;
-    left: max(0.5rem, env(safe-area-inset-left)) !important;
-    display: flex;
-    flex-direction: column;
-    box-sizing: border-box !important;
-    width: auto !important;
-    height: auto !important;
-    max-height: none !important;
-    padding-bottom: 0;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    border-radius: 1.1rem !important;
-    background: color-mix(in srgb, var(--bg-card) 97%, transparent) !important;
-    box-shadow: 0 8px 22px -10px rgba(0, 0, 0, 0.38), 0 1px 3px rgba(0, 0, 0, 0.12) !important;
+  html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-title {
+    font-size: .95rem !important;
   }
-  /* With the bar away the card keeps the safe-area gap on its own. */
-  html body #root .app-root.nav-away .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock.simple-player--compact:not(.simple-player--mobile-open),
-  html body #root .app-root.immersive-mode .audio-player-simple.mp-audio-player--mobile.mp-audio-player--dock.simple-player--compact:not(.simple-player--mobile-open) {
-    bottom: max(0.5rem, env(safe-area-inset-bottom, 0px)) !important;
+  html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-reciter {
+    font-size: .78rem !important;
   }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__timeline {
-    order: 2;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__progress {
-    height: 3px !important;
-    min-height: 3px !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-row {
-    min-height: 3.7rem !important;
-    gap: 0.7rem !important;
-    padding: 0.4rem 0.6rem 0.4rem 0.7rem !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-row > .audio-cover-art {
-    width: 2.6rem !important;
-    height: 2.6rem !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-title {
-    font-size: 0.95rem !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-reciter {
-    font-size: 0.78rem !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-actions {
-    gap: 0.15rem !important;
-  }
-  html body #root .app-root .audio-player-simple.mp-audio-player--mobile.simple-player--compact:not(.simple-player--mobile-open) .simple-player__compact-actions > button:not(.simple-player__play--compact) {
-    border-color: transparent !important;
+  html body #root .app-root .audio-player-simple.simple-player--compact .simple-player__compact-actions {
+    gap: .15rem !important;
   }
 }
 

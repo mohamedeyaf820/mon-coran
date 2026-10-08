@@ -392,23 +392,18 @@ html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pa
   max-width: none !important;
 }
 
-/* --- Audio player: a full-width bar at the bottom, like quran.com -------- */
+/* --- Audio player: a separate card above navigation on every device ---- */
 /* Layout only: opacity, transform, transition and animation stay with the
    player and the immersive mode, which slides it away while reading. */
 
 html body #root .app-root .mp-audio-player.audio-player-simple[data-player-state="compact"],
 html body #root .app-root .mp-audio-player.mp-audio-player--desktop[data-player-state="compact"],
 html body #root .app-root .mp-audio-player.mp-audio-player--desktop.is-minimized[data-player-state="compact"] {
-  inset: auto 0 var(--mobile-nav-h, 0px) 0 !important;
-  width: 100% !important;
+  inset: auto max(.5rem, env(safe-area-inset-right)) calc(var(--mobile-nav-h, 0px) + max(.5rem, env(safe-area-inset-bottom))) max(.5rem, env(safe-area-inset-left)) !important;
+  width: auto !important;
   min-width: 0 !important;
   max-width: none !important;
   margin: 0 !important;
-  border: 0 !important;
-  border-top: 1px solid var(--border) !important;
-  border-radius: 0 !important;
-  background: var(--bg-card) !important;
-  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.04) !important;
   transform-origin: bottom center;
 }
 
@@ -453,4 +448,18 @@ html body #root .app-root.immersive-mode.immersive-keep-player .mp-audio-player.
    keeps its own explicit anchor. */
 html body #root .app-root .app-main-shell {
   overflow-anchor: none;
+}
+
+/* Expanded touch player shares the compact card's placement, including when
+   navigation is hidden on a supporting page. */
+html body #root .app-root .audio-player-simple.simple-player--mobile-open {
+  inset: auto max(.5rem, env(safe-area-inset-right)) calc(var(--mobile-nav-h, 0px) + max(.5rem, env(safe-area-inset-bottom))) max(.5rem, env(safe-area-inset-left)) !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+html body #root .app-root.nav-away .audio-player-simple.simple-player,
+html body #root .app-root.immersive-mode .audio-player-simple.simple-player {
+  bottom: max(.5rem, env(safe-area-inset-bottom)) !important;
 }
