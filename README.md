@@ -60,7 +60,7 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
   <img src="docs/images/devices-phone-2.webp" alt="MushafPlus sur téléphone : arabe RTL en sépia, recherche automatique, invocations, fiche récitateur, réglages" width="100%">
 </p>
 <p align="center">
-  <img src="docs/images/devices-phone-3.webp" alt="MushafPlus sur téléphone : démarrage animé, Mes prières, pages de transparence, accueil" width="85%">
+  <img src="docs/images/devices-phone-3.webp" alt="MushafPlus sur téléphone : démarrage animé, horaires de prière, pages de transparence, accueil" width="85%">
 </p>
 
 ### 📲 Tablette
@@ -125,14 +125,14 @@ Une seule application, trois formats : l'interface s'adapte au téléphone (barr
 - **Tafsir** (français Al-Mukhtasar via QuranEnc.com, conservé sur l’appareil après lecture) et sources Quran.com, traductions et translittération.
 - **Favoris, notes, listes** ; export / import JSON.
 - **Partage d'un verset en image** (formats et réseaux, PNG réel).
-- **Horaires de prière**, adhan optionnel, suivi des prières, invocations (du'as).
+- **Horaires de prière** pensés pour un premier usage : on indique sa ville une fois (position ou liste hors ligne), la prochaine prière et le temps restant sont mis en avant, un « Comment ça marche ? » explique la méthode ; adhan, rappels et suivi des prières restent optionnels ; invocations (du'as).
 
 ### 📱 Interface
 - **Mobile d'abord** : barre de navigation du bas, zones tactiles ≥ 44 px, en-tête qui s'efface en lecture.
 - **Trois thèmes** (jour, sépia, nuit), mode nuit automatique, cibles tactiles et contrastes testés.
 - **Pages d'information** (À propos, Confidentialité, Mentions légales, Sources) en cartes responsives dès 240 px, avec attributions de chaque source.
 - **Démarrage animé** : le logo se révèle, un éclat doré le traverse, les lanternes respirent (séquence complète au premier lancement après 12 h, courte ensuite, fixe si les animations sont réduites).
-- **Charte unique** : une même surface verte (brune en sépia) pour les cartes d'accueil, « Mes prières » et « Invocations ».
+- **Charte unique** : une même surface verte (brune en sépia) pour les cartes d'accueil, « Horaires de prière » et « Invocations ».
 - Lecteur audio compact (barre de progression, titre de sourate en calligraphie), raccourcis clavier, plein écran, accessibilité vérifiée par axe-core.
 
 ---

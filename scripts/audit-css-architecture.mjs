@@ -52,7 +52,9 @@ const LIMITS = {
   // shared tree during the palette migration (measured 1254.3 kB).
   // 2026-10-07: 1262 kB for the Invocations hero (one set of inks in every theme)
   // and the reciter page order on phones, measured 1259.2 kB.
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1262),
+  // 2026-10-08: 1275 kB for the prayer-times page (place and method pickers,
+  // next-prayer card, day list states, how-it-works), measured 1270.7 kB.
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1275),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

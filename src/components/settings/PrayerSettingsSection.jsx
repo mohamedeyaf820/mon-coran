@@ -3,6 +3,7 @@ import { CloudDownload, Loader2, MapPin, Play, Square } from "lucide-react";
 import { Section, SwitchRow } from "./controls";
 import { t } from "../../i18n";
 import { PRAYER_CITIES } from "../../data/prayerCities";
+import { suggestPrayerMethod } from "../../data/prayerRegions";
 import {
   ADHAN_VOLUME_STEPS,
   POST_REMINDER_CHOICES,
@@ -63,6 +64,7 @@ export default function PrayerSettingsSection({ lang, state, set }) {
   const {
     prayerTimesEnabled,
     prayerMethod,
+    prayerMethodAuto,
     prayerLocation,
     prayerReminders,
     prayerTimeOffsets,
@@ -129,13 +131,14 @@ export default function PrayerSettingsSection({ lang, state, set }) {
           longitude: position.longitude,
           label: "",
         },
+        ...(prayerMethodAuto !== false ? { prayerMethod: suggestPrayerMethod(position.latitude, position.longitude) } : {}),
       });
     } catch {
       setLocationError(t("prayer.locationError", lang));
     } finally {
       setLocating(false);
     }
-  }, [lang, set]);
+  }, [lang, prayerMethodAuto, set]);
 
   const chooseCity = useCallback(
     (cityId) => {
@@ -151,9 +154,10 @@ export default function PrayerSettingsSection({ lang, state, set }) {
           longitude: city.longitude,
           label: lang === "ar" ? city.ar : lang === "en" ? city.en : city.fr,
         },
+        ...(prayerMethodAuto !== false ? { prayerMethod: suggestPrayerMethod(city.latitude, city.longitude) } : {}),
       });
     },
-    [lang, set],
+    [lang, prayerMethodAuto, set],
   );
 
   const previewAdhan = useCallback(
@@ -244,7 +248,14 @@ export default function PrayerSettingsSection({ lang, state, set }) {
             id="settings-prayer-method"
             className="settings-select"
             value={prayerMethod}
-            onChange={(event) => set({ prayerMethod: Number(event.target.value) })}
+            onChange={(event) => {
+              const id = Number(event.target.value);
+              // Choosing the method of one's own region keeps the app following it.
+              set({
+                prayerMethod: id,
+                prayerMethodAuto: prayerLocation ? id === suggestPrayerMethod(prayerLocation.latitude, prayerLocation.longitude) : false,
+              });
+            }}
           >
             {PRAYER_METHODS.map((item) => (
               <option key={item.id} value={item.id}>

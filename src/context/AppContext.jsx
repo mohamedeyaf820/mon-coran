@@ -137,6 +137,8 @@ const getInitialState = () => {
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
   homeSection: "surah",
   showDuas: routeOverrides.showDuas ?? false,
+  // Sub-page of /duas ("", "/hisn", "/hisn/27", "/coran"); read from the URL, never persisted.
+  duasRoute: routeOverrides.duasRoute ?? "",
   legalPage: routeOverrides.legalPage ?? null,
   routeNotFound: routeOverrides.routeNotFound ?? false,
   showTranslation: stored.showTranslation ?? true,
@@ -186,6 +188,7 @@ const getInitialState = () => {
   // Prayer times & notifications
   prayerTimesEnabled: stored.prayerTimesEnabled ?? false,
   prayerMethod: stored.prayerMethod ?? 12,
+  prayerMethodAuto: stored.prayerMethodAuto ?? true,
   prayerLocation: stored.prayerLocation ?? null,
   prayerReminders: stored.prayerReminders ?? false,
   prayerTimeOffsets: stored.prayerTimeOffsets ?? { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
@@ -233,6 +236,10 @@ export function appReducer(state, action) {
           Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
       ) {
         next.routeNotFound = false;
+      }
+      // Entering the invocations from the menu always lands on its hub.
+      if (payload.showDuas === true && !Object.prototype.hasOwnProperty.call(payload, "duasRoute")) {
+        next.duasRoute = "";
       }
       // The three full-page views are exclusive whichever setter fires; call
       // sites historically set only the flags they knew about.
@@ -566,6 +573,7 @@ export function AppProvider({ children }) {
     surahRepeatCount: state.surahRepeatCount,
     prayerTimesEnabled: state.prayerTimesEnabled,
     prayerMethod: state.prayerMethod,
+    prayerMethodAuto: state.prayerMethodAuto,
     prayerLocation: state.prayerLocation,
     prayerReminders: state.prayerReminders,
     prayerTimeOffsets: state.prayerTimeOffsets,
@@ -614,6 +622,7 @@ export function AppProvider({ children }) {
     state.surahRepeatCount,
     state.prayerTimesEnabled,
     state.prayerMethod,
+    state.prayerMethodAuto,
     state.prayerLocation,
     state.prayerReminders,
     state.prayerTimeOffsets,

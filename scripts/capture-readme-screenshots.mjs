@@ -42,7 +42,7 @@ const SHOTS = [
   { name: "about-desktop", url: "/about", viewport: DESKTOP, settings: { showHome: false } },
   { name: "about-mobile", url: "/privacy", viewport: PHONE, settings: { showHome: false }, mobile: true },
   { name: "splash-mobile", url: "/", viewport: PHONE, settings: { showHome: true, theme: "dark" }, mobile: true, splashFrame: 1100, freshStorage: true },
-  { name: "prayers-mobile", url: "/prieres", viewport: PHONE, settings: { showHome: false }, mobile: true },
+  { name: "prayers-mobile", url: "/prieres", viewport: PHONE, settings: { showHome: false, prayerTimesEnabled: true, prayerMethod: 12, prayerLocation: { latitude: 48.8566, longitude: 2.3522, label: "Paris" } }, mobile: true },
   { name: "reciter-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true, openReciter: true },
   { name: "reciter-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true, openReciter: true },
   { name: "duas-mobile", url: "/duas", viewport: PHONE, settings: { showHome: false }, mobile: true },
@@ -53,7 +53,7 @@ const only = process.env.ONLY?.split(",");
 const browser = await chromium.launch();
 for (const shot of SHOTS) {
   if (only && !only.includes(shot.name)) continue;
-  const context = await browser.newContext({ viewport: shot.viewport, deviceScaleFactor: shot.mobile ? 2 : 1.5, serviceWorkers: "block", reducedMotion: shot.splashFrame ? "no-preference" : "reduce", locale: "fr-FR" });
+  const context = await browser.newContext({ viewport: shot.viewport, deviceScaleFactor: shot.mobile ? 2 : 1.5, serviceWorkers: "block", reducedMotion: shot.splashFrame ? "no-preference" : "reduce", locale: "fr-FR", timezoneId: "Europe/Paris" });
   const page = await context.newPage();
   const settings = { ...base, ...shot.settings };
   if (shot.splashFrame) {

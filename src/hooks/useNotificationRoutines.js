@@ -39,12 +39,17 @@ export function useNotificationRoutines({
         ]);
         if (!active || request !== armRequest) return;
         if (notifModule.getNotificationPermission() !== "granted") return;
-        const data = await prayerModule.fetchTodayTimings({
+        const fetched = await prayerModule.fetchTodayTimings({
           latitude: prayerLocation.latitude,
           longitude: prayerLocation.longitude,
           method: prayerMethod,
           offsets: prayerTimeOffsets,
         });
+        // Times of a place in another timezone fire on the device's own clock.
+        const data = {
+          ...fetched,
+          timings: prayerModule.timingsOnDeviceClock(fetched.timings, fetched.timezone),
+        };
         if (!active || request !== armRequest) return;
         cancelScheduled();
 
