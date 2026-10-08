@@ -119,6 +119,7 @@ export default function AudioPlayer() {
   const skipInitialExpandedPreferenceRef = useRef(!currentPlayingAyah);
 
   const optionsCloseButtonRef = useRef(null);
+  const optionsTriggerRef = useRef(null);
   const progressRef = useRef(null);
   const audioErrorTimerRef = useRef(null);
   const reciterSwitchingIdRef = useRef(null);
@@ -194,6 +195,7 @@ export default function AudioPlayer() {
 
   useEffect(() => {
     const openImmersiveOptions = () => {
+      optionsTriggerRef.current = document.activeElement;
       setClosed(false);
       setMinimized(true);
       setOptionsModalOpen(true);
@@ -638,10 +640,14 @@ export default function AudioPlayer() {
     return () => {
       window.cancelAnimationFrame(rafId);
       document.removeEventListener("keydown", handleKeyDown);
+      if (optionsTriggerRef.current?.isConnected) {
+        optionsTriggerRef.current.focus({ preventScroll: true });
+      }
     };
   }, [optionsModalOpen]);
 
-  const toggleOptionsModal = useCallback(() => {
+  const toggleOptionsModal = useCallback((event) => {
+    optionsTriggerRef.current = event.currentTarget;
     setOptionsModalOpen((prev) => !prev);
   }, []);
 
@@ -983,7 +989,7 @@ export default function AudioPlayer() {
     const updateReservedHeight = () => {
       const usesWideDock =
         window.innerWidth >= 600 && window.innerWidth <= MOBILE_BREAKPOINT;
-      const reservedHeight = minimized ? 70 : usesWideDock ? 64 : 122;
+      const reservedHeight = (minimized ? 70 : usesWideDock ? 64 : 122) + 8;
       root.style.setProperty("--player-h", `${reservedHeight}px`);
     };
     updateReservedHeight();

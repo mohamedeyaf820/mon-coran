@@ -645,13 +645,12 @@ test("compact tablet reader keeps one surface, an independent surah identity and
   await expect(page.locator(".mp-header")).toBeHidden();
   await expect(page.locator(".mobile-navigation")).toBeVisible();
 
-  // The player is a full-width bar docked at the bottom edge (quran.com
-  // pattern): it never floats inset from the viewport sides.
+  // The card keeps a visible inset and a gap above navigation.
   const player = page.getByTestId("audio-player-compact");
   await expect(player).toBeVisible();
   const playerBox = await player.boundingBox();
-  expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
-  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeGreaterThanOrEqual(641);
+  expect(playerBox?.x || 0).toBeGreaterThanOrEqual(7);
+  expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeLessThanOrEqual(635);
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
@@ -926,9 +925,10 @@ test("general pages use a compact quick-command palette on narrow phones", async
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
 });
 
-test("compact player is a full-width bottom bar on tablet and desktop", async ({ page }) => {
-  // Like quran.com: the compact player spans the viewport at the bottom.
+test("audio cards remain separated from navigation in compact and expanded modes", async ({ page }) => {
+  // Check placement, controls and overflow in both states on each device.
   for (const viewport of [
+    { width: 319, height: 698 },
     { width: 768, height: 1024 },
     { width: 1440, height: 900 },
   ]) {
@@ -936,16 +936,62 @@ test("compact player is a full-width bottom bar on tablet and desktop", async ({
     const player = page.getByTestId("audio-player-compact");
     await expect(player).toBeVisible();
     const playerBox = await player.boundingBox();
-    expect(playerBox?.x || 0).toBeLessThanOrEqual(1);
-    expect(playerBox?.width || 0).toBeGreaterThanOrEqual(viewport.width - 2);
+    expect(playerBox?.x || 0).toBeGreaterThanOrEqual(7);
+    expect((playerBox?.x || 0) + (playerBox?.width || 0)).toBeLessThanOrEqual(viewport.width - 7);
     expect(playerBox?.height || 0).toBeLessThanOrEqual(96);
     const navigation = await box(page, ".mobile-navigation");
     if (viewport.width <= 1024) {
-      expect((playerBox?.y || 0) + (playerBox?.height || 0)).toBeLessThanOrEqual(navigation.y);
+      expect((playerBox?.y || 0) + (playerBox?.height || 0)).toBeLessThanOrEqual(navigation.y - 6);
     } else {
-      expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeLessThanOrEqual(2);
+      expect(viewport.height - ((playerBox?.y || 0) + (playerBox?.height || 0))).toBeGreaterThanOrEqual(7);
     }
+    await page.screenshot({ path: `.codex-artifacts/audio-all-modes/compact-${viewport.width}.png` });
+    await openAudioPlayer(page);
+    const expanded = page.getByTestId("audio-player-open");
+    const expandedBox = await expanded.boundingBox();
+    expect(expandedBox.x).toBeGreaterThanOrEqual(7);
+    expect(expandedBox.x + expandedBox.width).toBeLessThanOrEqual(viewport.width - 7);
+    if (viewport.width <= 1024) expect(expandedBox.y + expandedBox.height).toBeLessThanOrEqual(navigation.y - 6);
+    for (const control of await expanded.locator(".simple-player__transport button").all()) {
+      const bounds = await control.boundingBox();
+      expect(bounds.width).toBeGreaterThanOrEqual(44);
+      expect(bounds.height).toBeGreaterThanOrEqual(44);
+    }
+    await page.screenshot({ path: `.codex-artifacts/audio-all-modes/expanded-${viewport.width}.png` });
     expect(await overflowX(page)).toBeLessThanOrEqual(2);
+  }
+});
+
+test("audio cards support touch tablets, dark RTL and Warsh", async ({ browser }) => {
+  for (const variant of [
+    { width: 820, height: 860, lang: "ar", riwaya: "warsh", hasTouch: true },
+    { width: 390, height: 844, lang: "en", riwaya: "hafs", hasTouch: true },
+    { width: 1440, height: 900, lang: "fr", riwaya: "warsh", hasTouch: false },
+  ]) {
+    const context = await browser.newContext({ hasTouch: variant.hasTouch, serviceWorkers: "block" });
+    const page = await context.newPage();
+    try {
+      await openReader(page, variant, { lang: variant.lang, riwaya: variant.riwaya, theme: "dark" });
+      await openAudioPlayer(page);
+      const player = page.getByTestId("audio-player-open");
+      const bounds = await player.boundingBox();
+      expect(bounds.x).toBeGreaterThanOrEqual(7);
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(variant.width - 7);
+      for (const control of await player.locator(".simple-player__transport button").all()) {
+        const rect = await control.boundingBox();
+        expect(rect.width).toBeGreaterThanOrEqual(44);
+        expect(rect.height).toBeGreaterThanOrEqual(44);
+        expect(rect.y + rect.height).toBeLessThanOrEqual(bounds.y + bounds.height);
+      }
+      await page.screenshot({ path: `.codex-artifacts/audio-all-modes/expanded-${variant.width}-${variant.lang}-${variant.riwaya}-dark.png` });
+      await player.locator(".mp-player-options-trigger").click();
+      await expect(page.locator(".audio-player-modal__surface--settings")).toBeVisible();
+      await page.keyboard.press("Escape");
+      await expect(player.locator(".mp-player-options-trigger")).toBeFocused();
+      expect(await overflowX(page)).toBeLessThanOrEqual(2);
+    } finally {
+      await context.close();
+    }
   }
 });
 
