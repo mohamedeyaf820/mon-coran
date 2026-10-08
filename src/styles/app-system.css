@@ -1846,3 +1846,14 @@ body:has(.pwa-update-banner) .install-prompt {
     margin-top: 0.7rem;
   }
 }
+
+/* Gold small print: the brand gold is 2.9:1 on its own tint, so on the light
+   themes the Meccan badge and the home chip use a deeper gold (>= 4.5:1). */
+html[data-theme="light"] .hp-card-type--meccan {
+  color: #6f4f0f;
+}
+
+html[data-theme="dark"] .library-modal__header p:not(.library-modal__lede),
+html[data-theme="dark"] .library-tabs button.is-active {
+  color: #58cc93;
+}

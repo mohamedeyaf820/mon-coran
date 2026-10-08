@@ -3,8 +3,15 @@ import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mj
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
-async function openFullscreenReader(page, viewport, overrides = {}, { live = false } = {}) {
+// seedZoom: start from a zoom the reader "chose" (1 = the reader's own size) instead of the
+// fitted view the overlay opens in, so a spec can count zoom steps from a known value.
+async function openFullscreenReader(page, viewport, overrides = {}, { live = false, seedZoom = null } = {}) {
   await page.setViewportSize(viewport);
+  if (seedZoom != null) {
+    await page.addInitScript((value) => {
+      if (!sessionStorage.getItem("mushafplus-fullscreen-zoom")) sessionStorage.setItem("mushafplus-fullscreen-zoom", String(value));
+    }, seedZoom);
+  }
   // The Warsh Mushaf specs run against the live pinned dataset: the service
   // verifies its SHA-256 digest, which mock fixtures cannot satisfy.
   if (!live) await installQuranNetworkFixtures(page);
@@ -176,7 +183,7 @@ test("Warsh opening leaves keep the title, basmala and page 2 to 3 carry", async
 });
 
 test("fullscreen page remains usable from 280px to 1920px and zoom persists", async ({ page }) => {
-  await openFullscreenReader(page, { width: 1280, height: 800 });
+  await openFullscreenReader(page, { width: 1280, height: 800 }, {}, { seedZoom: 1 });
   const overlay = page.locator(".mfp-portal-root");
   const zoom = overlay.locator(".mfp-zoom-value");
   const plus = overlay.getByRole("button", { name: "Zoom avant" });
@@ -209,30 +216,34 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
   const beforeFit = await composition();
   await overlay.getByRole("button", { name: "Ajuster à la page" }).click();
   const fitPageZoom = Number.parseInt(await zoom.textContent(), 10);
-  expect(fitPageZoom).toBeGreaterThanOrEqual(75);
+  expect(fitPageZoom).toBeGreaterThanOrEqual(60);
   expect(fitPageZoom).toBeLessThanOrEqual(220);
   await expect.poll(() => sheetBox().then((b) => b.fitsWidth && b.fitsHeight)).toBe(true);
   expect(await composition()).toEqual(beforeFit);
   await overlay.getByRole("button", { name: "Ajuster à la largeur" }).click();
   const fitWidthZoom = Number.parseInt(await zoom.textContent(), 10);
-  expect(fitWidthZoom).toBeGreaterThanOrEqual(75);
+  expect(fitWidthZoom).toBeGreaterThanOrEqual(60);
   expect(fitWidthZoom).toBeLessThanOrEqual(220);
   await expect.poll(() => sheetBox().then((b) => b.fitsWidth)).toBe(true);
   expect(await composition()).toEqual(beforeFit);
+  // The value button gives the fitted view back (it is not a fixed 100 %).
   await zoom.click();
-  await expect(zoom).toHaveText("100%");
+  const fitted = Number.parseInt(await zoom.textContent(), 10);
+  expect(fitted).toBeGreaterThanOrEqual(60);
+  expect(fitted).toBeLessThanOrEqual(100);
   await plus.click();
-  await expect(zoom).toHaveText("115%");
+  await expect.poll(async () => Number.parseInt(await zoom.textContent(), 10)).toBeGreaterThanOrEqual(fitted + 14);
+  const zoomed = await zoom.textContent();
 
   const pageLabelBefore = await overlay.locator(".mfp-header__copy h2").textContent();
   await overlay.locator(".mfp-side-nav--next").click();
   await expect.poll(() => overlay.locator(".mfp-header__copy h2").textContent()).not.toBe(pageLabelBefore);
-  await expect(zoom).toHaveText("115%");
+  await expect(zoom).toHaveText(zoomed);
 
   await overlay.getByRole("button", { name: "Fermer" }).click();
   await expect(overlay).toBeHidden();
   await page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first().click();
-  await expect(page.locator(".mfp-zoom-value")).toHaveText("115%");
+  await expect(page.locator(".mfp-zoom-value")).toHaveText(zoomed);
   await page.locator(".mfp-zoom-value").click();
 
   await expect(overlay.locator(".qcm-page")).toHaveCount(2);
@@ -307,7 +318,7 @@ test("fullscreen page remains usable from 280px to 1920px and zoom persists", as
 });
 
 test("whole-page zoom keeps the sheet inside the viewport and grows its scroll bounds", async ({ page }) => {
-  await openFullscreenReader(page, { width: 1280, height: 800 });
+  await openFullscreenReader(page, { width: 1280, height: 800 }, {}, { seedZoom: 1 });
   const overlay = page.locator(".mfp-portal-root");
   const zoom = overlay.locator(".mfp-zoom-value");
   const minus = overlay.getByRole("button", { name: "Zoom arrière" });
@@ -334,21 +345,67 @@ test("whole-page zoom keeps the sheet inside the viewport and grows its scroll b
   const full = await metrics();
   await minus.click();
   await minus.click();
-  await expect(zoom).toHaveText("75%");
+  await expect(zoom).toHaveText("70%");
   const shrunk = await metrics();
   expect(shrunk.sheetWidth).toBeLessThan(full.sheetWidth);
   expect(shrunk.clippedWords).toBe(0);
   expect(shrunk.scrollWidth).toBeLessThanOrEqual(shrunk.clientWidth + 1);
 
   await zoom.click();
-  await expect(zoom).toHaveText("100%");
+  const fitted = Number.parseInt(await zoom.textContent(), 10);
   await plus.click();
   await plus.click();
   await plus.click();
-  await expect(zoom).toHaveText("145%");
+  await expect.poll(async () => Number.parseInt(await zoom.textContent(), 10)).toBeGreaterThanOrEqual(fitted + 43);
   const enlarged = await metrics();
   expect(enlarged.sheetWidth).toBeGreaterThan(full.sheetWidth);
   // The enlarged sheet must be reachable by scrolling, not cut off.
   expect(enlarged.scrollWidth).toBeGreaterThan(enlarged.clientWidth);
   expect(enlarged.clippedWords).toBe(0);
+});
+
+test("the leaf opens fitted to the window: whole page in view, under the header, above the footer", async ({ page }) => {
+  for (const [width, height, label] of [[1440, 900, "desktop spread"], [1280, 800, "laptop spread"], [820, 1180, "tablet portrait"], [390, 844, "phone"]]) {
+    await openFullscreenReader(page, { width, height });
+    const overlay = page.locator(".mfp-portal-root");
+    await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
+    await expect.poll(() => overlay.evaluate((root) => {
+      const sheet = [...root.querySelectorAll(".qcm-page")].map((leaf) => leaf.getBoundingClientRect());
+      const header = root.querySelector(".mfp-header").getBoundingClientRect();
+      const footer = root.querySelector(".mfp-mobile-footer");
+      const footerTop = footer && footer.getClientRects().length ? footer.getBoundingClientRect().top : innerHeight;
+      return sheet.length > 0 && sheet.every((box) => box.top >= header.bottom - 3 && box.bottom <= footerTop + 3 && box.left >= -1 && box.right <= innerWidth + 1);
+    }), { message: label, timeout: 8_000 }).toBe(true);
+    // Never enlarged beyond the reader's own size.
+    expect(Number.parseInt(await overlay.locator(".mfp-zoom-value").textContent(), 10)).toBeLessThanOrEqual(100);
+  }
+});
+
+test.describe("touch", () => {
+  test.use({ hasTouch: true });
+
+  test("a tap on the page puts the header and the arrows away, and the next tap brings them back", async ({ page }) => {
+    await openFullscreenReader(page, { width: 820, height: 1180 });
+    const overlay = page.locator(".mfp-portal-root");
+    await expect(overlay.locator(".qcm-word").first()).toBeVisible({ timeout: 30_000 });
+    const away = () => overlay.evaluate((root) => root.classList.contains("mfp-portal-root--zen"));
+    expect(await away()).toBe(false);
+    // The bottom margin of the reading area: the page itself, no word, no control.
+    await page.touchscreen.tap(410, 1170);
+    await expect.poll(away).toBe(true);
+    await expect(overlay.locator(".mfp-header")).toHaveCSS("opacity", "0");
+    await expect(overlay.locator(".mfp-side-nav--next")).toHaveCSS("opacity", "0");
+    await page.touchscreen.tap(410, 1170);
+    await expect.poll(away).toBe(false);
+    await expect(overlay.locator(".mfp-header")).toHaveCSS("opacity", "1");
+    await expect(overlay.locator(".mfp-side-nav--next")).toHaveCSS("opacity", "1");
+  });
+});
+
+test("the header keeps its title on a 684px tablet window", async ({ page }) => {
+  await openFullscreenReader(page, { width: 684, height: 900 });
+  const title = page.locator(".mfp-portal-root .mfp-header__copy h2");
+  const truncated = await title.evaluate((node) => node.scrollWidth > node.clientWidth + 1);
+  expect(truncated).toBe(false);
+  await expect(title).toContainText(/Page [0-9]+ \/ 604/);
 });

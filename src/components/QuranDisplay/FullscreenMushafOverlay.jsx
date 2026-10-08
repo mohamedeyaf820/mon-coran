@@ -1,4 +1,4 @@
-import React, { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeftRight, ChevronLeft, ChevronRight, Maximize, Minus, Pause, Play, Plus, Settings2, SkipBack, SkipForward, X } from "lucide-react";
 import { useApp } from "../../context/AppContext";
@@ -13,8 +13,13 @@ import TajweedLegend from "../Quran/TajweedLegend";
 import QuranMushafPage from "./QuranMushafPage";
 import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
-const MIN_ZOOM = 0.75;
+const MIN_ZOOM = 0.6;
 const MAX_ZOOM = 2.2;
+// "auto" only ever shrinks the sheet to the room it has; it never enlarges it
+// (the type size of the leaf is already the reader's), and it stops short of
+// micro-glyphs: below the floor the leaf scrolls instead.
+const AUTO_FLOOR = 0.7;
+const AUTO_FLOOR_PHONE = 0.9;
 const ZOOM_STEP = 0.15;
 const ZOOM_STORAGE_KEY = "mushafplus-fullscreen-zoom";
 const TOTAL_PAGES = 604;
@@ -56,12 +61,15 @@ function TurnAlert({ lang }) {
   return <span className="mfp-nav-alert" aria-hidden="true">{t("quran.pageLoadFailed", lang)}</span>;
 }
 
-function getInitialZoom() {
-  if (typeof sessionStorage === "undefined") return 1;
+// The view is either fitted (auto, page, width: the sheet follows the window,
+// including a rotation) or a zoom the reader chose with the controls.
+function getInitialView() {
+  if (typeof sessionStorage === "undefined") return { fit: "auto", delta: 1 };
   const raw = sessionStorage.getItem(ZOOM_STORAGE_KEY);
-  if (raw == null) return 1;
+  if (raw === "page" || raw === "width") return { fit: raw, delta: 1 };
   const stored = Number(raw);
-  return Number.isFinite(stored) ? clampZoom(stored) : 1;
+  if (raw == null || !Number.isFinite(stored)) return { fit: "auto", delta: 1 };
+  return { fit: null, delta: clampZoom(stored) };
 }
 
 function isInteractiveTarget(target) {
@@ -120,7 +128,7 @@ function AudioControls({ audioAyah, compact = false, hasSession, isPlaying, lang
       {!compact ? <button type="button" className="mfp-icon-btn mfp-audio-skip" onClick={() => audioService.prev()} disabled={!hasSession || audioService.playlistIndex <= 0} aria-label={t("audio.prev", lang)}><SkipBack size={16} aria-hidden="true" /></button> : null}
       <button type="button" className="mfp-icon-btn mfp-audio-toggle" onClick={toggle} aria-label={toggleLabel} title={`${toggleLabel} (Espace)`}>{isPlaying ? <Pause size={18} aria-hidden="true" /> : <Play size={18} aria-hidden="true" />}</button>
       {!compact ? <button type="button" className="mfp-icon-btn mfp-audio-skip" onClick={() => audioService.next()} disabled={!hasSession || audioService.playlistIndex >= audioService.playlist.length - 1} aria-label={t("audio.next", lang)}><SkipForward size={16} aria-hidden="true" /></button> : null}
-      <span className="mfp-audio-track" aria-live="polite">{trackLabel ? <strong>{trackLabel}</strong> : null}<small>{isPlaying ? t("audio.playing", lang) : t("audio.ready", lang)}</small></span>
+      {trackLabel || isPlaying ? <span className="mfp-audio-track" aria-live="polite">{trackLabel ? <strong>{trackLabel}</strong> : null}{isPlaying ? <small>{t("audio.playing", lang)}</small> : null}</span> : null}
       <button type="button" className="mfp-icon-btn" onClick={onOpenPlayer} aria-label={t("settings.audio", lang)}><Settings2 size={17} aria-hidden="true" /></button>
     </div>
   );
@@ -134,7 +142,9 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const closeButtonRef = useRef(null);
   const turnRef = useRef(null);
   const chromeTimerRef = useRef(0);
-  const [zoomDelta, setZoomDelta] = useState(getInitialZoom);
+  const [view, setView] = useState(getInitialView);
+  const [fitScale, setFitScale] = useState(1);
+  const fitScaleRef = useRef(1);
   const [layout, setLayout] = useState(() => (typeof window === "undefined" ? "single" : computeLayout(window.innerWidth, window.innerHeight)));
   const [chromeVisible, setChromeVisible] = useState(true);
   const [pageCache, setPageCache] = useState(() => new Map(
@@ -156,7 +166,15 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   // opens the leaf at 160 % of the viewport-fitted page. The ± controls stay a
   // delta on top of it, so their reset returns to the reader's size, not to 25 px.
   const sizeScale = clampArabicFontSize(state.quranFontSize) / DEFAULT_ARABIC_FONT_SIZE;
-  const zoom = clampZoom(zoomDelta * sizeScale);
+  const zoomDelta = view.delta;
+  const zoom = view.fit ? fitScale : clampZoom(zoomDelta * sizeScale);
+  fitScaleRef.current = zoom;
+  // A zoom step from wherever the sheet is now (fitted or not): the reader's
+  // choice replaces the fit, and the fit buttons give it back.
+  const stepZoom = useCallback((step) => {
+    setView({ fit: null, delta: clampZoom(fitScaleRef.current + step) / sizeScale });
+  }, [sizeScale]);
+  const fitTo = useCallback((mode) => setView({ fit: mode, delta: 1 }), []);
   const hasAudioSession = Boolean(audioAyah || audioService.currentAyah || audioService.playlist.length || audioService.audio?.src);
 
   const isDouble = layout === "double";
@@ -179,25 +197,49 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
 
   // Chrome recedes after a few idle seconds so the leaf reads as a page, and
   // returns on the next pointer, touch, wheel or key gesture.
+  const chromeVisibleRef = useRef(true);
   const revealChrome = useCallback(() => {
+    chromeVisibleRef.current = true;
     setChromeVisible(true);
     window.clearTimeout(chromeTimerRef.current);
-    chromeTimerRef.current = window.setTimeout(() => setChromeVisible(false), CHROME_HIDE_DELAY);
+    const scheduleHide = () => {
+      chromeTimerRef.current = window.setTimeout(() => {
+        // A reader moving through the controls with the keyboard keeps them.
+        if (overlayRef.current?.querySelector(".mfp-header:focus-within, .mfp-mobile-footer:focus-within")) {
+          scheduleHide();
+          return;
+        }
+        chromeVisibleRef.current = false;
+        setChromeVisible(false);
+      }, CHROME_HIDE_DELAY);
+    };
+    scheduleHide();
+  }, []);
+  const hideChrome = useCallback(() => {
+    window.clearTimeout(chromeTimerRef.current);
+    chromeVisibleRef.current = false;
+    setChromeVisible(false);
   }, []);
 
   useEffect(() => {
     if (!fullPage) return undefined;
+    // A mouse brings the chrome back by moving; a finger by tapping the page
+    // (handled on the sheet, which also hides it again), so a swipe that turns
+    // the leaf does not make the controls flash. Touching the controls themselves
+    // only keeps them awake.
+    const onMouseMove = (event) => { if (event.pointerType === "mouse") revealChrome(); };
+    const onChromePress = (event) => {
+      if (event.target instanceof Element && event.target.closest(".mfp-header, .mfp-mobile-footer, .mfp-side-nav")) revealChrome();
+    };
     const onActivity = () => revealChrome();
-    window.addEventListener("pointermove", onActivity);
-    window.addEventListener("pointerdown", onActivity);
-    window.addEventListener("touchstart", onActivity, { passive: true });
+    window.addEventListener("pointermove", onMouseMove);
+    window.addEventListener("pointerdown", onChromePress);
     window.addEventListener("keydown", onActivity);
     window.addEventListener("wheel", onActivity, { passive: true });
     revealChrome();
     return () => {
-      window.removeEventListener("pointermove", onActivity);
-      window.removeEventListener("pointerdown", onActivity);
-      window.removeEventListener("touchstart", onActivity);
+      window.removeEventListener("pointermove", onMouseMove);
+      window.removeEventListener("pointerdown", onChromePress);
       window.removeEventListener("keydown", onActivity);
       window.removeEventListener("wheel", onActivity);
       window.clearTimeout(chromeTimerRef.current);
@@ -335,10 +377,10 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
     if (isInteractiveTarget(event.target)) return;
     if (event.key === "ArrowLeft") { handleNext(); return; }
     if (event.key === "ArrowRight") { handlePrev(); return; }
-    if (event.key === "+" || event.key === "=") { setZoomDelta((value) => clampZoom(value + ZOOM_STEP)); return; }
-    if (event.key === "-") { setZoomDelta((value) => clampZoom(value - ZOOM_STEP)); return; }
-    if (event.key === "0") setZoomDelta(1);
-  }, [actionsAyah, handleNext, handlePrev, hasAudioSession, onClose]);
+    if (event.key === "+" || event.key === "=") { stepZoom(ZOOM_STEP); return; }
+    if (event.key === "-") { stepZoom(-ZOOM_STEP); return; }
+    if (event.key === "0") fitTo("auto");
+  }, [actionsAyah, fitTo, handleNext, handlePrev, hasAudioSession, onClose, stepZoom]);
 
   useEffect(() => {
     if (!fullPage) return undefined;
@@ -413,8 +455,57 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   }, [currentPage, layout]);
 
   useEffect(() => {
-    try { sessionStorage.setItem(ZOOM_STORAGE_KEY, String(zoomDelta)); } catch { /* best-effort preference */ }
-  }, [zoomDelta]);
+    try { sessionStorage.setItem(ZOOM_STORAGE_KEY, view.fit && view.fit !== "auto" ? view.fit : view.fit === "auto" ? "auto" : String(view.delta)); } catch { /* best-effort preference */ }
+  }, [view]);
+
+  // The scale that makes the sheet fit the reading area. It is read from the
+  // sheet's painted size divided by the zoom currently applied, so it does not
+  // depend on how a browser reports zoomed boxes, and it never feeds on itself.
+  const measureFit = useCallback((mode) => {
+    const viewport = viewportRef.current;
+    const sheet = viewport?.querySelector(".mfp-book");
+    if (!viewport || !sheet) return null;
+    const shells = Array.from(sheet.querySelectorAll(".qcm-page-shell"));
+    if (!shells.length) return null;
+    const applied = Number.parseFloat(sheet.style.getPropertyValue("--mfp-zoom")) || 1;
+    const boxes = shells.map((shell) => shell.getBoundingClientRect());
+    const naturalWidth = (Math.max(...boxes.map((box) => box.right)) - Math.min(...boxes.map((box) => box.left))) / applied;
+    const naturalHeight = (Math.max(...boxes.map((box) => box.bottom)) - Math.min(...boxes.map((box) => box.top))) / applied;
+    const styles = window.getComputedStyle(viewport);
+    const availW = viewport.clientWidth - (Number.parseFloat(styles.paddingLeft) || 0) - (Number.parseFloat(styles.paddingRight) || 0);
+    const availH = viewport.clientHeight - (Number.parseFloat(styles.paddingTop) || 0) - (Number.parseFloat(styles.paddingBottom) || 0);
+    if (availW <= 0 || availH <= 0 || naturalWidth <= 0 || naturalHeight <= 0) return null;
+    const byWidth = availW / naturalWidth;
+    const byHeight = availH / naturalHeight;
+    if (mode === "width") return clampZoom(byWidth);
+    if (mode === "page") return clampZoom(Math.min(byWidth, byHeight));
+    // auto: a short landscape screen keeps the width-fitted leaf and scrolls.
+    if (window.innerHeight < 520) return 1;
+    const floor = window.innerWidth < 600 ? AUTO_FLOOR_PHONE : AUTO_FLOOR;
+    return Math.min(1, Math.max(floor, Math.min(byWidth, byHeight)));
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!fullPage || !view.fit) return undefined;
+    const fit = view.fit;
+    const run = () => {
+      const next = measureFit(fit);
+      if (next) setFitScale((previous) => (Math.abs(previous - next) < 0.004 ? previous : next));
+    };
+    run();
+    const viewport = viewportRef.current;
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(run);
+    if (viewport) observer?.observe(viewport);
+    // The leaf settles in passes (page data, the line fit, the reciter font).
+    const timers = [120, 450, 1200].map((delay) => window.setTimeout(run, delay));
+    document.fonts?.ready?.then(run);
+    return () => {
+      observer?.disconnect();
+      timers.forEach((timer) => window.clearTimeout(timer));
+    };
+  // pageCache.size, not the map: the map is rebuilt on every page-data effect and would re-run this
+  // in a loop; what matters here is only that another leaf has arrived.
+  }, [currentPage, fullPage, layout, measureFit, pageCache.size, view.fit]);
 
   if (!fullPage || typeof document === "undefined") return null;
 
@@ -427,6 +518,15 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const pageKind = (isDouble ? spread.right : currentPage) <= 2 ? "opening" : "standard";
   const startPageAudio = () => { if (activePageAyahs[0]) onPlayAyah?.(activePageAyahs[0], activePageAyahs); };
   const audioProps = { audioAyah, hasSession: hasAudioSession, isPlaying, lang, onOpenPlayer, onStart: startPageAudio };
+  // A tap on the page itself (not on a word, a marker or a control) shows the
+  // chrome when it is away and puts it away when it is there, arrows included.
+  const handleViewportClick = (event) => {
+    const type = event.nativeEvent?.pointerType;
+    if (type !== "touch" && type !== "pen") return;
+    if (event.target instanceof Element && event.target.closest("button, a, input, select, textarea, [role='button']")) return;
+    if (window.getSelection?.()?.toString()) return;
+    if (chromeVisibleRef.current) hideChrome(); else revealChrome();
+  };
   const handleTouchStart = (event) => { if (event.touches.length === 1) swipeRef.current = { x: event.touches[0].clientX, y: event.touches[0].clientY, time: performance.now() }; };
   const handleTouchEnd = (event) => {
     if (!swipeRef.current || !event.changedTouches[0]) return;
@@ -443,27 +543,7 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
   const handleWheel = (event) => {
     if (!event.ctrlKey && !event.metaKey) return;
     event.preventDefault();
-    setZoomDelta((value) => clampZoom(value + (event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP)));
-  };
-  // Fit changes only the type scale: the fifteen lines and their words are
-  // fixed by the printed page data, so the sheet shrinks or grows whole.
-  const applyFit = (mode) => {
-    const viewport = viewportRef.current;
-    const sheet = viewport?.querySelector(".mfp-book");
-    if (!viewport || !sheet) return;
-    // With CSS zoom the sheet's offset box is already its unzoomed layout
-    // size; the viewport's own padding is not readable area.
-    const styles = window.getComputedStyle(viewport);
-    const availW = viewport.clientWidth - (Number.parseFloat(styles.paddingLeft) || 0) - (Number.parseFloat(styles.paddingRight) || 0);
-    const availH = viewport.clientHeight - (Number.parseFloat(styles.paddingTop) || 0) - (Number.parseFloat(styles.paddingBottom) || 0);
-    const { offsetWidth: width, offsetHeight: height } = sheet;
-    if (availW <= 0 || availH <= 0 || width <= 0 || height <= 0) return;
-    const scale = mode === "width"
-      ? availW / width
-      : Math.min(availW / width, availH / height);
-    // The fit target is an absolute scale of the printed sheet, while the
-    // reader's size already counts as 100 % — convert the target into the delta.
-    setZoomDelta((value) => clampZoom((scale || value * sizeScale) / sizeScale));
+    stepZoom(event.deltaY < 0 ? ZOOM_STEP : -ZOOM_STEP);
   };
 
   return createPortal(
@@ -471,21 +551,22 @@ function FullscreenMushafOverlayComponent({ ayahs, currentPage, currentPlayingAy
       <header className="mfp-header">
         <div className="mfp-header__identity">
           <button ref={closeButtonRef} type="button" className="mfp-icon-btn" onClick={onClose} aria-label={t("audio.close", lang)} title={`${t("audio.close", lang)} (Esc)`}><X size={18} aria-hidden="true" /></button>
-          <div className="mfp-header__copy"><h2>{t("quran.page", lang)} {pageLabel}<span className="mfp-header__total">{" / 604"}</span><span className="mfp-header__context">{` · ${riwaya === "warsh" ? "Warsh" : "Hafs"}${currentJuz ? ` · ${t("sidebar.juz", lang)} ${currentJuz}` : ""}`}</span></h2></div>
+          <div className="mfp-header__copy"><h2>{t("quran.page", lang)} {pageLabel}<span className="mfp-header__total">{" / 604"}</span></h2><p className="mfp-header__context">{`${riwaya === "warsh" ? "Warsh" : "Hafs"}${currentJuz ? ` · ${t("sidebar.juz", lang)} ${currentJuz}` : ""}`}</p></div>
         </div>
         <div className="mfp-header__tools">
           <TajweedLegend lang={lang} riwaya={riwaya} compactTrigger />
           <AudioControls {...audioProps} />
           <div className="mfp-zoom-controls" dir="ltr">
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoomDelta((value) => clampZoom(value - ZOOM_STEP))} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>
-            <button type="button" className="mfp-zoom-value" onClick={() => setZoomDelta(1)} aria-label={t("quran.zoomReset", lang)}>{Math.round(zoom * 100)}%</button>
-            <button type="button" className="mfp-icon-btn" onClick={() => setZoomDelta((value) => clampZoom(value + ZOOM_STEP))} disabled={zoom >= MAX_ZOOM} aria-label={t("quran.zoomIn", lang)}><Plus size={16} /></button>
-            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("page")} aria-label={t("quran.fitPage", lang)} title={t("quran.fitPage", lang)}><Maximize size={16} /></button>
-            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => applyFit("width")} aria-label={t("quran.fitWidth", lang)} title={t("quran.fitWidth", lang)}><ArrowLeftRight size={16} /></button>
+            <button type="button" className="mfp-icon-btn" onClick={() => stepZoom(-ZOOM_STEP)} disabled={zoom <= MIN_ZOOM} aria-label={t("quran.zoomOut", lang)}><Minus size={16} /></button>
+            <button type="button" className="mfp-zoom-value" onClick={() => fitTo("auto")} aria-label={t("quran.zoomReset", lang)}>{Math.round(zoom * 100)}%</button>
+            <button type="button" className="mfp-icon-btn" onClick={() => stepZoom(ZOOM_STEP)} disabled={zoom >= MAX_ZOOM} aria-label={t("quran.zoomIn", lang)}><Plus size={16} /></button>
+            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => fitTo("page")} aria-pressed={view.fit === "page"} aria-label={t("quran.fitPage", lang)} title={t("quran.fitPage", lang)}><Maximize size={16} /></button>
+            <button type="button" className="mfp-icon-btn mfp-zoom-fit" onClick={() => fitTo("width")} aria-pressed={view.fit === "width"} aria-label={t("quran.fitWidth", lang)} title={t("quran.fitWidth", lang)}><ArrowLeftRight size={16} /></button>
           </div>
         </div>
+        <div className="mfp-progress" aria-hidden="true" style={{ "--mfp-progress": `${(currentPage / TOTAL_PAGES) * 100}%` }} />
       </header>
-      <main ref={viewportRef} className="mfp-viewport" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onWheel={handleWheel}>
+      <main ref={viewportRef} className="mfp-viewport" onClick={handleViewportClick} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} onWheel={handleWheel}>
         <div key={currentPage} className="mfp-book mfp-book--exact" data-page-kind={pageKind} data-layout={layout} data-turn={turnRef.current || undefined} style={{ "--mfp-zoom": zoom }}>
           {spreadPages.map((pageNumber) => {
             const pageAyahs = pageCache.get(pageNumber) || (isPageScoped(ayahs, pageNumber) ? ayahs : []);

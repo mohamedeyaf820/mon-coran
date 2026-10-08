@@ -56,7 +56,9 @@ const LIMITS = {
   // 2026-10-08 (verse card studio): 1539.1 kB measured, ceiling 1545 kB. Six more
   // palettes, four frames and four background motifs, drawn by their own module
   // (cardOrnaments.js) in the lazy share chunk; none of it is in the boot graph.
-  js: Number(process.env.BUDGET_JS_KB || 1545),
+  // 2026-10-08 (fullscreen Mushaf): 1548.7 kB measured, ceiling 1555 kB: the fitted view,
+  // the tap-to-hide chrome and the header's narrow-window rules (lazy reader chunk).
+  js: Number(process.env.BUDGET_JS_KB || 1555),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -85,7 +87,8 @@ const LIMITS = {
   // all JS, see the JS line), ceiling 2580 kB.
   // 2026-10-08 (verse card studio): 2587.1 kB measured (+7 kB: the JS above and the
   // studio's group and tile rules), ceiling 2595 kB.
-  total: Number(process.env.BUDGET_TOTAL_KB || 2595),
+  // 2026-10-08 (fullscreen Mushaf): 2599.1 kB measured, ceiling 2605 kB.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2605),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

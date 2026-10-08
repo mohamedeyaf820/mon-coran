@@ -580,7 +580,6 @@ html body .app-root.app-root[data-view="duas"] .duas-page--platform .dua-open-bt
     line-height: 1.6;
     padding-left: 0.75rem;
     border-left: 2px solid var(--gold);
-    opacity: 0.88;
 }
 
 .dua-translation {

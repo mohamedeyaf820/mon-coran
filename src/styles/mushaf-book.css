@@ -166,8 +166,56 @@
   .mfp-header__copy h2 { font-size: 0.95rem; }
   .mfp-audio-track small { font-size: 0.75rem; }
 }
-.mfp-header__copy h2 .mfp-header__context {
+/* Second line of the title: the reading and the juz, never cut off by the
+   page number that comes first. */
+.mfp-header__context {
+  overflow: hidden;
+  margin: 0.14rem 0 0;
   color: color-mix(in srgb, var(--mushaf-gold-deep) 42%, var(--mfp-btn-text));
+  font-size: 0.7rem;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Where the reader stands in the 604 pages: a gilded hairline along the top
+   edge, filled from the reading side. */
+.mfp-progress {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--mfp-btn-border) 70%, transparent);
+  pointer-events: none;
+}
+
+.mfp-progress::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  inset-inline-start: 0;
+  width: var(--mfp-progress, 0%);
+  background: var(--mushaf-gold-mid);
+}
+
+/* Narrow windows: the title keeps its room. The width-fit button and then the
+   verse skips give way; their actions stay on the keyboard and in the player. */
+@media (max-width: 1000px) {
+  .mfp-header__tools { gap: 0.4rem; }
+  .mfp-zoom-fit + .mfp-zoom-fit { display: none; }
+}
+
+@media (min-width: 561px) and (max-width: 760px) {
+  .mfp-audio-skip { display: none; }
+  .mfp-header__identity { min-width: 7.5rem; }
+}
+
+.mfp-zoom-fit[aria-pressed="true"] {
+  background: color-mix(in srgb, var(--mushaf-gold) 22%, transparent) !important;
+  color: var(--mfp-btn-text);
 }
 
 .mfp-zoom-value { color: color-mix(in srgb, var(--mushaf-gold-deep) 55%, var(--mfp-btn-text)); }
@@ -551,12 +599,26 @@
      tall tablet grows past the fold and scrolls, the same trade the desktop
      spread makes). Capped so a wide portrait does not print oversized glyphs. */
   --mfp-min-font: clamp(15px, calc((100vw - var(--mfp-hchrome)) / 16.7), 34px);
-  --mfp-chrome: 64px;
-  --mfp-header-room: max(0.5rem, env(safe-area-inset-top));
+  /* The page starts below the header and ends above the phone footer: the
+     running head (surah name, page number) and the folio are never under a
+     control. The sheet is fitted to what is left (see FullscreenMushafOverlay),
+     so the chrome can fade without the page moving. */
+  --mfp-header-room: calc(max(0.5rem, env(safe-area-inset-top)) + 3.65rem);
+  --mfp-bottom-room: max(0.9rem, env(safe-area-inset-bottom));
+  --mfp-chrome: calc(var(--mfp-header-room) + var(--mfp-bottom-room) + 1.6rem);
 }
 
 .mfp-portal-root[data-layout="single"] .mfp-viewport {
-  padding: var(--mfp-header-room) 0.35rem max(0.6rem, env(safe-area-inset-bottom));
+  padding: var(--mfp-header-room) 0.35rem var(--mfp-bottom-room);
+}
+
+/* A short landscape screen: a slimmer header, the page scrolls. */
+@media (max-height: 520px) {
+  .mfp-portal-root[data-layout="single"] {
+    --mfp-header-room: calc(max(0.25rem, env(safe-area-inset-top)) + 3.1rem);
+  }
+
+  .mfp-header { padding-block: 0.3rem 0.2rem; }
 }
 
 #root ~ .mfp-portal-root[data-layout="single"] .mfp-book .qcm-edge {
@@ -985,6 +1047,7 @@
        The budget only pays for the viewport's own insets. */
     --mfp-hchrome: 44px;
     --mfp-min-font: 14px;
+    --mfp-bottom-room: calc(3.9rem + env(safe-area-inset-bottom));
   }
 
   #root ~ .mfp-portal-root .mfp-book .qcm-page-shell {
