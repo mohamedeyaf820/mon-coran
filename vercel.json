@@ -3,7 +3,7 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/((?!assets/|fonts/|data/|splash/|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/((?:(?:en|ar)/)?(?:surah/(?:[1-9]|[1-9][0-9]|10[0-9]|11[0-4])(?:/[0-9]+)?|page/(?:[1-9]|[1-9][0-9]|[1-5][0-9][0-9]|60[0-4])|juz/(?:[1-9]|[12][0-9]|30)|duas(?:/(?:hisn(?:/[0-9]{1,4})?|coran|rabbana|khatm))?|prieres|prires|surahs)/?)", "destination": "/index.html" }
   ],
   "headers": [
     {
