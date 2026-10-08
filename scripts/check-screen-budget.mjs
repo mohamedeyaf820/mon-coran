@@ -9,7 +9,10 @@ const SCREEN_BUDGETS = [
   { file: "src/components/LibraryModal.jsx", maxKB: 24 },
   { file: "src/components/AyahActions.jsx", maxKB: 90 },
   // 46 after the A-B marking entry point and the provider-gap report (2026-09-22).
-  { file: "src/services/audioService.js", maxKB: 46 },
+  // 53 for the whole-surah route (2026-10-08): the verse timing, the fallback and
+  // the routing already live in audioSurahRoute.js; what stays here is the hook
+  // points (route choice in loadPlaylist, seek to a verse, verse-clock getters).
+  { file: "src/services/audioService.js", maxKB: 53 },
   { file: "src/context/AppContext.jsx", maxKB: 34 },
   { file: "src/services/quranAPI.js", maxKB: 29 },
   { file: "src/services/quranComAPI.js", maxKB: 20 },

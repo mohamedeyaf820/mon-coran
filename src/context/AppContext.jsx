@@ -175,6 +175,12 @@ const getInitialState = () => {
     return Math.max(1, Math.min(999, Math.floor(value)));
   })(),
 
+  // Voices published both verse by verse and as one recording per surah:
+  // "auto" decides per playlist, the others are the reader's explicit choice.
+  audioPlaybackMode: ["auto", "surah", "verse"].includes(stored.audioPlaybackMode)
+    ? stored.audioPlaybackMode
+    : "auto",
+
   // Karaoke / suivi auto
   karaokeFollow: stored.karaokeFollow ?? true,
 
@@ -571,6 +577,7 @@ export function AppProvider({ children }) {
     dayTheme: state.dayTheme,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
+    audioPlaybackMode: state.audioPlaybackMode,
     prayerTimesEnabled: state.prayerTimesEnabled,
     prayerMethod: state.prayerMethod,
     prayerMethodAuto: state.prayerMethodAuto,
@@ -620,6 +627,7 @@ export function AppProvider({ children }) {
     state.dayTheme,
     state.karaokeFollow,
     state.surahRepeatCount,
+    state.audioPlaybackMode,
     state.prayerTimesEnabled,
     state.prayerMethod,
     state.prayerMethodAuto,

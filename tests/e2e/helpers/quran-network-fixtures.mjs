@@ -177,6 +177,22 @@ function mockLegacyWarshDataset() {
 }
 
 export async function installQuranNetworkFixtures(page, options = {}) {
+  // Whole-surah recordings: the timing of each verse in the surah's file. Without a
+  // fixture the answer is a 404, so a spec about verse files never waits for the
+  // network and the player falls back to them at once.
+  await page.route(
+    (url) => url.hostname === "api.quran.com" && url.pathname.includes("/api/v4/chapter_recitations/"),
+    async (route) => {
+      const match = new URL(route.request().url()).pathname.match(/chapter_recitations\/(\d+)\/(\d+)$/);
+      const json = match && options.chapterRecitation?.(Number(match[1]), Number(match[2]));
+      if (!json) {
+        await route.fulfill({ status: 404, json: { error: "no chapter recitation in this fixture" } });
+        return;
+      }
+      await route.fulfill({ json });
+    },
+  );
+
   await page.route(
     (url) =>
       url.hostname === "api.quran.com" &&

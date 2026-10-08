@@ -349,7 +349,7 @@ export default function AyahActions({ surah, ayah, ayahData, translations = [], 
     }
 
     if (idx >= 0) {
-      audioService.loadAndPlay(idx).catch(() => {
+      audioService.loadAndPlay(idx, { ayah }).catch(() => {
         setAudioError(true);
         clearTimeout(audioErrTimerRef.current);
         audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);

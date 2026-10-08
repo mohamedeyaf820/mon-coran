@@ -72,7 +72,7 @@ test("navigation: parses reading, duas and legal routes safely", () => {
   });
 
   setPathname("/duas");
-  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true, showPrayers: false });
+  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true, showPrayers: false, duasRoute: "" });
 
   setPathname('/prires');
   assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: false, showPrayers: true });

@@ -9,6 +9,7 @@ import {
 } from "../context/AppContext";
 import { t } from "../i18n";
 import audioService from "../services/audioService";
+import { hasSurahTwin } from "../services/surahAudioSources";
 import { getSurahTimeline, seekSurahProgress } from "./audioPlayer/surahTimeline";
 import {
   ensureReciterForRiwaya,
@@ -47,6 +48,7 @@ export default function AudioPlayer() {
       riwaya: current.riwaya,
       audioSpeed: current.audioSpeed,
       surahRepeatCount: current.surahRepeatCount,
+      audioPlaybackMode: current.audioPlaybackMode,
       volume: current.volume,
       showHome: current.showHome,
       playerMinimized: current.playerMinimized,
@@ -67,6 +69,7 @@ export default function AudioPlayer() {
     riwaya,
     audioSpeed,
     surahRepeatCount,
+    audioPlaybackMode,
     volume: savedVolume,
     showHome,
     playerMinimized,
@@ -401,10 +404,7 @@ export default function AudioPlayer() {
     const activeCdn = currentReciter.cdn;
     const activeCdnType = currentReciter.cdnType || "everyayah";
 
-    if (
-      audioService._currentReciterCdn !== activeCdn ||
-      audioService._currentCdnType !== activeCdnType
-    ) {
+    if (!audioService.isLoadedFor(activeCdn, activeCdnType)) {
       audioService.switchReciter(activeCdn, activeCdnType).catch((err) => {
         console.warn("Global reciter synchronization failed:", err);
       });
@@ -417,6 +417,15 @@ export default function AudioPlayer() {
   useEffect(() => {
     audioService.setSurahRepeatCount(surahRepeatCount);
   }, [surahRepeatCount]);
+
+  // Whole surah in one recording or verse files: the reader's choice, "auto" by default.
+  useEffect(() => {
+    void audioService.setPlaybackMode(audioPlaybackMode);
+  }, [audioPlaybackMode]);
+  const activeReciter = getReciter(reciter, riwaya);
+  const reciterHasBothModes =
+    riwaya === "hafs" && Boolean(activeReciter) && hasSurahTwin(activeReciter.cdn, activeReciter.cdnType || "everyayah");
+  const setAudioPlaybackMode = useCallback((mode) => set({ audioPlaybackMode: mode }), [set]);
 
   /* Controls */
   const toggle = useCallback(() => audioService.toggle(), []);
@@ -523,7 +532,9 @@ export default function AudioPlayer() {
     audioService.applyEqPreset(preset);
   }, []);
 
-  const handleSetTartilMode = useCallback((enabled) => {
+  const handleSetTartilMode = useCallback(async (enabled) => {
+    // Progressive speeds are set verse by verse: leave the whole-surah recording.
+    if (enabled) await audioService.enterVerseMode();
     setTartilMode(enabled);
     audioService.setTartilMode(enabled, audioSpeed);
   }, [audioSpeed]);
@@ -540,7 +551,9 @@ export default function AudioPlayer() {
   // The range is marked from where the recitation stands: press A on the verse
   // to start from, let it recite, then press B on the verse to stop at. The
   // service loops on playlist indices, so this only works with a loaded list.
-  const handleSetAbPoint = useCallback((point) => {
+  const handleSetAbPoint = useCallback(async (point) => {
+    // The loop counts verses: a whole-surah recording has one item per surah.
+    await audioService.enterVerseMode();
     const index = audioService.playlistIndex;
     if (!Number.isInteger(index) || index < 0) {
       setCanSetAbRepeat(false);
@@ -920,6 +933,9 @@ export default function AudioPlayer() {
       setSyncOffsetMs={setSyncOffsetMs}
       stop={stop}
       surahRepeatCount={surahRepeatCount}
+      audioPlaybackMode={audioPlaybackMode}
+      setAudioPlaybackMode={setAudioPlaybackMode}
+      reciterHasBothModes={reciterHasBothModes}
       syncOffsetMs={syncOffsetMs}
       volume={volume}
     />

@@ -270,7 +270,7 @@ export default function useQuranDisplayAudio({
     activePlaylistScopeRef.current = readingScopeKey;
     // Filtering moves verses up: re-resolve the tapped one inside the loaded list.
     const targetIndex =
-      audioService.playlistGapCount > 0
+      audioService.playlistGapCount > 0 || audioService.isWholeSurahPlayback
         ? audioService.indexOfAyah(ayahSurah, Number(targetAyah.numberInSurah))
         : index;
     if (targetIndex < 0) {
@@ -278,7 +278,7 @@ export default function useQuranDisplayAudio({
       return;
     }
     try {
-      await audioService.loadAndPlay(targetIndex);
+      await audioService.loadAndPlay(targetIndex, { ayah: Number(targetAyah.numberInSurah) });
     } catch {
       setError(
         lang === "fr"

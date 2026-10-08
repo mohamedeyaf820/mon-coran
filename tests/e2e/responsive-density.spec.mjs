@@ -200,6 +200,13 @@ async function openDuas(page, viewport) {
   await expect(page.locator(".duas-page").first()).toBeVisible({ timeout: 30_000 });
 }
 
+/** The Quranic supplications list: the hub itself holds no card. */
+async function openQuranDuas(page, viewport) {
+  await openDuas(page, viewport);
+  await page.getByRole("link", { name: /Invocations du Coran/ }).click();
+  await expect(page.locator(".dua-card-v5").first()).toBeVisible({ timeout: 30_000 });
+}
+
 async function box(page, selector) {
   return page.locator(selector).first().boundingBox();
 }
@@ -1193,7 +1200,7 @@ test("Arabic reading controls visibly reduce and enlarge device-aware text", asy
 });
 
 test("duas page: cards, Arabic text and controls adapt to phone and tablet", async ({ page }) => {
-  await openDuas(page, { width: 320, height: 568 });
+  await openQuranDuas(page, { width: 320, height: 568 });
 
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect(await fontSizePx(page, ".duas-title")).toBeGreaterThanOrEqual(21);
@@ -1215,11 +1222,11 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
     expect(height).toBeGreaterThanOrEqual(38);
   }
 
-  await openDuas(page, { width: 820, height: 920 });
+  await openQuranDuas(page, { width: 820, height: 920 });
   expect(await overflowX(page)).toBeLessThanOrEqual(2);
   expect(await fontSizePx(page, ".dua-arabic")).toBeGreaterThanOrEqual(24);
 
-  await openDuas(page, { width: 1280, height: 900 });
+  await openQuranDuas(page, { width: 1280, height: 900 });
   const copyIcon = await box(page, '.dua-open-btn-v5[aria-label="Copier l\'invocation"] svg');
   expect(copyIcon?.width || 0).toBeGreaterThanOrEqual(13);
   expect(copyIcon?.height || 0).toBeGreaterThanOrEqual(13);
@@ -1228,7 +1235,7 @@ test("duas page: cards, Arabic text and controls adapt to phone and tablet", asy
 test("duas dark theme keeps its devotional palette on a direct load", async ({ page }) => {
   await seedReadingState(page, { showDuas: true, theme: "dark" });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/duas");
+  await page.goto("/duas/coran");
   await expect(page.locator(".duas-page").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 

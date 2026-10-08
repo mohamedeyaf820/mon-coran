@@ -58,7 +58,7 @@ async function expectLatinLeftToRight(locator, lang) {
 }
 
 test("duas: the English translation and the transliteration read left-to-right on the Arabic page", async ({ page }) => {
-  await page.goto("/duas");
+  await page.goto("/duas/coran");
   const translation = page.locator(".dua-translation").first();
   await expect(translation).toBeVisible({ timeout: 30_000 });
   await expectLatinLeftToRight(translation, "en");

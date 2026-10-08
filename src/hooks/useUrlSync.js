@@ -7,6 +7,7 @@ function buildRoute({
   legalPage,
   showHome,
   showDuas,
+  duasRoute,
   showPrayers,
   displayMode,
   currentAyah,
@@ -22,7 +23,7 @@ function buildRoute({
     return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
   }
   if (showHome) return { targetPath: "/", routeKey: "home" };
-  if (showDuas) return { targetPath: "/duas", routeKey: "duas" };
+  if (showDuas) return { targetPath: `/duas${duasRoute || ""}`, routeKey: `duas:${duasRoute || ""}` };
   if (showPrayers) return { targetPath: "/prieres", routeKey: "prieres" };
 
   if (displayMode === "surah") {
@@ -62,6 +63,7 @@ function buildRoute({
 export function useUrlSync({
   showHome,
   showDuas,
+  duasRoute = "",
   showPrayers,
   legalPage,
   routeNotFound,
@@ -82,6 +84,7 @@ export function useUrlSync({
       legalPage,
       showHome,
       showDuas,
+      duasRoute,
       showPrayers,
       displayMode,
       currentAyah,
@@ -111,6 +114,7 @@ export function useUrlSync({
   }, [
     showHome,
     showDuas,
+    duasRoute,
     showPrayers,
     legalPage,
     routeNotFound,
@@ -152,8 +156,15 @@ export function parseRoutePath(pathname = "/") {
     };
   }
 
-  if (/^\/duas\/?$/.test(path)) {
-    return { showHome: false, showDuas: true, showPrayers: false };
+  // /duas (hub), /duas/hisn (chapters), /duas/hisn/27 (one chapter), /duas/coran, /duas/rabbana and /duas/khatm (Quranic collections).
+  const duasMatch = path.match(/^\/duas(?:\/(hisn(?:\/\d{1,4})?|coran|rabbana|khatm))?\/?$/);
+  if (duasMatch) {
+    return {
+      showHome: false,
+      showDuas: true,
+      showPrayers: false,
+      duasRoute: duasMatch[1] ? `/${duasMatch[1]}` : "",
+    };
   }
 
   if (/^\/(?:prieres|prires)\/?$/.test(path)) {

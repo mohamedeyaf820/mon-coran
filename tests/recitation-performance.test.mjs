@@ -152,6 +152,8 @@ test("audio performance: a rapid verse change supersedes the stale load cleanly"
   const played = [];
   service.onError = (error) => errors.push(error);
   service.onPlay = (item) => played.push(`${item.surah}:${item.ayah}`);
+  // This voice also exists as one recording per surah; the test is about verse files.
+  service.setPlaybackMode("verse");
   service.loadPlaylist(
     playlistModule.buildSurahAudioPlaylist(1),
     "Abu_Bakr_Ash-Shaatree_128kbps",

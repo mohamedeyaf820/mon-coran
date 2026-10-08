@@ -166,7 +166,7 @@ test('QA: denied clipboard access on duas gives feedback without crashing', asyn
       writeText: () => Promise.reject(new DOMException('Permission denied', 'NotAllowedError')),
     } });
   });
-  await page.goto('/duas');
+  await page.goto('/duas/coran');
   await page.getByRole('button', { name: /Copier/ }).first().click();
   await expect(page.locator('.toast-notification')).toContainText(/Impossible/);
   expect(errors).toEqual([]);

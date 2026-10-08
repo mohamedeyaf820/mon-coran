@@ -49,7 +49,7 @@ test("the unified reader header remains available in mobile QCF4 Mushaf mode", (
 });
 
 test("dua cards keep a single compact reader action", () => {
-  const page = source("src/components/DuasPage.jsx");
+  const page = source("src/components/duas/DuaCard.jsx");
   const styles = source("src/styles/domains/duas-page.css");
 
   assert.doesNotMatch(page, /dua-card-footer-copy/);

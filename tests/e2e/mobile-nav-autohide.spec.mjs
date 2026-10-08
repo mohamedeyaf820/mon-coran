@@ -82,3 +82,23 @@ test("a desktop width keeps the header and never tucks anything away", async ({ 
   expect(await away(page)).toBe(false);
   await expect(page.locator(".mp-header")).toBeVisible();
 });
+
+test("a tap on a control that keeps its click to itself still brings the bar back", async ({ page }) => {
+  // Cards, play buttons and menus stop the click from bubbling. The bar listens
+  // while the click travels down to its target, so none of them can hold it back.
+  await open(page, "/privacy");
+  await scrollDownUntilAway(page);
+  await expect.poll(() => away(page)).toBe(true);
+  await page.locator("#main-content").evaluate((node) => {
+    const button = document.createElement("button");
+    button.id = "swallows-clicks";
+    button.type = "button";
+    button.textContent = "Test";
+    button.style.cssText = "position:fixed;top:90px;inset-inline-start:20px;z-index:5;width:64px;height:64px";
+    button.addEventListener("click", (event) => event.stopPropagation());
+    node.appendChild(button);
+  });
+  await page.locator("#swallows-clicks").click();
+  await expect.poll(() => away(page)).toBe(false);
+  await expect(page.locator(".mobile-navigation")).toBeVisible();
+});

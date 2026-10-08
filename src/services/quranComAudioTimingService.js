@@ -162,3 +162,64 @@ export async function getAudioTimingsForAyahs(appReciterId, ayahs = []) {
   });
   return merged;
 }
+
+/**
+ * One recording for a whole surah, with the position of every verse in it.
+ *
+ * GET /chapter_recitations/{reciter}/{surah}?segments=true answers with the file
+ * (download.quranicaudio.com) and, per verse, `timestamp_from` / `timestamp_to` in
+ * milliseconds from the start of that file plus the word segments. Those ids are the
+ * ones of the "chapter reciters", not of the per-verse recitations used above.
+ *
+ * Returned in seconds, verses in order and contiguous; word segments are relative to
+ * the start of their verse, as the per-verse files give them, so the word highlight
+ * reads the same data in both modes. Anything that does not look like a complete
+ * surah (missing file, a verse that goes backwards) is refused: the caller then
+ * plays verse by verse instead of trusting a broken map.
+ */
+export async function getChapterAudioTimeline(recitationId, surahNumber, expectedVerses = 0) {
+  const surah = Number(surahNumber);
+  const reciter = Number(recitationId);
+  if (!reciter || !surah) throw new Error("Chapter audio: missing reciter or surah");
+  const params = new URLSearchParams({ segments: "true" });
+  const json = await fetchJson(`${BASE_URL}/chapter_recitations/${reciter}/${surah}?${params.toString()}`);
+  const file = json?.audio_file;
+  const url = normalizeAudioUrl(file?.audio_url);
+  const stamps = Array.isArray(file?.timestamps) ? file.timestamps : [];
+  if (!url || !url.startsWith("https://") || stamps.length === 0) {
+    throw new Error("Chapter audio: no file or no verse timing");
+  }
+
+  const verses = [];
+  for (const stamp of stamps) {
+    const parts = String(stamp?.verse_key || "").split(":").map(Number);
+    const key = parts.length === 2 && parts.every(Number.isInteger) ? [null, ...parts] : null;
+    const fromMs = Number(stamp?.timestamp_from);
+    const toMs = Number(stamp?.timestamp_to);
+    if (!key || Number(key[1]) !== surah || !Number.isFinite(fromMs) || !Number.isFinite(toMs) || toMs <= fromMs) {
+      throw new Error("Chapter audio: unusable verse timing");
+    }
+    const previous = verses[verses.length - 1];
+    const ayah = Number(key[2]);
+    if (previous && (ayah !== previous.ayah + 1 || fromMs < previous.to * 1000 - 1)) {
+      throw new Error("Chapter audio: verses are not in order");
+    }
+    verses.push({
+      ayah,
+      from: fromMs / 1000,
+      to: toMs / 1000,
+      segments: (Array.isArray(stamp.segments) ? stamp.segments : [])
+        .map(normalizeSegment)
+        .filter(Boolean)
+        .map((segment) => ({
+          ...segment,
+          startMs: Math.max(0, segment.startMs - fromMs),
+          endMs: Math.max(0, segment.endMs - fromMs),
+        })),
+    });
+  }
+  if (verses[0].ayah !== 1 || (expectedVerses > 0 && verses.length !== expectedVerses)) {
+    throw new Error("Chapter audio: verse count does not match the surah");
+  }
+  return { url, verses };
+}

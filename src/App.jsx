@@ -210,6 +210,7 @@ export default function App() {
       homeSection: current.homeSection,
       showHome: current.showHome,
       showDuas: current.showDuas,
+      duasRoute: current.duasRoute,
       showPrayers: current.showPrayers,
       legalPage: current.legalPage,
       routeNotFound: current.routeNotFound,
@@ -250,6 +251,7 @@ export default function App() {
     currentJuz,
     showHome,
     showDuas,
+    duasRoute,
     showPrayers,
     legalPage,
     routeNotFound,
@@ -276,6 +278,7 @@ export default function App() {
   useUrlSync({
     showHome,
     showDuas,
+    duasRoute,
     showPrayers,
     legalPage,
     routeNotFound,
@@ -638,7 +641,9 @@ export default function App() {
     };
 
     scheduleHide();
-    scrollContainer.addEventListener('click', handleClick);
+    // Capture phase: a tap on a verse word, a play button or any control that stops
+    // the click from bubbling must still bring the chrome back.
+    scrollContainer.addEventListener('click', handleClick, true);
     document.addEventListener('pointerdown', handleControl, { passive: true });
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
     for (const type of ["wheel", "touchstart", "touchmove", "pointerdown", "keydown"]) {
@@ -650,7 +655,7 @@ export default function App() {
 
     return () => {
       clearTimeout(immersiveTimer.current);
-      scrollContainer.removeEventListener('click', handleClick);
+      scrollContainer.removeEventListener('click', handleClick, true);
       document.removeEventListener('pointerdown', handleControl);
       scrollContainer.removeEventListener("scroll", handleScroll);
       for (const type of ["wheel", "touchstart", "touchmove", "pointerdown", "keydown"]) {
@@ -690,11 +695,12 @@ export default function App() {
       if (["Tab", "Escape", "Home", "PageUp", "ArrowUp"].includes(event.key)) show();
     };
     scrollContainer.addEventListener("scroll", handleScroll, { passive: true });
-    scrollContainer.addEventListener("click", handleTap);
+    // Capture phase, like the reader: controls that stop propagation must not keep the bar away.
+    scrollContainer.addEventListener("click", handleTap, true);
     window.addEventListener("keydown", handleKey);
     return () => {
       scrollContainer.removeEventListener("scroll", handleScroll);
-      scrollContainer.removeEventListener("click", handleTap);
+      scrollContainer.removeEventListener("click", handleTap, true);
       window.removeEventListener("keydown", handleKey);
     };
   }, [navViewKey, immersiveActive, compactReadingChrome, blockingModalOpen]);

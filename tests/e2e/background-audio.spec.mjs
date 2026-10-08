@@ -127,6 +127,9 @@ test("a hidden native verse boundary advances through the global engine", async 
         mushafLayout: "list",
         lang: "fr",
         riwaya: "hafs",
+        // This spec is about the hand-off between two verse files; a whole surah
+        // played as one recording has no verse boundary to cross.
+        audioPlaybackMode: "verse",
         lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
       }),
     );

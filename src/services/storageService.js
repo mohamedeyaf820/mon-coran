@@ -315,6 +315,11 @@ function isValidClockTime(value) {
   return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
 }
 
+/** Whole surah in one recording, verse files, or decided per playlist. */
+function sanitizeAudioPlaybackMode(value) {
+  return value === "surah" || value === "verse" ? value : "auto";
+}
+
 function sanitizeAudioPlayerSkin(value) {
   return VALID_AUDIO_PLAYER_SKINS.includes(value) ? value : "orbit";
 }
@@ -419,6 +424,7 @@ const DEFAULT_SETTINGS = {
   nightTheme: "dark",
   dayTheme: "light",
   surahRepeatCount: 1,
+  audioPlaybackMode: "auto",
   prayerTimesEnabled: false,
   prayerMethod: 12,
   prayerMethodAuto: true,
@@ -558,6 +564,7 @@ export function getSettings() {
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
           : DEFAULT_SETTINGS.surahRepeatCount,
+      audioPlaybackMode: sanitizeAudioPlaybackMode(parsed?.audioPlaybackMode),
       prayerTimesEnabled: Boolean(parsed?.prayerTimesEnabled),
       prayerMethod: normalizePrayerMethodSetting(parsed?.prayerMethod, parsed?.lang),
       // A reader who already has a place and a method keeps them until they ask
@@ -710,6 +717,7 @@ function sanitizeSettings(settings) {
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))
         : DEFAULT_SETTINGS.surahRepeatCount,
+    audioPlaybackMode: sanitizeAudioPlaybackMode(safeInput.audioPlaybackMode),
     karaokeFollow:
       safeInput.karaokeFollow !== undefined
         ? Boolean(safeInput.karaokeFollow)
