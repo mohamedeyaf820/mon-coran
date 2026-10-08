@@ -56,7 +56,9 @@ const LIMITS = {
   // next-prayer card, day list states, how-it-works), measured 1270.7 kB.
   // 2026-10-08 (invocations hub): 1290 kB for the hub, the chapter rows, the sources
   // block of a card and the pager (duas-hub.css), measured 1280.4 kB.
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1290),
+  // 2026-10-08 (readable native lists, contrast): 1295 kB for the option colours of
+  // every <select> in the three themes and three contrast fixes, measured 1290.9 kB.
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1295),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

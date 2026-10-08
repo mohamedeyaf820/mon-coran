@@ -3,6 +3,8 @@ import { ArrowRight, BookOpen, Copy, ExternalLink, Repeat2, Share2 } from "lucid
 import { t } from "../../i18n";
 import { hubText } from "../../utils/duasHubText";
 import { ARABIC_DUA_SIGN } from "../../utils/arabicDuaText";
+import { applyFontSigns } from "../../utils/quranUtils";
+import { useAppSelector } from "../../context/AppContext";
 
 /** Punctuation and brackets keep their own face so the Quran font does not draw them too large. */
 function ArabicWithPunctuation({ text }) {
@@ -39,6 +41,10 @@ export default function DuaCard({
   notice,
   footer,
 }) {
+  // The Quran face draws some canonical signs (U+06DF, U+06EB) as a large black
+  // dot: the card shows them the way the reader's own text does.
+  const riwaya = useAppSelector((state) => state.riwaya);
+  const shownArabic = applyFontSigns(arabic, riwaya === "warsh" ? "qpc-warsh" : "qpc-hafs");
   return (
     <article className="dua-card-v5">
       <div className="dua-card-inner">
@@ -94,7 +100,7 @@ export default function DuaCard({
         <div className="dua-content-area">
           {title && <h3 className="dua-item-title">{title}</h3>}
           <p className="dua-arabic" lang="ar" dir="rtl">
-            <ArabicWithPunctuation text={arabic} />
+            <ArabicWithPunctuation text={shownArabic} />
           </p>
           {transliteration && (
             <p className="dua-translit" dir="ltr">

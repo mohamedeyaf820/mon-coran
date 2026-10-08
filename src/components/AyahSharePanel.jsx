@@ -18,6 +18,7 @@ import { useApp } from "../context/AppContext";
 import { getSurah, getSurahLigature } from "../data/surahs";
 import { t } from "../i18n";
 import { sanitizeSvgMarkup } from "../lib/security";
+import { applyFontSigns } from "../utils/quranUtils";
 import { cleanShareText, createVerseSharePayload, DEFAULT_SHARE_ORIGIN } from "../services/verseShareService";
 import { fetchWithTimeout } from "../services/fetchWithTimeout.js";
 import {
@@ -465,6 +466,12 @@ export default function AyahSharePanel() {
   // Data-layer text only. The card is never filled from the DOM again: a
   // scraped miss used to fall through to the Basmala under a valid reference.
   const arabicText = useMemo(() => cleanShareText(draft.arabicText), [draft.arabicText]);
+  // The card's Quran face has no glyph for some canonical signs (U+06DF, U+06EB):
+  // it would draw them as a large black dot. Same mapping as the reader's text.
+  const cardArabicText = useMemo(
+    () => applyFontSigns(arabicText, draftRiwaya === "warsh" ? "qpc-warsh" : "qpc-hafs"),
+    [arabicText, draftRiwaya],
+  );
   const translationText = useMemo(
     () => cleanShareText(draft.translationText),
     [draft.translationText],
@@ -545,7 +552,7 @@ export default function AyahSharePanel() {
   const surahLigature = surahNamesFontReady ? getSurahLigature(surahNumber) : "";
   const svgContent = useMemo(
     () => (verseUnavailable ? "" : buildVerseCardSvg({
-      arabicText,
+      arabicText: cardArabicText,
       translationText,
       includeTranslation,
       surahNameAr: surahData?.ar,
@@ -569,7 +576,7 @@ export default function AyahSharePanel() {
     })),
     [
       arabicFontFamily,
-      arabicText,
+      cardArabicText,
       displayAyahNumber,
       draft.occasion,
       draft.source,
@@ -621,7 +628,7 @@ export default function AyahSharePanel() {
         verseUnavailable
           ? buildVerseCardThumbSvg(tilePreset, tileFrame, tileMotif)
           : buildVerseCardSvg({
-              arabicText,
+              arabicText: cardArabicText,
               translationText,
               includeTranslation,
               surahNameAr: surahData?.ar,
@@ -653,7 +660,7 @@ export default function AyahSharePanel() {
     }
     return Object.fromEntries(VERSE_CARD_MOTIFS.map((item) => [item.id, miniature(presetId, frameId, item.id)]));
   }, [
-    arabicText,
+    cardArabicText,
     displayAyahNumber,
     draft.occasion,
     draft.source,

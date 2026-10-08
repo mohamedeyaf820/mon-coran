@@ -519,3 +519,30 @@ html[data-theme="dark"] .app-root aside[role="dialog"] {
         rgba(5, 10, 9, 0.99)
     ) !important;
 }
+
+/* The list of a native <select> is drawn by the browser from the option's own
+   colours, not from the control: without them an inherited light text lands on the
+   browser's white list (the tafsir source picker in the dark theme). Opaque
+   colours per theme, so the options are readable in all three. */
+html[data-theme="light"] select option,
+html[data-theme="light"] select optgroup {
+    background-color: #ffffff;
+    color: #17211c;
+}
+
+html[data-theme="sepia"] select option,
+html[data-theme="sepia"] select optgroup {
+    background-color: #f8efdc;
+    color: #241505;
+}
+
+html[data-theme="dark"] select option,
+html[data-theme="dark"] select optgroup {
+    background-color: #151c19;
+    color: #f3f6f9;
+}
+
+html[data-theme="dark"] select optgroup {
+    color: #7fd8b8;
+}
+
