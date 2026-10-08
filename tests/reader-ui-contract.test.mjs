@@ -276,13 +276,17 @@ test("immersive Mushaf opens on the verse in view and leafs right to left like a
   // The reader's own writing size is what 100 % means in the book: the leaf is
   // scaled whole, exactly as the pane's page scale does. The ± controls are a
   // delta on top of it, so their reset returns to the preference.
-  assert.match(overlay, /const zoom = clampZoom\(zoomDelta \* sizeScale\)/);
+  assert.match(overlay, /const zoom = view\.fit \? fitScale : clampZoom\(zoomDelta \* sizeScale\)/);
+  // The leaf opens fitted to the window (it only shrinks to the room it has) and the
+  // value button returns to that fit.
+  assert.match(overlay, /fitTo\("auto"\)/);
   assert.match(
     overlay,
     /clampArabicFontSize\(state\.quranFontSize\) \/ DEFAULT_ARABIC_FONT_SIZE/,
   );
-  assert.match(overlay, /sessionStorage\.setItem\(ZOOM_STORAGE_KEY, String\(zoomDelta\)\)/);
-  assert.match(overlay, /clampZoom\(\(scale \|\| value \* sizeScale\) \/ sizeScale\)/);
+  assert.match(overlay, /sessionStorage\.setItem\(ZOOM_STORAGE_KEY,/);
+  assert.match(overlay, /Math\.min\(byWidth, byHeight\)/);
+  assert.match(overlay, /pageCache\.size/);
 
   // The exact Madani page is set like print: measure and pitch from the type,
   // an opening page starting under the running head, title band and basmala on

@@ -104,7 +104,11 @@ test("first launch keeps the critical network payload compact", async ({ page })
   // Raised 55 -> 60 (measured 58) for the mobile navigation, the split style
   // chunks and the data prefetch that landed since; still a hard stop for any
   // page-level bundle pulled into startup.
-  expect(parsedRequests.length).toBeLessThanOrEqual(60);
+  // Raised 60 -> 61 (measured 61, 60 before) with the fullscreen Mushaf work (2026-10-08):
+  // a 1.4 kB shared chunk (the invocations route table, imported by the URL sync and by
+  // the lazy invocations page) is now emitted on its own when the reader chunk grew. Same
+  // bytes, one more request; compared against a build of the previous commit.
+  expect(parsedRequests.length).toBeLessThanOrEqual(61);
   // Performance observers load as one small optional module after first paint.
   expect(firstLaunchJs.length).toBeLessThanOrEqual(46); // measured 44 with the mobile navigation and split style chunks
   expect(parsedRequests.filter((url) => url.pathname === "/logo.png")).toHaveLength(0);
