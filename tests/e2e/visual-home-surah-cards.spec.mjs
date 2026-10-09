@@ -10,16 +10,17 @@ const VIEWPORTS = [
   { id: "tablet", width: 834, height: 1112, isMobile: true },
   { id: "mobile", width: 390, height: 844, isMobile: true },
 ];
+const THEMES = ["light", "sepia", "dark"];
 
-function buildSeedSettings() {
+function buildSeedSettings(theme) {
   return {
     lang: "fr",
-    theme: "light",
+    theme,
     riwaya: "hafs",
     displayMode: "surah",
     showHome: true,
     showDuas: false,
-    splashDone: true,
+    skipSplashAnimation: true,
     currentSurah: 1,
     currentAyah: 1,
     quranFontSize: 42,
@@ -30,7 +31,8 @@ function buildSeedSettings() {
 }
 
 for (const viewport of VIEWPORTS) {
-  test(`Visual ${viewport.id} light - home surah cards`, async ({ browser, baseURL }) => {
+  for (const theme of THEMES) {
+  test(`Visual ${viewport.id} ${theme} - home surah cards`, async ({ browser, baseURL }) => {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 
     const context = await browser.newContext({
@@ -47,7 +49,7 @@ for (const viewport of VIEWPORTS) {
       },
       {
         key: SETTINGS_KEY,
-        payload: buildSeedSettings(),
+        payload: buildSeedSettings(theme),
       },
     );
 
@@ -55,22 +57,28 @@ for (const viewport of VIEWPORTS) {
       waitUntil: "domcontentloaded",
     });
 
-    await page.waitForSelector(".hp-grid.hp-grid--surah .hp-card", { timeout: 30000 });
+    await page.waitForSelector(".hp-card--surah", { timeout: 30000 });
     await page.waitForTimeout(1000);
 
-    const prefix = `${viewport.id}-light`;
-    const cardsGrid = page.locator(".hp-grid.hp-grid--surah").first();
+    const prefix = `${viewport.id}-${theme}`;
+    const cardsGrid = page.locator(".hp-grid.hp-grid--surah, .hp-list").first();
     await expect(cardsGrid).toBeVisible();
 
     await cardsGrid.screenshot({
       path: path.join(OUTPUT_DIR, `${prefix}-surah-grid.png`),
     });
 
-    const firstCard = page.locator(".hp-grid.hp-grid--surah .hp-card").first();
+    const firstCard = page.locator(".hp-card--surah").first();
     await expect(firstCard).toBeVisible();
 
     await firstCard.screenshot({
       path: path.join(OUTPUT_DIR, `${prefix}-surah-card-first.png`),
+    });
+
+    await page.evaluate(() => {
+      window.scrollTo(0, 0);
+      const main = document.querySelector("#main-content");
+      if (main) main.scrollTop = 0;
     });
 
     await page.screenshot({
@@ -80,4 +88,5 @@ for (const viewport of VIEWPORTS) {
 
     await context.close();
   });
+  }
 }

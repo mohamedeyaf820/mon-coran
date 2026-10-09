@@ -1,4 +1,3 @@
-import { t } from "../../i18n";
 import {
   getJuz,
   getPage,
@@ -11,6 +10,24 @@ import {
   getWarshPageVerses,
   getWarshSurahFormatted,
 } from "../../services/warshService";
+import { READER_LOAD, createReaderDataError } from "./readerLoadError.js";
+
+export function describeArabicDataSource(arabicData, riwaya) {
+  if (arabicData?.isOfflineFallback || arabicData?.source === "offline-fallback") {
+    return { id: "offline", label: "Secours hors ligne", degraded: true };
+  }
+  if (riwaya === "warsh") {
+    return { id: "warsh-dataset", label: "Jeu de données Warsh dédié", degraded: Boolean(arabicData?.isTextFallback) };
+  }
+  if (arabicData?.source === "quran.com" || arabicData?.usedEdition === "quran.com-v4") {
+    return { id: "quran-com", label: "Quran.com API", degraded: false };
+  }
+  return {
+    id: "alquran-cloud",
+    label: arabicData?.usedEdition ? `AlQuran Cloud · ${arabicData.usedEdition}` : "AlQuran Cloud",
+    degraded: false,
+  };
+}
 
 function ayahSortKey(ayah) {
   const globalNumber = Number(ayah?.number);
@@ -34,11 +51,14 @@ function normalizeRiwayaText(ayah, riwaya) {
     };
   }
 
+  // Canonical Hafs text is Unicode `text_uthmani` (already resolved into
+  // ayah.text by the API layer). Font-locked payloads like the nastaleeq or
+  // qpc-hafs variants stay in quranCom fields and are picked per font by
+  // getAyahTextForFont — never flattened into the shared text here.
   const hafsText =
-    ayah?.quranCom?.textQpcHafs ||
-    ayah?.quranCom?.textQpcNastaleeqHafs ||
-    ayah?.quranCom?.textUthmani ||
     ayah?.text ||
+    ayah?.quranCom?.textUthmani ||
+    ayah?.quranCom?.textQpcHafs ||
     "";
 
   return {
@@ -57,6 +77,7 @@ export async function loadArabicData({
   displayMode,
   riwaya,
   signal,
+  onPartial,
 }) {
   if (riwaya === "warsh") {
     if (displayMode === "page") return getWarshPageVerses(currentPage);
@@ -87,7 +108,7 @@ export async function loadArabicData({
   try {
     return displayMode === "juz"
       ? await getJuz(currentJuz, riwaya, signal)
-      : await getSurahText(currentSurah, riwaya, signal);
+      : await getSurahText(currentSurah, riwaya, signal, { onFirstPage: onPartial });
   } catch (error) {
     if (error?.name === "AbortError") throw error;
     const fallback = getOfflineArabicData({
@@ -123,30 +144,26 @@ export function ensureRequestedRiwaya(ayahs, riwaya) {
     });
 }
 
-export function assertWarshStrict({
-  arabicData,
-  displayMode,
-  lang,
-  riwaya,
-  warshStrictMode,
-}) {
+export function assertWarshStrict({ arabicData, riwaya, warshStrictMode }) {
   if (
     riwaya === "warsh" &&
     warshStrictMode &&
     arabicData?.isTextFallback
   ) {
-    throw new Error(
-      lang === "fr"
-        ? "Mode Warsh strict: texte Warsh indisponible (fallback Hafs refuse)."
-        : lang === "ar"
-          ? "\u0648\u0636\u0639 \u0648\u0631\u0634 \u0627\u0644\u0635\u0627\u0631\u0645: \u0646\u0635 \u0648\u0631\u0634 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d (\u062a\u0645 \u0631\u0641\u0636 \u0628\u062f\u064a\u0644 \u062d\u0641\u0635)."
-          : "Warsh strict mode: Warsh text unavailable (Hafs fallback blocked).",
+    // Typed, not translated in place: the reader owns the wording. A raw
+    // localised Error used to surface here as if the app had crashed.
+    throw createReaderDataError(
+      READER_LOAD.WARSH_TEXT,
+      "Warsh strict mode: Warsh text unavailable (Hafs fallback blocked).",
     );
   }
 
   const fetchedAyahs = arabicData?.ayahs || [];
   if (!Array.isArray(fetchedAyahs) || fetchedAyahs.length === 0) {
-    throw new Error(t("errors.emptyData", lang));
+    throw createReaderDataError(
+      READER_LOAD.EMPTY,
+      "Empty payload for the requested reading",
+    );
   }
 }
 

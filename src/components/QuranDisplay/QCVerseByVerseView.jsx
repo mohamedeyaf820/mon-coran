@@ -1,26 +1,22 @@
 import React, {
   useCallback,
-  useState,
-  useEffect,
-  useRef,
   useMemo,
   memo,
 } from "react";
+import { Bookmark } from "lucide-react";
 import { arabicToLatin } from "../../data/transliteration";
+import { toAr } from "../../data/surahs";
+import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
-import MemorizationText from "../Quran/MemorizationText";
 import SmartAyahRenderer from "../Quran/SmartAyahRenderer";
-import WordByWordDisplay from "../Quran/WordByWordDisplay";
 import QCVerseActions from "./QCVerseActions";
+import AyahSkeleton from "../Quran/AyahSkeleton";
+import VirtualizedItem from "../ui/VirtualizedItem";
 
-function getInitialVisibleCount(total, displayMode) {
-  if (displayMode === "page") return total;
-  if (displayMode === "juz") return Math.min(total, 64);
-  return Math.min(total, 42);
-}
-
-function PageSeparator({ page }) {
+function PageSeparator({ page, lang }) {
   if (!page) return null;
+
+  const label = `${t("quran.page", lang)} ${lang === "ar" ? toAr(page) : page}`;
 
   return (
     <div
@@ -28,11 +24,9 @@ function PageSeparator({ page }) {
       aria-hidden="true"
     >
       <div className="h-px flex-1 bg-gradient-to-r from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
-      <div className="flex items-center gap-2 rounded-full border border-[rgba(var(--primary-rgb),0.12)] bg-[var(--bg-secondary)] px-3 py-1">
-        <i className="fas fa-bookmark text-[0.5rem] text-[var(--primary)]" />
-        <span className="font-[var(--font-ui)] text-[0.68rem] font-semibold uppercase tracking-wide text-[var(--text-muted)]">
-          Page {page}
-        </span>
+      <div className="page-separator__label">
+        <Bookmark size={11} className="text-[var(--text-muted)]" aria-hidden="true" />
+        <span>{label}</span>
       </div>
       <div className="h-px flex-1 bg-gradient-to-l from-transparent to-[rgba(var(--primary-rgb),0.15)]" />
     </div>
@@ -77,17 +71,14 @@ const QCVerseCard = memo(function QCVerseCard({
   isActive,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   showTajwid,
   translation,
+  getTransliterationForAyah,
   calibration,
   riwaya,
-  fontSize,
-  memMode,
   onToggleActive,
   toggleId,
-  ayahId,
+  referenceLabel,
 }) {
   const handleClick = useCallback(() => {
     if (typeof onToggleActive === "function") onToggleActive(toggleId);
@@ -95,41 +86,16 @@ const QCVerseCard = memo(function QCVerseCard({
 
   const transliterationText = useMemo(
     () =>
-      showTransliteration && !showWordByWord
-        ? arabicToLatin(
-            riwaya === "warsh" && ayah.hafsText ? ayah.hafsText : ayah.text,
-            riwaya,
-          )
+      showTransliteration && ayah?.text
+        ? getTransliterationForAyah
+          ? getTransliterationForAyah(ayah)
+          : arabicToLatin(ayah.text, riwaya)
         : "",
-    [showTransliteration, showWordByWord, ayah.text, ayah.hafsText, riwaya],
+    [showTransliteration, ayah, riwaya, getTransliterationForAyah],
   );
 
-  const arabicContent = useMemo(() => {
-    if (memMode) {
-      // For memorization, use the correct riwaya text
-      const memoText =
-        riwaya === "warsh" ? ayah.text : ayah.hafsText || ayah.text;
-      return <MemorizationText text={memoText} lang={lang} />;
-    }
-    if (showWordByWord) {
-      return (
-        <WordByWordDisplay
-          surah={surahNum}
-          ayah={ayah.numberInSurah}
-          text={ayah.text}
-          isPlaying={isPlaying}
-          showTajwid={showTajwid}
-          showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
-          fontSize={fontSize}
-          calibration={calibration}
-          initialWords={ayah.words}
-          warshWords={ayah.warshWords}
-        />
-      );
-    }
-
-    return (
+  const arabicContent = useMemo(
+    () => (
       <SmartAyahRenderer
         ayah={ayah}
         showTajwid={showTajwid}
@@ -138,30 +104,33 @@ const QCVerseCard = memo(function QCVerseCard({
         calibration={calibration}
         riwaya={riwaya}
       />
-    );
-  }, [
-    memMode,
-    showWordByWord,
+    ),
+    [
     ayah,
     surahNum,
     isPlaying,
     showTajwid,
-    showTransliteration,
-    showWordTranslation,
-    fontSize,
     calibration,
     riwaya,
-    lang,
-  ]);
+    ],
+  );
 
-  const translations = Array.isArray(translation) ? translation : [];
+  const translations = useMemo(() => {
+    if (!Array.isArray(translation)) return [];
+    return translation.filter((item) => {
+      if (!item?.text || typeof item.text !== "string") return false;
+      const text = item.text.trim();
+      if (!text) return false;
+      if (lang !== "ar") {
+        const arabicCharCount = (text.match(/[\u0600-\u06FF]/g) || []).length;
+        if (arabicCharCount > text.length * 0.5) return false;
+      }
+      return true;
+    });
+  }, [translation, lang]);
 
   return (
     <article
-      id={ayahId}
-      data-surah-number={surahNum}
-      data-ayah-number={ayah.numberInSurah}
-      data-ayah-global={ayah.number}
       className={cn(
         "qc-verse-card qc-list-card group relative transition-colors duration-200 outline-none",
         "px-4 sm:px-6 py-5 sm:py-6",
@@ -169,15 +138,22 @@ const QCVerseCard = memo(function QCVerseCard({
         isPlaying && "is-playing",
         isActive && "is-active",
         isPlaying
-          ? "bg-[rgba(var(--primary-rgb),0.05)] border-l-[3px] border-l-[var(--primary)]"
+          ? "bg-[rgba(var(--primary-rgb),0.05)]"
           : isActive
             ? "bg-[rgba(var(--primary-rgb),0.03)]"
             : "hover:bg-[var(--bg-secondary)]",
       )}
     >
-      {/* Card Header: verse number + actions */}
-      <div className="qc-list-card__top select-none">
-        <div className="qc-list-card__start">
+      {/* Quran.com opens a verse with its chrome: the reference and the
+          listening actions sit on a bar above the text, the overflow menu at
+          the far end of that bar, so the row is identified before it is read
+          and the Quran keeps the whole measure below it. The reference opens
+          the full action sheet, so it stays a button. */}
+      <div className="qc-list-card__foot select-none">
+        <div
+          className="qc-list-card__start"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
           <button
             type="button"
             onClick={handleClick}
@@ -189,47 +165,58 @@ const QCVerseCard = memo(function QCVerseCard({
               isActive && "is-active",
             )}
           >
-            {surahNum}:{ayah.numberInSurah}
+            {referenceLabel ?? `${surahNum}:${ayah.numberInSurah}`}
           </button>
           <QCVerseActions
             surah={surahNum}
             ayah={ayah.numberInSurah}
             ayahData={ayah}
+            translations={translations}
             lang={lang}
             layout="qcom-header-left"
           />
         </div>
-        <div className="qc-list-card__end">
+        <div
+          className="qc-list-card__end"
+          style={{ display: "flex", alignItems: "center", flexWrap: "nowrap" }}
+        >
           <QCVerseActions
             surah={surahNum}
             ayah={ayah.numberInSurah}
             ayahData={ayah}
+            translations={translations}
             lang={lang}
             layout="qcom-header-right"
           />
         </div>
       </div>
 
-      {/* Arabic text */}
       <div className="flex-1 min-w-0 flex flex-col gap-3">
         <div
           dir="rtl"
           lang="ar"
           className="qc-ayah-text-ar text-right font-[var(--qd-font-family,var(--font-quran,'Amiri Quran'))] text-[var(--text-quran,var(--text-primary))] [-webkit-font-smoothing:antialiased] [text-rendering:optimizeLegibility]"
           style={{
-            fontSize:
-              "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
-            lineHeight: "var(--quran-line-height, 2.15)",
+            fontSize: "var(--reader-arabic-size, var(--qd-reading-font-size, 42px))",
+            cursor: riwaya === "warsh" ? "pointer" : undefined,
           }}
-          onClick={handleClick}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(event) => {
+          role={riwaya === "warsh" ? "button" : undefined}
+          tabIndex={riwaya === "warsh" ? 0 : undefined}
+          aria-expanded={riwaya === "warsh" ? isActive : undefined}
+          onClick={riwaya === "warsh" ? handleClick : undefined}
+          onKeyDown={riwaya === "warsh" ? (event) => {
             if (event.key === "Enter" || event.key === " ") {
               event.preventDefault();
               handleClick();
             }
-          }}
+          } : undefined}
+          aria-label={`${
+            lang === "fr"
+              ? "Texte arabe du verset"
+              : lang === "ar"
+                ? "نص الآية"
+                : "Arabic text for verse"
+          } ${surahNum}:${ayah.numberInSurah}`}
         >
           {arabicContent}
         </div>
@@ -237,7 +224,7 @@ const QCVerseCard = memo(function QCVerseCard({
         {/* Transliteration */}
         {transliterationText ? (
           <div
-            className="font-[var(--font-ui)] text-[0.8rem] italic leading-relaxed text-[var(--text-muted)] text-left border-l-2 border-[rgba(var(--primary-rgb),0.15)] pl-3"
+            className="qc-ayah-transliteration"
             dir="ltr"
           >
             {transliterationText}
@@ -245,54 +232,62 @@ const QCVerseCard = memo(function QCVerseCard({
         ) : null}
 
         {/* Translation block — clean, no card */}
-        {showTranslation && translations.length > 0 ? (
-          <div className="mt-1">
-            {translations.map((item, index) => (
-              <p
-                key={item.id || item.resourceId || index}
-                className={cn(
-                  "text-left leading-[1.85] text-[var(--text-secondary)]",
-                  index > 0 && "mt-2 pt-2 border-t border-[var(--border)]",
+        {showTranslation ? (
+          <div
+            className={cn(
+              "qc-list-card__translation-slot mt-1",
+              translations.length === 0 && "is-loading",
+            )}
+            aria-hidden={translations.length === 0 ? "true" : undefined}
+          >
+            {translations.length > 0
+              ? translations.map((item, index) => (
+                  <p
+                    key={item.id || item.resourceId || index}
+                    className={cn(
+                      "text-left leading-[1.85] text-[var(--text-secondary)]",
+                      index > 0 && "mt-3",
+                    )}
+                    style={{
+                      fontSize: "var(--qd-translation-font-size, 0.95rem)",
+                    }}
+                    dir="ltr"
+                  >
+                    {item.text}
+                  </p>
+                ))
+              : (
+                  <>
+                    <span />
+                    <span />
+                    <span />
+                  </>
                 )}
-                style={{ fontSize: "var(--qd-translation-font-size, 0.95rem)" }}
-                dir="ltr"
-              >
-                {item.text}
-              </p>
-            ))}
           </div>
         ) : null}
-
-        <div className="qc-list-card__study">
-          <QCVerseActions
-            surah={surahNum}
-            ayah={ayah.numberInSurah}
-            ayahData={ayah}
-            lang={lang}
-            layout="qcom-list-study"
-          />
-        </div>
       </div>
+
     </article>
   );
 });
+
+const EAGER_TOP_COUNT = 10;
 
 export default function QCVerseByVerseView({
   ayahs,
   surahGroups,
   lang,
   currentPlayingAyah,
+  initialTargetAyah,
   activeAyah,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   showTajwid,
   getTranslationForAyah,
+  getTransliterationForAyah,
   calibration,
   riwaya,
   fontSize,
-  memMode,
   onToggleActive,
   displayMode,
   showPageSeparators,
@@ -306,9 +301,11 @@ export default function QCVerseByVerseView({
           )
         : (ayahs || []).map((ayah) => ({
             ayah,
-            surahNum: ayah.surah?.number || 1,
+            // Some sources (the alquran.cloud fallback) ship ayahs without their
+            // surah: defaulting to 1 made the Basmala glued to verse 1 survive.
+            surahNum: ayah.surah?.number || surahMeta?.n || surahMeta?.number || 1,
           })),
-    [surahGroups, ayahs],
+    [surahGroups, ayahs, surahMeta],
   );
 
   const contentKey = useMemo(() => {
@@ -325,126 +322,98 @@ export default function QCVerseByVerseView({
     ].join(":");
   }, [displayMode, items, riwaya]);
 
-  const [visibleCount, setVisibleCount] = useState(() =>
-    getInitialVisibleCount(items.length, displayMode),
-  );
-  const sentinelRef = useRef(null);
+  if (items.length === 0)
+    return <AyahSkeleton count={5} showTranslation={showTranslation} lang={lang} />;
 
-  const activeIndex = useMemo(() => {
-    if (!activeAyah) return -1;
-    return items.findIndex(({ ayah }) => {
-      const toggleId =
-        displayMode === "surah" ? ayah.numberInSurah : ayah.number;
-      return toggleId === activeAyah;
-    });
-  }, [items, activeAyah, displayMode]);
-
-  const playingIndex = useMemo(() => {
-    if (!currentPlayingAyah) return -1;
-    return items.findIndex(
-      ({ ayah, surahNum }) =>
-        ayah.numberInSurah === currentPlayingAyah.ayah &&
-        surahNum === currentPlayingAyah.surah,
-    );
-  }, [items, currentPlayingAyah]);
-
-  useEffect(() => {
-    const targetIdx = Math.max(activeIndex, playingIndex);
-    if (targetIdx !== -1 && targetIdx >= visibleCount) {
-      setVisibleCount(targetIdx + 10);
-    }
-  }, [activeIndex, playingIndex, visibleCount]);
-
-  useEffect(() => {
-    setVisibleCount(getInitialVisibleCount(items.length, displayMode));
-  }, [contentKey, displayMode, items.length]);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 32, items.length));
-        }
-      },
-      { rootMargin: "300px" },
-    );
-
-    const currentSentinel = sentinelRef.current;
-    if (currentSentinel) {
-      observer.observe(currentSentinel);
-    }
-    return () => {
-      if (currentSentinel) {
-        observer.unobserve(currentSentinel);
-      }
-    };
-  }, [items.length]);
-
-  if (items.length === 0) return null;
-
-  const visibleItems = items.slice(0, visibleCount);
-  const hasMore = visibleCount < items.length;
+  const estimatedHeight = showTranslation || showTransliteration ? 350 : 250;
+  // A deep link lands far from the top: rendering the first ten verses eagerly
+  // only to unmount them when the view jumps to the target (21 of 30 verse nodes
+  // were created then removed within 600 ms on Warsh 2:25). Keep the eager
+  // tranche around the target instead.
+  const targetIndex =
+    displayMode === "surah" && Number(initialTargetAyah) > 0
+      ? items.findIndex(({ ayah }) => Number(ayah.numberInSurah) === Number(initialTargetAyah))
+      : -1;
+  const targetIsFar = targetIndex > EAGER_TOP_COUNT + 4;
+  const renderingProfile = [
+    showTranslation ? 1 : 0,
+    showTransliteration ? 1 : 0,
+    Math.round(Number(fontSize) || 0),
+  ].join("");
 
   return (
-    <div className="qc-verse-by-verse-view mx-auto w-full max-w-[1120px] px-2 sm:px-4 py-4">
-      {visibleItems.map(({ ayah, surahNum }, index) => {
+    <div
+      className="qc-verse-by-verse-view mx-auto w-full max-w-[1120px] px-2 sm:px-4 py-4"
+      role="list"
+    >
+      {items.map(({ ayah, surahNum }, index) => {
         const toggleId =
           displayMode === "surah" ? ayah.numberInSurah : ayah.number;
         const isPlaying =
           currentPlayingAyah?.ayah === ayah.numberInSurah &&
           currentPlayingAyah?.surah === surahNum;
         const isActive = activeAyah === toggleId;
-        const translation = showTranslation
-          ? getTranslationForAyah?.(ayah)
-          : null;
+        const isInitialTarget =
+          displayMode === "surah" &&
+          Number(initialTargetAyah) === Number(ayah.numberInSurah);
         const showSeparator =
           showPageSeparators &&
           (index === 0 || items[index - 1].ayah.page !== ayah.page);
+        const ayahId =
+          displayMode === "surah"
+            ? `ayah-${ayah.numberInSurah}`
+            : `ayah-${ayah.number}`;
+        const itemKey = ayah.number || `${surahNum}:${ayah.numberInSurah}`;
 
         return (
-          <React.Fragment
-            key={ayah.number || `${surahNum}:${ayah.numberInSurah}`}
+          <VirtualizedItem
+            key={itemKey}
+            cacheKey={`${contentKey}:${renderingProfile}:${itemKey}`}
+            eager={
+              targetIsFar
+                ? Math.abs(index - targetIndex) <= 2
+                : index < EAGER_TOP_COUNT || isInitialTarget
+            }
+            estimatedHeight={estimatedHeight + (showSeparator ? 70 : 0)}
+            pinned={isPlaying || isActive || isInitialTarget}
+            id={ayahId}
+            data-surah-number={surahNum}
+            data-ayah-number={ayah.numberInSurah}
+            data-ayah-global={ayah.number || undefined}
+            role="listitem"
+            aria-current={isPlaying ? "true" : undefined}
+            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${surahNum}:${ayah.numberInSurah}`}
+            aria-posinset={index + 1}
+            aria-setsize={items.length}
           >
-            {showSeparator ? <PageSeparator page={ayah.page} /> : null}
-            <QCVerseCard
-              ayah={ayah}
-              surahNum={surahNum}
-              lang={lang}
-              isPlaying={isPlaying}
-              isActive={isActive}
-              showTranslation={showTranslation}
-              showTransliteration={showTransliteration}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
-              showTajwid={showTajwid}
-              translation={translation}
-              calibration={calibration}
-              riwaya={riwaya}
-              fontSize={fontSize}
-              memMode={memMode}
-              onToggleActive={onToggleActive}
-              toggleId={toggleId}
-              ayahId={
-                displayMode === "surah"
-                  ? `ayah-${ayah.numberInSurah}`
-                  : `ayah-${ayah.number}`
-              }
-            />
-          </React.Fragment>
+            {() => (
+              <>
+                {showSeparator ? <PageSeparator page={ayah.page} lang={lang} /> : null}
+                <QCVerseCard
+                  ayah={ayah}
+                  surahNum={surahNum}
+                  lang={lang}
+                  isPlaying={isPlaying}
+                  isActive={isActive}
+                  showTranslation={showTranslation}
+                  showTransliteration={showTransliteration}
+                  showTajwid={showTajwid}
+                  translation={getTranslationForAyah?.(ayah)}
+                  getTransliterationForAyah={getTransliterationForAyah}
+                  calibration={calibration}
+                  riwaya={riwaya}
+                  fontSize={fontSize}
+                  onToggleActive={onToggleActive}
+                  toggleId={toggleId}
+                  referenceLabel={displayMode === "surah" ? String(ayah.numberInSurah) : `${surahNum}:${ayah.numberInSurah}`}
+                />
+              </>
+            )}
+          </VirtualizedItem>
         );
       })}
 
-      {hasMore && (
-        <div
-          ref={sentinelRef}
-          className="flex justify-center p-4"
-          aria-hidden="true"
-        >
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-primary border-t-transparent" />
-        </div>
-      )}
-
-      {surahMeta && !hasMore ? <SurahEndMarker lang={lang} /> : null}
+      {surahMeta ? <SurahEndMarker lang={lang} /> : null}
     </div>
   );
 }

@@ -28,6 +28,7 @@ const AUDIO_PLAYER_LABELS = {
     stop: "Arr\u00eater",
     modalTitle: "R\u00e9glages audio",
     modalSubtitle: "R\u00e9citateurs, volume et synchronisation",
+    reciters: "R\u00e9citateurs",
   },
   en: {
     region: "Audio player",
@@ -58,6 +59,7 @@ const AUDIO_PLAYER_LABELS = {
     stop: "Stop",
     modalTitle: "Audio settings",
     modalSubtitle: "Reciters, volume, and synchronization",
+    reciters: "Reciters",
   },
   ar: {
     region: "\u0645\u0634\u063a\u0644 \u0627\u0644\u0635\u0648\u062a",
@@ -88,6 +90,7 @@ const AUDIO_PLAYER_LABELS = {
     stop: "\u0625\u064a\u0642\u0627\u0641",
     modalTitle: "\u0625\u0639\u062f\u0627\u062f\u0627\u062a \u0627\u0644\u0635\u0648\u062a",
     modalSubtitle: "\u0627\u0644\u0642\u0631\u0627\u0621 \u0648\u0645\u0633\u062a\u0648\u0649 \u0627\u0644\u0635\u0648\u062a \u0648\u0627\u0644\u0645\u0632\u0627\u0645\u0646\u0629",
+    reciters: "\u0627\u0644\u0642\u0631\u0627\u0621",
   },
 };
 

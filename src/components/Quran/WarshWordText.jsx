@@ -1,17 +1,8 @@
-import React from 'react';
-
-const TAJWID_FALLBACK_COLORS = {
-    ghunna: '#09b000', idgham: '#ababab', ikhfa: '#09b000', iqlab: '#00b4e0',
-    qalqala: '#00b4e0', madd: '#c09725', 'madd-normal': '#c09725',
-    'madd-separated': '#e67b00', 'madd-connected': '#ff0000',
-    'lam-shamsiyya': '#ababab', tafkhim: '#134fe1', silent: '#ababab',
-    naql: '#e67b00', tashil: '#09b000', ibdal: '#e67b00',
-    'madd-badal': '#e67b00', 'sila-kubra': '#e67b00', 'tarqiq-ra': '#09b000',
-    'idgham-warsh': '#ababab',
-};
-
-const WAQF_MARKER_SPLIT_RE = /([\u06d6-\u06dc])/u;
-const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
+import React, { useLayoutEffect, useMemo, useRef, useSyncExternalStore } from 'react';
+import { subscribeWarshArchive, getWarshArchiveSnapshot } from '../../utils/warshArchiveRules';
+import { getWarshPerWordTajweedRanges } from '../../utils/warshTajwidRanges';
+import { CLIP_PAINT_SUPPORTED, paintTajweedWord, clearTajweedWordPaint } from '../../utils/tajweedWordPaint';
+import { getWholeWordTajwidRule } from '../../utils/tajwidAnnotation';
 
 /**
  * WarshWordText – renders Unicode Warsh text.
@@ -20,13 +11,41 @@ const WAQF_MARKER_CHAR_RE = /^[\u06d6-\u06dc]$/u;
  * Props:
  *  words         - Array of words (strings)
  *  highlightIdx  - Current word index for karaoke highlighting
- *  tajweedColors - Optional rule-ID array per word
+ *  showTajwid    - Paint the printed Warsh signs with the shared Hafs palette
  */
-const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, tajweedColors, markerFlags }) {
+const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, showTajwid = false, markerFlags }) {
+    const rootRef = useRef(null);
+    const archive = useSyncExternalStore(subscribeWarshArchive, getWarshArchiveSnapshot, getWarshArchiveSnapshot);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the archive is an external store read through module state: its snapshot is the invalidation signal
+    const ranges = useMemo(() => showTajwid ? getWarshPerWordTajweedRanges(words || []) : [], [words, showTajwid, archive]);
+    useLayoutEffect(() => {
+        const root = rootRef.current;
+        if (!root || !showTajwid) return undefined;
+        const elements = [...root.querySelectorAll('[data-warsh-word]')];
+        const repaint = () => elements.forEach(element => {
+            const index = Number(element.dataset.warshWord);
+            if (element.firstChild?.data !== words[index]) return;
+            if (CLIP_PAINT_SUPPORTED) paintTajweedWord(element, ranges[index]);
+            else {
+                const rule = getWholeWordTajwidRule(words[index], ranges[index]);
+                if (rule) element.style.color = `var(--tajwid-${rule})`;
+            }
+        });
+        repaint();
+        const observer = new ResizeObserver(repaint);
+        observer.observe(root);
+        return () => {
+            observer.disconnect();
+            elements.forEach(element => {
+                clearTajweedWordPaint(element);
+                element.style.removeProperty('color');
+            });
+        };
+    }, [words, ranges, showTajwid]);
     if (!words || words.length === 0) return null;
 
     return (
-        <span className="warsh-unicode-text inline" dir="rtl">
+        <span className="warsh-unicode-text inline" dir="rtl" lang="ar" ref={rootRef}>
             {words.map((word, i) => {
                 const isMarkerToken = Boolean(markerFlags?.[i]);
                 let cls = 'warsh-unicode-word';
@@ -39,29 +58,14 @@ const WarshWordText = React.memo(function WarshWordText({ words, highlightIdx, t
 
                 if (isMarkerToken) cls += ' wbw-marker';
 
-                const ruleId = tajweedColors?.[i];
                 const wordStyle = {
                     fontFamily: 'var(--qd-font-family, var(--font-quran-warsh, var(--font-quran, serif)))',
                 };
-                if (ruleId) wordStyle.color = `var(--tajwid-${ruleId}, ${TAJWID_FALLBACK_COLORS[ruleId] || 'inherit'})`;
-                const parts = String(word).split(WAQF_MARKER_SPLIT_RE).filter(Boolean);
 
                 return (
                     <React.Fragment key={i}>
-                        <span className={cls} style={wordStyle}>
-                            {parts.map((part, partIdx) => (
-                                WAQF_MARKER_CHAR_RE.test(part) ? (
-                                    <span
-                                        key={`${i}-${partIdx}`}
-                                        className="warsh-waqf-marker"
-                                        aria-hidden="true"
-                                    >
-                                        {part}
-                                    </span>
-                                ) : (
-                                    <React.Fragment key={`${i}-${partIdx}`}>{part}</React.Fragment>
-                                )
-                            ))}
+                        <span className={`${cls} quran-word-unit`} data-warsh-word={i} data-tajwid={ranges[i]?.[0]?.ruleId} dir="rtl" style={wordStyle}>
+                            {word}
                         </span>
                         {i < words.length - 1 && " "}
                     </React.Fragment>

@@ -1,0 +1,91 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 93,
+  "number_of_ayahs": 11,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Par la première clarté du jour !"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Par la nuit quand elle voile tout !"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Ton Seigneur ne t’a point délaissé, ni ne t’a haï."
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Le monde dernier est pour toi meilleur que le premier.",
+      "footnotes": [
+        {
+          "ref": 611,
+          "text": "Le monde dernier : l’autre monde, l’au-delà ; le monde premier : le bas monde, l’ici-bas."
+        }
+      ]
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "Ton Seigneur te donnera certes ce dont tu seras satisfait."
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Ne t’a-t-Il pas trouvé orphelin, et Il t’a alors donné asile ?"
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "Ne t’a-t-Il pas trouvé égaré, et Il t’a alors guidé ?"
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "Ne t’a-t-Il pas trouvé pauvre, et Il t’a alors enrichi ?"
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "Quant à l’orphelin, ne le persécute point."
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "Quant au mendiant, ne le malmène point."
+    },
+    {
+      "ayah_number": 11,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "Et quant aux bienfaits de ton Seigneur, proclame-les tout haut !"
+    }
+  ]
+}

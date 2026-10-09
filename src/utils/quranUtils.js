@@ -5,6 +5,73 @@
 const BASMALA_CACHE = new Map();
 const CACHE_MAX = 800;
 
+// Some QPC payloads use presentation-only code points which become conspicuous
+// fallback glyphs while the specialised face is loading on mobile:
+// - U+25CC is an internal positioning anchor (a large dotted circle in fallback)
+// - U+06EC is the QPC form of the ishmam/tashil sign; Quran.com's Uthmani and
+//   Tajweed texts carry the canonical U+06EB (notably Yusuf 12:11). The text is
+//   kept canonical here; the font boundary below picks the glyph each face
+//   actually has.
+// - U+200C is sometimes inserted immediately before a Quranic annotation mark
+//   (for example Al-Mulk 67:2: tanwin + ZWNJ + U+06DA). That separator detaches
+//   the combining mark from its base letter, so browsers draw a dotted-circle
+//   fallback. Remove only this unsafe sequence; ordinary ZWNJ usage is preserved.
+export function normalizeQuranGlyphText(text) {
+    return String(text || '')
+        .replace(/[\u25CC\u25CF\u25CB\u2B24\u2022]/g, '')
+        .replace(/\u06EC/g, '\u06EB')
+        .replace(/\u200C(?=[\u06D6-\u06ED])/g, '');
+}
+
+// Two renderings of the same Quranic wording, compared as letter sequences
+// with the Uthmanic service marks (harakat, tatweel, waqf signs, invisible
+// direction controls) removed. Used to decide whether a difference is real
+// wording or only spelling/segmentation noise.
+export function comparableArabicText(value) {
+    return normalizeQuranGlyphText(value)
+        .normalize('NFC')
+        .replace(/[\u0610-\u061A\u0640\u064B-\u065F\u0670\u06D6-\u06ED]/gu, '')
+        .replace(/[\u200C\u200D\u200E\u200F\u2066-\u2069]/gu, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+// The KFGQPC Uthmanic Hafs face only knows its own signs: U+06EC for the
+// ishmam/tashil mark and a plain sukun on a silent letter (2:5 in the QPC
+// text). It has no glyph for the canonical U+06EB / U+06DF, which the system
+// fallback paints as a large black dot in a dotted circle (checked in Chrome
+// on 12:11 and 2:5). The KFGQPC Warsh face shows U+06DF as the small circle
+// and nothing for U+06EB.
+const FONT_SIGN_VARIANTS = {
+    'qpc-hafs': [[/\u06EB/g, '\u06EC'], [/\u06DF/g, '\u0652']],
+    'qpc-warsh': [[/\u06EB/g, '\u06DF']],
+};
+
+export function getFontSignVariant(fontId) {
+    if (fontId === 'qpc-hafs' || fontId === 'qpc-madani-page') return 'qpc-hafs';
+    if (fontId === 'qpc-warsh') return 'qpc-warsh';
+    return null;
+}
+
+export function applyFontSigns(text, variant) {
+    const rules = FONT_SIGN_VARIANTS[variant];
+    if (!rules) return text;
+    return rules.reduce((value, [pattern, glyph]) => value.replace(pattern, glyph), String(text || ''));
+}
+
+const WAQF_COMBINING_MARK_RE = /^[\u06D6-\u06DC]$/u;
+
+/**
+ * Quranic stop signs U+06D6..U+06DC are combining marks. Keep the canonical
+ * Quran character instead of replacing it with ordinary Arabic letters: the
+ * latter changes the printed form of صلى / قلى / ج and varies between fonts.
+ * A non-breaking-space anchor gives WebKit and fallback fonts a harmless base
+ * on which to position the small-high glyph without drawing a dotted circle.
+ */
+export function getReadableWaqfGlyph(char) {
+    return WAQF_COMBINING_MARK_RE.test(char) ? `\u00A0${char}` : char;
+}
+
 // Diacritics character class: covers all Arabic combining marks + tatweel
 const D = '[\\u0640\\u064B-\\u065F\\u0670\\u06D6-\\u06ED]*';
 
@@ -25,18 +92,6 @@ const BASMALA_PATTERNS = [
     // Simple (no diacritics at all)
     /^بسم الله الرحمن الرحيم\s*/,
 ];
-
-export function startsWithBasmala(text) {
-    const input = String(text || '').replace(/[\u200F\u200E]/g, '');
-    return BASMALA_PATTERNS.some((pattern) => pattern.test(input));
-}
-
-export function shouldShowStandaloneBasmala(surahNum, riwaya = 'hafs', firstAyahText = '') {
-    const surahNumber = Number(surahNum);
-    if (!surahNumber || surahNumber === 9) return false;
-    if (surahNumber !== 1) return true;
-    return riwaya === 'warsh' && !startsWithBasmala(firstAyahText);
-}
 
 /**
  * Strips the Basmala from the beginning of a verse text.

@@ -1,0 +1,9 @@
+# These checked-in payloads are verified byte-for-byte at runtime.
+# Preserve LF on Windows so Git checkout cannot invalidate their digests.
+public/data/warsh-page-source.json text eol=lf
+public/data/transliteration-en/*.json text eol=lf
+public/data/warsh-translation-fr/*.json text eol=lf
+public/data/warsh-translation-en/*.json text eol=lf
+# The Warsh Tajwid archive and the other digest-checked data of public/data are
+# verified byte for byte at runtime: keep them LF everywhere.
+public/data/*.json text eol=lf

@@ -1,0 +1,40 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 95,
+  "number_of_ayahs": 8,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "wal-tīni wal-zaytūni"
+    },
+    {
+      "ayah_number": 2,
+      "text": "waṭūri sīnīna"
+    },
+    {
+      "ayah_number": 3,
+      "text": "wahādhā l-baladi l-amīni"
+    },
+    {
+      "ayah_number": 4,
+      "text": "laqad khalaqnā l-insāna fī aḥsani taqwīmin"
+    },
+    {
+      "ayah_number": 5,
+      "text": "thumma radadnāhu asfala sāfilīna"
+    },
+    {
+      "ayah_number": 6,
+      "text": "illā alladhīna āmanū waʿamilū l-ṣāliḥāti falahum ajrun ghayru mamnūnin"
+    },
+    {
+      "ayah_number": 7,
+      "text": "famā yukadhibuka baʿdu bil-dīni"
+    },
+    {
+      "ayah_number": 8,
+      "text": "alaysa l-lahu bi-aḥkami l-ḥākimīna"
+    }
+  ]
+}

@@ -1,27 +1,51 @@
 # Dependencies
 node_modules/
+.npm-cache/
 
 # Build output
 dist/
 
 # Test artifacts
 test-results/
+test-results-*/
 playwright-report/
 coverage/
+.scratch-diag/
+.design-shots/
+tmp-verification-warsh/
 
 # Local dev artifacts
+.claude/settings.local.json
+.codex-artifacts/
+.codex-*.log
 vite-dev*.log
 vite-preview*.log
 vite-preview*.err.log
 vite.config.js.timestamp-*.mjs
 debug.log
+*.log
+*.bak
+*.old
+*.tmp
+*.tsbuildinfo
 currentAyah_matches*.txt
 template_currentAyah*.txt
 scratch/
+/tmp-*.png
+/tmp-*.mjs
+
+# Downloaded originals for scripts/build-reciter-images.mjs — never shipped.
+.cache/
 
 # Backend cache
 server/.cache/
 
+# Local agent tooling: plans, worktrees and per-machine config. The worktrees
+# folder holds a full checkout of this repository, which must never be pushed.
+.kilo/
+# Throwaway HTTPS dev config for on-device secure-context testing; it imports a
+# plugin that is deliberately not a dependency.
+vite.https.config.mjs
 # IDE
 .vscode/
 *.swp
@@ -34,3 +58,25 @@ Thumbs.db
 # Env
 .env
 .env.local
+.env.*
+!.env.example
+design-audit/
+design-audit-2/
+.vercel
+
+# Local Netlify folder
+.netlify
+
+# Vercel CLI local state (device/session ids) — must never be tracked
+.vercel-cli-data/
+.env*
+
+# Raw Tarteel/QUL downloads: local intake only, never committed (see vendor/qul/README.md).
+vendor/
+
+# Warsh tajweed build intermediates (re-run scripts/build-warsh-tajweed/prepare-words.mjs).
+scripts/build-warsh-tajweed/words/
+scripts/build-warsh-tajweed/annotated/
+
+# README image sources (regenerate with scripts/capture-readme-screenshots.mjs)
+docs/images/raw/

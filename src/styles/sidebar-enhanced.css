@@ -1,23 +1,22 @@
-/* ══════════════════════════════════════════════════════
-   Sidebar Enhanced Styles
-   ══════════════════════════════════════════════════════ */
 
-/* ── Base panel ── */
+
+
 #sidebar,
 .sb-wrapper {
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0;
+  /* The sheet, its scrim and the app header share one anchor: starting at 0
+     left the top row under the header and the bottom of the screen uncovered. */
+  top: var(--header-h, 64px);
   left: 0;
-  bottom: 0;
-  width: min(360px, 92vw);
-  z-index: 1000;
+  width: min(340px, 88vw);
+  z-index: var(--z-sidebar);
   background: var(--bg-primary);
   border-right: 1px solid var(--border);
-  box-shadow: 12px 0 48px rgba(0, 0, 0, 0.12);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.08);
   transform: translateX(-100%);
-  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
   overflow: hidden;
 }
 
@@ -26,55 +25,106 @@
   transform: translateX(0);
 }
 
-/* RTL support */
-#sidebar[dir="rtl"],
-.sb-wrapper[dir="rtl"] {
-  left: auto;
-  right: 0;
-  border-right: none;
-  border-left: 1px solid var(--border);
-  transform: translateX(100%);
-  box-shadow: -12px 0 48px rgba(0, 0, 0, 0.12);
+
+/* The production CSS build strips every `[dir=…]` attribute selector, so RTL
+   rules key off `.app-root[data-dir="rtl"]` — a data attribute, which survives.
+   The mirrored-edge transform only applies while the panel is the fixed sheet:
+   from 1280px it is an in-flow rail and must not be translated. */
+@media (max-width: 1279.98px) {
+  .app-root[data-dir="rtl"] #sidebar,
+  .app-root[data-dir="rtl"] .sb-wrapper {
+    left: auto;
+    right: 0;
+    transform: translateX(100%);
+  }
 }
 
-#sidebar.open[dir="rtl"],
-.sb-wrapper.open[dir="rtl"] {
+/* From 1280px only the open panel becomes the in-flow rail; a closed one is
+   still the fixed sheet, and the base rule slides it out to the left — the
+   wrong edge for a right-anchored RTL sheet, which would leave it painted over
+   the reading column. Mirror the slide-out for the closed state at every width. */
+.app-root[data-dir="rtl"] #sidebar:not(.open),
+.app-root[data-dir="rtl"] .sb-wrapper:not(.open) {
+  left: auto;
+  right: 0;
+  transform: translateX(100%);
+}
+
+.app-root[data-dir="rtl"] #sidebar,
+.app-root[data-dir="rtl"] .sb-wrapper {
+  border-right: none;
+  border-left: 1px solid var(--border);
+  box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
+}
+
+.app-root[data-dir="rtl"] #sidebar.open,
+.app-root[data-dir="rtl"] .sb-wrapper.open {
   transform: translateX(0);
 }
 
-/* Dark mode sidebar */
+
 [data-theme="dark"] #sidebar,
 [data-theme="dark"] .sb-wrapper {
-  background: rgba(8, 15, 13, 0.98);
-  border-right-color: rgba(196, 219, 208, 0.12);
-  box-shadow: 12px 0 56px rgba(0, 0, 0, 0.42);
+  background: var(--theme-bg);
+  border-right-color: var(--theme-border);
+  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.3);
 }
 
-/* ── Header (first direct div child) ── */
+
 #sidebar > div:first-child,
 .sb-wrapper > div:first-child {
   flex-shrink: 0;
-  padding: 1rem 1.15rem 0.85rem;
+  padding: 0.75rem 0.85rem 0.65rem;
   border-bottom: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-secondary) 80%, transparent 20%);
+  background: var(--bg-primary);
 }
 
 [data-theme="dark"] #sidebar > div:first-child,
 [data-theme="dark"] .sb-wrapper > div:first-child {
-  background: rgba(6, 11, 10, 0.7);
-  border-bottom-color: rgba(196, 219, 208, 0.1);
+  background: var(--theme-bg-alt);
+  border-bottom-color: var(--theme-border);
 }
 
-/* ── Scrollable zone ── */
+#sidebar .sidebar-close-button,
+.sb-wrapper .sidebar-close-button {
+  border: 1px solid var(--border) !important;
+  background: var(--bg-secondary) !important;
+  color: var(--primary) !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+#sidebar .sidebar-close-button:hover,
+.sb-wrapper .sidebar-close-button:hover {
+  background: var(--bg-tertiary) !important;
+  color: var(--text-primary) !important;
+}
+
+html body .app-root #sidebar .sidebar-close-button svg,
+html body .app-root .sb-wrapper .sidebar-close-button svg {
+  width: 1.05rem !important;
+  height: 1.05rem !important;
+  flex: 0 0 auto;
+}
+
+@media (max-width: 640px) {
+  html body .app-root #sidebar .sidebar-close-button svg,
+  html body .app-root .sb-wrapper .sidebar-close-button svg {
+    width: 0.85rem !important;
+    height: 0.85rem !important;
+  }
+}
+
+
 #sidebar .overflow-y-auto,
 .sb-wrapper .overflow-y-auto {
   scrollbar-width: thin;
-  scrollbar-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) transparent;
+  scrollbar-color: color-mix(in srgb, var(--primary) 25%, transparent 75%) transparent;
 }
 
 #sidebar .overflow-y-auto::-webkit-scrollbar,
 .sb-wrapper .overflow-y-auto::-webkit-scrollbar {
-  width: 4px;
+  width: 3px;
 }
 
 #sidebar .overflow-y-auto::-webkit-scrollbar-track,
@@ -84,59 +134,60 @@
 
 #sidebar .overflow-y-auto::-webkit-scrollbar-thumb,
 .sb-wrapper .overflow-y-auto::-webkit-scrollbar-thumb {
-  background: color-mix(in srgb, var(--primary) 30%, transparent 70%);
+  background: color-mix(in srgb, var(--primary) 25%, transparent 75%);
   border-radius: 999px;
 }
 
-/* ── Tab bar ── */
-#sidebar .grid.gap-1,
-.sb-wrapper .grid.gap-1 {
-  gap: 0.25rem !important;
-  padding: 0.25rem !important;
-  border-radius: 12px !important;
+
+#sidebar .sidebar-tab-list,
+.sb-wrapper .sidebar-tab-list {
+  gap: 0.2rem !important;
+  padding: 0.2rem !important;
+  border-radius: 10px !important;
   border: 1px solid var(--border) !important;
   background: var(--bg-secondary) !important;
 }
 
-#sidebar .grid.gap-1 button,
-.sb-wrapper .grid.gap-1 button {
-  border-radius: 9px !important;
-  font-size: 0.75rem !important;
+#sidebar .sidebar-tab-trigger,
+.sb-wrapper .sidebar-tab-trigger {
+  border-radius: 8px !important;
+  font-size: 0.72rem !important;
   font-weight: 650 !important;
   padding: 0.35rem 0.5rem !important;
   transition: all 0.15s !important;
   border: none !important;
   color: var(--text-secondary) !important;
   background: transparent !important;
-  min-height: 2rem !important;
+  min-height: max(2.75rem, 44px) !important;
 }
 
-/* Active tab button — uses Tailwind bg-bg-primary text-primary shadow-sm */
-#sidebar .grid.gap-1 button.bg-bg-primary,
-.sb-wrapper .grid.gap-1 button.bg-bg-primary {
+
+#sidebar .sidebar-tab-trigger[aria-selected="true"],
+.sb-wrapper .sidebar-tab-trigger[aria-selected="true"] {
   background: var(--bg-card) !important;
   color: var(--primary) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1) !important;
-  font-weight: 750 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  font-weight: 700 !important;
 }
 
-[data-theme="dark"] #sidebar .grid.gap-1 button.bg-bg-primary,
-[data-theme="dark"] .sb-wrapper .grid.gap-1 button.bg-bg-primary {
-  background: rgba(20, 36, 30, 0.9) !important;
-  color: #2fd08e !important;
+[data-theme="dark"] #sidebar .sidebar-tab-trigger[aria-selected="true"],
+[data-theme="dark"] .sb-wrapper .sidebar-tab-trigger[aria-selected="true"] {
+  background: color-mix(in srgb, var(--theme-primary) 14%, var(--theme-panel-bg-strong)) !important;
+  color: var(--emerald-lit) !important;
 }
 
-/* ── Search input ── */
+
 #sidebar input[type="text"],
 #sidebar input[type="search"],
 .sb-wrapper input[type="text"],
 .sb-wrapper input[type="search"] {
-  border-radius: 12px !important;
+  border-radius: 10px !important;
   border: 1px solid var(--border) !important;
   background: var(--bg-secondary) !important;
   color: var(--text-primary) !important;
-  font-size: 0.85rem !important;
-  padding: 0.5rem 0.85rem !important;
+  font-size: 0.8rem !important;
+  padding: 0.4rem 0.75rem !important;
+  min-height: 2.25rem !important;
   transition: border-color 0.15s, box-shadow 0.15s !important;
   outline: none !important;
   width: 100% !important;
@@ -145,73 +196,212 @@
 #sidebar input:focus,
 .sb-wrapper input:focus {
   border-color: color-mix(in srgb, var(--primary) 50%, transparent 50%) !important;
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent 88%) !important;
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 10%, transparent 90%) !important;
 }
 
-/* ── Surah / Juz / Page list items ── */
+
 #sidebar .overflow-y-auto button.w-full,
 .sb-wrapper .overflow-y-auto button.w-full {
-  border-radius: 10px !important;
-  transition: background 0.12s, border-color 0.12s !important;
+  border-radius: 8px !important;
+  transition: background 0.12s !important;
+  min-height: 2.5rem !important;
+  padding: 0.35rem 0.5rem !important;
 }
 
 #sidebar .overflow-y-auto button.w-full:hover,
 .sb-wrapper .overflow-y-auto button.w-full:hover {
-  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%) !important;
+  background: color-mix(in srgb, var(--primary) 5%, var(--bg-secondary) 95%) !important;
 }
 
-/* Active list item — uses border-primary/30 bg-primary/8 classes */
+
 #sidebar .overflow-y-auto button.border-primary\/30,
 #sidebar .overflow-y-auto button[class*="bg-primary"],
 .sb-wrapper .overflow-y-auto button.border-primary\/30,
 .sb-wrapper .overflow-y-auto button[class*="bg-primary"] {
-  background: color-mix(in srgb, var(--primary) 10%, var(--bg-secondary) 90%) !important;
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%) !important;
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-secondary) 92%) !important;
+  border-color: color-mix(in srgb, var(--primary) 25%, transparent 75%) !important;
   color: var(--primary) !important;
 }
 
-/* ── Number circles (surah index badges) ── */
+
 #sidebar span.rounded-full.flex,
 #sidebar span[class*="rounded-full"][class*="flex"],
 .sb-wrapper span.rounded-full.flex,
 .sb-wrapper span[class*="rounded-full"][class*="flex"] {
   border-radius: 50% !important;
-  font-size: 0.65rem !important;
+  font-size: 0.62rem !important;
   font-weight: 800 !important;
-  min-width: 1.6rem !important;
-  height: 1.6rem !important;
+  min-width: 1.5rem !important;
+  height: 1.5rem !important;
 }
 
-/* ── Surah name / title text ── */
+
 #sidebar span.font-semibold,
 #sidebar p.font-semibold,
 .sb-wrapper span.font-semibold,
 .sb-wrapper p.font-semibold {
-  font-size: 0.88rem !important;
+  font-size: 0.82rem !important;
 }
 
-/* ── Arabic calligraphy glyph ── */
-#sidebar [class*="font-surah"],
-.sb-wrapper [class*="font-surah"] {
-  font-size: 1.3rem !important;
-  opacity: 0.65 !important;
+
+/* Juz names have no masthead ligature, so they stay set as readable naskh. */
+#sidebar .sb-row-ar,
+.sb-wrapper .sb-row-ar {
+  font-family: var(--font-arabic-ui, "Noto Naskh Arabic", "Amiri", serif) !important;
+  font-size: max(1.02rem, 16px) !important;
+  line-height: 1.5 !important;
+  font-weight: 400 !important;
+  opacity: 1 !important;
+  color: var(--text-secondary) !important;
+  filter: none !important;
+  text-align: end;
+  max-width: 42%;
+  overflow-wrap: anywhere;
 }
 
-/* ── Subtle entry animation for list items ── */
+/* The surah rows carry the same calligraphic name face as the mushaf
+   cartouche. The light-theme brightness filter is neutralised here so the glyph
+   keeps the row's token ink instead of a filtered approximation of it. */
+#sidebar .sb-row-calli,
+.sb-wrapper .sb-row-calli {
+  flex: 0 0 auto;
+  max-width: 42%;
+  text-align: end;
+  color: var(--text-secondary);
+}
+
+#sidebar .sb-row-calli .font-surah-names,
+.sb-wrapper .sb-row-calli .font-surah-names {
+  display: block;
+  font-size: 1.45rem !important;
+  line-height: 1.3 !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+/* The current-position summary carries the same masthead face for the Arabic
+   name, but at the size of its own caption line rather than a row's. */
+#sidebar .sb-summary-calli,
+.sb-wrapper .sb-summary-calli {
+  display: inline-block;
+  max-width: 45%;
+  vertical-align: -0.3em;
+}
+
+#sidebar .sb-summary-calli .font-surah-names,
+.sb-wrapper .sb-summary-calli .font-surah-names {
+  font-size: 1.15rem !important;
+  line-height: 1.1 !important;
+  filter: none !important;
+  opacity: 1 !important;
+}
+
+
 @media (prefers-reduced-motion: no-preference) {
-  #sidebar .overflow-y-auto > *,
-  .sb-wrapper .overflow-y-auto > * {
-    animation: sb-item-in 0.18s ease both;
+  /* Only animate the first 10 items — avoids triggering 114 animations at once on open */
+  #sidebar .overflow-y-auto > *:nth-child(-n+10),
+  .sb-wrapper .overflow-y-auto > *:nth-child(-n+10) {
+    animation: sb-item-in 0.14s ease both;
   }
 }
 
 @keyframes sb-item-in {
   from {
     opacity: 0;
-    transform: translateX(-6px);
+    transform: translateX(-4px);
   }
   to {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+
+@media (min-width: 640px) and (max-width: 1024px) {
+  #sidebar,
+  .sb-wrapper {
+    width: min(380px, 80vw);
+  }
+}
+
+
+@media (max-width: 420px) {
+  #sidebar,
+  .sb-wrapper {
+    width: min(300px, 85vw);
+  }
+
+  #sidebar > div:first-child,
+  .sb-wrapper > div:first-child {
+    padding: 0.6rem 0.7rem 0.5rem;
+  }
+
+  #sidebar .overflow-y-auto button.w-full,
+  .sb-wrapper .overflow-y-auto button.w-full {
+    min-height: max(2.75rem, 44px) !important;
+    padding: 0.3rem 0.4rem !important;
+  }
+
+  #sidebar .sidebar-tab-trigger,
+  .sb-wrapper .sidebar-tab-trigger {
+    font-size: 0.68rem !important;
+  }
+}
+
+
+@media (min-width: 1280px) {
+  #sidebar.open,
+  .sb-wrapper.open {
+    position: relative;
+    top: 0;
+    transform: none;
+    box-shadow: none;
+    border-right: 1px solid var(--border);
+  }
+}
+
+/* ── Calm list ────────────────────────────────────────────────────────────
+   A navigation list reads as a table of contents: neutral ink for names,
+   muted metadata, one quiet number cell. Colour is kept for the active row
+   and for focus, not for every row. Overrides the deferred hover rules from
+   expert-overhaul.css with the same specificity, loaded later. */
+#sidebar button[type="button"].group > .flex.shrink-0 {
+  border-color: transparent !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600 !important;
+}
+
+#sidebar button[type="button"].group span.text-primary,
+#sidebar button[type="button"].group span.group-hover\:text-primary {
+  color: var(--text-primary) !important;
+}
+
+#sidebar button[type="button"].group span.text-text-primary {
+  font-weight: 500 !important;
+}
+
+#sidebar button[type="button"].group.bg-primary\/8 {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07)) !important;
+}
+
+#sidebar button[type="button"].group.bg-primary\/8 > .flex.shrink-0,
+#sidebar button[type="button"].group.bg-primary\/8 span.text-primary {
+  color: var(--primary) !important;
+  font-weight: 600 !important;
+}
+
+@media (hover: hover) {
+  #sidebar button[type="button"].group:hover .flex.shrink-0 {
+    border-color: transparent !important;
+    background: transparent !important;
+    color: var(--text-primary) !important;
+  }
+}
+
+#sidebar .sidebar-tab-trigger {
+  font-weight: 600 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
 }

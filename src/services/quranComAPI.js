@@ -1,13 +1,7 @@
-import { dbGet, dbSet } from "./dbService";
+import { getSurahAyahCount } from "../data/surahs.js";
+import { fetchJson, mapWithConcurrency } from "./quranComTransport.js";
 
 const BASE_URL = "https://api.quran.com/api/v4";
-const CACHE_TTL = 7 * 24 * 60 * 60 * 1000;
-const FETCH_TIMEOUT = 4000;
-const IDB_STORE = "cache";
-const IDB_PREFIX = "qcom-api:";
-
-const memCache = new Map();
-const inflight = new Map();
 const WBW_AUDIO_BASE = "https://audio.qurancdn.com/";
 
 const VERSE_FIELDS = [
@@ -19,23 +13,16 @@ const VERSE_FIELDS = [
   "juz_number",
   "hizb_number",
   "rub_el_hizb_number",
-  "ruku_number",
-  "manzil_number",
   "text_uthmani",
-  "text_uthmani_simple",
   "text_uthmani_tajweed",
   "text_indopak",
   "text_qpc_hafs",
-  "text_qpc_nastaleeq_hafs",
   "code_v1",
   "code_v2",
-  "v1_page",
-  "v2_page",
 ].join(",");
 
 const WORD_FIELDS = [
   "id",
-  "verse_id",
   "chapter_id",
   "verse_key",
   "location",
@@ -48,153 +35,45 @@ const WORD_FIELDS = [
   "text_uthmani_tajweed",
   "text_indopak",
   "text_qpc_hafs",
-  "text_imlaei",
   "code_v1",
   "code_v2",
-  "v1_page",
-  "v2_page",
   "audio_url",
   "char_type_name",
   "translation",
-  "transliteration",
-  "root",
-  "grammar",
 ].join(",");
 
+// Fields the client asked for until 2026-10 and never read (text_uthmani_simple,
+// text_qpc_nastaleeq_hafs, v1/v2 pages, ruku, manzil, word text_imlaei and
+// verse_id): about 14% of every page. Pages cached under those URLs are still
+// served, see fetchJson's legacy URL.
+const LEGACY_VERSE_FIELDS = ["id","chapter_id","verse_key","verse_number","page_number","juz_number","hizb_number","rub_el_hizb_number","ruku_number","manzil_number","text_uthmani","text_uthmani_simple","text_uthmani_tajweed","text_indopak","text_qpc_hafs","text_qpc_nastaleeq_hafs","code_v1","code_v2","v1_page","v2_page"].join(",");
+const LEGACY_WORD_FIELDS = ["id","verse_id","chapter_id","verse_key","location","position","line_number","line_v1","line_v2","page_number","text_uthmani","text_uthmani_tajweed","text_indopak","text_qpc_hafs","text_imlaei","code_v1","code_v2","v1_page","v2_page","audio_url","char_type_name","translation"].join(",");
+
+// Verified live: 131 is not in /resources/translations, and asking for it
+// returns verses with no translation body at all - a 200 that paints nothing.
+// 20 is Saheeh International, the English edition served as `en.sahih`.
 const TRANSLATION_RESOURCE_IDS = {
-  en: 131,
+  en: 20,
   fr: 136,
 };
 
-function createTimedSignal(signal, timeoutMs = FETCH_TIMEOUT) {
-  const controller = new AbortController();
-  const abort = () => controller.abort();
-  const timeoutId = globalThis.setTimeout(abort, timeoutMs);
-
-  if (signal) {
-    if (signal.aborted) abort();
-    else signal.addEventListener("abort", abort, { once: true });
-  }
-
-  return {
-    signal: controller.signal,
-    cleanup() {
-      globalThis.clearTimeout(timeoutId);
-      signal?.removeEventListener?.("abort", abort);
-    },
-  };
-}
-
-function refreshInBackground(url, cacheKey) {
-  const timed = createTimedSignal(null, FETCH_TIMEOUT);
-  fetch(url, {
-    signal: timed.signal,
-    headers: { Accept: "application/json" },
-  })
-    .then((response) => {
-      if (response.ok) {
-        return response.json();
-      }
-      throw new Error(`Background fetch failed ${response.status}`);
-    })
-    .then((json) => {
-      if (json && typeof json === "object") {
-        memCache.set(cacheKey, json);
-        dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
-      }
-    })
-    .catch(()=>{})
-    .finally(() => {
-      timed.cleanup();
-    });
-}
-
-async function mapWithConcurrency(items, limit, fn) {
-  const results = [];
-  const executing = new Set();
-  for (const item of items) {
-    const p = Promise.resolve().then(() => fn(item));
-    results.push(p);
-    executing.add(p);
-    const clean = () => executing.delete(p);
-    p.then(clean, clean);
-    if (executing.size >= limit) {
-      await Promise.race(executing);
-    }
-  }
-  return Promise.all(results);
-}
-
-async function fetchJson(url, signal) {
-  const cacheKey = IDB_PREFIX + url;
-
-  if (memCache.has(cacheKey)) return memCache.get(cacheKey);
-
-  try {
-    const cached = await dbGet(IDB_STORE, cacheKey);
-    if (cached?.data && cached?.ts) {
-      memCache.set(cacheKey, cached.data);
-      const isFresh = Date.now() - cached.ts < CACHE_TTL;
-      if (isFresh) {
-        return cached.data;
-      } else {
-        refreshInBackground(url, cacheKey);
-        return cached.data;
-      }
-    }
-  } catch {
-    // Network fetch below remains the source of truth.
-  }
-
-  if (inflight.has(cacheKey)) return inflight.get(cacheKey);
-
-  const request = (async () => {
-    const timed = createTimedSignal(signal);
-    try {
-      const response = await fetch(url, {
-        signal: timed.signal,
-        headers: { Accept: "application/json" },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Quran.com API error ${response.status}: ${url}`);
-      }
-
-      const json = await response.json();
-      if (!json || typeof json !== "object") {
-        throw new Error("Malformed Quran.com API response");
-      }
-
-      memCache.set(cacheKey, json);
-      dbSet(IDB_STORE, { key: cacheKey, data: json, ts: Date.now() }).catch(() => {});
-      return json;
-    } finally {
-      timed.cleanup();
-      inflight.delete(cacheKey);
-    }
-  })();
-
-  inflight.set(cacheKey, request);
-  return request;
-}
-
-function buildVerseParams(extra = {}) {
+function buildVerseParams(extra = {}, legacy = false) {
   const includeWords = extra.words === true || extra.words === "true";
   const params = new URLSearchParams({
-    fields: VERSE_FIELDS,
+    fields: legacy ? LEGACY_VERSE_FIELDS : VERSE_FIELDS,
     mushaf: "1",
     per_page: "50",
     ...extra,
   });
   params.set("words", includeWords ? "true" : "false");
   if (includeWords) {
-    params.set("word_fields", WORD_FIELDS);
+    params.set("word_fields", legacy ? LEGACY_WORD_FIELDS : WORD_FIELDS);
   }
   return params;
 }
 
-function buildUrl(path, extraParams) {
-  const params = buildVerseParams(extraParams);
+function buildUrl(path, extraParams, legacy = false) {
+  const params = buildVerseParams(extraParams, legacy);
   return `${BASE_URL}${path}?${params.toString()}`;
 }
 
@@ -212,6 +91,7 @@ function normalizeWordAudioUrl(audioPath) {
 function htmlToPlainText(value) {
   return String(value || "")
     .replace(/<sup[^>]*>.*?<\/sup>/gi, "")
+    .replace(/<br\s*\/?>|<\/(?:p|h[1-6]|li|div)>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/g, " ")
     .replace(/&amp;/g, "&")
@@ -219,14 +99,23 @@ function htmlToPlainText(value) {
     .replace(/&#39;/g, "'")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
-    .replace(/\s+/g, " ")
+    .replace(/[^\S\r\n]+/g, " ")
+    .replace(/ *\n+ */g, "\n\n")
+    .replace(/ +([.,;:!?])/g, "$1")
     .trim();
 }
 
 function stripVerseEndGlyphs(value) {
   return String(value || "")
-    .replace(/<span[^>]*(?:class|data-type)=["'][^"']*(?:end|ayah|verse)[^"']*["'][^>]*>.*?<\/span>/gi, "")
-    .replace(/[\u06DD\u06DE\uFC00-\uFCFF\uFDF0-\uFDFF]/g, "")
+    .replace(/<span\s+class\s*=\s*(?:"end"|'end'|end)\s*>[^<]*<\/span>/gi, "")
+    // Only the proven end-of-ayah marker bases: U+06DD (end-of-ayah rosette)
+    // and U+06DE. Arabic presentation forms (U+FC00-U+FCFF, U+FDF0-U+FDFF) are
+    // deliberately NOT stripped - they carry reader-visible Quranic ligatures
+    // (U+FDFC Allah, U+FDFD salawat, ...), which src/data/fonts.js and
+    // tests/warsh-marker-integrity.test.mjs define as content unless the ayah
+    // number itself is proven. Stripping the whole range silently deleted
+    // Quran text from the verse.
+    .replace(/[\u06DD\u06DE]/g, "")
     .replace(/\s+/g, " ")
     .trim();
 }
@@ -246,7 +135,7 @@ function normalizeWord(word = {}, verse = {}) {
     lineV1: Number(word.line_v1) || null,
     lineV2: Number(word.line_v2) || null,
     page: Number(word.page_number || verse.page_number) || null,
-    text: word.text_qpc_hafs || word.text_uthmani || word.text_indopak || word.text,
+    text: word.text_uthmani || word.text_qpc_hafs || word.text_indopak || word.text,
     textUthmani: word.text_uthmani || "",
     textTajweed: word.text_uthmani_tajweed || "",
     textIndopak: word.text_indopak || "",
@@ -274,7 +163,7 @@ function normalizeVerse(verse = {}) {
     : [];
   const wordText = normalizedWords
     .filter((word) => word.charType === "word")
-    .map((word) => word.textQpcHafs || word.textUthmani || word.text)
+    .map((word) => word.textUthmani || word.text)
     .filter(Boolean)
     .join(" ");
   const text =
@@ -376,21 +265,62 @@ function normalizeVerseCollection(verses, meta = {}) {
   };
 }
 
-async function fetchPaginated(path, meta, signal) {
-  const first = await fetchJson(buildUrl(path, { page: "1" }), signal);
-  const verses = [...(first.verses || [])];
-  const totalPages = Number(first.pagination?.total_pages || 1);
+const VERSES_PER_PAGE = 50;
+// A page of verses is a few hundred kilobytes of compressed JSON on a long surah.
+// Six is enough for the longest one (Al-Baqarah, 286 verses) to travel in a
+// single wave over HTTP/2.
+const MAX_PARALLEL_PAGES = 6;
 
-  if (totalPages > 1) {
-    const remainingPages = Array.from({ length: totalPages - 1 }, (_, index) => index + 2);
-    const chunks = await mapWithConcurrency(
-      remainingPages,
-      4,
-      (page) => fetchJson(buildUrl(path, { page: String(page) }), signal)
+/**
+ * @param {number} [expectedPages] Page count known without asking the API (the
+ *   verse count of a surah is fixed). Every page is then requested at once
+ *   instead of waiting for page 1 to learn the total: that serial round trip
+ *   delayed every long surah by the whole duration of its first page.
+ * @param {(partial: object) => void} [onFirstPage] Called once, as soon as page 1
+ *   arrives and more pages follow, with the verses of that page in the final
+ *   shape. The first fifty verses can be read while the rest is still travelling.
+ */
+async function fetchPaginated(path, meta, signal, expectedPages = 1, onFirstPage) {
+  const fetchPage = (page) =>
+    fetchJson(
+      buildUrl(path, { page: String(page), words: true }),
+      signal,
+      buildUrl(path, { page: String(page), words: true }, true),
     );
-    chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
+  const speculative = Math.max(1, Math.min(expectedPages, MAX_PARALLEL_PAGES));
+
+  const fetchWavePage = (page) =>
+    fetchPage(page).then((chunk) => {
+      const announced = Number(chunk?.pagination?.total_pages || 1);
+      if (page === 1 && onFirstPage && announced > 1 && !signal?.aborted) {
+        try {
+          onFirstPage(normalizeVerseCollection(chunk.verses || [], meta));
+        } catch {
+          // A faulty listener never costs the reader their text.
+        }
+      }
+      return chunk;
+    });
+
+  const wave = await mapWithConcurrency(
+    Array.from({ length: speculative }, (_, index) => index + 1),
+    MAX_PARALLEL_PAGES,
+    fetchWavePage,
+  );
+  const first = wave[0];
+  // The API answers with the real count: pages we guessed beyond it are dropped,
+  // pages it announces beyond our guess are fetched now.
+  const totalPages = Math.max(1, Number(first.pagination?.total_pages || 1));
+  const chunks = wave.slice(0, totalPages);
+  if (totalPages > chunks.length) {
+    const missing = Array.from(
+      { length: totalPages - chunks.length },
+      (_, index) => chunks.length + index + 1,
+    );
+    chunks.push(...(await mapWithConcurrency(missing, MAX_PARALLEL_PAGES, fetchPage)));
   }
 
+  const verses = chunks.flatMap((chunk) => chunk.verses || []);
   return normalizeVerseCollection(verses, meta);
 }
 
@@ -399,11 +329,49 @@ export function canLoadFromQuranCom(pathPrefix, riwaya = "hafs") {
   return /^(surah|page|juz)\/\d+$/.test(pathPrefix) || /^ayah\/\d+:\d+$/.test(pathPrefix);
 }
 
-export async function fetchQuranComText(pathPrefix, signal) {
+export async function fetchQuranComSurahInfo(surahNum, signal) {
+  const chapter = Number(surahNum);
+  if (!Number.isInteger(chapter) || chapter < 1 || chapter > 114) {
+    throw new RangeError("Invalid surah number");
+  }
+
+  const [infoJson, chapterJson] = await Promise.all([
+    fetchJson(`${BASE_URL}/chapters/${chapter}/info?language=en`, signal),
+    fetchJson(`${BASE_URL}/chapters/${chapter}?language=en`, signal),
+  ]);
+  const info = infoJson?.chapter_info;
+  if (!info || typeof info !== "object") {
+    throw new Error("Missing Quran.com surah information");
+  }
+
+  const meta = chapterJson?.chapter || {};
+
+  return {
+    shortText: htmlToPlainText(info.short_text),
+    text: htmlToPlainText(info.text),
+    source: htmlToPlainText(info.source),
+    revelationOrder: Number(meta.revelation_order) || null,
+    revelationPlace: meta.revelation_place || null,
+    pages: Array.isArray(meta.pages) ? meta.pages.map(Number) : [],
+  };
+}
+
+/**
+ * @param {{ onFirstPage?: (partial: object) => void }} [options] Only a whole
+ *   surah is announced early: page and juz requests are one request or one short wave.
+ */
+export async function fetchQuranComText(pathPrefix, signal, options = {}) {
   let match = /^surah\/(\d+)$/.exec(pathPrefix);
   if (match) {
     const number = Number(match[1]);
-    return fetchPaginated(`/verses/by_chapter/${number}`, { number }, signal);
+    const expectedPages = Math.ceil(getSurahAyahCount(number) / VERSES_PER_PAGE);
+    return fetchPaginated(
+      `/verses/by_chapter/${number}`,
+      { number },
+      signal,
+      expectedPages,
+      options.onFirstPage,
+    );
   }
 
   match = /^page\/(\d+)$/.exec(pathPrefix);
@@ -421,7 +389,11 @@ export async function fetchQuranComText(pathPrefix, signal) {
   match = /^ayah\/(\d+):(\d+)$/.exec(pathPrefix);
   if (match) {
     const verseKey = `${Number(match[1])}:${Number(match[2])}`;
-    const json = await fetchJson(buildUrl(`/verses/by_key/${verseKey}`), signal);
+    const json = await fetchJson(
+      buildUrl(`/verses/by_key/${verseKey}`, { words: true }),
+      signal,
+      buildUrl(`/verses/by_key/${verseKey}`, { words: true }, true),
+    );
     return normalizeVerse(json.verse || {});
   }
 
@@ -454,12 +426,23 @@ async function fetchQuranComTranslationPath(path, resourceId, lang, meta, signal
     chunks.forEach((chunk) => verses.push(...(chunk.verses || [])));
   }
 
+  // A dead resource id answers with verses that carry no translation body.
+  // Passed through, that reads as "this surah has no translation".
+  const hasBody = verses.some((verse) => verse?.translations?.length);
+  if (verses.length && !hasBody) {
+    throw new Error(`Quran.com returned no ${lang} translation body`);
+  }
+
   return { ...normalizeTranslationCollection(verses, lang), number: meta?.number || null };
 }
 
 export async function fetchQuranComTranslations(pathPrefix, langs = ["fr"], signal) {
-  const langArray = (Array.isArray(langs) ? langs : [langs])
-    .map((lang) => (TRANSLATION_RESOURCE_IDS[lang] ? lang : "fr"));
+  const langArray = (Array.isArray(langs) ? langs : [langs]).map((lang) => {
+    if (!TRANSLATION_RESOURCE_IDS[lang]) {
+      throw new Error(`Unsupported Quran.com translation language: ${lang}`);
+    }
+    return lang;
+  });
 
   let path = null;
   let meta = {};
@@ -490,7 +473,3 @@ export async function fetchQuranComTranslations(pathPrefix, langs = ["fr"], sign
   );
 }
 
-export function getQuranComPageFontFamily(page, version = "v2") {
-  const normalizedVersion = version === "v1" ? "v1" : version === "v4" ? "v4" : "v2";
-  return `qcf-${normalizedVersion}-p${Number(page) || 1}`;
-}

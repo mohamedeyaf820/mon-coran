@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { resolveFontFamily } from "../../data/fonts";
+import {
+  DEFAULT_ARABIC_FONT_SIZE,
+  clampArabicFontSize,
+  getArabicReadingLineHeight,
+  getResponsiveArabicFontSize,
+} from "../../utils/arabicTypography";
 
 export default function useQuranDisplayView({
+  contentReady,
   dispatch,
   displayMode,
   fontFamily,
@@ -14,11 +21,13 @@ export default function useQuranDisplayView({
   mushafLayout,
 }) {
   const contentRef = useRef(null);
-  const pinchRef = useRef({ startDist: null, startSize: null });
+  const pinchRef = useRef({ startDist: null, startSize: null, lastSize: null });
+  const pinchFrameRef = useRef(null);
+  const pendingPinchSizeRef = useRef(null);
   const [fullPage, setFullPage] = useState(false);
-  const [isCompactPhone, setIsCompactPhone] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return window.matchMedia("(max-width: 420px)").matches;
+  const [viewportWidth, setViewportWidth] = useState(() => {
+    if (typeof window === "undefined") return 1024;
+    return window.innerWidth;
   });
 
   const quranFontCss = resolveFontFamily(fontFamily, riwaya);
@@ -27,7 +36,16 @@ export default function useQuranDisplayView({
     Math.min(500, Number(syncOffsetsMs?.[syncKey] ?? 0)),
   );
   const readingFontSize = useMemo(
-    () => Math.min(Math.max(quranFontSize, 12), 96),
+    () =>
+      getResponsiveArabicFontSize({
+        preferredSize: clampArabicFontSize(quranFontSize),
+        viewportWidth,
+        mushafLayout,
+      }),
+    [mushafLayout, quranFontSize, viewportWidth],
+  );
+  const preferredReadingFontSize = useMemo(
+    () => clampArabicFontSize(quranFontSize),
     [quranFontSize],
   );
   const fullscreenFontSize = useMemo(
@@ -48,72 +66,150 @@ export default function useQuranDisplayView({
   }, []);
 
   useEffect(() => {
-    if (!fullPage) return undefined;
-    const handler = (event) => {
-      if (event.key === "Escape") setFullPage(false);
+    let frameId;
+    const updateWidth = () => {
+      window.cancelAnimationFrame(frameId);
+      frameId = window.requestAnimationFrame(() => {
+        setViewportWidth(window.innerWidth);
+      });
     };
-    document.addEventListener("keydown", handler);
-    return () => document.removeEventListener("keydown", handler);
-  }, [fullPage]);
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 420px)");
-    const onChange = (event) => setIsCompactPhone(event.matches);
-    setIsCompactPhone(media.matches);
-    if (typeof media.addEventListener === "function") {
-      media.addEventListener("change", onChange);
-      return () => media.removeEventListener("change", onChange);
-    }
-    media.addListener(onChange);
-    return () => media.removeListener(onChange);
+    updateWidth();
+    window.addEventListener("resize", updateWidth, { passive: true });
+    return () => {
+      window.cancelAnimationFrame(frameId);
+      window.removeEventListener("resize", updateWidth);
+    };
   }, []);
+
+  useEffect(
+    () => () => {
+      if (pinchFrameRef.current) {
+        window.cancelAnimationFrame(pinchFrameRef.current);
+      }
+    },
+    [],
+  );
 
   useLayoutEffect(() => {
     const element = contentRef.current;
     if (!element) return;
 
-    const stableReadingSize = Math.max(mushafLayout === "mushaf" ? 38 : 28, readingFontSize);
-    const quranFontSizeCss = `${Math.round(stableReadingSize)}px`;
-    const quranLineHeight =
-      mushafLayout === "mushaf" ? "2.48" : displayMode === "page" ? "3.05" : "2.2";
+    const quranFontSizeCss = `${Math.round(readingFontSize)}px`;
+    const listMetric = (factor, minimum, maximum) =>
+      `${Math.max(minimum, Math.min(maximum, readingFontSize * factor)).toFixed(2)}px`;
+    const rawLineHeight = getArabicReadingLineHeight({
+      displayMode,
+      fontFamily,
+      mushafLayout,
+      riwaya,
+    });
+    // At large list sizes the tight per-face ratios leave ~4 px of room for
+    // high harakat (madda, hamza) inside clipped verse containers; raise the
+    // floor instead of loosening every per-face ratio at small sizes.
+    const quranLineHeight = String(
+      mushafLayout === "list" && readingFontSize >= 28 && rawLineHeight < 1.95
+        ? 1.95
+        : rawLineHeight,
+    );
     element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
     element.style.setProperty("--qd-font-size", quranFontSizeCss);
+    // Verse-list chrome follows the resolved, device-aware Arabic size. This
+    // keeps small text from sitting inside an unnecessarily tall card while
+    // preserving comfortable spacing when the reader enlarges it.
+    element.style.setProperty(
+      "--qd-list-card-padding-block",
+      listMetric(0.42, 6, 24),
+    );
+    element.style.setProperty(
+      "--qd-list-card-padding-inline",
+      listMetric(0.5, 8, 28),
+    );
+    element.style.setProperty(
+      "--qd-list-content-gap",
+      listMetric(0.22, 4, 14),
+    );
+    element.style.setProperty(
+      "--qd-list-section-gap",
+      listMetric(0.28, 5, 18),
+    );
+    element.style.setProperty(
+      "--qd-list-control-size",
+      listMetric(1.08, 32, 44),
+    );
+    element.style.setProperty(
+      "--qd-list-icon-size",
+      listMetric(0.4, 12, 15),
+    );
+    element.style.setProperty(
+      "--qd-list-loading-height",
+      listMetric(1.7, 42, 80),
+    );
     element.style.setProperty(
       "--qd-translation-font-size",
       `${Math.max(12, Math.min(28, Number(quranTranslationFontSize) || 18))}px`,
     );
     element.style.setProperty("--qd-fullscreen-font-size", `${fullscreenFontSize}px`);
-    document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
+    // The print-engine sheet sizes itself from the raw preference: the CSS
+    // clamp keeps it inside the fifteen-line measure of the pane, so the
+    // slider shrinks freely and grows up to the sheet's natural width.
+    element.style.setProperty(
+      "--qcm-mushaf-font-size",
+      `${Math.round(preferredReadingFontSize)}px`,
+    );
+    // The continuous sheet sizes itself from its own width, so the preference
+    // reaches it as a unitless multiplier rather than a pixel value.
+    element.style.setProperty(
+      "--qcm-mushaf-scale",
+      String(preferredReadingFontSize / DEFAULT_ARABIC_FONT_SIZE),
+    );
+    document.documentElement.style.setProperty("--qcom-reader-font-size", quranFontSizeCss);
+    document.documentElement.style.setProperty("--qcom-ar-size", quranFontSizeCss);
     document.documentElement.style.setProperty("--quran-font-size", quranFontSizeCss);
-    document.documentElement.style.setProperty("--quran-line-height", quranLineHeight);
+    document.documentElement.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
+    element.style.setProperty("--qd-font-size", quranFontSizeCss);
+    element.style.setProperty("--qd-reading-font-size", quranFontSizeCss);
+    element.style.setProperty("--qcom-reader-font-size", quranFontSizeCss);
+    element.style.setProperty("--qcom-ar-size", quranFontSizeCss);
+    element.style.setProperty("--quran-font-size", quranFontSizeCss);
+    element.style.setProperty("--quran-line-height", quranLineHeight);
+    element.style.setProperty("--cpv-font-size", quranFontSizeCss);
+
     if (isQCF4) {
       element.style.removeProperty("--qd-font-family");
       element.dataset.qcf4Font = "true";
-      return;
+    } else {
+      document.documentElement.style.setProperty("--quran-font-family", quranFontCss);
+      document.documentElement.style.setProperty("--font-quran", quranFontCss);
+      document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
+      element.style.setProperty("--qd-font-family", quranFontCss);
+      element.style.setProperty("--quran-font-family", quranFontCss);
+      element.dataset.qcf4Font = "false";
     }
-
-    element.style.setProperty("--qd-font-family", quranFontCss);
-    element.style.setProperty("--qd-font-size", quranFontSizeCss);
-    element.style.setProperty("--quran-font-family", quranFontCss);
-    element.style.setProperty("--quran-font-size", quranFontSizeCss);
-    element.style.setProperty("--quran-line-height", quranLineHeight);
-    element.dataset.qcf4Font = "false";
-    document.documentElement.style.setProperty("--font-quran", quranFontCss);
-    document.documentElement.style.setProperty("--font-quran-tajweed", quranFontCss);
+    element.dataset.quranFont = fontFamily;
 
     element
-      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, [lang='ar']")
+      .querySelectorAll(".verse-text, .mushaf-container, .quran-text, .qc-ayah-text-ar, .rd-arabic, .mushaf-verse, .cpv-verse, [lang='ar']:not(.mfp-content-area)")
       .forEach((arabicElement) => {
-        arabicElement.style.fontFamily = quranFontCss;
+        if (!isQCF4) {
+          arabicElement.style.fontFamily = quranFontCss;
+        }
+        // The print-engine sheet owns its size: the device-scaled stamp would
+        // override the fifteen-line clamp contract and desync adjacent sheets.
+        if (arabicElement.closest(".qcm-page-shell")) return;
+        arabicElement.style.fontSize = quranFontSizeCss;
       });
   }, [
+    contentReady,
     displayMode,
     fullscreenFontSize,
+    fontFamily,
     isQCF4,
     quranFontCss,
     quranTranslationFontSize,
     mushafLayout,
+    preferredReadingFontSize,
     readingFontSize,
+    riwaya,
   ]);
 
   const touchHandlers = {
@@ -124,7 +220,8 @@ export default function useQuranDisplayView({
           event.touches[0].clientX - event.touches[1].clientX,
           event.touches[0].clientY - event.touches[1].clientY,
         ),
-        startSize: quranFontSize,
+        startSize: preferredReadingFontSize,
+        lastSize: preferredReadingFontSize,
       };
     },
     onTouchMove: (event) => {
@@ -134,14 +231,25 @@ export default function useQuranDisplayView({
         event.touches[0].clientY - event.touches[1].clientY,
       );
       const nextSize = Math.round(
-        Math.max(12, Math.min(96, pinchRef.current.startSize * (distance / pinchRef.current.startDist))),
+        clampArabicFontSize(
+          pinchRef.current.startSize * (distance / pinchRef.current.startDist),
+        ),
       );
-      if (nextSize !== quranFontSize) {
-        dispatch({ type: "SET_QURAN_FONT_SIZE", payload: nextSize });
-      }
+      if (nextSize === pinchRef.current.lastSize) return;
+      pinchRef.current.lastSize = nextSize;
+      pendingPinchSizeRef.current = nextSize;
+      if (pinchFrameRef.current) return;
+      pinchFrameRef.current = window.requestAnimationFrame(() => {
+        pinchFrameRef.current = null;
+        const size = pendingPinchSizeRef.current;
+        pendingPinchSizeRef.current = null;
+        if (size != null) {
+          dispatch({ type: "SET_QURAN_FONT_SIZE", payload: size });
+        }
+      });
     },
     onTouchEnd: () => {
-      pinchRef.current = { startDist: null, startSize: null };
+      pinchRef.current = { startDist: null, startSize: null, lastSize: null };
     },
   };
 

@@ -1,45 +1,39 @@
-import React, { useMemo } from "react";
+import React, { memo, useMemo } from "react";
 import { t } from "../../i18n";
 import { toAr } from "../../data/surahs";
-import { cn } from "../../lib/utils";
-import CleanPageView from "../Quran/CleanPageView";
 import ReadingToolbar from "../Quran/ReadingToolbar";
-import ReadingProgressBar from "../Quran/ReadingProgressBar";
 import AyahActionsModal from "./AyahActionsModal";
 import QCVerseByVerseView from "./QCVerseByVerseView";
 import ModeNavigation from "./ModeNavigation";
+import ReaderContextCard from "./ReaderContextCard";
+import VirtualizedMushafPages from "./VirtualizedMushafPages";
 import { modePaneShellClass } from "./displayClasses";
 
-export default function JuzMode({
+function JuzMode({
   activeAyah,
   calibration,
   classes,
   currentJuz,
   currentPlayingAyah,
   getTranslationForAyah,
+  getTransliterationForAyah,
   isQCF4,
   lang,
-  memMode,
   mushafLayout,
-  onNavigateToAyah,
   onNextJuz,
+  onOpenFullscreen,
   onPlayJuz,
   onPlaySpecificSurah,
   onPrevJuz,
   onToggleActive,
-  onToggleMemorization,
   onToggleMushaf,
-  onToggleWordByWord,
   pageGroups = [],
   preparingSurah,
   readingFontSize,
   riwaya,
-  showRiwayaStar,
   showTajwid,
   showTranslation,
   showTransliteration,
-  showWordByWord,
-  showWordTranslation,
   surahGroups,
 }) {
   const activeAyahEntry = useMemo(() =>
@@ -64,71 +58,61 @@ export default function JuzMode({
         mushafLayout === "mushaf" ? "quran-mode-pane--mushaf" : ""
       } ${modePaneShellClass}`}
     >
-      <ReadingProgressBar />
-      <div className="mb-4 flex items-center justify-between rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-4 py-3">
-        <div className="flex items-center gap-2">
-          <i className="fas fa-book-open text-sm text-[var(--primary)]" />
-          <span className="font-[var(--font-ui)] text-sm font-bold text-[var(--text-primary)]">
-            {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
-          </span>
-        </div>
+      <section
+        className="reader-control-deck"
+        aria-label={lang === "fr" ? "Commandes de lecture" : lang === "ar" ? "أدوات القراءة" : "Reading controls"}
+      >
+        <ReaderContextCard
+          kind="juz"
+          label={t("settings.juzMode", lang)}
+          value={lang === "ar" ? toAr(currentJuz) : currentJuz}
+          numericValue={currentJuz}
+          total={30}
+          secondary={
+            lang === "fr"
+              ? "Lecture continue"
+              : lang === "ar"
+                ? "قراءة متواصلة"
+                : "Continuous reading"
+          }
+          riwaya={riwaya}
+          lang={lang}
+        />
 
-        <span
-          className={cn(
-            "inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[0.65rem] font-bold tracking-wide",
-            riwaya === "warsh"
-              ? "border-[rgba(212,168,32,0.3)] bg-[rgba(212,168,32,0.12)] text-[var(--gold,#b8860b)]"
-              : "border-[rgba(var(--primary-rgb),0.2)] bg-[rgba(var(--primary-rgb),0.08)] text-[var(--primary)]",
-          )}
-        >
-          {showRiwayaStar && <i className="fas fa-star text-[0.55rem]" />}
-          {riwaya === "warsh" ? "WARSH" : "HAFS"}
-        </span>
-      </div>
-
-      <ReadingToolbar
-        contextLabel={`${t("sidebar.juz", lang)} ${lang === "ar" ? toAr(currentJuz) : currentJuz} / 30`}
-        onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
-        playLabel={lang === "fr" ? "Écouter le juz" : "Listen juz"}
-        preparingSurah={preparingSurah}
-        surahNum={firstSurah}
-        currentAyah={activeAyah || 1}
-        onNavigateToAyah={onNavigateToAyah}
-        onToggleMushaf={onToggleMushaf}
-        onToggleMemorization={onToggleMemorization}
-        onToggleWordByWord={onToggleWordByWord}
-      />
+        <ReadingToolbar
+          onPlay={onPlayJuz || (() => firstSurah && onPlaySpecificSurah(firstSurah))}
+          playLabel={lang === "ar" ? undefined : t("audio.listenJuz", lang)}
+          preparingSurah={preparingSurah}
+          surahNum={firstSurah}
+          onToggleMushaf={onToggleMushaf}
+          onOpenFullscreen={onOpenFullscreen}
+        />
+      </section>
 
       {mushafLayout === "mushaf" ? (
         <>
-          {pageGroups.map((group, index) => (
-            <CleanPageView
-              key={`cpv-jz-pg-${group.page}-${index}`}
-              ayahs={group.ayahs}
-              lang={lang}
-              fontSize={readingFontSize}
-              isQCF4={isQCF4}
-              showTajwid={showTajwid}
-              currentPlayingAyah={currentPlayingAyah}
-              surahNum={group.ayahs[0]?.surah?.number || group.ayahs[0]?.surah || firstSurah}
-              calibration={calibration}
-              riwaya={riwaya}
-              showTranslation={showTranslation}
-              getTranslation={getTranslationForAyah}
-              onAyahClick={onToggleActive}
-              activeAyah={activeAyah}
-              getAyahToggleId={(ayah) => ayah.number}
-              showSurahHeader={true}
-              showWordByWord={showWordByWord}
-              showWordTranslation={showWordTranslation}
-              showTransliteration={showTransliteration}
-            />
-          ))}
+          <VirtualizedMushafPages
+            activeAyah={activeAyah}
+            calibration={calibration}
+            currentPlayingAyah={currentPlayingAyah}
+            fallbackSurah={firstSurah}
+            isQCF4={isQCF4}
+            lang={lang}
+            mode="juz"
+            onAyahClick={onToggleActive}
+            onOpenFullscreen={onOpenFullscreen}
+            pageGroups={pageGroups}
+            readingFontSize={readingFontSize}
+            riwaya={riwaya}
+            showTajwid={showTajwid}
+            showTransliteration={showTransliteration}
+          />
           <AyahActionsModal
             activeAyah={activeAyah}
             onClose={() => onToggleActive(null)}
             surah={activeAyahData?.surah?.number || activeAyahEntry?.surah}
             ayahData={activeAyahData}
+            translations={activeAyahData ? getTranslationForAyah?.(activeAyahData) : []}
           />
         </>
       ) : (
@@ -138,15 +122,13 @@ export default function JuzMode({
           activeAyah={activeAyah}
           lang={lang}
           getTranslationForAyah={getTranslationForAyah}
+          getTransliterationForAyah={getTransliterationForAyah}
           showTajwid={showTajwid}
           showTranslation={showTranslation}
-          showWordByWord={showWordByWord}
           showTransliteration={showTransliteration}
-          showWordTranslation={showWordTranslation}
           calibration={calibration}
           riwaya={riwaya}
           fontSize={readingFontSize}
-          memMode={memMode}
           onToggleActive={onToggleActive}
           displayMode="juz"
           showPageSeparators
@@ -164,7 +146,8 @@ export default function JuzMode({
         onNext={onNextJuz}
         centerContent={
           <span className={classes.pageIndicatorClass}>
-            {t("sidebar.juz", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} / 30
+            {t("settings.juzMode", lang)} {lang === "ar" ? toAr(currentJuz) : currentJuz} /{" "}
+            {lang === "ar" ? toAr(30) : 30}
           </span>
         }
         lang={lang}
@@ -172,3 +155,5 @@ export default function JuzMode({
     </div>
   );
 }
+
+export default memo(JuzMode);

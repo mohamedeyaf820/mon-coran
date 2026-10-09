@@ -2,31 +2,105 @@ const loadedFontIds = new Set();
 const failedFontIds = new Set();
 const inFlightLoads = new Map();
 
+// The runtime FontFace names must match the @font-face blocks in tailwind.css:
+// no plain duplicate aliases in a stack. The restricted QPC Hafs Unicode face
+// is a distinct Warsh rendering policy over the same cached binary.
+const WARSH_FACE = {
+  family: "KFGQPC Warsh",
+  url: "/fonts/kfgqpc-warsh-21.woff2",
+  format: "woff2",
+};
+const SCHEHERAZADE_FACE = {
+  family: "Scheherazade New",
+  url: "/fonts/scheherazade-new-400.woff2",
+  format: "woff2",
+};
+
 const FONT_SOURCES = {
   "qpc-hafs": {
     family: "QPC Hafs",
-    url: "https://verses.quran.foundation/fonts/quran/hafs/uthmanic_hafs/UthmanicHafs1Ver18.woff2",
+    url: "/fonts/uthmanic-hafs-v18.woff2",
     format: "woff2",
   },
+  // Remote and not redistributable (its licence forbids it), so it is the one
+  // face that can be missing. Its text uses private-use glyph codes that no other
+  // face draws: until it is there nothing should be painted ("block"), and after a
+  // short wait the reader falls back to the Hafs text and face.
   "qpc-indopak": {
     family: "IndoPak",
     url: "https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.woff2",
     format: "woff2",
+    display: "block",
+    timeoutMs: 4000,
   },
-  "qpc-warsh": {
-    family: "QPC Warsh",
-    url: "https://fonts.quranwbw.com/v2/kfgqpc_uthman_taha_warsh-webfont.woff2",
+  // Scheherazade New: served from local woff2 (preloaded in index.html)
+  "scheherazade-new": SCHEHERAZADE_FACE,
+  // Same font file, used for Warsh riwaya rendering
+  "scheherazade-new-warsh": SCHEHERAZADE_FACE,
+  // Amiri Quran / Noto Naskh Arabic are declared as local @font-face in index.html
+  "amiri-quran": {
+    family: "Amiri Quran",
+    selfHosted: true,
+  },
+  "noto-naskh-arabic": {
+    family: "Noto Naskh Arabic",
+    selfHosted: true,
+  },
+  "qpc-uthmani-warsh": {
+    family: "QPC Hafs Unicode",
+    selfHosted: true,
+  },
+  "amiri-quran-warsh": {
+    family: "Amiri Quran",
+    selfHosted: true,
+  },
+  "noto-naskh-arabic-warsh": {
+    family: "Noto Naskh Arabic",
+    selfHosted: true,
+  },
+  "alkalami-warsh": {
+    family: "Alkalami",
+    url: "/fonts/alkalami-3000.woff2",
     format: "woff2",
   },
-  "kfgqpc-warsh": {
-    family: "KFGQPC Warsh",
-    url: "https://cdn.jsdelivr.net/gh/thetruetruth/quran-data-kfgqpc@main/warsh/font/warsh.10.woff2",
-    format: "woff2",
-  },
+  "qpc-warsh": WARSH_FACE,
+  // Callers pass the stored preference straight in, and "kfgqpc-warsh" is a
+  // merged id that older settings still carry: same woff2, so it maps here.
+  "kfgqpc-warsh": WARSH_FACE,
 };
 
 const QCF_FONT_VERSIONS = new Set(["v1", "v2", "v4"]);
 const QCF_FONT_BASE = "https://verses.quran.foundation/fonts/quran/hafs";
+const qcfPaletteStyles = new Map();
+
+function ensureQcfPaletteStyle(page) {
+  if (typeof document === "undefined") return;
+  const normalizedPage = normalizePage(page);
+  if (qcfPaletteStyles.has(normalizedPage)) return;
+  const family = `qcf-v4-p${normalizedPage}`;
+  const selector = `.qcm-word[data-qcf-v4-page="${normalizedPage}"]`;
+  const style = document.createElement("style");
+  style.textContent = `
+    @font-palette-values --qcf-v4-dark-p${normalizedPage} {
+      font-family: "${family}"; base-palette: 1;
+    }
+    @font-palette-values --qcf-v4-sepia-p${normalizedPage} {
+      font-family: "${family}"; base-palette: 2;
+    }
+    html[data-theme="dark"] ${selector}, html[data-theme="night-blue"] ${selector},
+    html[data-theme="oled"] ${selector} { font-palette: --qcf-v4-dark-p${normalizedPage}; }
+    html[data-theme="sepia"] ${selector} { font-palette: --qcf-v4-sepia-p${normalizedPage}; }
+  `;
+  document.head.appendChild(style);
+  qcfPaletteStyles.set(normalizedPage, style);
+  // The reader holds at most eight pages. Bound dynamic palette rules even
+  // after long sessions; revisiting a page reinstalls its rule on demand.
+  if (qcfPaletteStyles.size > 40) {
+    const oldestPage = qcfPaletteStyles.keys().next().value;
+    qcfPaletteStyles.get(oldestPage)?.remove();
+    qcfPaletteStyles.delete(oldestPage);
+  }
+}
 
 function normalizePage(page) {
   const value = Math.trunc(Number(page));
@@ -60,18 +134,13 @@ function resolveFontSource(fontId, options = {}) {
 }
 
 async function loadFontFace(fontId, source) {
-  if (typeof window !== "undefined" && (navigator.webdriver || window.__playwright__)) {
-    loadedFontIds.add(fontId);
-    return { loaded: true, mock: true, family: source?.family || fontId };
-  }
-
   if (typeof document === "undefined" || typeof FontFace === "undefined" || !source) {
     loadedFontIds.add(fontId);
     return { loaded: false, unsupported: true, family: source?.family || fontId };
   }
 
   if (source.localOnly) {
-    let available = false;
+    let available;
     try {
       available = document.fonts.check(`16px "${source.family}"`);
     } catch {
@@ -81,32 +150,31 @@ async function loadFontFace(fontId, source) {
     return { loaded: available, localOnly: true, family: source.family };
   }
 
-  if (source.cssUrl) {
-    const linkId = `font-css-${fontId}`;
-    if (!document.getElementById(linkId)) {
-      const link = document.createElement("link");
-      link.id = linkId;
-      link.rel = "stylesheet";
-      link.href = source.cssUrl;
-      document.head.appendChild(link);
-      await new Promise((resolve) => {
-        link.onload = resolve;
-        link.onerror = resolve;
-        setTimeout(resolve, 1800);
-      });
-    }
+  if (source.selfHosted) {
+    let matched;
     try {
-      await document.fonts.load(`400 1em "${source.family}"`);
+      matched = await document.fonts.load(`400 1em "${source.family}"`);
     } catch {
-      // Browser fallback stack still keeps the reader usable offline.
+      matched = [];
     }
-    loadedFontIds.add(fontId);
-    failedFontIds.delete(fontId);
-    return { loaded: true, family: source.family, url: source.cssUrl };
+    if (matched.length) {
+      loadedFontIds.add(fontId);
+      failedFontIds.delete(fontId);
+    } else {
+      failedFontIds.add(fontId);
+    }
+    return { loaded: matched.length > 0, family: source.family, selfHosted: true };
   }
 
+  // Skip document.fonts.check() — it returns true for unknown fonts (browser
+  // uses fallback stack), causing a false positive that makes QCF glyph codes
+  // render as boxes when the actual font file hasn't been fetched yet.
+  // The loadedFontIds check in ensureFontLoaded already handles cached fonts.
   try {
-    if (document.fonts.check(`16px "${source.family}"`)) {
+    const existing = [...document.fonts].find(
+      (f) => (f.family === `"${source.family}"` || f.family === source.family) && f.status === "loaded"
+    );
+    if (existing) {
       loadedFontIds.add(fontId);
       failedFontIds.delete(fontId);
       return { loaded: true, cached: true, family: source.family };
@@ -125,7 +193,13 @@ async function loadFontFace(fontId, source) {
     },
   );
 
-  const loadedFont = await fontFace.load();
+  const FONT_LOAD_TIMEOUT_MS = source.timeoutMs || 10000;
+  const loadedFont = await Promise.race([
+    fontFace.load(),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error("Font load timeout")), FONT_LOAD_TIMEOUT_MS)
+    ),
+  ]);
   document.fonts.add(loadedFont);
   loadedFontIds.add(fontId);
   failedFontIds.delete(fontId);
@@ -152,9 +226,16 @@ export async function ensureFontLoaded(fontId, options = {}) {
 
   if (inFlightLoads.has(loadKey)) return inFlightLoads.get(loadKey);
 
+  // Clear any previous failure so this attempt is a clean retry.
+  failedFontIds.delete(fontId);
+  failedFontIds.delete(loadKey);
+
   const request = loadFontFace(loadKey, source)
     .then((result) => {
-      if (result.loaded || result.cached) loadedFontIds.add(fontId);
+      if (result.loaded || result.cached) {
+        loadedFontIds.add(fontId);
+        loadedFontIds.add(loadKey);
+      }
       return result;
     })
     .catch((error) => {
@@ -170,27 +251,10 @@ export async function ensureFontLoaded(fontId, options = {}) {
 }
 
 export async function ensureQcfPageFontLoaded(page, version = "v2") {
+  if (version === "v4") ensureQcfPaletteStyle(page);
   return ensureFontLoaded(`qcf-${version}-p${normalizePage(page)}`);
-}
-
-export async function warmQcfPageFonts(pages = [], version = "v2", { radius = 0 } = {}) {
-  const targets = new Set();
-  (Array.isArray(pages) ? pages : [pages]).forEach((page) => {
-    const base = normalizePage(page);
-    targets.add(base);
-    for (let offset = 1; offset <= radius; offset += 1) {
-      targets.add(normalizePage(base - offset));
-      targets.add(normalizePage(base + offset));
-    }
-  });
-
-  return Promise.all([...targets].map((page) => ensureQcfPageFontLoaded(page, version)));
 }
 
 export function isFontMarkedLoaded(fontId) {
   return loadedFontIds.has(fontId) || [...loadedFontIds].some((id) => id.startsWith(`${fontId}:`));
-}
-
-export function hasFontLoadFailed(fontId) {
-  return failedFontIds.has(fontId);
 }

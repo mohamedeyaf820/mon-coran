@@ -1,0 +1,29 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 108,
+  "number_of_ayahs": 3,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Lo! We have given thee Abundance;"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "So pray unto thy Lord, and sacrifice."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Lo! it is thy insulter (and not thou) who is without posterity."
+    }
+  ]
+}

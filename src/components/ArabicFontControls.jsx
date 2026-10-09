@@ -1,17 +1,16 @@
 import React from "react";
-import { Minus, Plus, Type } from "lucide-react";
+import { Type } from "lucide-react";
 import useArabicFontPreferences, {
   ARABIC_FONT_SIZE_MAX,
   ARABIC_FONT_SIZE_MIN,
 } from "../hooks/useArabicFontPreferences";
+import {
+  getAyahMarkerFontFamily,
+  getFontOptionsForRiwaya,
+  getNativeAyahMarker,
+} from "../data/fonts";
+import { DEFAULT_ARABIC_FONT_SIZE } from "../utils/arabicTypography";
 import { cn } from "../lib/utils";
-
-const ARABIC_FONT_OPTIONS = [
-  { id: "qpc-hafs", label: "Quran.com Hafs", riwaya: "hafs" },
-  { id: "qpc-indopak", label: "Quran.com IndoPak", riwaya: "hafs" },
-  { id: "qpc-warsh", label: "QPC Warsh", riwaya: "warsh" },
-  { id: "kfgqpc-warsh", label: "KFGQPC Warsh", riwaya: "warsh" },
-];
 
 function labelFor(lang, fr, en, ar = en) {
   if (lang === "ar") return ar;
@@ -28,10 +27,12 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
   } = useArabicFontPreferences();
 
   const currentSize = Math.round(arabicFontSize);
-  const availableFonts = ARABIC_FONT_OPTIONS.filter((font) => font.riwaya === (riwaya || "hafs"));
+  const availableFonts = getFontOptionsForRiwaya(riwaya);
   const selectedFont = availableFonts.some((font) => font.id === arabicFontFamily)
     ? arabicFontFamily
     : availableFonts[0]?.id || "qpc-hafs";
+  const markerPreview = getNativeAyahMarker(1, selectedFont, riwaya);
+  const markerFontFamily = getAyahMarkerFontFamily(selectedFont, riwaya);
 
   return (
     <div
@@ -43,11 +44,20 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
     >
       <div className="afc-font-group" role="group" aria-label={labelFor(lang, "Choisir la police arabe", "Choose Arabic font", "اختيار الخط العربي")}>
         <Type size={14} className="afc-leading-icon" aria-hidden="true" />
+        <span
+          className="afc-marker-preview native-ayah-marker"
+          dir="rtl"
+          aria-hidden="true"
+          style={{ fontFamily: markerFontFamily }}
+        >
+          {markerPreview}
+        </span>
         <select
           className="afc-select"
           value={selectedFont}
           onChange={(event) => setArabicFontFamily(event.target.value)}
           aria-label={labelFor(lang, "Police arabe", "Arabic font", "الخط العربي")}
+          title={availableFonts.find((font) => font.id === selectedFont)?.label}
         >
           {availableFonts.map((font) => (
             <option key={font.id} value={font.id}>
@@ -64,16 +74,20 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           onClick={() => setArabicFontSize(currentSize - 2)}
           disabled={currentSize <= ARABIC_FONT_SIZE_MIN}
           aria-label={labelFor(lang, "Réduire la taille arabe", "Decrease Arabic size", "تصغير الخط العربي")}
-          title="A-"
         >
-          <Minus size={13} />
+          {/* Text glyphs, not icon SVGs: inside the collapsible 0fr→1fr reader
+              tools Chromium can leave an SVG's intrinsic width at 0 until an
+              unrelated recalc, which rendered the steppers as empty boxes. */}
+          <span className="afc-size-glyph" aria-hidden="true">
+            −
+          </span>
         </button>
         <input
           className="afc-range"
           type="range"
           min={ARABIC_FONT_SIZE_MIN}
           max={ARABIC_FONT_SIZE_MAX}
-          step="2"
+          step="1"
           value={currentSize}
           onChange={(event) => setArabicFontSize(event.target.value)}
           aria-label={labelFor(lang, "Taille de police arabe", "Arabic font size", "حجم الخط العربي")}
@@ -87,10 +101,24 @@ export default function ArabicFontControls({ lang = "fr", compact = false }) {
           onClick={() => setArabicFontSize(currentSize + 2)}
           disabled={currentSize >= ARABIC_FONT_SIZE_MAX}
           aria-label={labelFor(lang, "Augmenter la taille arabe", "Increase Arabic size", "تكبير الخط العربي")}
-          title="A+"
         >
-          <Plus size={13} />
+          <span className="afc-size-glyph" aria-hidden="true">
+            +
+          </span>
         </button>
+        {currentSize !== DEFAULT_ARABIC_FONT_SIZE && (
+          <button
+            type="button"
+            className="afc-size-reset"
+            onClick={() => setArabicFontSize(DEFAULT_ARABIC_FONT_SIZE)}
+            aria-label={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
+            title={labelFor(lang, "Réinitialiser la taille", "Reset text size", "إعادة حجم الخط")}
+          >
+            <span className="afc-size-glyph afc-size-glyph--reset" aria-hidden="true">
+              ↺
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

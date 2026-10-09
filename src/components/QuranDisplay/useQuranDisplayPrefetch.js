@@ -1,134 +1,87 @@
 import { useEffect } from "react";
+import { runWhenIdle } from "../../utils/idleUtils";
 import {
-  getJuz,
-  getJuzTranslation,
-  getPage,
-  getPageTranslation,
-  getSurahText,
-  getSurahTranslation,
-} from "../../services/quranAPI";
-import { getWarshJuzVerses, getWarshPageVerses, preloadWarshSurah } from "../../services/warshService";
+  isLowPerformanceDevice,
+  shouldSkipSpeculativePrefetch,
+} from "../../utils/networkPolicy";
+import { preloadQuranDisplayData } from "./useQuranDisplayData";
 
+// Warming a neighbour parses and stores up to a few megabytes of JSON, so it
+// only starts once the reader has settled and the main thread is idle: on a
+// phone it otherwise lands in the middle of the first scroll.
+const NEIGHBOUR_PREFETCH_DELAY_MS = 1500;
+const NEIGHBOUR_PREFETCH_IDLE_TIMEOUT_MS = 5000;
+
+/** Warm the bounded set of destinations exposed by the reader controls. */
 export default function useQuranDisplayPrefetch({
   currentJuz,
   currentPage,
   currentSurah,
   displayMode,
+  lang,
   loading,
   riwaya,
-  showTranslation,
-  translationLangs,
+  warshStrictMode,
 }) {
   useEffect(() => {
-    if (loading) return;
+    if (loading || shouldSkipSpeculativePrefetch()) return undefined;
 
-    const connection = navigator.connection;
-    const constrained =
-      connection?.saveData === true || /2g|3g/.test(connection?.effectiveType || "");
-    if (constrained) return;
-
-    const translationLang = translationLangs[0] || "fr";
-    const prefetchText = (mode, value, targetRiwaya) => {
-      if (mode === "surah") {
-        if (targetRiwaya === "warsh") preloadWarshSurah(value);
-        else getSurahText(value, targetRiwaya).catch(() => {});
-        return;
-      }
-      if (mode === "page") {
-        (targetRiwaya === "warsh" ? getWarshPageVerses(value) : getPage(value, targetRiwaya)).catch(() => {});
-        return;
-      }
-      if (mode === "juz") {
-        (targetRiwaya === "warsh" ? getWarshJuzVerses(value) : getJuz(value, targetRiwaya)).catch(() => {});
-      }
+    const prefetchText = (mode, value) => {
+      preloadQuranDisplayData({
+        currentJuz: mode === "juz" ? value : currentJuz,
+        currentPage: mode === "page" ? value : currentPage,
+        currentSurah: mode === "surah" ? value : currentSurah,
+        displayMode: mode,
+        lang,
+        riwaya,
+        warshStrictMode,
+      }).catch(() => null);
     };
 
-    const runCurrentAlternatePrefetch = () => {
-      const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
-      prefetchText(
-        displayMode,
-        displayMode === "page" ? currentPage : displayMode === "juz" ? currentJuz : currentSurah,
-        alternateRiwaya,
-      );
+    const canPrefetch = () => {
+      if (
+        document.visibilityState !== "visible" ||
+        shouldSkipSpeculativePrefetch()
+      ) {
+        return false;
+      }
+      return true;
     };
 
-    const runNearbyPrefetch = () => {
+    const runNeighbourPrefetch = () => {
+      if (!canPrefetch()) return;
+      // Reading goes forward far more often than back: a constrained device
+      // keeps only the next destination warm.
+      const forwardOnly = isLowPerformanceDevice();
       if (displayMode === "surah") {
-        [currentSurah - 1, currentSurah + 1].forEach((surah) => {
-          if (surah < 1 || surah > 114) return;
-          prefetchText("surah", surah, riwaya);
-        });
-      }
-
-      if (displayMode === "page") {
-        [currentPage - 1, currentPage + 1].forEach((page) => {
-          if (page < 1 || page > 604) return;
-          prefetchText("page", page, riwaya);
-        });
-      }
-
-      if (displayMode === "juz") {
-        [currentJuz - 1, currentJuz + 1].forEach((juz) => {
-          if (juz < 1 || juz > 30) return;
-          prefetchText("juz", juz, riwaya);
-        });
+        if (currentSurah < 114) prefetchText("surah", currentSurah + 1);
+        if (!forwardOnly && currentSurah > 1) prefetchText("surah", currentSurah - 1);
+      } else if (displayMode === "page") {
+        if (currentPage < 604) prefetchText("page", currentPage + 1);
+        if (!forwardOnly && currentPage > 1) prefetchText("page", currentPage - 1);
+      } else if (displayMode === "juz") {
+        if (currentJuz < 30) prefetchText("juz", currentJuz + 1);
+        if (!forwardOnly && currentJuz > 1) prefetchText("juz", currentJuz - 1);
       }
     };
 
-    const runSecondaryPrefetch = () => {
-      const alternateRiwaya = riwaya === "warsh" ? "hafs" : "warsh";
+    let cancelIdle = () => {};
+    const neighbourTimer = window.setTimeout(() => {
+      cancelIdle = runWhenIdle(runNeighbourPrefetch, NEIGHBOUR_PREFETCH_IDLE_TIMEOUT_MS);
+    }, NEIGHBOUR_PREFETCH_DELAY_MS);
 
-      if (displayMode === "surah") {
-        const next = currentSurah + 1;
-        const previous = currentSurah - 1;
-        if (showTranslation && next <= 114) getSurahTranslation(next, translationLang).catch(() => {});
-        if (showTranslation && previous >= 1) getSurahTranslation(previous, translationLang).catch(() => {});
-      }
-
-      if (displayMode === "page") {
-        [currentPage - 1, currentPage + 1].forEach((page) => {
-          if (page < 1 || page > 604) return;
-          if (showTranslation) getPageTranslation(page, translationLang).catch(() => {});
-        });
-      }
-
-      if (displayMode === "juz") {
-        [currentJuz - 1, currentJuz + 1].forEach((juz) => {
-          if (juz < 1 || juz > 30) return;
-          if (showTranslation) getJuzTranslation(juz, translationLang).catch(() => {});
-        });
-      }
-    };
-
-    let secondaryTimer = null;
-    const alternateTimer = window.setTimeout(runCurrentAlternatePrefetch, 240);
-    if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(runNearbyPrefetch, { timeout: 2400 });
-      secondaryTimer = window.setTimeout(() => {
-        window.requestIdleCallback(runSecondaryPrefetch, { timeout: 3600 });
-      }, 1800);
-      return () => {
-        window.clearTimeout(alternateTimer);
-        window.cancelIdleCallback?.(idleId);
-        if (secondaryTimer) window.clearTimeout(secondaryTimer);
-      };
-    }
-
-    const timer = window.setTimeout(runNearbyPrefetch, 1200);
-    secondaryTimer = window.setTimeout(runSecondaryPrefetch, 3200);
     return () => {
-      window.clearTimeout(alternateTimer);
-      window.clearTimeout(timer);
-      if (secondaryTimer) window.clearTimeout(secondaryTimer);
+      window.clearTimeout(neighbourTimer);
+      cancelIdle();
     };
   }, [
     currentJuz,
     currentPage,
     currentSurah,
     displayMode,
+    lang,
     loading,
     riwaya,
-    showTranslation,
-    translationLangs,
+    warshStrictMode,
   ]);
 }

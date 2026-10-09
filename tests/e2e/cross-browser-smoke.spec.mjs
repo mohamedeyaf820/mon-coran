@@ -1,0 +1,621 @@
+import { expect, test } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+import { openQuickMenuItem } from "./helpers/quick-menu.mjs";
+
+test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    if (localStorage.getItem("mushaf-plus-settings")) return;
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: true,
+        showDuas: false,
+        lang: "fr",
+        theme: "light",
+        riwaya: "hafs",
+      }),
+    );
+  });
+});
+
+test("compatibilité: accueil, route légale et lecteur", async ({ page, context }) => {
+  await installQuranNetworkFixtures(page);
+  await page.goto("/", { waitUntil: "load" });
+  await expect(page.getByRole("heading", { level: 1 })).toContainText(/lire|lecture|reading|قراءة/i);
+  await expect(page.locator(".hp-card--surah").first()).toBeVisible();
+  await expect(page.locator("html")).toHaveAttribute("data-deferred-styles", "ready");
+
+  // Firefox can abort a document request when a second hard navigation starts
+  // while late PWA assets from the first route are settling. Independent tabs
+  // exercise each direct-entry route without introducing that browser race.
+  const privacyPage = await context.newPage();
+  await privacyPage.goto("/privacy", { waitUntil: "load" });
+  await expect(privacyPage.locator(".legal-page")).toBeVisible();
+  await expect(privacyPage.getByRole("heading", { level: 1 })).toContainText(/lecture|reading|بيانات/i);
+
+  const readerPage = await context.newPage();
+  await installQuranNetworkFixtures(readerPage);
+  await readerPage.goto("/surah/1", { waitUntil: "load" });
+  await expect(readerPage.locator(".qc-ayah-text-ar").first()).toBeVisible({ timeout: 30_000 });
+  await expect(readerPage.locator("html")).toHaveAttribute("lang", "fr");
+});
+
+test("la recherche unifiée reste simple sur un très petit écran", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.setViewportSize({ width: 319, height: 698 });
+  await page.goto("/surah/63", { waitUntil: "domcontentloaded" });
+  await expect(page.locator(".qc-list-card").first()).toBeVisible({ timeout: 30_000 });
+
+  await openQuickMenuItem(page, "search");
+
+  const dialog = page.getByRole("dialog", { name: /Recherche|Search|بحث/i });
+  await expect(dialog).toBeVisible({ timeout: 15_000 });
+  await expect(dialog.locator(".search-pro__modes")).toHaveCount(0);
+  await expect(dialog.locator(".search-pro__summary")).toHaveCount(0);
+  await expect(dialog.getByRole("textbox")).toBeVisible();
+  await expect(
+    dialog.getByRole("button", {
+      name: /Rechercher avec votre voix|Search with your voice|البحث باستخدام صوتك/i,
+    }),
+  ).toBeVisible();
+
+  const layout = await dialog.evaluate((node) => {
+    const rect = node.getBoundingClientRect();
+    const input = node.querySelector(".search-pro__input-shell").getBoundingClientRect();
+    const close = node.querySelector(".search-pro__close").getBoundingClientRect();
+    const voice = node.querySelector(".search-pro__voice-btn").getBoundingClientRect();
+    return {
+      width: rect.width,
+      height: rect.height,
+      overflow: node.scrollWidth - node.clientWidth,
+      inputHeight: input.height,
+      closeWidth: close.width,
+      voiceWidth: voice.width,
+    };
+  });
+
+  expect(layout.width).toBeLessThanOrEqual(319);
+  expect(layout.height).toBeLessThanOrEqual(698);
+  expect(layout.overflow).toBeLessThanOrEqual(2);
+  expect(layout.inputHeight).toBeLessThanOrEqual(50);
+  expect(layout.closeWidth).toBeLessThanOrEqual(44);
+  expect(layout.voiceWidth).toBeGreaterThanOrEqual(44);
+
+  for (const viewport of [
+    { width: 768, height: 900 },
+    { width: 1440, height: 900 },
+  ]) {
+    await page.setViewportSize(viewport);
+    await expect.poll(async () => {
+      const rect = await dialog.boundingBox();
+      return rect?.width || 0;
+    }).toBeLessThanOrEqual(720);
+    expect(
+      await dialog.evaluate((node) => node.scrollWidth - node.clientWidth),
+    ).toBeLessThanOrEqual(2);
+  }
+});
+
+test("le verset 53:4 conserve un flux arabe canonique et RTL sur mobile", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 42,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 53, ayah: 4, page: 526, juz: 27 },
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/surah/53/4", { waitUntil: "domcontentloaded" });
+
+  const card = page.locator(".qc-list-card").filter({
+    has: page.getByRole("button", { name: "Verset 4", exact: true }),
+  });
+  const ayah = card.locator(".qc-ayah-text-ar");
+  await expect(ayah).toBeVisible({ timeout: 30_000 });
+  await expect(ayah.locator(".wbw-word")).toHaveCount(0);
+  await expect(ayah.locator(".quran-word-unit")).toHaveCount(0);
+  await expect(ayah).toContainText("إِنْ هُوَ إِلَّا وَحْيٌ يُوحَىٰ");
+
+  let layout;
+  await expect.poll(async () => {
+    try {
+      layout = await ayah.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          text: element.textContent.replace(/\s+/g, " ").trim(),
+          scrollWidth: element.scrollWidth,
+          clientWidth: element.clientWidth,
+          direction: style.direction,
+          display: style.display,
+          overflowWrap: style.overflowWrap,
+          wordBreak: style.wordBreak,
+          tajwidDisplay: getComputedStyle(
+            element.querySelector(".quran-tajwid-text"),
+          ).display,
+        };
+      });
+      return `${layout.direction}:${layout.display}`;
+    } catch {
+      return null;
+    }
+  }, { timeout: 10_000 }).toBe("rtl:block");
+
+  expect(layout.text).toContain("إِنْ هُوَ إِلَّا وَحْيٌ يُوحَىٰ");
+  expect(layout.scrollWidth).toBeLessThanOrEqual(layout.clientWidth + 1);
+  expect(layout.direction).toBe("rtl");
+  expect(layout.display).toBe("block");
+  expect(layout.tajwidDisplay).toBe("inline");
+  expect(layout.overflowWrap).toBe("normal");
+  expect(layout.wordBreak).toBe("normal");
+
+  const reference = card.locator(".qc-list-card__reference");
+  const touchTarget = await reference.evaluate((element) => {
+    const rect = element.getBoundingClientRect();
+    return { width: rect.width, height: rect.height };
+  });
+  // The compact reader row intentionally uses a 34px control on phones. It
+  // remains above the WCAG 2.2 minimum target size while leaving enough room
+  // for reference, play, bookmark and overflow on a 319px WebKit viewport.
+  expect(touchTarget.width).toBeGreaterThanOrEqual(43.9);
+  expect(touchTarget.height).toBeGreaterThanOrEqual(43.9);
+  expect(touchTarget.width).toBeLessThanOrEqual(44.1);
+  expect(touchTarget.height).toBeLessThanOrEqual(44.1);
+
+  for (const width of [320, 375, 390, 430]) {
+    await page.setViewportSize({ width, height: 844 });
+    await expect.poll(async () => {
+      try {
+        return await ayah.evaluate((element) => ({
+          ayahFits: element.scrollWidth <= element.clientWidth + 1,
+          pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1,
+        }));
+      } catch {
+        return null;
+      }
+    }, {
+      message: `le lecteur ne doit pas déborder à ${width}px`,
+      timeout: 10_000,
+    }).toEqual({ ayahFits: true, pageFits: true });
+  }
+});
+
+test("le Tajwid colore le verset sans découper les mots arabes", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 42,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 53, ayah: 4, page: 526, juz: 27 },
+      }),
+    );
+  });
+  await page.goto("/surah/53/4", { waitUntil: "domcontentloaded" });
+
+  const card = page.locator(".qc-list-card").filter({
+    has: page.getByRole("button", { name: "Verset 4", exact: true }),
+  });
+  const tajwid = card.locator(".quran-tajwid-text");
+  await expect(tajwid).toBeVisible({ timeout: 30_000 });
+
+  // A Tajwid rule must never split a word into several text runs: WebKit
+  // shapes each run separately (letters lose their joined forms) and every
+  // engine loses the cursive kashida under a dagger alif. The rule colours are
+  // therefore gradient bands clipped to a single text node per word.
+  const readContract = () => tajwid.evaluate((root) => {
+    const zwj = String.fromCharCode(0x200d);
+    // The component owns this choice: WebKit exposes CSS.highlights but paints
+    // them by re-shaping sub-runs, so it deliberately keeps word-level colour.
+    const supported = root.getAttribute("data-tajwid-render") === "highlight";
+    const firstWord = root.querySelector("[data-tajwid-word='0'], .quran-word-item");
+    const paintedWords = () => [...root.querySelectorAll(".is-tajweed-painted")];
+    return {
+      supported,
+      render: root.getAttribute("data-tajwid-render"),
+      segments: root.querySelectorAll(".tajwid-rule-segment").length,
+      joiners: root.textContent.split(zwj).length - 1,
+      firstWordChildren: firstWord ? firstWord.childNodes.length : 0,
+      firstWordUserSelect: firstWord
+        ? getComputedStyle(firstWord).webkitUserSelect || getComputedStyle(firstWord).userSelect
+        : null,
+      painted: supported ? paintedWords().length : 0,
+      banded: supported
+        ? paintedWords().filter((word) =>
+            (word.style.getPropertyValue("--tajweed-paint").match(/%/g) || []).length >= 4,
+          ).length
+        : 0,
+      // A calligraphic Arabic glyph overlaps the advance boxes of its
+      // neighbours: a highlight range that stops inside a word slices the ink
+      // of the surrounding letters, which reads as a cut letter.
+      colourHighlights: supported
+        ? [...CSS.highlights.entries()]
+            .filter(([name]) =>
+              name.startsWith("tajwid-") && name !== "tajwid-hover" && name !== "tajwid-playing")
+            .reduce((sum, [, highlight]) => sum + highlight.size, 0)
+        : 0,
+    };
+  });
+
+  // The bands are measured once the words are mounted; under a loaded
+  // machine that can land after the text is visible.
+  await expect
+    .poll(async () => {
+      const state = await readContract();
+      return state.supported ? state.painted : 1;
+    }, { timeout: 15_000 })
+    .toBeGreaterThan(0);
+  const contract = await readContract();
+
+  if (contract.supported) {
+    expect(contract.render).toBe("highlight");
+    expect(contract.segments).toBe(0);
+    expect(contract.joiners).toBe(0);
+    expect(contract.firstWordChildren).toBe(1);
+    expect(contract.banded).toBe(contract.painted);
+    expect(contract.colourHighlights).toBe(0);
+    // WebKit does not paint custom highlights inside user-select: none.
+    expect(contract.firstWordUserSelect).not.toBe("none");
+  } else {
+    expect(contract.render).toBe("word-fallback");
+    expect(contract.segments).toBe(0);
+    expect(contract.joiners).toBe(0);
+    expect(contract.firstWordChildren).toBeGreaterThanOrEqual(1);
+  }
+});
+
+test("les signes de waqf restent attachés aux lettres coraniques", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "mushaf",
+        lang: "fr",
+        theme: "light",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 30,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 3, ayah: 2, page: 1, juz: 1 },
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 319, height: 698 });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+
+  const words = page.locator(".mushaf-text-block [data-tajwid-word]");
+  await expect(words.first()).toBeVisible({ timeout: 30_000 });
+  const marks = await words.evaluateAll((elements) => elements
+    .filter((element) => /[\u06D6-\u06DC]/u.test(element.textContent || ""))
+    .map((element) => ({
+      text: element.textContent,
+      children: element.childNodes.length,
+      startsWithMark: /^[\u06D6-\u06DC]/u.test(element.textContent || ""),
+      help: element.title,
+    })));
+  expect(marks.length).toBe(3);
+  expect(marks.every((mark) => mark.children === 1 && !mark.startsWithMark)).toBe(true);
+  expect(marks.every((mark) => mark.help.length > 0)).toBe(true);
+  await expect(page.locator(".mushaf-text-block .waqf-marker")).toHaveCount(0);
+
+  expect(
+    await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1),
+  ).toBe(true);
+
+});
+
+test("les signes de waqf restent liés au texte quand le Tajweed est désactivé", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      displayMode: "surah",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "hafs",
+      fontFamily: "qpc-hafs",
+      showTajwid: false,
+      lastPosition: { surah: 3, ayah: 2, page: 1, juz: 1 },
+    }));
+  });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+  const plain = page.locator(".mushaf-text-block").first();
+  await expect(plain).toContainText("\u06D7", { timeout: 30_000 });
+  const plainMarks = await plain.evaluate((root) => {
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const marks = [];
+    while (walker.nextNode()) {
+      const text = walker.currentNode.data;
+      for (let index = 0; index < text.length; index += 1) {
+        if (/[\u06D6-\u06DC]/u.test(text[index])) {
+          marks.push({ preceding: text[index - 1] || "", text });
+        }
+      }
+    }
+    return marks;
+  });
+  expect(plainMarks).toHaveLength(3);
+  expect(plainMarks.every((mark) => mark.preceding && !/\s/u.test(mark.preceding))).toBe(true);
+});
+
+test("Warsh sans Tajweed conserve les signes de waqf dans chaque mot", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      displayMode: "surah",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "warsh",
+      fontFamily: "qpc-warsh",
+      showTajwid: false,
+      lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 },
+    }));
+  });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+  const markedWords = page.locator('#ayah-1 .quran-word-item').filter({ hasText: /\u06D6/u });
+  await expect(markedWords).toHaveCount(2, { timeout: 30_000 });
+  const integrity = await markedWords.evaluateAll((elements) => elements.map((element) => ({
+    text: element.textContent,
+    children: element.childNodes.length,
+    help: element.title,
+  })));
+  expect(integrity.every((word) => word.children === 1 && word.help.length > 0)).toBe(true);
+  await expect(page.locator('#ayah-1 .warsh-waqf-marker')).toHaveCount(0);
+});
+
+test("Warsh garde un seul médaillon de fin et un shell progressif à 319px", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { withWaqfSigns: true });
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "mushaf",
+        lang: "fr",
+        theme: "light",
+        riwaya: "warsh",
+        fontFamily: "scheherazade-new",
+        quranFontSize: 22,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 3, ayah: 1, page: 50, juz: 3 },
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 319, height: 698 });
+  await page.goto("/surah/3", { waitUntil: "domcontentloaded" });
+
+  const firstAyah = page.locator("#ayah-1");
+  await expect(firstAyah).toBeVisible({ timeout: 30_000 });
+  await expect(firstAyah.locator(".warsh-waqf-marker")).toHaveCount(0);
+  const warshMarks = await firstAyah.locator("[data-tajwid-word]").evaluateAll((elements) => elements
+    .filter((element) => /\u06D6/u.test(element.textContent || ""))
+    .map((element) => element.childNodes.length));
+  expect(warshMarks).toEqual([1, 1]);
+  await expect(firstAyah.locator(".native-ayah-marker")).toHaveCount(1);
+
+  await expect(page.locator(".mp-header__search")).toBeHidden();
+  const mobileMore = page.locator('.mobile-navigation [data-destination="more"]');
+  // Reading chrome auto-hides; a tap on the margin brings the navigation back.
+  await page.locator("#main-content").click({ position: { x: 4, y: 180 } });
+  await expect(mobileMore).toBeVisible();
+  await mobileMore.click();
+  const quickMenu = page.locator(".mobile-navigation-menu");
+  await expect(quickMenu.locator('[data-tool="search"]')).toBeVisible();
+  const quickMenuBox = await quickMenu.boundingBox();
+  expect(quickMenuBox?.width || 0).toBeLessThanOrEqual(315);
+  // Rows carry 44px touch targets, so the sheet is bounded by the viewport,
+  // not a fixed height: it must open fully under the header and scroll in place.
+  const viewport = page.viewportSize();
+  expect(quickMenuBox.y).toBeGreaterThanOrEqual(0);
+  expect(quickMenuBox.height).toBeLessThanOrEqual(viewport.height - quickMenuBox.y);
+  expect(await quickMenu.evaluate((el) => el.scrollHeight > el.clientHeight ? el.scrollTop === 0 && getComputedStyle(el).overflowY === "auto" : true)).toBe(true);
+  await page.mouse.click(4, 520);
+  await expect(quickMenu).toBeHidden();
+
+  const compactPlayer = page.getByTestId("audio-player-compact");
+  await expect(compactPlayer).toBeVisible();
+  const compactPlayerBox = await compactPlayer.boundingBox();
+  expect(compactPlayerBox?.width || 0).toBeLessThanOrEqual(319);
+  expect(compactPlayerBox?.height || 0).toBeLessThanOrEqual(80);
+
+  const mobileTitle = page.locator(".srh-mobile-bar__title");
+  await expect(mobileTitle).toBeHidden();
+  await expect(page.locator(".srh-mobile-bar__name")).toBeVisible();
+  const mobileActions = page.locator(".srh-mobile-bar__actions button");
+  await expect(mobileActions).toHaveCount(3);
+  for (const action of await mobileActions.all()) {
+    const dimensions = await action.evaluate((element) => {
+      const rect = element.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    });
+    expect(dimensions.width).toBeGreaterThanOrEqual(44);
+    expect(dimensions.height).toBeGreaterThanOrEqual(44);
+  }
+
+  const disclosure = page.locator(".srh-mobile-bar__disclosure");
+  if ((await disclosure.getAttribute("aria-expanded")) !== "true") {
+    await disclosure.click();
+  }
+  await expect(page.locator(".srh-controls")).toBeVisible();
+  const typographyTrigger = page.locator(".srh-typography-trigger");
+  await expect(typographyTrigger).toBeVisible();
+  await typographyTrigger.click();
+  await expect(page.locator(".srh-typography-panel")).toBeVisible();
+
+  const responsiveLayout = await page.evaluate(() => ({
+    fitsViewport: document.documentElement.scrollWidth <= window.innerWidth + 1,
+    navRight: document.querySelector(".mp-header__nav")?.getBoundingClientRect().right || 0,
+    menuLeft: document.querySelector(".mp-header__more")?.getBoundingClientRect().left || 0,
+    controlsHeight: document.querySelector(".srh-controls")?.getBoundingClientRect().height || 0,
+    fontRows: Array.from(
+      document.querySelectorAll(".srh-typography-panel .afc-font-group, .srh-typography-panel .afc-size-group"),
+      (element) => element.getBoundingClientRect().height,
+    ),
+  }));
+  expect(responsiveLayout.fitsViewport).toBe(true);
+  expect(responsiveLayout.navRight).toBeLessThanOrEqual(responsiveLayout.menuLeft);
+  expect(responsiveLayout.controlsHeight).toBeLessThanOrEqual(53);
+  expect(responsiveLayout.fontRows.length).toBeGreaterThanOrEqual(2);
+  for (const height of responsiveLayout.fontRows) expect(height).toBeLessThanOrEqual(44);
+
+  await page.setViewportSize({ width: 1263, height: 698 });
+  await expect(page.locator(".mp-header__search")).toBeVisible();
+  await expect(page.locator(".mp-header__riwaya-toggle")).toBeVisible();
+  await expect(page.locator(".srh-identity")).toBeVisible();
+  await expect(page.locator(".srh-mobile-bar")).toBeHidden();
+});
+
+test("le mode Mushaf garde un feuillet lisible en ligne et en plein écran", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "page",
+        mushafLayout: "mushaf",
+        lang: "fr",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 34,
+        showTajwid: true,
+        showTranslation: false,
+        showTransliteration: false,
+        lastPosition: { surah: 2, ayah: 1, page: 3, juz: 1 },
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/page/3", { waitUntil: "domcontentloaded" });
+
+  const sheet = page.locator(".qcm-page-shell").first();
+  await expect(sheet).toBeVisible({ timeout: 30_000 });
+  await expect
+    .poll(() => sheet.locator(".qcm-word").count())
+    .toBeGreaterThan(5);
+
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await page.setViewportSize({ width, height: width <= 430 ? 844 : 900 });
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () => document.documentElement.scrollWidth <= window.innerWidth + 1,
+        ),
+      )
+      .toBe(true);
+  }
+
+  // The fullscreen page uses Unicode word flow, which must remain readable
+  // and inside the viewport at the compact size.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator(".reader-fullscreen-trigger").click();
+  const portal = page.locator(".mfp-portal-root");
+  await expect(portal).toBeVisible({ timeout: 30_000 });
+  const grid = portal.locator(".qcm-lines").first();
+  await expect(grid).toBeVisible({ timeout: 30_000 });
+  await expect.poll(() => grid.locator(".qcm-word").count()).toBeGreaterThan(5);
+
+  const layout = await grid.evaluate((element) => {
+    const style = getComputedStyle(element);
+    return {
+      direction: style.direction,
+      lang: element.getAttribute("lang"),
+      words: element.querySelectorAll(".qcm-word").length,
+      readable: Array.from(element.querySelectorAll(".qcm-word")).some(
+        (word) => /[\u0600-\u06FF]/u.test(word.textContent || ""),
+      ),
+      replacementGlyphs: element.textContent.includes("\uFFFD"),
+      pageFits: document.documentElement.scrollWidth <= window.innerWidth + 1,
+    };
+  });
+
+  expect(layout.direction).toBe("rtl");
+  expect(layout.lang).toBe("ar");
+  expect(layout.readable).toBe(true);
+  expect(layout.replacementGlyphs).toBe(false);
+  expect(layout.words).toBeGreaterThan(5);
+  expect(layout.pageFits).toBe(true);
+});
+
+test("Al-Fātiḥa garde son arabe canonique si un cache livre les mots d'un autre verset", async ({ page }) => {
+  await installQuranNetworkFixtures(page, { corruptFatihaWords: true });
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: false,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        fontFamily: "qpc-hafs",
+        quranFontSize: 42,
+        showTajwid: true,
+        showTranslation: true,
+        showTransliteration: true,
+        lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
+      }),
+    );
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/surah/1/1", { waitUntil: "domcontentloaded" });
+
+  const card = page.locator(".qc-list-card").filter({
+    has: page.getByRole("button", { name: "Verset 1", exact: true }),
+  });
+  const ayah = card.locator(".qc-ayah-text-ar");
+  await expect(ayah).toBeVisible({ timeout: 30_000 });
+  await expect(ayah).toContainText("بِسْمِ");
+  await expect(ayah).not.toContainText("الْحَمْدُ");
+  await expect(ayah.locator(".wbw-word")).toHaveCount(0);
+});

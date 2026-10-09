@@ -1,10 +1,21 @@
 import React from "react";
+import { Radio } from "lucide-react";
 
 export default function ReciterRadioButton({ lang, onClick }) {
   return (
-    <button type="button" className="reciter-radio-btn hp2-btn hp2-btn--soft min-h-10 rounded-xl px-3" onClick={onClick}>
-      <i className="fas fa-play" />
-      <span>{lang === "fr" ? "Lancer la radio" : lang === "ar" ? "تشغيل الراديو" : "Play radio"}</span>
+    <button
+      type="button"
+      className="reciter-radio-button"
+      onClick={onClick}
+    >
+      <Radio className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+      <span>
+        {lang === "fr"
+          ? "Radio continue"
+          : lang === "ar"
+            ? "راديو مستمر"
+            : "Continuous radio"}
+      </span>
     </button>
   );
 }

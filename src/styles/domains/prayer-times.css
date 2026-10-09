@@ -1,0 +1,205 @@
+/* ─── Prayer times: home strip + modal ────────────────────────────────────────
+   One compact row in the home "Aujourd'hui" panel and its detail modal.
+   Visual language follows home-today-suggestion and the settings switches. */
+
+.app-root[data-view="home"] .home-prayer-strip {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr) auto 1.5rem;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: max(2.75rem, 44px);
+  margin-bottom: 0.5rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 18%, var(--theme-border));
+  border-radius: 0.75rem;
+  padding: 0.3rem 0.55rem;
+  color: var(--text-primary);
+  text-align: start;
+  background: color-mix(in srgb, var(--theme-surface) 88%, var(--primary) 12%);
+}
+
+.app-root[data-view="home"] .home-prayer-strip:hover {
+  background: color-mix(in srgb, var(--theme-surface) 80%, var(--primary) 20%);
+}
+
+.app-root[data-view="home"] .home-prayer-strip__icon {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, var(--theme-border));
+  border-radius: 50%;
+  color: var(--primary);
+  background: var(--mp-surface-raised);
+}
+
+.app-root[data-view="home"] .home-prayer-strip__copy {
+  min-width: 0;
+}
+
+.app-root[data-view="home"] .home-prayer-strip__copy > * {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-root[data-view="home"] .home-prayer-strip__copy strong {
+  font-size: 0.72rem;
+}
+
+.app-root[data-view="home"] .home-prayer-strip__copy small {
+  margin-top: 0.08rem;
+  color: var(--text-muted);
+  font-size: max(0.66rem, 10px);
+}
+
+.app-root[data-view="home"] .home-prayer-strip__time {
+  color: var(--primary);
+  font-size: 0.95rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-root[data-view="home"] .home-prayer-strip__arrow {
+  display: grid;
+  width: 1.5rem;
+  height: 1.5rem;
+  place-items: center;
+  border-radius: 50%;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
+}
+
+.app-root[data-view="home"] .home-prayer-strip.is-error .home-prayer-strip__icon {
+  color: var(--toast-warning-text, #9a3412);
+  border-color: color-mix(in srgb, var(--toast-warning-accent, #f97316) 40%, var(--theme-border));
+}
+
+/* ── Modal ─────────────────────────────────────────────────────────────────── */
+
+.prayer-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  width: min(430px, calc(100vw - 2rem));
+  max-height: min(86dvh, 760px);
+  overflow-y: auto;
+  padding: 1.1rem;
+}
+
+/* ── Next-prayer hero: the one answer the modal exists to give ─────────── */
+
+/* Bilingual pair: keep the Arabic name readable but clearly secondary. */
+
+/* Already elapsed today: de-emphasised, never hidden. */
+
+/* Arabic twin of the prayer name, secondary in every non-Arabic UI. */
+
+/* Two selectors deep so the global `select` chevron and the `[data-theme]`
+   override cannot win the image back over this background shorthand. The
+   icon side follows the writing direction through padding-inline. */
+
+[dir="rtl"] .prayer-modal .prayer-modal__select {
+  background-position: left 0.7rem center;
+}
+
+.prayer-modal__switch[data-state="checked"] {
+  border-color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 18%, transparent);
+}
+
+.prayer-modal__switch[data-state="checked"] span {
+  transform: translateX(1.16rem);
+  background: var(--primary);
+}
+
+/* The switch's real control is the checkbox hidden inside the label. The
+   global `input[type="checkbox"]` rule (specificity 0,1,1) out-ranks a bare
+   class, so the hiding declarations need !important — same shape as
+   .settings-visually-hidden; without it the modal paints a green checkbox
+   next to every switch. */
+
+/* The switch thumb travels with the writing direction, like the settings one. */
+[dir="rtl"] .prayer-modal__switch[data-state="checked"] span {
+  transform: translateX(-1.16rem);
+}
+
+/* ─── Home prayer block: next prayer + the five rows ──────────────────────── */
+
+.app-root[data-view="home"] .home-prayer-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+
+.app-root[data-view="home"] .home-prayer-block .home-prayer-strip {
+  margin-bottom: 0;
+}
+
+.app-root[data-view="home"] .home-prayer-block__kicker {
+  color: var(--text-muted);
+  font-size: max(0.62rem, 10px);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0.1rem 0 0;
+  list-style: none;
+  border-top: 1px solid color-mix(in srgb, var(--primary) 12%, var(--theme-border));
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li > button {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.4rem;
+  width: 100%;
+  min-height: 32px;
+  padding: 0.15rem 0.1rem;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  text-align: start;
+  cursor: pointer;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li > button:hover {
+  color: var(--text-primary);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li.is-next > button {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist li.is-past > button {
+  color: var(--text-muted);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__name {
+  display: flex;
+  align-items: baseline;
+  gap: 0.3rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__name small {
+  color: var(--text-muted);
+  font-size: max(0.58rem, 9px);
+}
+
+.app-root[data-view="home"] .home-prayer-daylist__time {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}

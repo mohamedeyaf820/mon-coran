@@ -10,12 +10,13 @@ import {
   BookOpen,
   BookOpenText,
   Calendar,
+  CalendarCheck,
   CalendarDays,
+  ChartLine,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
   ChevronUp,
-  Clipboard,
   Copy,
   Clock,
   Compass,
@@ -24,11 +25,13 @@ import {
   Feather,
   FileText,
   Globe,
+  GraduationCap,
   Heart,
   Image as ImageIcon,
   Languages,
   Layers,
   List,
+  ListMusic,
   Loader2,
   Mail,
   Menu,
@@ -38,6 +41,7 @@ import {
   Music,
   Pencil,
   PenLine,
+  Palette,
   Pin,
   Play,
   Plus,
@@ -45,20 +49,25 @@ import {
   Repeat,
   RotateCw,
   Search,
-  Send,
   Settings,
   Share2,
+  Shapes,
   SlidersHorizontal,
-  Sparkles,
+  SpellCheck,
   Star,
   StepBack,
   StepForward,
   StickyNote,
   StopCircle,
   Sun,
+  Type,
   Trash2,
   TriangleAlert,
   Wand2 as WandSparkles,
+  AudioWaveform,
+  Brain,
+  UsersRound,
+  WifiOff,
   X,
   Zap,
 } from "lucide-react";
@@ -67,9 +76,9 @@ import { clsx } from "clsx";
 /**
  * Icon component that renders Lucide React icons by name.
  *
- * Supports all FontAwesome icon names used in the app, mapped to their
+ * Supports the legacy FontAwesome-style names used in the app, mapped to their
  * closest Lucide equivalents. Use this component going forward instead
- * of `<i className="fas fa-*" />`.
+ * of icon-font elements.
  *
  * @example
  *   <Icon name="search" size={16} />
@@ -106,6 +115,8 @@ const iconMap = {
   "repeat": Repeat,
   "refresh": RefreshCw,
   "rotate": RotateCw,
+  "rotate-left": RotateCw,
+  "rotate-right": RotateCw,
   "share-nodes": Share2,
   "share": Share2,
   "star": Star,
@@ -203,7 +214,9 @@ const iconMap = {
   "book-quran": BookOpenText,
   "quran": BookOpenText,
   "calendar": Calendar,
+  "calendar-check": CalendarCheck,
   "calendar-day": CalendarDays,
+  "chart-line": ChartLine,
   "clock": Clock,
   "clock-rotate-left": ({ className, size, ...props }) => (
     <svg
@@ -229,8 +242,18 @@ const iconMap = {
   "language": Languages,
   "layer-group": Layers,
   "list": List,
+  "list-music": ListMusic,
+  "list-ul": List,
+  "graduation-cap": GraduationCap,
   "magnifying-glass": Search,
+  "palette": Palette,
   "search": Search,
+  "spell-check": SpellCheck,
+  "brain": Brain,
+  "shapes": Shapes,
+  "users-between-lines": UsersRound,
+  "user-music": Music,
+  "wifi-slash": WifiOff,
   "feather": Feather,
   "sticky-note": StickyNote,
   "globe": Globe,
@@ -239,6 +262,8 @@ const iconMap = {
   "comment": MessageCircle,
   "file": FileText,
   "bold": Bold,
+  "font": Type,
+  "wave-square": AudioWaveform,
 
   // Brands (rendered as inline SVGs)
   "whatsapp": ({ className, size, ...props }) => (
@@ -278,6 +303,19 @@ const iconMap = {
       {...props}
     >
       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </svg>
+  ),
+  "facebook": ({ className, size, ...props }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size || 16}
+      height={size || 16}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      {...props}
+    >
+      <path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.438H7.078v-3.489h3.047V9.414c0-3.025 1.792-4.697 4.533-4.697 1.313 0 2.686.236 2.686.236v2.971h-1.513c-1.49 0-1.956.931-1.956 1.887v2.262h3.328l-.532 3.489h-2.796V24C19.612 23.094 24 18.1 24 12.073z" />
     </svg>
   ),
 
@@ -320,10 +358,15 @@ const Icon = forwardRef(function Icon(
   { name, size = 16, className, spin = false, "aria-hidden": ariaHidden, ...rest },
   ref,
 ) {
-  const IconComponent = iconMap[name];
+  const nameTokens = String(name || "").trim().split(/\s+/);
+  const legacyName = nameTokens.find(
+    (token) => token.startsWith("fa-") && token !== "fa-spin",
+  );
+  const normalizedName = legacyName ? legacyName.slice(3) : name;
+  const IconComponent = iconMap[normalizedName];
+  const shouldSpin = spin || nameTokens.includes("fa-spin");
 
   if (!IconComponent) {
-    if (process.env.NODE_ENV === "production") return null;
     return null;
   }
 
@@ -333,20 +376,18 @@ const Icon = forwardRef(function Icon(
       <IconComponent
         ref={ref}
         size={size}
-        className={clsx(spin && "animate-spin", className)}
+        className={clsx(shouldSpin && "animate-spin", className)}
         aria-hidden={ariaHidden ?? true}
         {...rest}
       />
     );
   }
 
-  const isLucide = true;
-
   return (
     <IconComponent
       ref={ref}
       size={size}
-      className={clsx(spin && "animate-spin", className)}
+      className={clsx(shouldSpin && "animate-spin", className)}
       aria-hidden={ariaHidden ?? true}
       strokeWidth={1.5}
       {...rest}

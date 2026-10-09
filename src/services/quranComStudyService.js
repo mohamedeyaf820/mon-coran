@@ -3,9 +3,27 @@
  * Fetches tafsir and translations from Quran.com API.
  */
 
+import { fetchWithTimeout } from "./fetchWithTimeout.js";
+import {
+  FRENCH_TAFSIR_EDITION_ID,
+  getFrenchTafsirVerse,
+} from "./frenchTafsirService.js";
+
 const BASE_URL = "https://api.quran.com/api/v4";
+const STUDY_FETCH_TIMEOUT = 8000;
+const TAFSIR_CACHE_PREFIX = "mushafplus:tafsir:v2:";
 
 export const TAFSIR_RESOURCES = {
+  // French commentary served by frenchTafsirService.js from the QuranEnc.com API.
+  // `local` marks it as not a Quran.com resource, so getVerseTafsir routes it away
+  // from the Quran.com HTTP path and the per-verse localStorage cache.
+  [FRENCH_TAFSIR_EDITION_ID]: {
+    id: 259,
+    name: "Al-Mukhtasar (French)",
+    nameFr: "Al-Mukhtasar (français)",
+    lang: "fr",
+    local: true,
+  },
   "ar-muyassar": {
     id: 16,
     name: "Tafsir Al-Muyassar",
@@ -47,18 +65,21 @@ export const TAFSIR_RESOURCES = {
     name: "Tafsir Al-Tabari",
     nameFr: "Tafsir Al-Tabari",
     lang: "ar",
+    qiraat: true,
   },
   "ar-qurtubi": {
     id: 90,
     name: "Tafsir Al-Qurtubi",
     nameFr: "Tafsir Al-Qurtubi",
     lang: "ar",
+    qiraat: true,
   },
   "ar-baghawi": {
     id: 94,
     name: "Tafsir Al-Baghawi",
     nameFr: "Tafsir Al-Baghawi",
     lang: "ar",
+    qiraat: true,
   },
   "ar-saadi": {
     id: 91,
@@ -66,6 +87,10 @@ export const TAFSIR_RESOURCES = {
     nameFr: "Tafsir Al-Saadi",
     lang: "ar",
   },
+  // The French reader's default is `fr-mokhtasar` (declared at the top): the
+  // Al-Mukhtasar commentary from QuranEnc.com. It is not a Quran.com resource —
+  // Quran.com's index has no French tafsir at all, and the id 816 this app once
+  // advertised answers 503 on every verse — so it has its own service.
 };
 
 function normalizeText(text) {
@@ -86,6 +111,125 @@ function htmlToText(html) {
   return normalizeText(String(html).replace(/<[^>]+>/g, " "));
 }
 
+function readCachedTafsir(resourceId, verseKey) {
+  if (typeof localStorage === "undefined") return "";
+  try {
+    const raw = localStorage.getItem(
+      `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`,
+    );
+    const cached = raw ? JSON.parse(raw) : null;
+    return typeof cached?.text === "string" ? cached.text : "";
+  } catch {
+    return "";
+  }
+}
+
+/**
+ * The tafsir cache is bounded: one entry per verse per author is a few
+ * kilobytes, and an unbounded pile of them competes with the storage the
+ * user's own notes, bookmarks and reading position live in. The index keeps
+ * the cached keys most-recent-first so the oldest go when it is full, without
+ * reading the texts back.
+ */
+const TAFSIR_CACHE_INDEX = `${TAFSIR_CACHE_PREFIX}index`;
+const TAFSIR_CACHE_MAX = 240;
+
+function listTafsirCacheKeys() {
+  const keys = [];
+  for (let i = 0; i < localStorage.length; i += 1) {
+    const key = localStorage.key(i);
+    if (key && key !== TAFSIR_CACHE_INDEX && key.startsWith(TAFSIR_CACHE_PREFIX)) {
+      keys.push(key);
+    }
+  }
+  return keys;
+}
+
+function readTafsirCacheIndex() {
+  let raw;
+  try {
+    raw = localStorage.getItem(TAFSIR_CACHE_INDEX);
+  } catch {
+    return [];
+  }
+  // An absent index is not an empty one: it means verses were cached before
+  // the cache was bounded, and they still have to be counted.
+  if (raw === null) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed)
+      ? parsed.filter((key) => typeof key === "string")
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function removeTafsirCacheKeys(keys) {
+  keys.forEach((key) => {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // A browser that refuses the removal still has the entry counted out.
+    }
+  });
+}
+
+function writeTafsirCacheIndex(index) {
+  try {
+    localStorage.setItem(TAFSIR_CACHE_INDEX, JSON.stringify(index));
+  } catch {
+    // The index is a convenience; losing it only means rebuilding it next time.
+  }
+}
+
+function trackTafsirCacheKey(key) {
+  let index = readTafsirCacheIndex();
+  if (index === null) {
+    const existing = listTafsirCacheKeys();
+    // An unbounded cache left by an earlier version is not worth reading
+    // through: it is only a copy of what the API already has.
+    if (existing.length > TAFSIR_CACHE_MAX) {
+      removeTafsirCacheKeys(existing);
+      index = [];
+    } else {
+      index = existing;
+    }
+  }
+  index = [key, ...index.filter((entry) => entry !== key)];
+  removeTafsirCacheKeys(index.slice(TAFSIR_CACHE_MAX));
+  writeTafsirCacheIndex(index.slice(0, TAFSIR_CACHE_MAX));
+}
+
+function trimTafsirCache(keep) {
+  const index = readTafsirCacheIndex() ?? listTafsirCacheKeys();
+  removeTafsirCacheKeys(index.slice(keep));
+  writeTafsirCacheIndex(index.slice(0, keep));
+}
+
+function cacheTafsir(resourceId, verseKey, text) {
+  if (typeof localStorage === "undefined" || !text) return;
+  const key = `${TAFSIR_CACHE_PREFIX}${resourceId}:${verseKey}`;
+  const savedAt = Date.now();
+  const write = () =>
+    localStorage.setItem(key, JSON.stringify({ text, savedAt }));
+  try {
+    write();
+  } catch {
+    // A full cache must not cost the rest of the app its storage: drop the
+    // oldest half of it and retry once.
+    trimTafsirCache(TAFSIR_CACHE_MAX / 2);
+    try {
+      write();
+    } catch {
+      // Storage can be disabled entirely in private browsing; live loading
+      // still works.
+    }
+    return;
+  }
+  trackTafsirCacheKey(key);
+}
+
 export function getAvailableTafsirs() {
   return Object.entries(TAFSIR_RESOURCES).map(([key, data]) => ({
     ...data,
@@ -96,7 +240,7 @@ export function getAvailableTafsirs() {
 const FALLBACK_TAFSIRS_BY_LANG = {
   ar: ["ar-muyassar", "ar-kathir", "en-kathir"],
   en: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
-  fr: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
+  fr: [FRENCH_TAFSIR_EDITION_ID, "en-kathir", "en-maarif", "ar-muyassar"],
   wo: ["en-kathir", "en-maarif", "en-tazkir", "ar-muyassar"],
 };
 
@@ -109,13 +253,17 @@ function resolveTafsirKey(value, lang = "en") {
     );
     if (found) return found[0];
   }
-  return lang === "ar" ? "ar-muyassar" : "en-kathir";
+  if (lang === "ar") return "ar-muyassar";
+  if (lang === "fr") return FRENCH_TAFSIR_EDITION_ID;
+  return "en-kathir";
 }
 
 async function fetchTafsirText(resource, verseKey, signal) {
-  const response = await fetch(
-    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${verseKey}`,
-    { signal },
+  const encodedVerseKey = encodeURIComponent(verseKey);
+  const response = await fetchWithTimeout(
+    `${BASE_URL}/tafsirs/${resource.id}/by_ayah/${encodedVerseKey}`,
+    { signal, headers: { Accept: "application/json" } },
+    STUDY_FETCH_TIMEOUT,
   );
 
   if (!response.ok) {
@@ -130,6 +278,7 @@ async function fetchTafsirText(resource, verseKey, signal) {
     throw new Error("No tafsir text found");
   }
 
+  cacheTafsir(resource.id, verseKey, text);
   return text;
 }
 
@@ -152,11 +301,24 @@ export async function getVerseTafsir({
   ].filter((key, index, list) => key && list.indexOf(key) === index);
 
   let lastError = null;
+  let cachedFallback = null;
   for (const key of candidates) {
     const resource = TAFSIR_RESOURCES[key];
     if (!resource) continue;
+    // The French edition caches whole surahs in IndexedDB; the Quran.com
+    // per-verse localStorage cache must not shadow or duplicate it.
+    if (!resource.local) {
+      const cachedText = readCachedTafsir(resource.id, verseKey);
+      if (cachedText && !cachedFallback) {
+        cachedFallback = { key, resource, text: cachedText };
+      }
+    }
     try {
-      const text = await fetchTafsirText(resource, verseKey, signal);
+      const text = resource.local
+        ? (await getFrenchTafsirVerse({ surah, ayah, signal }))?.text
+        : await fetchTafsirText(resource, verseKey, signal);
+      if (!text) continue;
+      const langMismatch = resource.lang !== normalizedLang;
       return {
         source: resource.name,
         sourceFr: resource.nameFr,
@@ -164,9 +326,9 @@ export async function getVerseTafsir({
         text,
         tafsirId: key,
         note:
-          normalizedLang === "fr"
-            ? "Aucun tafsir français vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
-            : normalizedLang === "wo"
+          normalizedLang === "fr" && langMismatch
+            ? "Aucun commentaire français n'existe pour cette source : le tafsir est affiché dans sa langue d'origine. Choisissez Al-Mukhtasar [FR] pour lire en français."
+            : normalizedLang === "wo" && langMismatch
               ? "Aucun tafsir wolof vérifié n'est disponible dans Quran.com pour cette source. Le commentaire est affiché dans sa langue d'origine."
               : null,
       };
@@ -174,6 +336,21 @@ export async function getVerseTafsir({
       if (error?.name === "AbortError") throw error;
       lastError = error;
     }
+  }
+
+  if (cachedFallback) {
+    return {
+      source: cachedFallback.resource.name,
+      sourceFr: cachedFallback.resource.nameFr,
+      language: cachedFallback.resource.lang,
+      text: cachedFallback.text,
+      tafsirId: cachedFallback.key,
+      cached: true,
+      note:
+        normalizedLang === "fr" && cachedFallback.resource.lang !== "fr"
+          ? "Le commentaire conserv\u00e9 hors connexion est affich\u00e9 dans sa langue d'origine."
+          : null,
+    };
   }
 
   throw lastError || new Error("No tafsir text found");
@@ -194,10 +371,6 @@ const TRANSLATION_RESOURCES = {
   nl: 209,
 };
 
-export function getQuranComVerseUrl(surah, ayah) {
-  return `https://quran.com/${Number(surah)}/${Number(ayah)}`;
-}
-
 export async function getVerseTranslation({
   surah,
   ayah,
@@ -213,9 +386,10 @@ export async function getVerseTranslation({
     translation_fields: "text,resource_name,language_name",
   });
 
-  const response = await fetch(
+  const response = await fetchWithTimeout(
     `${BASE_URL}/verses/by_key/${verseKey}?${params.toString()}`,
     { signal },
+    STUDY_FETCH_TIMEOUT,
   );
 
   if (!response.ok) {

@@ -1,8 +1,6 @@
 const SAFE_LOCAL_STORAGE_KEY = /^[a-z0-9:_-]{1,64}$/i;
-const MEMO_KEY = /^\d{1,3}:\d{1,3}$/;
-const SURAH_KEY = /^\d{1,3}$/;
+const AYAH_KEY = /^\d{1,3}:\d{1,3}$/;
 const DOWNLOAD_KEY = /^(hafs|warsh):.{1,80}:\d{1,3}$/;
-const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function schema(validate) {
   const api = {
@@ -30,6 +28,9 @@ function isPlainObject(value) {
 function isIntBetween(value, min, max) {
   return Number.isInteger(value) && value >= min && value <= max;
 }
+
+/** Longest note the device keeps; the editors hold the writer to the same cap. */
+export const NOTE_TEXT_MAX_LENGTH = 8000;
 
 function isText(value, max) {
   return typeof value === "string" && value.length <= max;
@@ -70,42 +71,21 @@ export function writeLocalStorageJson(key, data) {
   }
 }
 
-export const memorizationMapSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  for (const [key, rating] of Object.entries(value)) {
-    if (!MEMO_KEY.test(key) || !isIntBetween(rating, 0, 5)) return null;
-  }
-  return value;
-});
-
-export const khatmaGoalSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  if (!ISO_DATE.test(value.startDate)) return null;
-  if (!isIntBetween(value.targetDays, 1, 3650)) return null;
-  if (!isIntBetween(value.startPage, 1, 604)) return null;
-  return {
-    startDate: value.startDate,
-    targetDays: value.targetDays,
-    startPage: value.startPage,
-  };
-});
-
-export const readProgressSchema = schema((value) => {
-  if (!isPlainObject(value)) return null;
-  for (const [key, progress] of Object.entries(value)) {
-    if (!SURAH_KEY.test(key) || !isIntBetween(progress, 0, 286)) return null;
-  }
-  return value;
-});
-
 export const downloadProgressEntrySchema = schema((value) => {
   if (!isPlainObject(value)) return null;
   if (!isText(value.key, 160) || value.key.length < 3) return null;
-  if (!["partial", "done", "error"].includes(value.status)) return null;
+  if (!["partial", "done", "error", "cancelled"].includes(value.status)) return null;
   if (!isIntBetween(value.surahNum, 1, 114)) return null;
   if (!isText(value.reciterId, 80) || value.reciterId.length < 1) return null;
+  if (value.reciterName !== undefined && !isText(value.reciterName, 160)) return null;
   if (!["hafs", "warsh"].includes(value.riwaya)) return null;
   if (!isIntBetween(value.updatedAt, 0, Number.MAX_SAFE_INTEGER)) return null;
+  if (
+    value.total !== undefined &&
+    !isIntBetween(value.total, 1, Number.MAX_SAFE_INTEGER)
+  ) {
+    return null;
+  }
   if (
     value.downloaded !== undefined &&
     !isIntBetween(value.downloaded, 0, Number.MAX_SAFE_INTEGER)
@@ -135,10 +115,11 @@ export const downloadProgressMapSchema = schema((value) => {
 
 export const noteRecordSchema = schema((value) => {
   if (!isPlainObject(value)) return null;
-  if (!MEMO_KEY.test(value.id)) return null;
+  if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
-  if (!isText(value.text, 8000)) return null;
+  if (value.id !== `${value.surah}:${value.ayah}`) return null;
+  if (!isText(value.text, NOTE_TEXT_MAX_LENGTH)) return null;
   if (!isIntBetween(value.updatedAt, 0, Number.MAX_SAFE_INTEGER)) return null;
   return {
     id: value.id,
@@ -151,9 +132,10 @@ export const noteRecordSchema = schema((value) => {
 
 export const bookmarkRecordSchema = schema((value) => {
   if (!isPlainObject(value)) return null;
-  if (!MEMO_KEY.test(value.id)) return null;
+  if (!AYAH_KEY.test(value.id)) return null;
   if (!isIntBetween(value.surah, 1, 114)) return null;
   if (!isIntBetween(value.ayah, 1, 286)) return null;
+  if (value.id !== `${value.surah}:${value.ayah}`) return null;
   if (!isText(value.label, 200)) return null;
   if (!isIntBetween(value.createdAt, 0, Number.MAX_SAFE_INTEGER)) return null;
   return {

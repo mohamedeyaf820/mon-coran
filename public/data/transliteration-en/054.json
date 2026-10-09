@@ -1,0 +1,228 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 54,
+  "number_of_ayahs": 55,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "iq'tarabati l-sāʿatu wa-inshaqqa l-qamaru"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wa-in yaraw āyatan yuʿ'riḍū wayaqūlū siḥ'run mus'tamirrun"
+    },
+    {
+      "ayah_number": 3,
+      "text": "wakadhabū wa-ittabaʿū ahwāahum wakullu amrin mus'taqirrun"
+    },
+    {
+      "ayah_number": 4,
+      "text": "walaqad jāahum mina l-anbāi mā fīhi muz'dajarun"
+    },
+    {
+      "ayah_number": 5,
+      "text": "ḥik'matun bālighatun famā tugh'ni l-nudhuru"
+    },
+    {
+      "ayah_number": 6,
+      "text": "fatawalla ʿanhum yawma yadʿu l-dāʿi ilā shayin nukurin"
+    },
+    {
+      "ayah_number": 7,
+      "text": "khushaʿan abṣāruhum yakhrujūna mina l-ajdāthi ka-annahum jarādun muntashirun"
+    },
+    {
+      "ayah_number": 8,
+      "text": "muh'ṭiʿīna ilā l-dāʿi yaqūlu l-kāfirūna hādhā yawmun ʿasirun"
+    },
+    {
+      "ayah_number": 9,
+      "text": "kadhabat qablahum qawmu nūḥin fakadhabū ʿabdanā waqālū majnūnun wa-uz'dujira"
+    },
+    {
+      "ayah_number": 10,
+      "text": "fadaʿā rabbahu annī maghlūbun fa-intaṣir"
+    },
+    {
+      "ayah_number": 11,
+      "text": "fafataḥnā abwāba l-samāi bimāin mun'hamirin"
+    },
+    {
+      "ayah_number": 12,
+      "text": "wafajjarnā l-arḍa ʿuyūnan fal-taqā l-māu ʿalā amrin qad qudira"
+    },
+    {
+      "ayah_number": 13,
+      "text": "waḥamalnāhu ʿalā dhāti alwāḥin wadusurin"
+    },
+    {
+      "ayah_number": 14,
+      "text": "tajrī bi-aʿyuninā jazāan liman kāna kufira"
+    },
+    {
+      "ayah_number": 15,
+      "text": "walaqad taraknāhā āyatan fahal min muddakirin"
+    },
+    {
+      "ayah_number": 16,
+      "text": "fakayfa kāna ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 17,
+      "text": "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin"
+    },
+    {
+      "ayah_number": 18,
+      "text": "kadhabat ʿādun fakayfa kāna ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 19,
+      "text": "innā arsalnā ʿalayhim rīḥan ṣarṣaran fī yawmi naḥsin mus'tamirrin"
+    },
+    {
+      "ayah_number": 20,
+      "text": "tanziʿu l-nāsa ka-annahum aʿjāzu nakhlin munqaʿirin"
+    },
+    {
+      "ayah_number": 21,
+      "text": "fakayfa kāna ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 22,
+      "text": "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin"
+    },
+    {
+      "ayah_number": 23,
+      "text": "kadhabat thamūdu bil-nudhuri"
+    },
+    {
+      "ayah_number": 24,
+      "text": "faqālū abasharan minnā wāḥidan nattabiʿuhu innā idhan lafī ḍalālin wasuʿurin"
+    },
+    {
+      "ayah_number": 25,
+      "text": "a-ul'qiya l-dhik'ru ʿalayhi min bayninā bal huwa kadhābun ashirun"
+    },
+    {
+      "ayah_number": 26,
+      "text": "sayaʿlamūna ghadan mani l-kadhābu l-ashiru"
+    },
+    {
+      "ayah_number": 27,
+      "text": "innā mur'silū l-nāqati fit'natan lahum fa-ir'taqib'hum wa-iṣ'ṭabir"
+    },
+    {
+      "ayah_number": 28,
+      "text": "wanabbi'hum anna l-māa qis'matun baynahum kullu shir'bin muḥ'taḍarun"
+    },
+    {
+      "ayah_number": 29,
+      "text": "fanādaw ṣāḥibahum fataʿāṭā faʿaqara"
+    },
+    {
+      "ayah_number": 30,
+      "text": "fakayfa kāna ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 31,
+      "text": "innā arsalnā ʿalayhim ṣayḥatan wāḥidatan fakānū kahashīmi l-muḥ'taẓiri"
+    },
+    {
+      "ayah_number": 32,
+      "text": "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin"
+    },
+    {
+      "ayah_number": 33,
+      "text": "kadhabat qawmu lūṭin bil-nudhuri"
+    },
+    {
+      "ayah_number": 34,
+      "text": "innā arsalnā ʿalayhim ḥāṣiban illā āla lūṭin najjaynāhum bisaḥarin"
+    },
+    {
+      "ayah_number": 35,
+      "text": "niʿ'matan min ʿindinā kadhālika najzī man shakara"
+    },
+    {
+      "ayah_number": 36,
+      "text": "walaqad andharahum baṭshatanā fatamāraw bil-nudhuri"
+    },
+    {
+      "ayah_number": 37,
+      "text": "walaqad rāwadūhu ʿan ḍayfihi faṭamasnā aʿyunahum fadhūqū ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 38,
+      "text": "walaqad ṣabbaḥahum buk'ratan ʿadhābun mus'taqirrun"
+    },
+    {
+      "ayah_number": 39,
+      "text": "fadhūqū ʿadhābī wanudhuri"
+    },
+    {
+      "ayah_number": 40,
+      "text": "walaqad yassarnā l-qur'āna lildhik'ri fahal min muddakirin"
+    },
+    {
+      "ayah_number": 41,
+      "text": "walaqad jāa āla fir'ʿawna l-nudhuru"
+    },
+    {
+      "ayah_number": 42,
+      "text": "kadhabū biāyātinā kullihā fa-akhadhnāhum akhdha ʿazīzin muq'tadirin"
+    },
+    {
+      "ayah_number": 43,
+      "text": "akuffārukum khayrun min ulāikum am lakum barāatun fī l-zuburi"
+    },
+    {
+      "ayah_number": 44,
+      "text": "am yaqūlūna naḥnu jamīʿun muntaṣirun"
+    },
+    {
+      "ayah_number": 45,
+      "text": "sayuh'zamu l-jamʿu wayuwallūna l-dubura"
+    },
+    {
+      "ayah_number": 46,
+      "text": "bali l-sāʿatu mawʿiduhum wal-sāʿatu adhā wa-amarru"
+    },
+    {
+      "ayah_number": 47,
+      "text": "inna l-muj'rimīna fī ḍalālin wasuʿurin"
+    },
+    {
+      "ayah_number": 48,
+      "text": "yawma yus'ḥabūna fī l-nāri ʿalā wujūhihim dhūqū massa saqara"
+    },
+    {
+      "ayah_number": 49,
+      "text": "innā kulla shayin khalaqnāhu biqadarin"
+    },
+    {
+      "ayah_number": 50,
+      "text": "wamā amrunā illā wāḥidatun kalamḥin bil-baṣari"
+    },
+    {
+      "ayah_number": 51,
+      "text": "walaqad ahlaknā ashyāʿakum fahal min muddakirin"
+    },
+    {
+      "ayah_number": 52,
+      "text": "wakullu shayin faʿalūhu fī l-zuburi"
+    },
+    {
+      "ayah_number": 53,
+      "text": "wakullu ṣaghīrin wakabīrin mus'taṭarun"
+    },
+    {
+      "ayah_number": 54,
+      "text": "inna l-mutaqīna fī jannātin wanaharin"
+    },
+    {
+      "ayah_number": 55,
+      "text": "fī maqʿadi ṣid'qin ʿinda malīkin muq'tadirin"
+    }
+  ]
+}

@@ -1,0 +1,797 @@
+/*
+ * Verse-card studio (AyahSharePanel). Loaded with the lazy panel chunk, so the
+ * entry stylesheet stays free of it.
+ *
+ * Desktop: the card is the centre of the dialog, the format sits right under
+ * it, and one tab strip (models, frame, pattern, text) drives the card.
+ * Phone and tablet: a bottom sheet with the card pinned on top and the tab
+ * content scrolling underneath; swatches become horizontal rails.
+ */
+
+.share-studio-overlay {
+    padding: clamp(0.4rem, 2vw, 1.4rem);
+}
+
+.share-panel.modal.share-studio {
+    display: flex;
+    flex-direction: column;
+    width: min(1180px, 96vw);
+    max-width: 1180px;
+    height: min(93dvh, 900px);
+    max-height: min(93dvh, 900px);
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid color-mix(in srgb, var(--border) 82%, var(--primary) 18%);
+    border-radius: clamp(1rem, 2vw, 1.5rem);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 32px 90px rgba(3, 18, 13, 0.28);
+}
+
+.share-studio__header {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.78rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card) 92%, var(--primary) 8%);
+}
+
+.share-studio__kicker {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.38rem;
+    margin-bottom: 0.18rem;
+    color: var(--primary);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.share-studio__heading h2 {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: clamp(1rem, 2vw, 1.22rem);
+    line-height: 1.2;
+}
+
+.share-studio__heading p {
+    margin: 0.16rem 0 0;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.share-studio__close {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    height: 2.75rem;
+}
+
+.share-studio__workspace {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.94fr);
+}
+
+/* ---- Preview column ------------------------------------------------- */
+
+.share-studio__preview-column {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+    padding: clamp(0.8rem, 2vw, 1.2rem);
+    border-inline-end: 1px solid var(--border);
+    background:
+        radial-gradient(circle at 50% 18%, rgba(var(--primary-rgb), 0.14), transparent 46%),
+        repeating-linear-gradient(45deg, transparent 0 22px, rgba(var(--primary-rgb), 0.035) 22px 23px),
+        repeating-linear-gradient(-45deg, transparent 0 22px, rgba(var(--primary-rgb), 0.035) 22px 23px),
+        color-mix(in srgb, var(--bg-secondary) 88%, var(--primary) 12%);
+}
+
+.share-studio__preview-stage {
+    flex: 1 1 auto;
+    min-height: 0;
+    display: grid;
+    place-items: center;
+}
+
+.share-studio__preview-frame {
+    display: block;
+    height: 100%;
+    max-width: 100%;
+    overflow: hidden;
+    border-radius: 0.7rem;
+    background: var(--bg-card);
+    box-shadow:
+        0 0 0 1px rgba(0, 0, 0, 0.06),
+        0 24px 54px rgba(2, 20, 14, 0.3);
+}
+
+.share-studio__preview-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Format facts under the card: the reader knows what the PNG will weigh
+   before sharing it. */
+.share-studio__meta {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.3rem;
+}
+
+.share-studio__meta > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    padding: 0.24rem 0.56rem;
+    border: 1px solid color-mix(in srgb, var(--border) 84%, var(--primary) 16%);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--bg-card) 86%, var(--primary) 14%);
+    color: var(--text-muted);
+    font-size: 0.64rem;
+    font-weight: 700;
+}
+
+.share-control-group {
+    min-width: 0;
+    margin: 0 0 0.9rem;
+    padding: 0;
+    border: 0;
+}
+
+.share-control-group > :is(legend, label) {
+    display: flex;
+    align-items: center;
+    gap: 0.38rem;
+    margin-bottom: 0.45rem;
+    color: var(--text-secondary);
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.share-control-group--format {
+    flex: none;
+    margin: 0;
+}
+
+/* Three ratio tiles: the little rectangle has the real proportions. */
+.share-format-picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.4rem;
+}
+
+.share-format-picker button {
+    min-width: 0;
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.1rem 0.4rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    cursor: pointer;
+}
+
+.share-format-picker button.is-active {
+    border-color: color-mix(in srgb, var(--primary) 62%, var(--border) 38%);
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.18);
+}
+
+.share-format-picker strong {
+    font-weight: 800;
+}
+
+.share-format-ratio {
+    flex-shrink: 0;
+    padding: 0 0.28rem;
+    border: 1px solid currentColor;
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 0.58rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    line-height: 1.55;
+}
+
+.share-format-picker button.is-active .share-format-ratio {
+    color: var(--primary);
+    border-color: color-mix(in srgb, var(--primary) 55%, transparent);
+}
+
+.share-format-icon {
+    flex: none;
+    height: 1rem;
+    border: 1.5px solid currentColor;
+    border-radius: 0.16rem;
+    opacity: 0.75;
+}
+
+.share-format-icon--square {
+    aspect-ratio: 1;
+}
+
+.share-format-icon--portrait {
+    aspect-ratio: 4 / 5;
+}
+
+.share-format-icon--story {
+    aspect-ratio: 9 / 16;
+}
+
+/* Contextual description of the selected format: what it is for, where it lands. */
+.share-format-hint {
+    margin: 0.5rem 0 0;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    line-height: 1.5;
+    text-align: center;
+}
+
+/* ---- Controls column ------------------------------------------------ */
+
+.share-studio__controls {
+    min-width: 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    scrollbar-width: thin;
+}
+
+.share-tabs {
+    --share-tabs-gap: 0.8rem;
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    flex: none;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.25rem;
+    margin: var(--share-tabs-gap) 0.9rem 0;
+    padding: 0.25rem;
+    border: 1px solid var(--border);
+    border-radius: 0.95rem;
+    background: color-mix(in srgb, var(--bg-secondary) 92%, var(--primary) 8%);
+    backdrop-filter: blur(10px);
+}
+
+/* The gap above the pinned strip is part of it: what scrolls under the strip is
+   hidden there too, instead of showing through a transparent margin. */
+.share-tabs::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--share-tabs-gap) - 1px) -0.9rem auto;
+    height: var(--share-tabs-gap);
+    background: var(--bg-card);
+    pointer-events: none;
+}
+
+.share-tabs button {
+    min-width: 0;
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.4rem;
+    border: 1px solid transparent;
+    border-radius: 0.72rem;
+    background: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.74rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.share-tabs button > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.share-tabs button:hover {
+    color: var(--text-primary);
+}
+
+.share-tabs button.is-active {
+    border-color: color-mix(in srgb, var(--primary) 40%, var(--border) 60%);
+    background: var(--bg-card);
+    color: var(--primary);
+    font-weight: 800;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.share-tabpanel {
+    flex: 1 1 auto;
+    padding: 0.9rem;
+}
+
+.share-tabpanel:focus-visible,
+.share-tabs button:focus-visible,
+.share-tile:focus-visible,
+.share-format-picker button:focus-visible,
+.share-scale-picker button:focus-visible,
+.share-toggle:focus-visible,
+.share-action-btn:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .share-tabpanel {
+        animation: share-panel-in 0.18s ease-out;
+    }
+
+    .share-tile {
+        transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+
+    .share-tile:hover {
+        transform: translateY(-2px);
+    }
+
+    @keyframes share-panel-in {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+    }
+}
+
+/* Palette, frame and pattern pickers share one tile: a miniature of the card. */
+.share-theme-groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1.05rem;
+}
+
+.share-theme-group__title {
+    margin: 0 0 0.5rem;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.share-theme-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.3rem, 1fr));
+    gap: 0.65rem;
+}
+
+.share-choice-picker {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(6.4rem, 1fr));
+    gap: 0.6rem;
+}
+
+.share-tile {
+    position: relative;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.4rem;
+    padding: 0.35rem 0.35rem 0.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    text-align: center;
+    cursor: pointer;
+}
+
+.share-tile__thumb {
+    display: block;
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    border-radius: 0.55rem;
+    background: color-mix(in srgb, var(--border) 60%, transparent);
+    box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.16);
+}
+
+.share-tile__thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.share-tile__name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .share-tile {
+        transition: transform 140ms ease, box-shadow 140ms ease;
+    }
+
+    .share-tile:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(2, 20, 14, 0.18);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .share-tile {
+        transition: none;
+    }
+
+    .share-tile:hover {
+        transform: none;
+    }
+}
+
+.share-tile.is-active {
+    border-color: var(--primary);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--text-primary);
+    box-shadow: 0 0 0 2px rgba(var(--primary-rgb), 0.35);
+}
+
+.share-tile.is-active .share-tile__name {
+    font-weight: 800;
+}
+
+.share-tile__check {
+    position: absolute;
+    top: 0.6rem;
+    inset-inline-end: 0.6rem;
+    box-sizing: content-box;
+    padding: 0.18rem;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--primary-foreground, #fff);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
+
+/* Arabic-text scale. */
+.share-scale-picker {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.45rem;
+}
+
+.share-scale-picker button {
+    min-width: 0;
+    min-height: 3.2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.2rem;
+    padding: 0.4rem 0.3rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.7rem;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.share-scale-picker button.is-active {
+    border-color: color-mix(in srgb, var(--primary) 58%, var(--border) 42%);
+    background: rgba(var(--primary-rgb), 0.1);
+    color: var(--text-primary);
+    box-shadow: inset 0 0 0 1px rgba(var(--primary-rgb), 0.16);
+}
+
+.share-scale-glyph {
+    font-family: Georgia, serif;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.share-studio__quick-setting {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.share-toggle {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.3rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-secondary);
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-size: 0.72rem;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.share-toggle > span {
+    width: 0.5rem;
+    height: 0.5rem;
+    border: 1.5px solid currentColor;
+    border-radius: 50%;
+}
+
+.share-toggle.on {
+    border-color: rgba(var(--primary-rgb), 0.4);
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+}
+
+.share-toggle.on > span {
+    background: currentColor;
+}
+
+/* ---- Footer --------------------------------------------------------- */
+
+.share-studio__footer {
+    flex: none;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.8rem;
+    min-height: 4.25rem;
+    padding: 0.55rem 1rem;
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card) 94%, var(--primary) 6%);
+}
+
+.share-studio__feedback {
+    min-height: 1rem;
+    color: var(--text-muted);
+    font-size: 0.72rem;
+}
+
+.share-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.45rem;
+}
+
+.share-action-btn {
+    min-height: 2.75rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.42rem;
+    padding: 0.55rem 0.8rem;
+    border: 1px solid var(--border);
+    border-radius: 0.75rem;
+    font-family: var(--font-ui);
+    font-size: 0.76rem;
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.share-action-btn--secondary {
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.share-action-btn--icon {
+    width: 2.75rem;
+    min-width: 2.75rem;
+    padding: 0;
+}
+
+.share-action-btn--icon span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+}
+
+.share-action-btn--primary {
+    min-width: 10.5rem;
+    border-color: var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground, #fff);
+    box-shadow: 0 10px 22px rgba(var(--primary-rgb), 0.24);
+}
+
+.share-action-btn:disabled {
+    opacity: 0.55;
+    cursor: wait;
+}
+
+/* ---- Phone and tablet: bottom sheet --------------------------------- */
+
+@media (max-width: 820px) {
+    .share-studio-overlay {
+        align-items: flex-end;
+        padding: 0;
+    }
+
+    .share-panel.modal.share-studio {
+        width: 100vw;
+        max-width: none;
+        height: 96dvh;
+        max-height: 96dvh;
+        border-radius: 1.15rem 1.15rem 0 0;
+    }
+
+    .share-studio__header {
+        padding: 0.65rem 0.85rem;
+    }
+
+    .share-studio__heading p {
+        display: none;
+    }
+
+    .share-studio__workspace {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-rows: auto minmax(0, 1fr);
+    }
+
+    .share-studio__preview-column {
+        gap: 0.5rem;
+        padding: 0.65rem 0.85rem 0.7rem;
+        border-inline-end: 0;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .share-studio__preview-stage {
+        flex: none;
+        height: clamp(10.5rem, 31dvh, 22rem);
+    }
+
+    .share-studio__meta {
+        gap: 0.25rem;
+    }
+
+    /* The three tiles name themselves; the legend stays for assistive tech. */
+    .share-control-group--format > legend {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+
+    .share-studio__meta > span {
+        padding: 0.12rem 0.5rem;
+        font-size: 0.6rem;
+    }
+
+    /* The hint stays for assistive tech; the platforms are named in the tiles'
+       destination sheet anyway. */
+    .share-format-hint {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        margin: 0;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+    }
+
+    .share-tabs {
+        --share-tabs-gap: 0.6rem;
+        margin: var(--share-tabs-gap) 0.85rem 0;
+    }
+
+    .share-tabs::before {
+        inset-inline: -0.85rem;
+    }
+
+    .share-tabpanel {
+        padding: 0.75rem 0.85rem 1rem;
+    }
+
+    /* One rail per group (light, dark): the next tile peeks in, which says there is more. */
+    .share-theme-picker,
+    .share-choice-picker {
+        grid-template-columns: none;
+        grid-auto-flow: column;
+        grid-auto-columns: 5.9rem;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        scroll-snap-type: x proximity;
+        scrollbar-width: none;
+        /* Room for the ring and shadow that overflow clipping would cut. */
+        margin-inline: -0.25rem;
+        padding: 0.25rem 0.25rem 0.5rem;
+    }
+
+    .share-theme-picker::-webkit-scrollbar,
+    .share-choice-picker::-webkit-scrollbar {
+        display: none;
+    }
+
+    .share-tile {
+        scroll-snap-align: start;
+    }
+
+    .share-studio__footer {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 0.25rem;
+        min-height: 0;
+        padding: 0.55rem max(0.85rem, env(safe-area-inset-right)) calc(0.55rem + env(safe-area-inset-bottom)) max(0.85rem, env(safe-area-inset-left));
+    }
+
+    .share-studio__feedback {
+        min-height: 0;
+        text-align: center;
+    }
+
+    .share-studio__feedback.is-visible {
+        min-height: 1rem;
+    }
+
+    .share-actions {
+        display: grid;
+        grid-template-columns: 2.75rem 2.75rem minmax(0, 1fr);
+    }
+
+    .share-action-btn {
+        min-width: 0;
+        padding-inline: 0.62rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .share-studio__kicker {
+        font-size: 0.58rem;
+    }
+
+    .share-tabs button {
+        gap: 0;
+        font-size: 0.68rem;
+    }
+
+    .share-tabs button > svg {
+        display: none;
+    }
+
+    .share-format-ratio {
+        display: none;
+    }
+}
+
+@media (max-height: 700px) and (max-width: 820px) {
+    .share-studio__preview-stage {
+        height: clamp(8rem, 26dvh, 12rem);
+    }
+
+    /* Short phones give the room to the swatches. */
+    .share-studio__meta {
+        display: none;
+    }
+}

@@ -1,18 +1,32 @@
-import { statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const SCREEN_BUDGETS = [
-  { file: "src/components/HomePage.jsx", maxKB: 90 },
-  { file: "src/components/QuranDisplay.jsx", maxKB: 95 },
-  { file: "src/components/AudioPlayer.jsx", maxKB: 140 },
-  { file: "src/components/SettingsModal.jsx", maxKB: 160 },
+  { file: "src/components/HomePage.jsx", maxKB: 40 },
+  { file: "src/components/QuranDisplay.jsx", maxKB: 24 },
+  { file: "src/components/AudioPlayer.jsx", maxKB: 42 },
+  { file: "src/components/SettingsModal.jsx", maxKB: 44 },
+  { file: "src/components/LibraryModal.jsx", maxKB: 24 },
+  { file: "src/components/AyahActions.jsx", maxKB: 90 },
+  // 46 after the A-B marking entry point and the provider-gap report (2026-09-22).
+  // 53 for the whole-surah route (2026-10-08): the verse timing, the fallback and
+  // the routing already live in audioSurahRoute.js; what stays here is the hook
+  // points (route choice in loadPlaylist, seek to a verse, verse-clock getters).
+  { file: "src/services/audioService.js", maxKB: 53 },
+  { file: "src/context/AppContext.jsx", maxKB: 34 },
+  { file: "src/services/quranAPI.js", maxKB: 29 },
+  { file: "src/services/quranComAPI.js", maxKB: 20 },
 ];
 
 let hasError = false;
 
 for (const item of SCREEN_BUDGETS) {
   const abs = resolve(process.cwd(), item.file);
-  const sizeKB = statSync(abs).size / 1024;
+  // Measure the text, not the checkout: a Windows working copy with
+  // core.autocrlf adds a byte per line, which pushed two files past their cap
+  // here while the LF bundle CI builds stayed under it.
+  const sizeKB =
+    Buffer.byteLength(readFileSync(abs, "utf8").replace(/\r\n/g, "\n")) / 1024;
   const ok = sizeKB <= item.maxKB;
   const status = ok ? "OK" : "EXCEEDED";
   console.log(

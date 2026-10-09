@@ -1,386 +1,367 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
 import PlatformLogo from "./PlatformLogo";
 import { t } from "../i18n";
 
-/* 8 particules dorées flottantes générées statiquement */
-const PARTICLES = [
-  { size: 3, top: "15%", left: "12%", dur: 6, del: 0 },
-  { size: 2, top: "22%", left: "82%", dur: 8, del: 0.8 },
-  { size: 4, top: "70%", left: "8%", dur: 7, del: 1.4 },
-  { size: 2, top: "80%", left: "88%", dur: 9, del: 0.3 },
-  { size: 3, top: "45%", left: "92%", dur: 6, del: 2 },
-  { size: 2, top: "60%", left: "5%", dur: 10, del: 1 },
-  { size: 3, top: "10%", left: "55%", dur: 7, del: 1.7 },
-  { size: 2, top: "88%", left: "45%", dur: 8, del: 0.5 },
-];
+const VERSE = {
+  ar: "﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾",
+  ref: "الحجر — ٩",
+};
 
-/* Versets qui défilent pendant le chargement */
-const VERSES = [
-  {
-    ar: "﴿ إِنَّا نَحْنُ نَزَّلْنَا الذِّكْرَ وَإِنَّا لَهُ لَحَافِظُونَ ﴾",
-    ref: "الحجر — 9",
-  },
-  { ar: "﴿ وَلَقَدْ يَسَّرْنَا الْقُرْآنَ لِلذِّكْرِ ﴾", ref: "القمر — 17" },
-  {
-    ar: "﴿ إِنَّ هَٰذَا الْقُرْآنَ يَهْدِي لِلَّتِي هِيَ أَقْوَمُ ﴾",
-    ref: "الإسراء — 9",
-  },
-  { ar: "﴿ فَاقْرَءُوا مَا تَيَسَّرَ مِنَ الْقُرْآنِ ﴾", ref: "المزمل — 20" },
-  { ar: "﴿ وَرَتِّلِ الْقُرْآنَ تَرْتِيلًا ﴾", ref: "المزمل — 4" },
-  {
-    ar: "﴿ خَيْرُكُمْ مَنْ تَعَلَّمَ الْقُرْآنَ وَعَلَّمَهُ ﴾",
-    ref: "البخاري",
-  },
-];
+// A reader who opens the app several times a day should not wait for an
+// animation each time: the full sequence plays on the first launch after a
+// pause, a short settle otherwise. Neither ever waits longer than the data does
+// beyond its own minimum.
+const SEEN_KEY = "mushaf-splash-seen";
+const FULL_AFTER_MS = 12 * 60 * 60 * 1000;
+const TIMING = {
+  full: { min: 1150, max: 1900, skip: 700 },
+  quick: { min: 450, max: 1400, skip: 700 },
+};
+const SPLASH_FADE_MS = 240;
+
+function pickMode() {
+  try {
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return "quick";
+    const seen = Number(localStorage.getItem(SEEN_KEY)) || 0;
+    return Date.now() - seen > FULL_AFTER_MS ? "full" : "quick";
+  } catch {
+    return "full";
+  }
+}
 
 export default function SplashScreen({
   onDone,
   onPrefetch,
   lowPerfMode = false,
+  lang = "fr",
 }) {
+  const [mode] = useState(pickMode);
   const [fadeOut, setFadeOut] = useState(false);
-  const [verseIndex, setVerseIndex] = useState(0);
-  const [verseVisible, setVerseVisible] = useState(true);
   const [showSkip, setShowSkip] = useState(false);
+  const dismissedRef = useRef(false);
+  const onPrefetchRef = useRef(onPrefetch);
 
-  useEffect(() => {
-    if (lowPerfMode) return;
-    const t = setTimeout(() => setShowSkip(true), 800);
-    return () => clearTimeout(t);
-  }, [lowPerfMode]);
+  // Keep ref current without it becoming an effect dep
+  useEffect(() => { onPrefetchRef.current = onPrefetch; });
 
-  useEffect(() => {
-    if (onPrefetch) onPrefetch();
-
-    if (lowPerfMode) {
-      const t1 = setTimeout(() => setFadeOut(true), 300);
-      const t2 = setTimeout(() => onDone(), 500);
-      return () => {
-        clearTimeout(t1);
-        clearTimeout(t2);
-      };
+  const dismiss = React.useCallback(() => {
+    if (dismissedRef.current) return;
+    dismissedRef.current = true;
+    setShowSkip(false);
+    setFadeOut(true);
+    try {
+      localStorage.setItem(SEEN_KEY, String(Date.now()));
+    } catch {
+      /* private mode: the full sequence simply plays again */
     }
+    window.setTimeout(onDone, SPLASH_FADE_MS);
+  }, [onDone]);
 
-    // Rotation des versets toutes les ~1.4 s
-    const verseTick = setInterval(() => {
-      setVerseVisible(false);
-      setTimeout(() => {
-        setVerseIndex((i) => (i + 1) % VERSES.length);
-        setVerseVisible(true);
-      }, 350);
-    }, 1600);
+  useEffect(() => {
+    let active = true;
+    const { min, max, skip } = TIMING[mode];
+    const startedAt = performance.now();
+    let readyTimer;
+    const skipTimer = window.setTimeout(() => setShowSkip(true), skip);
+    const closeTimer = window.setTimeout(dismiss, max);
 
-    // Keep the splash decorative, but do not let it feel like a loading wall.
-    const t1 = setTimeout(() => setFadeOut(true), 950);
-    const t2 = setTimeout(() => onDone(), 1250);
+    // The route chunks can finish early; the splash should never add seconds
+    // of artificial waiting after they are ready.
+    Promise.resolve(onPrefetchRef.current?.())
+      .catch(() => null)
+      .finally(() => {
+        if (!active) return;
+        readyTimer = window.setTimeout(dismiss, Math.max(0, min - (performance.now() - startedAt)));
+      });
 
     return () => {
-      clearInterval(verseTick);
-      clearTimeout(t1);
-      clearTimeout(t2);
+      active = false;
+      window.clearTimeout(skipTimer);
+      window.clearTimeout(closeTimer);
+      window.clearTimeout(readyTimer);
     };
-  }, [onDone, onPrefetch, lowPerfMode]);
+  }, [dismiss, mode]);
 
-  const v = VERSES[verseIndex];
-
-  return (
+  return ReactDOM.createPortal(
     <div
-      className={`splash-screen ${fadeOut ? "fade-out" : ""} ${lowPerfMode ? "perf-low" : ""}`}
+      className={`splash-screen sp-root sp-root--${mode}${fadeOut ? " sp-root--out" : ""}${lowPerfMode ? " sp-root--perf-low" : ""}`}
+      aria-label={t("splash.loading", lang)}
+      aria-live="polite"
     >
+      <div className="sp-bloom" aria-hidden="true" />
+
       {showSkip && !fadeOut && (
-        <button
-          className="splash-skip"
-          onClick={() => {
-            setShowSkip(false);
-            setFadeOut(true);
-            setTimeout(onDone, 600);
-          }}
-        >
-          Skip ›
+        <button type="button" className="splash-skip" onClick={dismiss}>
+          {t("splash.skip", lang)}
+          <span aria-hidden="true">›</span>
         </button>
       )}
-      {/* Halo doré central */}
-      <div className="splash-halo" aria-hidden="true" />
 
-      {/* Étoiles / particules flottantes */}
-      {!lowPerfMode &&
-        PARTICLES.map((p, i) => (
-          <span
-            key={i}
-            aria-hidden="true"
-            className="splash-particle"
-            style={{
-              width: p.size,
-              height: p.size,
-              top: p.top,
-              left: p.left,
-              animationDuration: `${p.dur}s`,
-              animationDelay: `${p.del}s`,
-            }}
+      <main className="sp-stage">
+        {/* The logo is a raster emblem: it is lit, not redrawn. The shine is
+            masked by the logo's own alpha; the glows and sparkles sit on the
+            lanterns, the star and the book of the artwork. */}
+        <div className="sp-mark" aria-hidden="true">
+          <span className="sp-rays" />
+          <PlatformLogo
+            className="sp-logo-wrap"
+            imgClassName="splash-logo sp-logo"
+            decorative
+            priority
+            width={240}
+            height={240}
           />
-        ))}
-
-      {/* Motif arabesque discret en fond */}
-      <div className="splash-arabesque" aria-hidden="true">
-        {"✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦ ٭ ✦"}
-      </div>
-
-      <div className="splash-content">
-        <PlatformLogo
-          className="splash-logo-wrap"
-          imgClassName="splash-logo"
-          decorative
-          priority
-          width={160}
-          height={160}
-        />
-        <h1 className="splash-title">MushafPlus</h1>
-        <p className="splash-subtitle">القرآن الكريم</p>
-
-        {/* Verset tournant */}
-        <div
-          className={`splash-verse-wrap ${verseVisible ? "verse-in" : "verse-out"}`}
-        >
-          <p className="splash-verse">{v.ar}</p>
-          <p className="splash-verse-ref">{v.ref}</p>
+          <span className="sp-shine" />
+          <span className="sp-lantern sp-lantern--l" />
+          <span className="sp-lantern sp-lantern--r" />
+          <span className="sp-spark sp-spark--1" />
+          <span className="sp-spark sp-spark--2" />
+          <span className="sp-spark sp-spark--3" />
         </div>
 
-        {/* Barre de progression */}
-        <div
-          className="splash-loader"
-          role="progressbar"
-          aria-label={t("splash.loading")}
-        >
-          <div className="splash-loader-bar" />
+        <h1 className="sp-name">MushafPlus</h1>
+        <p className="splash-subtitle" lang="ar" dir="rtl">القرآن الكريم</p>
+
+        <blockquote className="splash-verse" lang="ar" dir="rtl">
+          <p className="sp-verse__text">{VERSE.ar}</p>
+          <cite className="sp-verse__ref">{VERSE.ref}</cite>
+        </blockquote>
+
+        <div className="sp-progress" role="status">
+          <span className="sr-only">{t("splash.loading", lang)}</span>
+          <span className="sp-progress__track" aria-hidden="true">
+            <span className="sp-progress__fill" />
+          </span>
+          <span className="splash-loading-text" lang={lang} dir={lang === "ar" ? "rtl" : "ltr"}>
+            {t("splash.loading", lang)}
+          </span>
         </div>
-        <div className="splash-ornament" aria-hidden="true">
-          ✦ ✦ ✦
-        </div>
-        <p className="splash-loading-text">بِسْمِ اللَّهِ</p>
-      </div>
+      </main>
 
       <style>{`
-        .splash-screen {
+        .sp-root {
+          --sp-gold: #d4a843;
+          --sp-gold-soft: #f0d17a;
+          --sp-ink: #eef4f0;
+          --sp-ease: cubic-bezier(.16, 1, .3, 1);
           position: fixed;
           inset: 0;
           z-index: 9999;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(160deg, #071A0F 0%, #102A1A 35%, #1A3828 65%, #0B1F12 100%);
-          transition: opacity 0.7s cubic-bezier(0.4,0,0.2,1);
+          display: grid;
+          place-items: center;
           overflow: hidden;
+          color: var(--sp-ink);
+          /* The same deep greens as the home card, so the app opens in its own colours. */
+          background: linear-gradient(145deg, #102d22, #0a1812 76%);
+          opacity: 1;
+          transition: opacity ${SPLASH_FADE_MS}ms ease, transform ${SPLASH_FADE_MS}ms ease;
         }
-        .splash-screen.perf-low {
-          transition: opacity 0.2s linear;
-          background: #0e2117;
-        }
-        .splash-screen.fade-out { opacity: 0; pointer-events: none; }
+        .sp-root--out { opacity: 0; transform: scale(1.025); pointer-events: none; }
 
-        /* ── Halo ── */
-        .splash-halo {
+        .sp-bloom {
           position: absolute;
-          width: 520px; height: 520px;
+          left: 50%; top: 44%;
+          width: min(46rem, 150vw);
+          aspect-ratio: 1;
           border-radius: 50%;
-          background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, rgba(212,175,55,0.03) 50%, transparent 72%);
-          top: 50%; left: 50%;
-          transform: translate(-50%,-50%);
-          animation: splashHalo 4s ease-in-out infinite;
-          pointer-events: none;
-        }
-        .splash-screen.perf-low .splash-halo { display: none; }
-
-        /* ── Arabesque ── */
-        .splash-arabesque {
-          position: absolute;
-          bottom: 12%;
-          left: 0; right: 0;
-          text-align: center;
-          font-size: 0.85rem;
-          letter-spacing: 6px;
-          color: rgba(212,175,55,0.08);
-          white-space: nowrap;
-          overflow: hidden;
-          pointer-events: none;
-          animation: arFlow 20s linear infinite;
-          user-select: none;
-        }
-        .splash-screen.perf-low .splash-arabesque { display: none; }
-
-        /* ── Particules ── */
-        .splash-particle {
-          position: absolute;
-          border-radius: 50%;
-          background: rgba(212,175,55,0.55);
-          box-shadow: 0 0 6px rgba(212,175,55,0.4);
-          animation: floatParticle var(--dur, 7s) ease-in-out infinite;
-          animation-delay: var(--del, 0s);
-          pointer-events: none;
+          background: radial-gradient(circle, rgba(222,190,96,.2) 0%, rgba(47,159,107,.1) 38%, transparent 68%);
+          transform: translate(-50%, -50%) scale(.55);
+          opacity: 0;
+          animation: spBloom 1.1s var(--sp-ease) 40ms forwards;
         }
 
-        /* ── Content ── */
-        .splash-content {
-          text-align: center;
+        .sp-stage {
           position: relative;
-          z-index: 1;
-          animation: splashIn 1s cubic-bezier(0.22,1,0.36,1);
-        }
-        .splash-screen.perf-low .splash-content { animation: none; }
-
-        .splash-logo-wrap {
           display: flex;
+          flex-direction: column;
           align-items: center;
-          justify-content: center;
-          margin-bottom: 1.4rem;
-          animation: logoPulse 3s ease-in-out infinite;
-          filter: drop-shadow(0 6px 24px rgba(212,175,55,0.3));
-        }
-        .splash-screen.perf-low .splash-logo-wrap { animation: none; filter: none; }
-        .splash-logo { width: min(200px, 54vw); height: auto; object-fit: contain; }
-
-        .splash-title {
-          font-family: 'Scheherazade New', 'Amiri', serif;
-          font-size: clamp(2.4rem, 8vw, 3.4rem);
-          color: #fff;
-          margin: 0 0 0.25rem;
-          letter-spacing: 4px;
-          text-shadow: 0 2px 16px rgba(0,0,0,0.4), 0 0 30px rgba(212,175,55,0.12);
-        }
-        .splash-subtitle {
-          font-family: 'Amiri Quran', serif;
-          font-size: clamp(1.2rem, 4vw, 1.6rem);
-          color: rgba(240,234,214,0.88);
-          margin: 0 0 1.6rem;
-          letter-spacing: 2px;
+          width: min(88vw, 24rem);
+          text-align: center;
         }
 
-        /* ── Verset tournant ── */
-        .splash-verse-wrap {
-          min-height: 72px;
-          margin: 0 auto 1.8rem;
-          max-width: 360px;
-          transition: opacity 0.35s ease, transform 0.35s ease;
-        }
-        .splash-verse-wrap.verse-in  { opacity: 1; transform: translateY(0); }
-        .splash-verse-wrap.verse-out { opacity: 0; transform: translateY(-8px); }
-        .splash-verse {
-          font-family: 'Amiri Quran', serif;
-          font-size: clamp(0.9rem, 2.8vw, 1.05rem);
-          color: rgba(212,175,55,0.82);
-          margin: 0 0 0.3rem;
-          line-height: 1.9;
-          direction: rtl;
-        }
-        .splash-verse-ref {
-          font-family: 'Amiri', serif;
-          font-size: 0.75rem;
-          color: rgba(212,175,55,0.45);
-          margin: 0;
-          letter-spacing: 1px;
-        }
-
-        /* ── Barre de chargement ── */
-        .splash-loader {
-          width: min(240px, 60vw);
-          height: 3px;
-          background: rgba(255,255,255,0.1);
-          border-radius: 99px;
-          margin: 0 auto 0.9rem;
-          overflow: hidden;
+        /* ─── logo ──────────────────────────────────────────────── */
+        .sp-mark {
           position: relative;
+          width: min(62vw, 15rem);
+          aspect-ratio: 1;
+          animation: spLogoIn .9s var(--sp-ease) 90ms both;
         }
-        .splash-loader-bar {
+        .sp-logo-wrap, .sp-logo { display: block; width: 100%; height: 100%; }
+        .sp-logo { object-fit: contain; filter: drop-shadow(0 10px 28px rgba(0,0,0,.45)); }
+
+        .sp-rays {
+          position: absolute;
+          left: 50%; top: 52%;
+          width: 150%; aspect-ratio: 1;
+          transform: translate(-50%, -50%);
+          background: repeating-conic-gradient(from 0deg, rgba(240,209,122,.11) 0 4deg, transparent 4deg 18deg);
+          -webkit-mask-image: radial-gradient(circle, black 0 22%, transparent 58%);
+          mask-image: radial-gradient(circle, black 0 22%, transparent 58%);
+          opacity: 0;
+          animation: spRays 1.2s ease-out 260ms forwards, spSpin 28s linear infinite;
+        }
+
+        /* a band of light crossing the artwork, clipped to the artwork */
+        .sp-shine {
           position: absolute;
           inset: 0;
-          background: linear-gradient(90deg, #8B6914, #D4AF37, #F5D785, #D4AF37, #8B6914);
-          background-size: 300% 100%;
-          border-radius: 99px;
-          animation: loadBar 3s cubic-bezier(0.4,0,0.6,1) forwards,
-                     shimmerBar 1.8s linear infinite;
+          -webkit-mask: url(/logo-ui.webp) center / contain no-repeat;
+          mask: url(/logo-ui.webp) center / contain no-repeat;
+          background: linear-gradient(105deg, transparent 38%, rgba(255,247,214,.95) 50%, transparent 62%) no-repeat;
+          background-size: 280% 100%;
+          background-position: 130% 0;
+          mix-blend-mode: screen;
+          animation: spShine .95s ease-in-out 520ms forwards;
         }
-        .splash-screen.perf-low .splash-loader-bar {
-          animation: loadBar 0.35s linear forwards;
+
+        .sp-lantern {
+          position: absolute;
+          top: 44%;
+          width: 26%; aspect-ratio: 1;
+          transform: translate(-50%, -50%);
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255,214,120,.55) 0%, rgba(255,190,70,.18) 42%, transparent 70%);
+          mix-blend-mode: screen;
+          opacity: 0;
+          animation: spBreathe 2.4s ease-in-out 700ms infinite;
         }
-        .splash-ornament {
-          color: rgba(212,175,55,0.25);
-          font-size: 0.65rem;
-          letter-spacing: 8px;
-          margin: 0 auto 0.4rem;
+        .sp-lantern--l { left: 27.5%; }
+        .sp-lantern--r { left: 74%; animation-delay: 1.3s; }
+
+        .sp-spark {
+          position: absolute;
+          width: 9%; aspect-ratio: 1;
+          transform: translate(-50%, -50%) scale(0);
+          background: radial-gradient(circle, #fff 0 12%, rgba(255,236,160,.9) 22%, transparent 62%);
+          clip-path: polygon(50% 0, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0 50%, 40% 40%);
+          opacity: 0;
+          animation: spTwinkle 2s ease-in-out infinite;
         }
-        .splash-loading-text {
-          font-family: 'Amiri Quran', serif;
-          font-size: 0.78rem;
-          color: rgba(212,175,55,0.35);
+        .sp-spark--1 { left: 50%; top: 29.5%; animation-delay: 650ms; }
+        .sp-spark--2 { left: 39.5%; top: 34%; width: 6%; animation-delay: 1.15s; }
+        .sp-spark--3 { left: 61.5%; top: 31.5%; width: 6%; animation-delay: 1.65s; }
+
+        /* ─── words ─────────────────────────────────────────────── */
+        .sp-name {
+          position: absolute;
+          width: 1px; height: 1px;
+          overflow: hidden;
+          clip: rect(0 0 0 0);
+          white-space: nowrap;
+        }
+        .splash-subtitle {
+          margin: .35rem 0 0;
+          font-family: "Amiri Quran", "Noto Naskh Arabic", serif;
+          font-size: 1.45rem;
+          line-height: 1.5;
+          color: var(--sp-gold-soft);
+          opacity: 0;
+          animation: spRise .7s var(--sp-ease) 760ms forwards;
+        }
+        .splash-verse {
+          margin: .7rem 0 0;
+          opacity: 0;
+          animation: spRise .8s var(--sp-ease) 980ms forwards;
+        }
+        .sp-verse__text {
           margin: 0;
-          letter-spacing: 3px;
-          animation: blink 2s ease-in-out infinite;
+          font-family: "Amiri Quran", "Noto Naskh Arabic", serif;
+          font-size: 1.05rem;
+          line-height: 1.9;
+          color: rgba(238,244,240,.78);
+        }
+        .sp-verse__ref {
+          display: block;
+          margin-top: .1rem;
+          font-style: normal;
+          font-size: .78rem;
+          color: rgba(238,244,240,.5);
         }
 
-        /* ─ Keyframes ─ */
-        @keyframes splashIn {
-          from { opacity: 0; transform: translateY(28px) scale(0.97); }
-          to   { opacity: 1; transform: translateY(0)   scale(1);    }
+        .sp-progress { display: flex; flex-direction: column; align-items: center; gap: .55rem; margin-top: 1.4rem; }
+        .splash-loading-text { font-size: .75rem; letter-spacing: .08em; color: rgba(238,244,240,.55); }
+        .sp-progress__track {
+          display: block;
+          width: 7.5rem; height: 2px;
+          overflow: hidden;
+          border-radius: 2px;
+          background: rgba(212,168,67,.18);
         }
-        @keyframes logoPulse {
-          0%,100% { filter: drop-shadow(0 6px 24px rgba(212,175,55,0.28)); transform: scale(1);    }
-          50%     { filter: drop-shadow(0 8px 32px rgba(212,175,55,0.45)); transform: scale(1.03); }
-        }
-        @keyframes splashHalo {
-          0%,100% { transform: translate(-50%,-50%) scale(1);    opacity: 1;   }
-          50%     { transform: translate(-50%,-50%) scale(1.08); opacity: 0.7; }
-        }
-        @keyframes floatParticle {
-          0%,100% { transform: translateY(0); opacity: 0.6; }
-          50%     { transform: translateY(-18px); opacity: 1; }
-        }
-        @keyframes arFlow {
-          from { transform: translateX(0); }
-          to   { transform: translateX(-50%); }
-        }
-        @keyframes loadBar {
-          0%   { width: 0%;    }
-          15%  { width: 18%;   }
-          40%  { width: 45%;   }
-          70%  { width: 72%;   }
-          90%  { width: 90%;   }
-          100% { width: 100%;  }
-        }
-        @keyframes shimmerBar {
-          0%   { background-position: 200% center; }
-          100% { background-position: -200% center; }
-        }
-        @keyframes blink {
-          0%,100% { opacity: 0.35; }
-          50%     { opacity: 0.7;  }
+        .sp-progress__fill {
+          display: block;
+          width: 45%; height: 100%;
+          border-radius: 2px;
+          background: linear-gradient(90deg, transparent, var(--sp-gold-soft), transparent);
+          animation: spSlide 1.1s ease-in-out infinite;
         }
 
-        /* ── Skip button ── */
         .splash-skip {
           position: absolute;
-          bottom: 2rem;
-          right: 2rem;
-          background: rgba(255, 255, 255, 0.08);
-          border: 1px solid rgba(255, 255, 255, 0.12);
-          color: rgba(255, 255, 255, 0.5);
-          padding: 0.4rem 1rem;
-          border-radius: 99px;
-          font-size: 0.75rem;
+          top: max(1rem, env(safe-area-inset-top));
+          inset-inline-end: 1rem;
+          min-width: 44px; min-height: 44px;
+          display: inline-flex; align-items: center; gap: .3rem;
+          padding: 0 1rem;
+          border: 1px solid rgba(212,168,67,.3);
+          border-radius: 999px;
+          background: rgba(255,255,255,.05);
+          color: rgba(238,244,240,.85);
+          font-size: .85rem;
           cursor: pointer;
-          transition: all 0.2s ease;
-          animation: fadeInUp 0.4s ease;
-          font-family: 'Cairo', sans-serif;
-          z-index: 10;
+          animation: spRise .4s ease both;
         }
-        .splash-skip:hover {
-          background: rgba(255, 255, 255, 0.14);
-          color: rgba(255, 255, 255, 0.8);
-          border-color: rgba(255, 255, 255, 0.22);
+        .splash-skip:hover { border-color: rgba(212,168,67,.6); color: #fff; }
+        .splash-skip:focus-visible { outline: 2px solid var(--sp-gold-soft); outline-offset: 3px; }
+
+        /* A returning reader sees the settled mark almost at once. */
+        .sp-root--quick .sp-bloom { animation-duration: .35s; animation-delay: 0ms; }
+        .sp-root--quick .sp-mark { animation-duration: .3s; animation-delay: 0ms; }
+        .sp-root--quick .sp-rays { animation: spRays .4s ease-out forwards, spSpin 28s linear infinite; }
+        .sp-root--quick .sp-shine { animation-duration: .6s; animation-delay: 160ms; }
+        .sp-root--quick .splash-subtitle { animation-duration: .3s; animation-delay: 120ms; }
+        .sp-root--quick .splash-verse { animation-duration: .3s; animation-delay: 180ms; }
+
+        /* Low-power phones: opacity and transform only, no blur or blend. */
+        .sp-root--perf-low .sp-shine, .sp-root--perf-low .sp-rays, .sp-root--perf-low .sp-spark { display: none; }
+        .sp-root--perf-low .sp-lantern { mix-blend-mode: normal; animation: none; opacity: .6; }
+        .sp-root--perf-low .sp-logo { filter: none; }
+
+        @keyframes spBloom { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
+        @keyframes spLogoIn {
+          from { opacity: 0; transform: translateY(10px) scale(.84); filter: blur(10px); }
+          to   { opacity: 1; transform: none; filter: blur(0); }
         }
-        @keyframes fadeInUp {
-          from { opacity: 0; transform: translateY(10px); }
-          to   { opacity: 1; transform: translateY(0); }
+        @keyframes spRays { to { opacity: 1; } }
+        @keyframes spSpin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+        @keyframes spShine { to { background-position: -40% 0; } }
+        @keyframes spBreathe { 0%, 100% { opacity: .15; } 50% { opacity: .95; } }
+        @keyframes spTwinkle {
+          0%, 60%, 100% { opacity: 0; transform: translate(-50%, -50%) scale(0) rotate(0deg); }
+          25% { opacity: 1; transform: translate(-50%, -50%) scale(1) rotate(45deg); }
+        }
+        @keyframes spRise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        @keyframes spSlide { from { transform: translateX(-110%); } to { transform: translateX(260%); } }
+
+        @media (max-height: 560px) {
+          .splash-verse { display: none; }
+          .sp-mark { width: min(40vh, 11rem); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .sp-root *, .sp-root *::before, .sp-root *::after {
+            animation: none !important;
+            transition: none !important;
+          }
+          .sp-bloom { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+          .sp-shine, .sp-rays, .sp-spark { display: none; }
+          .sp-lantern { opacity: .45; }
+          .splash-subtitle, .splash-verse { opacity: 1; }
+          .sp-progress__fill { width: 100%; }
+          .sp-root--out { transform: none; }
         }
       `}</style>
-    </div>
+    </div>,
+    document.body
   );
 }

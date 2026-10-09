@@ -1,45 +1,284 @@
-import React from "react";
-import { openExternalUrl } from "../../lib/security";
+import { offlineText } from "../../i18n/offline.js";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { BookOpen, Check, Download, LoaderCircle, Play, Share2, X } from "lucide-react";
+import { toast } from "../../lib/utils";
+import {
+  OFFLINE_DOWNLOADS_CHANGED_EVENT,
+  cancelOfflineDownload,
+  downloadSurahForReciter,
+  getSurahDownloadEntry,
+  verifySurahDownloadForReciter,
+} from "../../services/downloadService";
 
-export default function RowActions({ lang, onPlay, onOpen, downloadUrl }) {
-  const handleDownload = () => {
-    if (!downloadUrl) return;
-    openExternalUrl(downloadUrl);
+function labelsFor(lang) {
+  if (lang === "ar") {
+    return {
+      listen: "استمع",
+      open: "افتح في المصحف",
+      share: "مشاركة التلاوة",
+      shareCopied: "تم النسخ!",
+      download: "تنزيل للاستماع دون اتصال",
+      downloading: "جارٍ التنزيل",
+      cancel: "إلغاء التنزيل",
+      offline: "متاح دون اتصال",
+      checking: "جارٍ التحقق من التنزيل",
+      unavailable: "التنزيل غير متاح",
+      readyToast: "أصبحت السورة متاحة دون اتصال.",
+      partialToast: "اكتمل جزء من التنزيل. يمكنك إعادة المحاولة.",
+      storageToast: "لا توجد مساحة تخزين كافية لهذا التنزيل.",
+      errorToast: "تعذر تنزيل الصوت. تحقق من الاتصال ثم أعد المحاولة.",
+    };
+  }
+  if (lang === "fr") {
+    return {
+      listen: "Écouter",
+      open: "Ouvrir dans le lecteur",
+      share: "Partager la récitation",
+      shareCopied: "Lien copié !",
+      download: "Télécharger pour l’écoute hors connexion",
+      downloading: "Téléchargement en cours",
+      cancel: "Annuler le téléchargement",
+      offline: "Disponible hors connexion",
+      checking: "Vérification du téléchargement",
+      unavailable: "Téléchargement indisponible",
+      readyToast: "La sourate est maintenant disponible hors connexion.",
+      partialToast: "Téléchargement partiel. Vous pouvez le reprendre.",
+      storageToast: "Espace de stockage insuffisant pour ce téléchargement.",
+      errorToast: "Impossible de télécharger l’audio. Vérifiez la connexion puis réessayez.",
+    };
+  }
+  return {
+    listen: "Listen",
+    open: "Open in reader",
+    share: "Share recitation",
+    shareCopied: "Link copied!",
+    download: "Download for offline listening",
+    downloading: "Downloading",
+    cancel: "Cancel download",
+    offline: "Available offline",
+    checking: "Checking download",
+    unavailable: "Download unavailable",
+    readyToast: "This surah is now available offline.",
+    partialToast: "Part of the download completed. You can retry it.",
+    storageToast: "There is not enough storage space for this download.",
+    errorToast: "Audio download failed. Check your connection and try again.",
+  };
+}
+
+function getProgress(entry) {
+  const total = Number(entry?.total || 0);
+  const downloaded = Number(entry?.downloaded || 0);
+  return total > 0 ? Math.round((downloaded / total) * 100) : 0;
+}
+
+export default function RowActions({
+  lang,
+  surahLabel,
+  surah,
+  reciter,
+  riwaya,
+  onPlay,
+  onOpen,
+  onOpenIntent,
+}) {
+  const labels = labelsFor(lang);
+  const canDownload = Boolean(surah?.n && reciter?.id && reciter?.cdn);
+  const contextualLabel = useCallback(
+    (action) => (surahLabel ? `${action} — ${surahLabel}` : action),
+    [surahLabel],
+  );
+  const readEntry = useCallback(
+    () =>
+      canDownload
+        ? getSurahDownloadEntry(surah.n, reciter.id, riwaya)
+        : null,
+    [canDownload, reciter?.id, riwaya, surah?.n],
+  );
+  const [online, setOnline] = useState(navigator.onLine);
+  const [entry, setEntry] = useState(readEntry);
+  const [verifiedOffline, setVerifiedOffline] = useState(false);
+  const verifiedSignatureRef = useRef(null);
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [liveProgress, setLiveProgress] = useState(() => getProgress(readEntry()));
+
+  useEffect(() => {
+    let mounted = true;
+    let generation = 0;
+    const refresh = (force = false) => {
+      const currentGeneration = ++generation;
+      const nextEntry = readEntry();
+      setEntry(nextEntry);
+      if (!isDownloading) setLiveProgress(getProgress(nextEntry));
+      const signature = nextEntry?.status === "done"
+        ? `${nextEntry.key}:${nextEntry.updatedAt}:${nextEntry.total}`
+        : null;
+      if (force !== true && signature && verifiedSignatureRef.current === signature) return;
+      verifiedSignatureRef.current = null;
+      setVerifiedOffline(false);
+      if (nextEntry?.status === "done") {
+        verifySurahDownloadForReciter({ surahMeta: surah, reciter, riwaya })
+          .then((checked) => {
+            if (!mounted || currentGeneration !== generation) return;
+            setEntry(checked?.verified ? checked : { ...checked, status: "partial" });
+            verifiedSignatureRef.current = checked?.verified && checked.status === "done"
+              ? signature
+              : null;
+            setVerifiedOffline(checked?.verified && checked.status === "done");
+          })
+          .catch(() => {
+            if (!mounted || currentGeneration !== generation) return;
+            setEntry({ ...nextEntry, status: "partial" });
+            setVerifiedOffline(false);
+          });
+      }
+    };
+    refresh();
+    const connection = () => { setOnline(navigator.onLine); refresh(true); };
+    window.addEventListener("online", connection);
+    window.addEventListener("offline", connection);
+    window.addEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
+    const refreshOnPageShow = () => refresh(true);
+    window.addEventListener("pageshow", refreshOnPageShow);
+    const refreshWhenVisible = () => {
+      if (!document.hidden) refresh(true);
+    };
+    document.addEventListener("visibilitychange", refreshWhenVisible);
+    return () => {
+      mounted = false;
+      window.removeEventListener("online", connection);
+      window.removeEventListener("offline", connection);
+      window.removeEventListener(OFFLINE_DOWNLOADS_CHANGED_EVENT, refresh);
+      window.removeEventListener("pageshow", refreshOnPageShow);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
+    };
+  }, [isDownloading, readEntry, reciter, riwaya, surah]);
+
+  const isOffline = entry?.status === "done" && verifiedOffline;
+  const isCheckingOffline = entry?.status === "done" && !verifiedOffline;
+  const downloadLabel = useMemo(() => {
+    if (!canDownload) return labels.unavailable;
+    if (isOffline) return labels.offline;
+    if (isCheckingOffline) return labels.checking;
+    if (isDownloading) {
+      return `${labels.downloading} ${liveProgress}% — ${labels.cancel}`;
+    }
+    return labels.download;
+  }, [canDownload, isDownloading, isOffline, isCheckingOffline, labels, liveProgress]);
+
+  const handleShare = useCallback(async () => {
+    const origin = typeof window !== "undefined" ? (window.location.origin || "") : "";
+    const base = origin && !origin.includes("localhost") && !origin.includes("127.0.0.1") ? origin : "https://mon-coran-kappa.vercel.app";
+    const url = `${base}/?reciter=${encodeURIComponent(reciter?.id || "")}&surah=${surah?.n || 1}&play=1`;
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try { await navigator.share({ url, title: `${contextualLabel(labels.listen)} — MushafPlus` }); return; } catch {}
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+      toast(labels.shareCopied, "success");
+    } catch {}
+  }, [reciter?.id, surah?.n, labels, contextualLabel]);
+
+  const handleDownload = async () => {
+    if (!canDownload || isOffline || isCheckingOffline) return;
+    if (isDownloading) {
+      if (entry?.key) cancelOfflineDownload(entry.key);
+      return;
+    }
+
+    setIsDownloading(true);
+    setLiveProgress(getProgress(entry));
+    const result = await downloadSurahForReciter(
+      { surahMeta: surah, reciter, riwaya },
+      (done, total) => {
+        setLiveProgress(total > 0 ? Math.round((done / total) * 100) : 0);
+      },
+    );
+    let nextEntry = readEntry();
+    if (result === "done") {
+      try {
+        nextEntry = await verifySurahDownloadForReciter({ surahMeta: surah, reciter, riwaya });
+      } catch {
+        nextEntry = { ...nextEntry, status: "partial", verified: false };
+      }
+    }
+    setIsDownloading(false);
+    setEntry(nextEntry?.verified === false ? { ...nextEntry, status: "partial" } : nextEntry);
+    setVerifiedOffline(nextEntry?.verified && nextEntry.status === "done");
+    setLiveProgress(getProgress(nextEntry));
+
+    if (result === "done" && nextEntry?.verified && nextEntry.status === "done") toast(labels.readyToast, "success");
+    else if (result === "done") toast(labels.partialToast, "warning");
+    else if (result === "partial") toast(labels.partialToast, "warning");
+    else if (result === "storage-full") toast(labels.storageToast, "warning");
+    else if (result !== "cancelled") toast(labels.errorToast, "error");
   };
 
-  const btnClass = "recitation-action-btn flex items-center justify-center w-9 h-9 rounded-lg border border-border bg-bg-card/55 text-text-muted hover:text-primary hover:border-primary/40 hover:bg-[rgba(var(--primary-rgb),0.08)] active:scale-95 transition-all duration-200";
-
   return (
-    <div className="recitation-row__actions flex items-center gap-1.5">
+    <div className="recitation-row__actions">
       <button
-        className={btnClass}
+        className="recitation-action-btn recitation-action-btn--primary"
         type="button"
         onClick={onPlay}
-        title={lang === "fr" ? "Écouter la sourate" : "Listen surah"}
-        aria-label={lang === "fr" ? "Écouter" : "Listen"}
+        disabled={!online && !isOffline}
+        title={contextualLabel(!online && !isOffline ? offlineText("missing", lang) : labels.listen)}
+        aria-label={contextualLabel(labels.listen)}
       >
-        <i className="fas fa-play text-[0.8rem]" />
+        <Play className="recitation-icon recitation-icon--sm" size={15} fill="currentColor" aria-hidden="true" />
+        <span className="recitation-action-btn__label">{labels.listen}</span>
       </button>
       <button
-        className={btnClass}
+        className="recitation-action-btn"
         type="button"
         onClick={onOpen}
-        title={lang === "fr" ? "Ouvrir dans le lecteur" : "Open in reader"}
-        aria-label={lang === "fr" ? "Ouvrir" : "Open"}
+        onPointerEnter={onOpenIntent}
+        onPointerDown={onOpenIntent}
+        onFocus={onOpenIntent}
+        title={contextualLabel(labels.open)}
+        aria-label={contextualLabel(labels.open)}
       >
-        <i className="fas fa-book-open text-[0.8rem]" />
+        <BookOpen className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
       </button>
       <button
-        className={`${btnClass} ${!downloadUrl ? "opacity-40 cursor-not-allowed" : ""}`}
+        className="recitation-action-btn"
+        type="button"
+        onClick={handleShare}
+        title={contextualLabel(labels.share)}
+        aria-label={contextualLabel(labels.share)}
+      >
+        <Share2 className="recitation-icon recitation-icon--sm" size={14} aria-hidden="true" />
+      </button>
+      <button
+        className={`recitation-action-btn recitation-action-btn--download${isOffline ? " is-offline" : ""}${isDownloading ? " is-downloading" : ""}`}
         type="button"
         onClick={handleDownload}
-        disabled={!downloadUrl}
-        title={downloadUrl
-          ? (lang === "fr" ? "Télécharger MP3" : "Download MP3")
-          : (lang === "fr" ? "Téléchargement indisponible" : "Download unavailable")}
-        aria-label={lang === "fr" ? "Télécharger" : "Download"}
+        disabled={!canDownload || isCheckingOffline}
+        aria-busy={isCheckingOffline || undefined}
+        aria-disabled={isOffline || undefined}
+        title={contextualLabel(downloadLabel)}
+        aria-label={contextualLabel(downloadLabel)}
       >
-        <i className="fas fa-download text-[0.8rem]" />
+        {isOffline ? (
+          <Check className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
+        ) : isDownloading ? (
+          <X className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
+        ) : isCheckingOffline ? (
+          <LoaderCircle className="recitation-download-spinner" size={15} aria-hidden="true" />
+        ) : (
+          <Download className="recitation-icon recitation-icon--sm" size={15} aria-hidden="true" />
+        )}
+        {isDownloading ? (
+          <span className="recitation-download-progress" aria-hidden="true">
+            {liveProgress}%
+          </span>
+        ) : null}
+        {isDownloading ? (
+          <LoaderCircle className="recitation-download-spinner" size={10} aria-hidden="true" />
+        ) : null}
+        {!isDownloading && (
+          <span className="recitation-action-btn__label">
+            {isOffline ? labels.offline : isCheckingOffline ? labels.checking : labels.download}
+          </span>
+        )}
       </button>
     </div>
   );

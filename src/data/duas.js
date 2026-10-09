@@ -1,4 +1,4 @@
-﻿const QURAN_DUAS = [
+const QURAN_DUAS = [
   // ── Ibadah / Worship ──────────────────────────────────────────────
   {
     id: 'baqara-127',
@@ -24,7 +24,7 @@
     surah: 2, ayah: 201,
     arabic: 'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ',
     transliteration: "Rabbana atina fi al-dunya hasanatan wa fi al-akhirati hasanatan wa qina 'adhaba al-nar",
-    fr: "Seigneur, accorde-nous une belle part ici-bas et dans l'au- delà, et protège - nous du châtiment du Feu.",
+    fr: "Seigneur, accorde-nous une belle part ici-bas et dans l’au-delà, et protège-nous du châtiment du Feu.",
     en: 'Our Lord, grant us good in this world and good in the Hereafter, and protect us from the punishment of the Fire.',
   },
 {
@@ -79,7 +79,7 @@
       surah: 3, ayah: 191,
         arabic: 'رَبَّنَا مَا خَلَقْتَ هَٰذَا بَاطِلًا سُبْحَانَكَ فَقِنَا عَذَابَ النَّارِ',
           transliteration: 'Rabbana ma khalaqta hadha batilan subhanaka faqina \'adhaba al-nar',
-            fr: "Seigneur, Tu n' as pas créé cela en vain.Gloire à Toi! Préserve - nous du châtiment du Feu.",
+            fr: "Seigneur, Tu n’as pas créé cela en vain. Gloire à Toi ! Préserve-nous du châtiment du Feu.",
   en: 'Our Lord, You did not create this in vain. Glory be to You! Protect us from the punishment of the Fire.',
   },
 {
@@ -125,7 +125,7 @@
     category: 'tawhid',
       surah: 12, ayah: 101,
         arabic: 'رَبِّ قَدْ آتَيْتَنِي مِنَ الْمُلْكِ وَعَلَّمْتَنِي مِن تَأْوِيلِ الْأَحَادِيثِ ۚ فَاطِرَ السَّمَاوَاتِ وَالْأَرْضِ أَنتَ وَلِيِّي فِي الدُّنْيَا وَالْآخِرَةِ ۖ تَوَفَّنِي مُسْلِمًا وَأَلْحِقْنِي بِالصَّالِحِينَ',
-          transliteration: "Rabbi qad ataytani min al-mulki wa \'allamtani min ta'wil al-ahadith fatir al-samawat wa al-ard anta waliyyi fi al-dunya wa al-akhirat tawaffani musliman wa alhiqni bil-salihin",
+          transliteration: "Rabbi qad ataytani min al-mulki wa 'allamtani min ta'wil al-ahadith fatir al-samawat wa al-ard anta waliyyi fi al-dunya wa al-akhirat tawaffani musliman wa alhiqni bil-salihin",
             fr: 'Seigneur, fais-moi mourir en soumission et joins-moi aux pieux.',
               en: 'My Lord, cause me to die as a Muslim, and join me with the righteous.',
   },
@@ -450,35 +450,6 @@
     en: 'Give good tidings to the patient — who, when disaster strikes them, say: "Indeed we belong to Allah, and indeed to Him we will return."',
   },
   {
-    id: 'zumar-10',
-    category: 'steadfastness',
-    surah: 39, ayah: 10,
-    arabic: 'إِنَّمَا يُوَفَّى الصَّابِرُونَ أَجْرَهُم بِغَيْرِ حِسَابٍ',
-    transliteration: 'Innama yuwaffa al-sabirun ajrahum bi-ghayri hisab',
-    fr: 'Les patients seront rémunérés sans compte.',
-    en: 'Indeed, the patient will be given their reward without account.',
-  },
-
-  // ── Shifa / Guérison ──────────────────────────────────────────────
-  {
-    id: 'shuara-80',
-    category: 'shifa',
-    surah: 26, ayah: 80,
-    arabic: 'وَإِذَا مَرِضْتُ فَهُوَ يَشْفِينِ',
-    transliteration: 'Wa idha maridtu fahuwa yashfin',
-    fr: "Et quand je suis malade, c\u2019est Lui qui me gu\u00e9rit.",
-    en: 'And when I am ill, it is He who cures me.',
-  },
-  {
-    id: 'isra-82',
-    category: 'shifa',
-    surah: 17, ayah: 82,
-    arabic: 'وَنُنَزِّلُ مِنَ الْقُرْآنِ مَا هُوَ شِفَاءٌ وَرَحْمَةٌ لِّلْمُؤْمِنِينَ',
-    transliteration: "Wa nunazzilu min al-Qur'ani ma huwa shifa'un wa rahmatun lil-mu'minin",
-    fr: 'Nous faisons descendre du Coran ce qui est une guérison et une miséricorde pour les croyants.',
-    en: 'And We send down of the Quran that which is healing and mercy for the believers.',
-  },
-  {
     id: 'yunus-57',
     category: 'shifa',
     surah: 10, ayah: 57,
@@ -592,3 +563,6 @@
 ];
 
 export default QURAN_DUAS;
+
+
+

@@ -1,0 +1,270 @@
+import { test, expect } from "@playwright/test";
+
+test.use({ serviceWorkers: "allow" });
+
+test.beforeEach(async ({ page }, testInfo) => {
+  const failures = [];
+  page.on('requestfailed', (request) => failures.push({ url: request.url(), error: request.failure()?.errorText }));
+  page.on('pageerror', (error) => failures.push({ error: error.message }));
+  page.on('console', (message) => { if (message.type() === 'error') failures.push({ console: message.text() }); });
+  testInfo._qaFailures = failures;
+});
+test.afterEach(async ({ page }, testInfo) => {
+  if (testInfo.status !== testInfo.expectedStatus) {
+    console.log('PWA_FAILURES', page.url(), JSON.stringify(testInfo._qaFailures));
+    await testInfo.attach('network-errors', { body: JSON.stringify(testInfo._qaFailures, null, 2), contentType: 'application/json' });
+  }
+});
+
+test("PWA: the visited app shell reloads while offline", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: true,
+      showDuas: false,
+      sidebarOpen: false,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+    await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
+  }
+
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await expect.poll(() => page.evaluate(async () => {
+    const registration = await navigator.serviceWorker.ready;
+    return registration.active?.state;
+  })).toBe("activated");
+
+  await page.evaluate(async () => {
+    const response = await fetch("/index.html", { cache: "reload" });
+    if (!response.ok) throw new Error(`App shell probe failed: ${response.status}`);
+    await response.arrayBuffer();
+  });
+  await page.waitForTimeout(250);
+
+  await context.setOffline(true);
+  const offlineShell = await page.evaluate(async () => {
+    const response = await fetch("/index.html");
+    return { ok: response.ok, html: await response.text() };
+  });
+  expect(offlineShell.ok).toBe(true);
+  expect(offlineShell.html).toContain('id="root"');
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+});
+
+test("PWA: a visited surah keeps its Quran text offline", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      showDuas: false,
+      displayMode: "surah",
+      currentSurah: 1,
+      currentAyah: 1,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/surah/1");
+  const firstAyah = page.locator(".qc-ayah-text-ar").first();
+  await expect(firstAyah).toBeVisible({ timeout: 30_000 });
+  const onlineText = (await firstAyah.textContent())?.trim();
+  expect(onlineText?.length).toBeGreaterThan(3);
+
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(firstAyah).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.waitForTimeout(500);
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(firstAyah).toBeVisible({ timeout: 30_000 });
+  await expect(firstAyah).toContainText(onlineText);
+});
+
+test("PWA: a visited Mushaf page keeps its Unicode reading font offline", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      showDuas: false,
+      sidebarOpen: false,
+      displayMode: "page",
+      mushafLayout: "mushaf",
+      lang: "fr",
+      riwaya: "hafs",
+      fontFamily: "qpc-hafs",
+      fontFamilyByRiwaya: { hafs: "qpc-hafs", warsh: "qpc-warsh" },
+      showTajwid: false,
+      currentSurah: 2,
+      currentPage: 3,
+      currentJuz: 1,
+      lastPosition: { surah: 2, ayah: 1, page: 3, juz: 1 },
+    }));
+  });
+
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("/page/3");
+  await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+
+  const trigger = page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first();
+  await expect(trigger).toBeVisible();
+  await trigger.click();
+  await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
+
+  // The local Unicode font is precached with the app shell. Check the actual
+  // asset and readable text before going offline, not just the CSS font name.
+  const firstWord = page.locator(".mfp-portal-root .qcm-word").first();
+  await expect
+    .poll(() => firstWord.evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
+    .toContain("QPC Hafs");
+  await expect(firstWord).toContainText(/[\u0600-\u06FF]/u);
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(async () => {
+          const names = await caches.keys();
+          const shellName = names.find((name) => /^mushaf-plus-v\d+$/u.test(name));
+          if (!shellName) return false;
+          const cache = await caches.open(shellName);
+          return Boolean(await cache.match("/fonts/uthmanic-hafs-v18.woff2"));
+        }),
+      { message: "the worker precaches the local Unicode reading font" },
+    )
+    .toBe(true);
+
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".mfp-portal-root")).toBeHidden({ timeout: 30_000 });
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".quran-display--platform")).toBeVisible({ timeout: 30_000 });
+  await page.locator(":is(.reader-fullscreen-trigger, .srh-fullscreen-btn):visible").first().click();
+  await expect(page.locator(".mfp-portal-root")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".mfp-portal-root .qcm-font-warning")).toHaveCount(0);
+  await expect
+    .poll(() => page.locator(".mfp-portal-root .qcm-word").first()
+      .evaluate((element) => window.getComputedStyle(element).fontFamily), { timeout: 30_000 })
+    .toContain("QPC Hafs");
+  await expect(page.locator(".mfp-portal-root .qcm-word").first()).toContainText(/[\u0600-\u06FF]/u);
+  await expect.poll(() => page.evaluate(() => document.fonts.check('24px "QPC Hafs"', "بِسْمِ"))).toBe(true);
+});
+
+test("PWA: an explicitly downloaded recitation is served while offline", async ({
+  page,
+  context,
+}) => {
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({ skipSplashAnimation: true, showHome: true, lang: "fr" }),
+    );
+  });
+  await page.goto("/");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+  }
+  await expect
+    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+    .toBe(true);
+
+  const audioUrl =
+    "https://files.quranpedia.net/recitations/261/001001.mp3";
+  await page.evaluate(async (url) => {
+    const cache = await caches.open("mushafplus-audio-v2");
+    await cache.put(
+      url,
+      new Response(new Uint8Array([73, 68, 51, 4, 0, 0, 0, 0, 0, 0]), {
+        status: 200,
+        headers: { "Content-Type": "audio/mpeg" },
+      }),
+    );
+  }, audioUrl);
+
+  await context.setOffline(true);
+  const cachedResponse = await page.evaluate(async (url) => {
+    const response = await fetch(url, { mode: "no-cors" });
+    return { ok: response.ok, status: response.status, type: response.type };
+  }, audioUrl);
+  expect(
+    cachedResponse.ok ||
+      cachedResponse.status === 200 ||
+      cachedResponse.type === "opaque",
+  ).toBe(true);
+
+  const ranges = await page.evaluate(async (url) => {
+    const results = [];
+    for (const range of ['bytes=0-999', 'bytes=-3']) {
+      const response = await fetch(url, { headers: { Range: range } });
+      results.push({ status: response.status, bytes: (await response.arrayBuffer()).byteLength, range: response.headers.get('Content-Range') });
+    }
+    return results;
+  }, audioUrl);
+  expect(ranges).toEqual([
+    { status: 206, bytes: 10, range: 'bytes 0-9/10' },
+    { status: 206, bytes: 3, range: 'bytes 7-9/10' },
+  ]);
+});
+
+test("PWA: a visited Hisn al-Muslim chapter stays readable offline, with its translation and sources", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      showHome: false,
+      showDuas: true,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/duas/hisn/28");
+  const firstCard = page.locator(".dua-card-v5").first();
+  await expect(firstCard).toBeVisible({ timeout: 30_000 });
+
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(firstCard).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  // One more online load, now controlled: the JSON files go through the worker and are kept.
+  await page.reload();
+  await expect(firstCard).toBeVisible({ timeout: 30_000 });
+  const onlineTitle = (await page.locator(".duas-title").textContent())?.trim();
+  const onlineTranslation = (await page.locator(".dua-translation").first().textContent())?.trim();
+  expect(onlineTitle).toBe("Avant de dormir");
+  expect(onlineTranslation?.length).toBeGreaterThan(20);
+  await page.waitForTimeout(500);
+
+  await context.setOffline(true);
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".dua-card-v5").first()).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".duas-title")).toHaveText(onlineTitle);
+  await expect(page.locator(".dua-translation").first()).toHaveText(onlineTranslation);
+  await expect(page.locator(".dua-sources").first()).toBeVisible();
+});

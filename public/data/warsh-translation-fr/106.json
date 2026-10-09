@@ -1,0 +1,49 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 106,
+  "number_of_ayahs": 5,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Pour les bienfaits reçus par Qoraïch,"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Pour les bienfaits de leurs voyages d’hiver et d’été,"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "qu’ils adorent donc le Seigneur de cette Maison,",
+      "footnotes": [
+        {
+          "ref": 619,
+          "text": "La Kaâba."
+        }
+      ]
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Qui les a nourris au mépris de la faim, et les a rassurés en dépit de la peur !"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Qui les a nourris au mépris de la faim, et les a rassurés en dépit de la peur !"
+    }
+  ]
+}

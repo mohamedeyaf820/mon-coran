@@ -26,7 +26,7 @@ test.describe('Warsh Debug Tests', () => {
     await page.waitForTimeout(3000);
     
     // Check if we're on the home page
-    await expect(page.locator('text=Mushaf.plus').first()).toBeVisible();
+    await expect(page.getByText("MushafPlus", { exact: true }).first()).toBeVisible();
     
     // Click on Warsh mode if available
     const warshButton = page.locator('text=WARSH').first();

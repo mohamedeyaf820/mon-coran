@@ -1,35 +1,22 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { addRecentVisit } from "../../services/recentHistoryService";
-import { logSession } from "../../services/historyService";
-import { logWirdProgress } from "../../services/wirdService";
-import { markRead } from "../../services/readingProgressService";
 import { savePosition } from "../../services/storageService";
-import { abortPendingRequests } from "../../services/quranAPI";
-import { getSurah } from "../../data/surahs";
+import { hafsNumbersForAyah } from "../../constants/warshSource";
+import { isWarshNumberedAyah } from "./displayHelpers";
 import {
   assertWarshStrict,
+  describeArabicDataSource,
   ensureRequestedRiwaya,
   loadArabicData,
   loadHafsSupportData,
-} from "./quranDisplayDataApi";
-
-function runWhenIdle(callback, timeout = 1600) {
-  if (typeof window === "undefined") {
-    callback();
-    return () => {};
-  }
-
-  if ("requestIdleCallback" in window) {
-    const idleId = window.requestIdleCallback(callback, { timeout });
-    return () => window.cancelIdleCallback?.(idleId);
-  }
-
-  const timeoutId = window.setTimeout(callback, 0);
-  return () => window.clearTimeout(timeoutId);
-}
+} from "./quranDisplayDataApi.js";
+import { classifyReaderLoadError } from "./readerLoadError.js";
 
 const DISPLAY_DATA_CACHE = new Map();
-const DISPLAY_DATA_CACHE_MAX = 56;
+const DISPLAY_DATA_CACHE_MAX = 120;
+const DISPLAY_DATA_PREFETCHES = new Map();
+const EMPTY_AYAHS = Object.freeze([]);
+// A deep link or a resume point past the first page of verses waits for the whole surah.
+const FIRST_PAGE_MAX_TARGET = 45;
 
 function displayCacheKey(displayMode, currentSurah, currentPage, currentJuz, riwaya, warshStrictMode) {
   const scope = displayMode === "page" ? `p:${currentPage}` : displayMode === "juz" ? `j:${currentJuz}` : `s:${currentSurah}`;
@@ -42,24 +29,58 @@ function rememberLimited(map, key, value, maxSize) {
   if (map.size > maxSize) map.delete(map.keys().next().value);
 }
 
-function mergeHafsSupport(ayahs, hafsMap) {
-  if (!hafsMap?.size) return ayahs;
+function attachWarshHafsMapping(ayahs, riwaya) {
+  if (riwaya !== "warsh") return ayahs;
+  // Tafsir, bookmarks and notes are Hafs-keyed, so every Warsh verse object
+  // must carry its mapping — including on layouts that skip the Hafs support
+  // payload below (needsHafsSupport is false there).
   return ayahs.map((ayah) => {
-    const hafsAyah = hafsMap.get(`${ayah.surah?.number}:${ayah.numberInSurah}`);
-    return hafsAyah
-      ? {
-          ...ayah,
-          number: ayah.number ?? hafsAyah.number,
-          page: ayah.page ?? hafsAyah.page,
-          juz: ayah.juz ?? hafsAyah.juz,
-          hafsText: hafsAyah.text,
-          hafsSupport: {
-            text: hafsAyah.text,
-            quranCom: hafsAyah.quranCom || null,
-            words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
-          },
-        }
-      : ayah;
+    if (Array.isArray(ayah?.hafsNumbers)) return ayah;
+    if (!isWarshNumberedAyah(ayah)) return ayah;
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya);
+    if (!hafsNumbers?.length) return ayah;
+    return { ...ayah, hafsNumbers, hafsNumber: hafsNumbers[0] };
+  });
+}
+
+function mergeHafsSupport(ayahs, hafsMap, riwaya) {
+  if (!hafsMap?.size) return ayahs;
+  const isWarsh = riwaya === "warsh";
+  return ayahs.map((ayah) => {
+    // The Hafs support payload (quran.com text, word-by-word, transliteration)
+    // is keyed on Hafs numbers, while a Warsh reader shows Madinah-mushaf
+    // numbers: 6214 ayahs against 6236 Hafs, with 50 surahs split differently.
+    // Joining on the raw numberInSurah therefore attaches the neighbouring
+    // verse from the first divergence point on (Warsh 2:2 recites Hafs 3).
+    // A verse the mapping cannot place stays un-enriched rather than showing
+    // another verse's data. See src/data/warshHafsNumbering.js.
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya);
+    const surahNumber = ayah.surah?.number;
+    const hafsAyah =
+      hafsNumbers?.length && surahNumber != null
+        ? hafsMap.get(`${surahNumber}:${hafsNumbers[0]}`)
+        : null;
+
+    if (!hafsAyah) return ayah;
+
+    return {
+      ...ayah,
+      number: ayah.number ?? hafsAyah.number,
+      page: ayah.page ?? hafsAyah.page,
+      juz: ayah.juz ?? hafsAyah.juz,
+      hafsText: hafsAyah.text,
+      ...(isWarsh
+        ? {
+            hafsNumbers,
+            hafsNumber: hafsNumbers[0],
+          }
+        : {}),
+      hafsSupport: {
+        text: hafsAyah.text,
+        quranCom: hafsAyah.quranCom || null,
+        words: Array.isArray(hafsAyah.words) ? hafsAyah.words : [],
+      },
+    };
   });
 }
 
@@ -71,10 +92,17 @@ export default function useQuranDisplayData({
   dispatch,
   displayMode,
   lang,
+  mushafLayout,
   showHome,
   riwaya,
+  showTransliteration,
   warshStrictMode,
 }) {
+  const needsHafsSupport =
+    riwaya === "warsh" &&
+    (displayMode === "page" ||
+      (displayMode === "surah" && mushafLayout === "mushaf") ||
+      (mushafLayout !== "mushaf" && showTransliteration));
   const currentCacheKey = displayCacheKey(
     displayMode,
     currentSurah,
@@ -85,131 +113,232 @@ export default function useQuranDisplayData({
   );
   const initialCachedData = DISPLAY_DATA_CACHE.get(currentCacheKey);
   const [ayahs, setAyahs] = useState(() => initialCachedData?.ayahs || []);
+  const [resolvedCacheKey, setResolvedCacheKey] = useState(() =>
+    initialCachedData ? currentCacheKey : null,
+  );
+  const [settledCacheKey, setSettledCacheKey] = useState(() =>
+    initialCachedData ? currentCacheKey : null,
+  );
   const [error, setError] = useState(null);
+  const [loadState, setLoadState] = useState(null);
   const [isWarshFallback, setIsWarshFallback] = useState(() =>
     Boolean(initialCachedData?.isWarshFallback),
   );
-  const readingStartRef = useRef(Date.now());
+  const [dataSource, setDataSource] = useState(() => initialCachedData?.dataSource || null);
   const requestSeqRef = useRef(0);
+  const requestAbortRef = useRef(null);
+  const persistRef = useRef(null);
+  const latestViewRef = useRef({ currentAyah, mushafLayout });
+  latestViewRef.current = { currentAyah, mushafLayout };
 
-  useEffect(() => {
-    if (showHome || !currentSurah || !currentAyah || displayMode !== "surah") return;
-    return runWhenIdle(() => {
-      markRead(currentSurah, currentAyah);
-      const meta = getSurah(currentSurah);
-      addRecentVisit(currentSurah, currentAyah, meta?.fr || meta?.en || "");
-    });
-  }, [currentAyah, currentSurah, displayMode, showHome]);
+  const persistReadingPosition = useCallback(
+    (allAyahs) => {
+      const firstAyah = allAyahs?.[0];
+      if (!firstAyah) return;
+
+      const firstSurah = firstAyah?.surah?.number || currentSurah;
+      const firstAyahNumber = firstAyah?.numberInSurah || 1;
+      const positionAyah =
+        displayMode === "surah" ? currentAyah || firstAyahNumber : firstAyahNumber;
+
+      if (displayMode === "page") {
+        savePosition(firstSurah, firstAyahNumber, currentPage);
+      } else {
+        savePosition(firstSurah, positionAyah, firstAyah.page || currentPage);
+      }
+    },
+    [currentAyah, currentPage, currentSurah, displayMode],
+  );
+  useEffect(() => { persistRef.current = persistReadingPosition; }, [persistReadingPosition]);
 
   const fetchData = useCallback(async () => {
     if (showHome) {
+      requestAbortRef.current?.abort();
       dispatch({ type: "SET_LOADING", payload: false });
       return;
     }
 
     const requestId = requestSeqRef.current + 1;
     requestSeqRef.current = requestId;
-    const signal = abortPendingRequests();
+    requestAbortRef.current?.abort();
+    const controller = new AbortController();
+    requestAbortRef.current = controller;
+    const signal = controller.signal;
     const cacheKey = currentCacheKey;
-    const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
+    let cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
 
     setError(null);
+    setLoadState(null);
     if (cachedData) {
       setAyahs(cachedData.ayahs);
+      setResolvedCacheKey(cacheKey);
+      setSettledCacheKey(cacheKey);
       setIsWarshFallback(Boolean(cachedData.isWarshFallback));
+      setDataSource(cachedData.dataSource || null);
       dispatch({ type: "SET", payload: { loadedAyahCount: cachedData.ayahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
-      return;
+      persistRef.current(cachedData.ayahs);
+      if (!needsHafsSupport || cachedData.hafsSupportReady) return;
     }
 
-    dispatch({ type: "SET_LOADING", payload: true });
+    if (!cachedData) dispatch({ type: "SET_LOADING", payload: true });
+
+    const pendingPrefetch = DISPLAY_DATA_PREFETCHES.get(cacheKey);
+    if (pendingPrefetch) {
+      try {
+        const prefetchedData = await pendingPrefetch;
+        if (signal.aborted || requestSeqRef.current !== requestId) return;
+        setAyahs(prefetchedData.ayahs);
+        setResolvedCacheKey(cacheKey);
+        setSettledCacheKey(cacheKey);
+        setIsWarshFallback(Boolean(prefetchedData.isWarshFallback));
+        setDataSource(prefetchedData.dataSource || null);
+        dispatch({
+          type: "SET",
+          payload: { loadedAyahCount: prefetchedData.ayahs.length },
+        });
+        dispatch({ type: "SET_LOADING", payload: false });
+        persistRef.current(prefetchedData.ayahs);
+        if (!needsHafsSupport || prefetchedData.hafsSupportReady) return;
+        cachedData = prefetchedData;
+      } catch {
+        // A failed background warmup must not prevent the foreground retry.
+      }
+    }
+
+    // The first fifty verses of a long Hafs surah are readable as soon as their
+    // page arrives; the rest is appended when it lands. Not when the reader is
+    // resuming beyond them (the scroll would have nothing to land on), and not in
+    // the mushaf layout, whose pages are composed from the whole surah.
+    // Read through a ref: the reading position moves while the reader scrolls
+    // and must not make fetchData, hence the request, start over.
+    const { currentAyah: resumeAyah, mushafLayout: layout } = latestViewRef.current;
+    const allowFirstPage =
+      displayMode === "surah" &&
+      riwaya === "hafs" &&
+      layout !== "mushaf" &&
+      !(Number(resumeAyah) > FIRST_PAGE_MAX_TARGET);
+    const showFirstPage = (partialData) => {
+      if (signal.aborted || requestSeqRef.current !== requestId) return;
+      const partialAyahs = attachWarshHafsMapping(
+        ensureRequestedRiwaya(partialData?.ayahs || [], riwaya),
+        riwaya,
+      );
+      if (!partialAyahs.length) return;
+      // Visible, but neither settled nor cached: the loading veil stays below the
+      // verses and the final payload replaces this one.
+      setAyahs(partialAyahs);
+      setResolvedCacheKey(cacheKey);
+      setDataSource(describeArabicDataSource(partialData, riwaya));
+    };
+
+    const fetchPromise = (async () => {
+      const hafsPromise = needsHafsSupport
+        ? loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal }).catch(() => null)
+        : Promise.resolve(null);
+
+      const arabicData = cachedData
+        ? null
+        : await loadArabicData({
+            currentJuz,
+            currentPage,
+            currentSurah,
+            displayMode,
+            riwaya,
+            signal,
+            onPartial: allowFirstPage ? showFirstPage : undefined,
+          });
+      const fetchedAyahs = attachWarshHafsMapping(
+        cachedData?.ayahs || ensureRequestedRiwaya(arabicData.ayahs || [], riwaya),
+        riwaya,
+      );
+      const fallback = cachedData
+        ? Boolean(cachedData.isWarshFallback)
+        : Boolean(arabicData?.isTextFallback);
+      return {
+        arabicData,
+        ayahs: fetchedAyahs,
+        dataSource: cachedData?.dataSource || describeArabicDataSource(arabicData, riwaya),
+        isWarshFallback: fallback,
+        hafsPromise,
+      };
+    })();
 
     try {
-      const arabicData = await loadArabicData({
-        currentJuz,
-        currentPage,
-        currentSurah,
-        displayMode,
-        riwaya,
-        signal,
-      });
+      const { arabicData, ayahs: fetchedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsPromise } = await fetchPromise;
 
       if (signal.aborted || requestSeqRef.current !== requestId) return;
-      assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
+      if (arabicData) {
+        assertWarshStrict({ arabicData, displayMode, lang, riwaya, warshStrictMode });
+      }
 
-      const fetchedAyahs = ensureRequestedRiwaya(arabicData.ayahs || [], riwaya);
-      const fallback = Boolean(arabicData?.isTextFallback);
+      // The requested Quran text is already verified. Optional Hafs metadata
+      // (translations, word support) can arrive later without holding it back.
       rememberLimited(
         DISPLAY_DATA_CACHE,
         cacheKey,
-        { ayahs: fetchedAyahs, isWarshFallback: fallback },
+        { ayahs: fetchedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsSupportReady: !needsHafsSupport },
         DISPLAY_DATA_CACHE_MAX,
       );
       setAyahs(fetchedAyahs);
+      setResolvedCacheKey(cacheKey);
+      setSettledCacheKey(cacheKey);
       setIsWarshFallback(fallback);
+      setDataSource(resolvedSource);
       dispatch({ type: "SET", payload: { loadedAyahCount: fetchedAyahs.length } });
       dispatch({ type: "SET_LOADING", payload: false });
+      persistRef.current(fetchedAyahs);
 
-      if (riwaya === "warsh") {
-        runWhenIdle(() => {
-          if (signal.aborted || requestSeqRef.current !== requestId) return;
-          loadHafsSupportData({ currentJuz, currentPage, currentSurah, displayMode, signal })
-          .then((hafsData) => {
-            if (signal.aborted || requestSeqRef.current !== requestId) return;
-            const hafsMap = new Map(
-              (hafsData?.ayahs || []).map((ayah) => [
-                `${ayah.surah?.number}:${ayah.numberInSurah}`,
-                ayah,
-              ]),
-            );
-            setAyahs((previous) => {
-              const merged = mergeHafsSupport(previous, hafsMap);
-              rememberLimited(
-                DISPLAY_DATA_CACHE,
-                cacheKey,
-                { ayahs: merged, isWarshFallback: fallback },
-                DISPLAY_DATA_CACHE_MAX,
-              );
-              return merged;
-            });
-          })
-          .catch(() => {});
-        }, 2400);
+      if (hafsPromise) {
+        const hafsData = await hafsPromise;
+        if (signal.aborted || requestSeqRef.current !== requestId) return;
+        if (hafsData) {
+          const hafsAyahs = ensureRequestedRiwaya(hafsData.ayahs || [], "hafs");
+          const hafsCacheKey = displayCacheKey(
+            displayMode,
+            currentSurah,
+            currentPage,
+            currentJuz,
+            "hafs",
+            false,
+          );
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            hafsCacheKey,
+            { ayahs: hafsAyahs, dataSource: describeArabicDataSource(hafsData, "hafs"), isWarshFallback: false },
+            DISPLAY_DATA_CACHE_MAX,
+          );
+          const hafsMap = new Map(
+            hafsAyahs.map((ayah) => [
+              `${ayah.surah?.number}:${ayah.numberInSurah}`,
+              ayah,
+            ]),
+          );
+          const resolvedAyahs = mergeHafsSupport(fetchedAyahs, hafsMap, riwaya);
+          rememberLimited(
+            DISPLAY_DATA_CACHE,
+            cacheKey,
+            { ayahs: resolvedAyahs, dataSource: resolvedSource, isWarshFallback: fallback, hafsSupportReady: true },
+            DISPLAY_DATA_CACHE_MAX,
+          );
+          setAyahs(resolvedAyahs);
+        }
       }
-
-      const allAyahs = arabicData.ayahs || [];
-      runWhenIdle(() => {
-        const firstAyah = allAyahs[0];
-        if (displayMode === "page") {
-          savePosition(firstAyah?.surah?.number || currentSurah, firstAyah?.numberInSurah || 1, currentPage);
-        } else if (firstAyah) {
-          savePosition(firstAyah.surah?.number || currentSurah, 1, firstAyah.page);
-        }
-
-        if (allAyahs.length > 0) {
-          const lastAyah = allAyahs[allAyahs.length - 1];
-          const elapsed = Date.now() - readingStartRef.current;
-          readingStartRef.current = Date.now();
-          logSession({
-            surah: firstAyah.surah?.number || currentSurah,
-            ayahFrom: firstAyah.numberInSurah || 1,
-            ayahTo: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-            page: currentPage,
-            durationMs: elapsed,
-          }).catch(() => {});
-          logWirdProgress({
-            surah: firstAyah.surah?.number || currentSurah,
-            fromAyah: firstAyah.numberInSurah || 1,
-            toAyah: lastAyah.numberInSurah || firstAyah.numberInSurah || 1,
-            pagesCount: displayMode === "page" ? 1 : Math.ceil(allAyahs.length / 15),
-          }).catch(() => {});
-        }
-      });
     } catch (err) {
       if (err?.name === "AbortError" || requestSeqRef.current !== requestId) return;
-      console.error("Fetch error:", err);
-      setError(err.message);
-      dispatch({ type: "SET_ERROR", payload: err.message });
+      if (import.meta.env.DEV) console.warn("Fetch error:", err);
+      // Classify at the source so the reader can answer the failure the user
+      // actually hit. A raw throw here used to end up in the crash boundary,
+      // whose only answers (reload, home) are both dead ends offline.
+      const loadState = classifyReaderLoadError(err, {
+        online: typeof navigator === "undefined" || navigator.onLine !== false,
+        aborted: signal.aborted || requestSeqRef.current !== requestId,
+        hadPayload: DISPLAY_DATA_CACHE.has(cacheKey),
+      });
+      setSettledCacheKey(cacheKey);
+      setLoadState(loadState);
+      setError(loadState.code);
+      dispatch({ type: "SET_ERROR", payload: "reader-load-failed" });
     } finally {
       if (!signal.aborted && requestSeqRef.current === requestId) {
         dispatch({ type: "SET_LOADING", payload: false });
@@ -223,6 +352,7 @@ export default function useQuranDisplayData({
     dispatch,
     displayMode,
     lang,
+    needsHafsSupport,
     riwaya,
     showHome,
     warshStrictMode,
@@ -231,23 +361,96 @@ export default function useQuranDisplayData({
   useEffect(() => {
     if (showHome) return;
     fetchData();
+    return () => {
+      requestAbortRef.current?.abort();
+    };
   }, [fetchData, showHome]);
 
-  useEffect(
-    () => () => {
-      const elapsed = Date.now() - readingStartRef.current;
-      if (elapsed > 3000) {
-        logSession({
-          surah: null,
-          ayahFrom: null,
-          ayahTo: null,
-          page: null,
-          durationMs: elapsed,
-        }).catch(() => {});
-      }
-    },
-    [],
-  );
+  const prefetchedCurrentData = DISPLAY_DATA_CACHE.get(currentCacheKey);
+  const dataTransitioning =
+    !showHome &&
+    !prefetchedCurrentData &&
+    settledCacheKey !== currentCacheKey;
+  const visibleAyahs =
+    resolvedCacheKey === currentCacheKey
+      ? ayahs
+      : prefetchedCurrentData?.ayahs || EMPTY_AYAHS;
+  const visibleWarshFallback =
+    resolvedCacheKey === currentCacheKey
+      ? isWarshFallback
+      : Boolean(prefetchedCurrentData?.isWarshFallback);
+  const visibleDataSource =
+    resolvedCacheKey === currentCacheKey
+      ? dataSource
+      : prefetchedCurrentData?.dataSource || null;
 
-  return { ayahs, error, fetchData, isWarshFallback, setError };
+  return {
+    ayahs: visibleAyahs,
+    dataTransitioning,
+    dataSource: visibleDataSource,
+    error,
+    fetchData,
+    isWarshFallback: visibleWarshFallback,
+    loadState,
+    setError,
+  };
+}
+
+export function preloadQuranDisplayData({
+  currentJuz,
+  currentPage,
+  currentSurah,
+  displayMode,
+  lang = "fr",
+  riwaya,
+  warshStrictMode = true,
+}) {
+  const cacheKey = displayCacheKey(
+    displayMode,
+    currentSurah,
+    currentPage,
+    currentJuz,
+    riwaya,
+    warshStrictMode,
+  );
+  const cachedData = DISPLAY_DATA_CACHE.get(cacheKey);
+  if (cachedData) return Promise.resolve(cachedData);
+
+  const pending = DISPLAY_DATA_PREFETCHES.get(cacheKey);
+  if (pending) return pending;
+
+  const prefetch = (async () => {
+    const arabicData = await loadArabicData({
+      currentJuz,
+      currentPage,
+      currentSurah,
+      displayMode,
+      riwaya,
+      signal: undefined,
+    });
+    const fetchedAyahs = attachWarshHafsMapping(
+      ensureRequestedRiwaya(arabicData.ayahs || [], riwaya),
+      riwaya,
+    );
+    assertWarshStrict({
+      arabicData,
+      displayMode,
+      lang,
+      riwaya,
+      warshStrictMode,
+    });
+    const value = {
+      ayahs: fetchedAyahs,
+      dataSource: describeArabicDataSource(arabicData, riwaya),
+      isWarshFallback: Boolean(arabicData?.isTextFallback),
+    };
+    rememberLimited(DISPLAY_DATA_CACHE, cacheKey, value, DISPLAY_DATA_CACHE_MAX);
+
+    return value;
+  })().finally(() => {
+    DISPLAY_DATA_PREFETCHES.delete(cacheKey);
+  });
+
+  DISPLAY_DATA_PREFETCHES.set(cacheKey, prefetch);
+  return prefetch;
 }

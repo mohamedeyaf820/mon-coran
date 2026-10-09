@@ -1,0 +1,765 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 15,
+  "number_of_ayahs": 99,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Alif, Lâm, Rā. Voici les versets du Livre et ceux d’un Coran très clair."
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Ceux qui ont mécru voudront peut-être (le Jour du Jugement Dernier) avoir été Musulmans."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "Laisse-les manger, profiter des jouissances éphémères et se nourrir d’illusions. Bientôt ils sauront !"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Nous n’avons détruit aucune cité sans qu’elle n’ait eu son terme écrit et déjà su."
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "Aucune communauté ne saurait devancer son terme ni le différer."
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Ils disent : « Ô toi sur qui le Rappel (le Dhikr) est descendu (en révélation) ! Tu n’es qu’un fou !",
+      "footnotes": [
+        {
+          "ref": 259,
+          "text": "Le mot Dhikr, littéralement « Le Rappel », signifie ici : le Coran."
+        }
+      ]
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "Que n’amènes-tu pas avec toi des Anges si tu dis vrai ? »"
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "Nous ne faisons descendre les Anges qu’avec la vérité et quand (ils descendront) il ne sera, alors, accordé plus aucun délai aux (mécréants).",
+      "footnotes": [
+        {
+          "ref": 260,
+          "text": "Dans ce contexte, la « vérité » est soit une mission pour les Prophètes soit un châtiment inéluctable pour les négateurs."
+        }
+      ]
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "C’est Nous qui avons fait descendre le Rappel (le Dhikr) et c’est Nous qui en assurons la préservation."
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "Avant toi, Nous avons déjà envoyé des Messagers parmi les peuples premiers.",
+      "footnotes": [
+        {
+          "ref": 261,
+          "text": "Les peuples anciens."
+        }
+      ]
+    },
+    {
+      "ayah_number": 11,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "Pas un seul Messager ne vint vers eux qu’ils n’eussent raillé."
+    },
+    {
+      "ayah_number": 12,
+      "hafs_numbers": [
+        12
+      ],
+      "text": "C’est ainsi que Nous l’introduisons (la dénégation) dans les cœurs des criminels."
+    },
+    {
+      "ayah_number": 13,
+      "hafs_numbers": [
+        13
+      ],
+      "text": "Ils ne croiront pas en lui bien que le châtiment infligé aux anciens (peuples) soit bien connu."
+    },
+    {
+      "ayah_number": 14,
+      "hafs_numbers": [
+        14
+      ],
+      "text": "Leur ouvririons-Nous une porte dans le ciel et (leur donnerions-Nous la possibilité) d’y accéder,"
+    },
+    {
+      "ayah_number": 15,
+      "hafs_numbers": [
+        15
+      ],
+      "text": "ils diraient : « Nos vues sont obnubilées, et peut-être même sommes nous des gens ensorcelés ! »"
+    },
+    {
+      "ayah_number": 16,
+      "hafs_numbers": [
+        16
+      ],
+      "text": "En vérité, Nous avons établi dans le ciel des constellations et Nous l’avons embelli pour ceux qui le contemplent."
+    },
+    {
+      "ayah_number": 17,
+      "hafs_numbers": [
+        17
+      ],
+      "text": "Et Nous l’avons protégé contre tout démon lapidé."
+    },
+    {
+      "ayah_number": 18,
+      "hafs_numbers": [
+        18
+      ],
+      "text": "Hormis ceux qui, (parmi les démons), cherchent à écouter à la dérobée et qu’une comète à l’éblouissante flamme aussitôt poursuit."
+    },
+    {
+      "ayah_number": 19,
+      "hafs_numbers": [
+        19
+      ],
+      "text": "La terre, Nous l’avons déployée, y avons (solidement) érigé des montagnes et y avons fait pousser toute chose en proportion."
+    },
+    {
+      "ayah_number": 20,
+      "hafs_numbers": [
+        20
+      ],
+      "text": "Nous y avons prévu des sources de subsistance, pour vous et pour ceux que vous n’êtes pas tenus de nourrir."
+    },
+    {
+      "ayah_number": 21,
+      "hafs_numbers": [
+        21
+      ],
+      "text": "Et il n’est rien dont Nous n’ayons les dépôts, encore que Nous n’en fassions descendre que par quantités déterminées."
+    },
+    {
+      "ayah_number": 22,
+      "hafs_numbers": [
+        22
+      ],
+      "text": "Et Nous envoyons les vents qui fécondent et faisons descendre l’eau du ciel pour vous désaltérer alors que vous n’êtes pas capables de l’emmagasiner.",
+      "footnotes": [
+        {
+          "ref": 262,
+          "text": "C’est le vent, nous apprend la science moderne, qui permet au pollen d’aller féconder les fleurs. Les vents fécondent aussi les nuages qui donnent les pluies. Enfin, comme il est dit dans ce verset, l’homme ne peut pas conserver toutes ces eaux car elles sont en quantités énormes et finissent, tôt ou tard, par s’évaporer. Qu’il suffise de songer à quel point toutes ces vérités scientifiques sont en avance par rapport à l’époque de Muhammad (paix et bénédiction d’Allah sur lui). Quel savant de cette époque eût pu initier le Messager illettré à toutes ces connaissances ? Voilà une preuve, parmi tant d’autres, que le Coran ne peut être d’origine humaine."
+        }
+      ]
+    },
+    {
+      "ayah_number": 23,
+      "hafs_numbers": [
+        23
+      ],
+      "text": "C’est Nous Qui faisons vivre et faisons mourir, et c’est Nous Qui hériterons (de Toute chose)."
+    },
+    {
+      "ayah_number": 24,
+      "hafs_numbers": [
+        24
+      ],
+      "text": "Et Nous savons qui de vous sont les générations premières et les générations dernières."
+    },
+    {
+      "ayah_number": 25,
+      "hafs_numbers": [
+        25
+      ],
+      "text": "Ton Seigneur est certes Celui Qui les ramènera vers Lui en foule. Il est Sage et Omniscient."
+    },
+    {
+      "ayah_number": 26,
+      "hafs_numbers": [
+        26
+      ],
+      "text": "Nous avons créé l’homme d’une argile dure et sonore, venant à son tour d’une boue lisse."
+    },
+    {
+      "ayah_number": 27,
+      "hafs_numbers": [
+        27
+      ],
+      "text": "Les djinns, Nous les avons créés avant (les hommes) d’un feu ardent."
+    },
+    {
+      "ayah_number": 28,
+      "hafs_numbers": [
+        28
+      ],
+      "text": "(Un jour) ton Seigneur dit aux Anges : « Je m’en vais créer un humain à partir d’une argile dure et sonore, venant à son tour d’une boue lisse."
+    },
+    {
+      "ayah_number": 29,
+      "hafs_numbers": [
+        29
+      ],
+      "text": "Dès que J’aurai achevé de le modeler et que Je lui aurai insufflé de Mon souffle, vous vous jetterez (par terre) prosternés devant lui. »"
+    },
+    {
+      "ayah_number": 30,
+      "hafs_numbers": [
+        30
+      ],
+      "text": "Les Anges se prosternèrent tous,"
+    },
+    {
+      "ayah_number": 31,
+      "hafs_numbers": [
+        31
+      ],
+      "text": "sauf Iblîs, qui refusa de se joindre à ceux qui s’étaient prosternés."
+    },
+    {
+      "ayah_number": 32,
+      "hafs_numbers": [
+        32
+      ],
+      "text": "« Ô Iblîs, dit (Allah), pourquoi n’es tu pas parmi ceux qui se sont prosternés ? »"
+    },
+    {
+      "ayah_number": 33,
+      "hafs_numbers": [
+        33
+      ],
+      "text": "Il dit : « Je ne me serais jamais prosterné devant un humain que Tu as créé d’argile et de boue lisse. »"
+    },
+    {
+      "ayah_number": 34,
+      "hafs_numbers": [
+        34
+      ],
+      "text": "« Sors d’ici ! dit (Allah), tu es vraiment lapidé,"
+    },
+    {
+      "ayah_number": 35,
+      "hafs_numbers": [
+        35
+      ],
+      "text": "et maudit sois-tu jusqu’au Jour de la Rétribution ! »"
+    },
+    {
+      "ayah_number": 36,
+      "hafs_numbers": [
+        36
+      ],
+      "text": "Il dit : « Seigneur ! Donne-moi un répit jusqu’au jour où ils (les hommes) seront ressuscités. »"
+    },
+    {
+      "ayah_number": 37,
+      "hafs_numbers": [
+        37
+      ],
+      "text": "Allah dit alors : « Tu es de ceux à qui répit est accordé,"
+    },
+    {
+      "ayah_number": 38,
+      "hafs_numbers": [
+        38
+      ],
+      "text": "jusqu’au jour du moment connu. »"
+    },
+    {
+      "ayah_number": 39,
+      "hafs_numbers": [
+        39
+      ],
+      "text": "« Seigneur, dit-il, comme Tu m’as égaré, j’embellirai à leurs yeux (le péché) sur terre et les induirai tous à l’égarement."
+    },
+    {
+      "ayah_number": 40,
+      "hafs_numbers": [
+        40
+      ],
+      "text": "excepté, parmi eux, (ceux de) Tes serviteurs que Tu auras élus. »"
+    },
+    {
+      "ayah_number": 41,
+      "hafs_numbers": [
+        41
+      ],
+      "text": "« Voici une voie qui mène droit vers Moi, dit (Allah),"
+    },
+    {
+      "ayah_number": 42,
+      "hafs_numbers": [
+        42
+      ],
+      "text": "quant à Mes serviteurs, tu n’auras aucune autorité sur eux, hormis ceux qui t’auront suivi en égarés."
+    },
+    {
+      "ayah_number": 43,
+      "hafs_numbers": [
+        43
+      ],
+      "text": "La Géhenne sera leur lieu de rencontre."
+    },
+    {
+      "ayah_number": 44,
+      "hafs_numbers": [
+        44
+      ],
+      "text": "Elle (la Géhenne) aura sept portes ; et à chaque porte ira une part (parmi les alliés d’Iblîs). »"
+    },
+    {
+      "ayah_number": 45,
+      "hafs_numbers": [
+        45
+      ],
+      "text": "Les gens pieux, quant à eux, seront dans des jardins arrosés de sources."
+    },
+    {
+      "ayah_number": 46,
+      "hafs_numbers": [
+        46
+      ],
+      "text": "Il leur sera dit : « Entrez-y en paix et en toute sécurité ! »"
+    },
+    {
+      "ayah_number": 47,
+      "hafs_numbers": [
+        47
+      ],
+      "text": "Nous aurons extirpé toute rancune de leurs cœurs. Ils seront frères, (étendus) sur des lits et se faisant face."
+    },
+    {
+      "ayah_number": 48,
+      "hafs_numbers": [
+        48
+      ],
+      "text": "Là, ne les atteindra aucune fatigue, et de là nul ne les fera sortir."
+    },
+    {
+      "ayah_number": 49,
+      "hafs_numbers": [
+        49
+      ],
+      "text": "Informe Mes serviteurs que c’est Moi l’Absoluteur, le Tout Miséricordieux,"
+    },
+    {
+      "ayah_number": 50,
+      "hafs_numbers": [
+        50
+      ],
+      "text": "et que Mon supplice est le supplice très douloureux."
+    },
+    {
+      "ayah_number": 51,
+      "hafs_numbers": [
+        51
+      ],
+      "text": "Et informe-les sur les hôtes d’Abraham."
+    },
+    {
+      "ayah_number": 52,
+      "hafs_numbers": [
+        52
+      ],
+      "text": "Quand ils furent entrés chez lui et eurent dit : « Paix ! (Salâm) » il dit : « J’ai en vérité peur de vous. »"
+    },
+    {
+      "ayah_number": 53,
+      "hafs_numbers": [
+        53
+      ],
+      "text": "« N’aie pas peur, dirent-ils, nous t’annonçons l’heureuse naissance d’un garçon doté d’un grand savoir. »"
+    },
+    {
+      "ayah_number": 54,
+      "hafs_numbers": [
+        54
+      ],
+      "text": "Il répondit : « M’annoncez-vous cette (heureuse nouvelle) quand m’a déjà atteint le grand âge? Quelle heureuse nouvelle m’annoncez-vous donc là ? »"
+    },
+    {
+      "ayah_number": 55,
+      "hafs_numbers": [
+        55
+      ],
+      "text": "« Nous t’avons annoncé la vérité. Ne sois donc pas si désespéré ! »"
+    },
+    {
+      "ayah_number": 56,
+      "hafs_numbers": [
+        56
+      ],
+      "text": "« Et qui pourrait désespérer de la miséricorde de son Seigneur, mis à part les égarés ? » dit-il."
+    },
+    {
+      "ayah_number": 57,
+      "hafs_numbers": [
+        57
+      ],
+      "text": "Et il ajouta : « Que voulez-vous donc, ô émissaires (d’Allah) ? »"
+    },
+    {
+      "ayah_number": 58,
+      "hafs_numbers": [
+        58
+      ],
+      "text": "« Nous avons été envoyés vers un peuple de criminels,",
+      "footnotes": [
+        {
+          "ref": 263,
+          "text": "La phrase arabe est elliptique. Le segment effacé reste sous entendu. Nous le reproduisons en italiques : « Nous avons été envoyés pour détruire un peuple de criminels. »"
+        }
+      ]
+    },
+    {
+      "ayah_number": 59,
+      "hafs_numbers": [
+        59
+      ],
+      "text": "hormis la famille de Loth que nous épargnerons tout entière,"
+    },
+    {
+      "ayah_number": 60,
+      "hafs_numbers": [
+        60
+      ],
+      "text": "à l’exception de sa femme. » « Nous (Allah) l’avons destinée à être du nombre des disparus. »"
+    },
+    {
+      "ayah_number": 61,
+      "hafs_numbers": [
+        61
+      ],
+      "text": "Lorsque les émissaires vinrent trouver la famille de Loth,"
+    },
+    {
+      "ayah_number": 62,
+      "hafs_numbers": [
+        62
+      ],
+      "text": "celui-ci leur dit : « Vous nous êtes des inconnus. »"
+    },
+    {
+      "ayah_number": 63,
+      "hafs_numbers": [
+        63
+      ],
+      "text": "Ils dirent : « Nous sommes plutôt venus t’apporter (le châtiment) à propos duquel ils étaient dans le doute."
+    },
+    {
+      "ayah_number": 64,
+      "hafs_numbers": [
+        64
+      ],
+      "text": "Nous sommes venus t’apporter la vérité, et nous sommes véridiques."
+    },
+    {
+      "ayah_number": 65,
+      "hafs_numbers": [
+        65
+      ],
+      "text": "Pars, accompagné de ta famille, lorsqu’une partie de la nuit se sera écoulée, suis-les en restant à l’arrière, et que personne d’entre vous ne se retourne ! Allez là où il vous sera ordonné. »"
+    },
+    {
+      "ayah_number": 66,
+      "hafs_numbers": [
+        66
+      ],
+      "text": "C’est alors que Nous lui fîmes part (à Loth) de Notre décision : tout son peuple sera exterminé au point du jour."
+    },
+    {
+      "ayah_number": 67,
+      "hafs_numbers": [
+        67
+      ],
+      "text": "Les habitants de la cité vinrent le trouver en jubilant.",
+      "footnotes": [
+        {
+          "ref": 264,
+          "text": "Sodome."
+        },
+        {
+          "ref": 265,
+          "text": "Les Sodomites, sous l’emprise de leurs fantasmes homosexuels, étaient séduits par la beauté exceptionnelle de ces hôtes dont ils ne savaient pas qu’ils étaient des Anges, car ces derniers sont arrivés chez Loth sous une apparence humaine."
+        }
+      ]
+    },
+    {
+      "ayah_number": 68,
+      "hafs_numbers": [
+        68
+      ],
+      "text": "Il leur dit : « Ceux-là sont mes hôtes, ne me couvrez pas de honte,"
+    },
+    {
+      "ayah_number": 69,
+      "hafs_numbers": [
+        69
+      ],
+      "text": "craignez Allah, évitez-moi le déshonneur ! »"
+    },
+    {
+      "ayah_number": 70,
+      "hafs_numbers": [
+        70
+      ],
+      "text": "Ils dirent : « Ne t’avons-nous pas défendu (d’accueillir) qui que ce soit au monde ? »"
+    },
+    {
+      "ayah_number": 71,
+      "hafs_numbers": [
+        71
+      ],
+      "text": "Il dit : « Voici mes filles, si vous devez (absolument) faire (ce que vous avez l’intention de faire) ! »"
+    },
+    {
+      "ayah_number": 72,
+      "hafs_numbers": [
+        72
+      ],
+      "text": "Par ta vie ! (ô Muhammad), ils pataugeaient aveuglément dans l’ivresse de leur égarement."
+    },
+    {
+      "ayah_number": 73,
+      "hafs_numbers": [
+        73
+      ],
+      "text": "Le Cri (assourdissant) les saisit au lever du soleil."
+    },
+    {
+      "ayah_number": 74,
+      "hafs_numbers": [
+        74
+      ],
+      "text": "Nous renversâmes alors (la cité) de fond en comble et fîmes pleuvoir sur eux des pierres d’argile durcie."
+    },
+    {
+      "ayah_number": 75,
+      "hafs_numbers": [
+        75
+      ],
+      "text": "Il y a là, vraiment, des Signes pour ceux qui savent en scruter le sens."
+    },
+    {
+      "ayah_number": 76,
+      "hafs_numbers": [
+        76
+      ],
+      "text": "Elle est située (cette cité) sur une route bien fréquentée."
+    },
+    {
+      "ayah_number": 77,
+      "hafs_numbers": [
+        77
+      ],
+      "text": "Il y a là un Signe pour les croyants."
+    },
+    {
+      "ayah_number": 78,
+      "hafs_numbers": [
+        78
+      ],
+      "text": "Les habitants d’Al-Aykah, eux aussi, étaient injustes.",
+      "footnotes": [
+        {
+          "ref": 266,
+          "text": "Le pays de Chou ̒ayb."
+        }
+      ]
+    },
+    {
+      "ayah_number": 79,
+      "hafs_numbers": [
+        79
+      ],
+      "text": "Nous tirâmes d’eux vengeance, et les deux cités (l’une comme l’autre) sont situées sur une voie évidente pour tous.",
+      "footnotes": [
+        {
+          "ref": 267,
+          "text": "Celle où vécut le peuple de Loth (Sodome), et celle où périt le peuple de Chou ̒ayb (Al-Aykah)."
+        }
+      ]
+    },
+    {
+      "ayah_number": 80,
+      "hafs_numbers": [
+        80
+      ],
+      "text": "Les habitants d’Al-Ḥijr avaient, de même, osé démentir les Messagers."
+    },
+    {
+      "ayah_number": 81,
+      "hafs_numbers": [
+        81
+      ],
+      "text": "Nous leur avons apporté Nos Signes mais ils s’en sont détournés."
+    },
+    {
+      "ayah_number": 82,
+      "hafs_numbers": [
+        82
+      ],
+      "text": "Ils creusaient à même les montagnes des maisons où (ils habitaient) en toute quiétude."
+    },
+    {
+      "ayah_number": 83,
+      "hafs_numbers": [
+        83
+      ],
+      "text": "C’est alors que le Cri (assourdissant) les saisit au point du jour."
+    },
+    {
+      "ayah_number": 84,
+      "hafs_numbers": [
+        84
+      ],
+      "text": "Ce qu’ils avaient acquis ne leur aura servi à rien."
+    },
+    {
+      "ayah_number": 85,
+      "hafs_numbers": [
+        85
+      ],
+      "text": "Nous n’avons créé les cieux et la terre, et ce qui est entre les deux, qu’en toute vérité. L’heure viendra sûrement, pardonne donc de ton plus beau pardon."
+    },
+    {
+      "ayah_number": 86,
+      "hafs_numbers": [
+        86
+      ],
+      "text": "Ton Seigneur est, Lui, le Parfait Créateur, l’Omniscient."
+    },
+    {
+      "ayah_number": 87,
+      "hafs_numbers": [
+        87
+      ],
+      "text": "Nous t’avons donné les sept versets que l’on réitère, et le Coran Sublime.",
+      "footnotes": [
+        {
+          "ref": 268,
+          "text": "Ce sont les sept versets de la Fâtiḥa, que l’on répète dans toute Çalât. Ibn Kathîr et Tabari rapportent également qu’il pourrait s’agir des sept plus longues sourates du Coran."
+        }
+      ]
+    },
+    {
+      "ayah_number": 88,
+      "hafs_numbers": [
+        88
+      ],
+      "text": "Ne porte surtout pas un regard envieux sur ces jouissances dont Nous gratifions certains groupes (parmi les mécréants), ne t’attriste pas pour eux, et sois humble et bienveillant avec les croyants.",
+      "footnotes": [
+        {
+          "ref": 269,
+          "text": "Littéralement : « Baisse ton aile pour les croyants. » Admirez l’expressivité de l’image !"
+        }
+      ]
+    },
+    {
+      "ayah_number": 89,
+      "hafs_numbers": [
+        89
+      ],
+      "text": "Et dis : « Je suis l’avertisseur explicite. »"
+    },
+    {
+      "ayah_number": 90,
+      "hafs_numbers": [
+        90
+      ],
+      "text": "Aussi avons-Nous fait s’abattre (Notre châtiment) sur ceux qui se sont fait le serment (de renier les Messagers),"
+    },
+    {
+      "ayah_number": 91,
+      "hafs_numbers": [
+        91
+      ],
+      "text": "ceux qui ont fait du Coran des fragments disparates."
+    },
+    {
+      "ayah_number": 92,
+      "hafs_numbers": [
+        92
+      ],
+      "text": "Par ton Seigneur ! Nous les interrogerons tous"
+    },
+    {
+      "ayah_number": 93,
+      "hafs_numbers": [
+        93
+      ],
+      "text": "sur ce qu’ils faisaient."
+    },
+    {
+      "ayah_number": 94,
+      "hafs_numbers": [
+        94
+      ],
+      "text": "Proclame tout haut ce qui t’est ordonné et détourne-toi des associâtres."
+    },
+    {
+      "ayah_number": 95,
+      "hafs_numbers": [
+        95
+      ],
+      "text": "Nous te suffisons comme défenseur contre les railleurs,"
+    },
+    {
+      "ayah_number": 96,
+      "hafs_numbers": [
+        96
+      ],
+      "text": "qui associent à Allah une autre divinité. Ceux-là vont bientôt savoir (ce qui les attend)."
+    },
+    {
+      "ayah_number": 97,
+      "hafs_numbers": [
+        97
+      ],
+      "text": "Nous savons que tu as des serrements au cœur (en entendant) ce qu’ils disent."
+    },
+    {
+      "ayah_number": 98,
+      "hafs_numbers": [
+        98
+      ],
+      "text": "Rends donc gloire à ton Seigneur en célébrant Ses louanges, et sois avec ceux qui se prosternent."
+    },
+    {
+      "ayah_number": 99,
+      "hafs_numbers": [
+        99
+      ],
+      "text": "Adore ton Seigneur jusqu’à ce que vienne à toi la certitude (de la mort)."
+    }
+  ]
+}

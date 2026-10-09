@@ -1,0 +1,44 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 104,
+  "number_of_ayahs": 9,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "waylun likulli humazatin lumazatin"
+    },
+    {
+      "ayah_number": 2,
+      "text": "alladhī jamaʿa mālan waʿaddadahu"
+    },
+    {
+      "ayah_number": 3,
+      "text": "yaḥsabu anna mālahu akhladahu"
+    },
+    {
+      "ayah_number": 4,
+      "text": "kallā layunbadhanna fī l-ḥuṭamati"
+    },
+    {
+      "ayah_number": 5,
+      "text": "wamā adrāka mā l-ḥuṭamatu"
+    },
+    {
+      "ayah_number": 6,
+      "text": "nāru l-lahi l-mūqadatu"
+    },
+    {
+      "ayah_number": 7,
+      "text": "allatī taṭṭaliʿu ʿalā l-afidati"
+    },
+    {
+      "ayah_number": 8,
+      "text": "innahā ʿalayhim mu'ṣadatun"
+    },
+    {
+      "ayah_number": 9,
+      "text": "fī ʿamadin mumaddadatin"
+    }
+  ]
+}

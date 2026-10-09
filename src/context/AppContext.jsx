@@ -9,11 +9,9 @@ import React, {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { getSettings, saveSettings } from "../services/storageService";
+import { getSettings, mergeSettings } from "../services/storageService";
+import { ensureLocale, getLocaleVersion } from "../i18n";
 import { ensureReciterForRiwaya } from "../data/reciters";
-import audioService from "../services/audioService";
-import { fetchPrayerTimes } from "../services/prayerTimesService";
-import { getPreferredReciterId } from "../utils/reciterRanking";
 import {
   normalizeDayTheme,
   normalizeNightTheme,
@@ -25,6 +23,14 @@ import {
   normalizeFontId,
 } from "../data/fonts";
 import { parseInitialRoute } from "../hooks/useUrlSync";
+import { getSurahAyahCount } from "../data/surahs";
+import { loadAudioService } from "../services/loadAudioService";
+import { noteSettingsWrite } from "../lib/multiTabMessages";
+import {
+  LOCAL_DATA_DELETION_EVENT,
+  PRIVACY_BEFORE_LOCK_EVENT,
+  PRIVACY_BEFORE_ROTATION_EVENT,
+} from "../services/privacyEvents";
 
 const clampQuranFontSize = (value, fallback = 25) => {
   const numeric = Number(value);
@@ -32,6 +38,17 @@ const clampQuranFontSize = (value, fallback = 25) => {
     ? Math.max(12, Math.min(96, numeric))
     : fallback;
 };
+
+const clampSurah = (value) => Math.max(1, Math.min(114, Number(value) || 1));
+const clampPage = (value) => Math.max(1, Math.min(604, Number(value) || 1));
+const clampJuz = (value) => Math.max(1, Math.min(30, Number(value) || 1));
+const clampAyah = (surah, value) =>
+  Math.max(1, Math.min(getSurahAyahCount(surah), Number(value) || 1));
+
+const shouldSkipSplashForAutomation = (stored) =>
+  Boolean(stored?.skipSplashAnimation) &&
+  typeof navigator !== "undefined" &&
+  navigator.webdriver === true;
 
 /* ── Initial State ──────────────────────────── */
 // Lazy initialization pour éviter les calculs au démarrage
@@ -42,10 +59,13 @@ const getInitialState = () => {
     stored.reciter || "ar.alafasy",
     initialRiwaya,
   );
-  const initialLang = ["fr", "en", "ar"].includes(stored.lang)
-    ? stored.lang
-    : "fr";
   const routeOverrides = parseInitialRoute();
+  // A language in the address (/en/..., /ar/...) wins over the saved one.
+  const initialLang = ["fr", "en", "ar"].includes(routeOverrides.lang)
+    ? routeOverrides.lang
+    : ["fr", "en", "ar"].includes(stored.lang)
+      ? stored.lang
+      : "fr";
   const initialFontFamilyByRiwaya = {
     hafs: normalizeFontId(
       stored.fontFamilyByRiwaya?.hafs ||
@@ -78,26 +98,25 @@ const getInitialState = () => {
   sidebarOpen: false,
   searchOpen: false,
   settingsOpen: false,
-  bookmarksOpen: false,
-  wirdOpen: false,
-  historyOpen: false,
-  playlistOpen: false,
-  flashcardsOpen: false,
-  tajweedQuizOpen: false,
-  khatmaOpen: false,
-  comparatorOpen: false,
+  settingsActiveTab: "general",
+  libraryOpen: false,
+  libraryTab: "favorites",
   shareImageOpen: false,
-  weeklyStatsOpen: false,
-  audioMakerOpen: false,
-  toolsHubOpen: false,
-  splashDone: false,
+  prayerModalOpen: false,
+  showPrayers: routeOverrides.showPrayers ?? false,
+  // The branded opening returns on each real app launch. A persisted legacy
+  // setting can only bypass it in automated browser tests.
+  skipSplashAnimation: shouldSkipSplashForAutomation(stored),
+  splashDone: shouldSkipSplashForAutomation(stored),
   tafsirSidebarOpen: false,
   tafsirSidebarVerse: null,
+  readerTypographyOpen: false,
 
   // Quran
   riwaya: initialRiwaya,
   displayMode: routeOverrides.displayMode ?? (stored.displayMode || "surah"), // 'surah' | 'page' | 'juz'
   mushafLayout: stored.mushafLayout || "list", // 'list' | 'mushaf'
+  mushafPageFlow: stored.mushafPageFlow === "horizontal" ? "horizontal" : "vertical",
   currentSurah:
     routeOverrides.currentSurah ?? (stored.lastPosition?.surah || 1),
   currentAyah: routeOverrides.currentAyah ?? (stored.lastPosition?.ayah || 1),
@@ -119,14 +138,16 @@ const getInitialState = () => {
   showHome:
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
+  homeSection: "surah",
   showDuas: routeOverrides.showDuas ?? false,
+  // Sub-page of /duas ("", "/hisn", "/hisn/27", "/coran"); read from the URL, never persisted.
+  duasRoute: routeOverrides.duasRoute ?? "",
+  legalPage: routeOverrides.legalPage ?? null,
+  routeNotFound: routeOverrides.routeNotFound ?? false,
   showTranslation: stored.showTranslation ?? true,
   showTajwid: stored.showTajwid ?? false,
-  showWordByWord: stored.showWordByWord ?? false,
   showTransliteration: stored.showTransliteration ?? true,
-  showWordTranslation: stored.showWordTranslation ?? true,
   translationReadingMode: stored.translationReadingMode ?? false,
-  pinnedAyahs: stored.pinnedAyahs || [],
   translationLangs: stored.translationLangs || [stored.translationLang || "fr"],
   wordTranslationLang:
     stored.wordTranslationLang || stored.translationLang || "fr",
@@ -140,17 +161,16 @@ const getInitialState = () => {
   syncOffsetsMs: stored.syncOffsetsMs || {},
   warshStrictMode: stored.warshStrictMode ?? true,
   favoriteReciters: stored.favoriteReciters || [],
-  autoSelectFastestReciter: false,
+  // Le meilleur serveur est choisi automatiquement. Ce choix technique reste
+  // volontairement invisible pour ne pas surcharger l'expérience de lecture,
+  // mais une préférence enregistrée contraire est respectée.
+  autoSelectFastestReciter: stored.autoSelectFastestReciter ?? true,
   reciterLatencyByKey: stored.reciterLatencyByKey || {},
   reciterAvailabilityById: stored.reciterAvailabilityById || {},
   isPlaying: false,
   currentPlayingAyah: null,
   playerMinimized: stored.playerMinimized ?? false,
 
-  // Memorization
-  memMode: false,
-  memRepeatCount: 3,
-  memPause: 2,
   surahRepeatCount: (() => {
     const value = Number(stored.surahRepeatCount);
     if (!Number.isFinite(value)) return 1;
@@ -158,8 +178,14 @@ const getInitialState = () => {
     return Math.max(1, Math.min(999, Math.floor(value)));
   })(),
 
+  // Voices published both verse by verse and as one recording per surah:
+  // "auto" decides per playlist, the others are the reader's explicit choice.
+  audioPlaybackMode: ["auto", "surah", "verse"].includes(stored.audioPlaybackMode)
+    ? stored.audioPlaybackMode
+    : "auto",
+
   // Karaoke / suivi auto
-  karaokeFollow: true,
+  karaokeFollow: stored.karaokeFollow ?? true,
 
   // Auto night mode
   autoNightMode: stored.autoNightMode ?? false,
@@ -167,11 +193,18 @@ const getInitialState = () => {
   nightEnd: stored.nightEnd || "06:00",
   nightTheme: normalizeNightTheme(stored.nightTheme || "dark"),
   dayTheme: normalizeDayTheme(stored.dayTheme || "light"),
-  usePrayerTimes: stored.usePrayerTimes ?? false,
 
-  // Wird goals
-  wirdGoalType: stored.wirdGoalType || "pages",
-  wirdGoalAmount: stored.wirdGoalAmount || 5,
+  // Prayer times & notifications
+  prayerTimesEnabled: stored.prayerTimesEnabled ?? false,
+  prayerMethod: stored.prayerMethod ?? 12,
+  prayerMethodAuto: stored.prayerMethodAuto ?? true,
+  prayerLocation: stored.prayerLocation ?? null,
+  prayerReminders: stored.prayerReminders ?? false,
+  prayerTimeOffsets: stored.prayerTimeOffsets ?? { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
+  prayerNotifications: stored.prayerNotifications ?? null,
+  prayerTrackingEnabled: stored.prayerTrackingEnabled ?? false,
+  prayerPostAdhanDuas: stored.prayerPostAdhanDuas ?? true,
+  dailyVerseNotification: stored.dailyVerseNotification ?? false,
 
   // Loading
   loading: true,
@@ -182,8 +215,7 @@ const getInitialState = () => {
   };
 };
 
-// Lazy initialization - ne calcule l'état initial qu'une fois au premier render
-const initialState = getInitialState();
+// initialState is computed lazily inside useReducer (third-argument form)
 
 /* ── Reducer ────────────────────────────────── */
 
@@ -192,8 +224,54 @@ export function appReducer(state, action) {
     case "SET": {
       const payload = action.payload || {};
       const next = { ...state, ...payload };
-      const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");
-      const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "legalPage") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.legalPage = null;
+      }
+      if (
+        !Object.prototype.hasOwnProperty.call(payload, "routeNotFound") &&
+        (payload.showHome === true ||
+          payload.showDuas === true ||
+          payload.showPrayers === true ||
+          payload.legalPage ||
+          Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+          Object.prototype.hasOwnProperty.call(payload, "currentJuz"))
+      ) {
+        next.routeNotFound = false;
+      }
+      // Entering the invocations from the menu always lands on its hub.
+      if (payload.showDuas === true && !Object.prototype.hasOwnProperty.call(payload, "duasRoute")) {
+        next.duasRoute = "";
+      }
+      // The three full-page views are exclusive whichever setter fires; call
+      // sites historically set only the flags they knew about.
+      if (payload.showHome === true) {
+        next.showDuas = false;
+        next.showPrayers = false;
+      } else if (payload.showDuas === true) {
+        next.showHome = false;
+        next.showPrayers = false;
+      } else if (payload.showPrayers === true) {
+        next.showHome = false;
+        next.showDuas = false;
+      } else if (
+        payload.legalPage ||
+        Object.prototype.hasOwnProperty.call(payload, "currentSurah") ||
+        Object.prototype.hasOwnProperty.call(payload, "currentPage") ||
+        Object.prototype.hasOwnProperty.call(payload, "currentJuz")
+      ) {
+        next.showHome = false;
+        next.showDuas = false;
+        next.showPrayers = false;
+      }
+      const hasRiwaya = Object.prototype.hasOwnProperty.call(payload, "riwaya");      const hasFontFamily = Object.prototype.hasOwnProperty.call(payload, "fontFamily");
       const targetRiwaya = hasRiwaya
         ? payload.riwaya === "warsh"
           ? "warsh"
@@ -239,6 +317,32 @@ export function appReducer(state, action) {
           [targetRiwaya]: normalizedFont,
         };
       }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentSurah")) {
+        next.currentSurah = clampSurah(payload.currentSurah);
+        next.currentAyah = clampAyah(
+          next.currentSurah,
+          Object.prototype.hasOwnProperty.call(payload, "currentAyah")
+            ? payload.currentAyah
+            : state.currentAyah,
+        );
+      } else if (Object.prototype.hasOwnProperty.call(payload, "currentAyah")) {
+        next.currentAyah = clampAyah(clampSurah(state.currentSurah), payload.currentAyah);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentPage")) {
+        next.currentPage = clampPage(payload.currentPage);
+      }
+      if (Object.prototype.hasOwnProperty.call(payload, "currentJuz")) {
+        next.currentJuz = clampJuz(payload.currentJuz);
+      }
+      // Choosing a theme by hand outranks the clock: with the automatic mode
+      // still on, its next 60 s tick would put the theme back and the reader
+      // would see their choice silently undone.
+      if (
+        Object.prototype.hasOwnProperty.call(payload, "theme") &&
+        next.autoNightMode
+      ) {
+        next.autoNightMode = false;
+      }
       return next;
     }
 
@@ -248,43 +352,48 @@ export function appReducer(state, action) {
       return { ...state, searchOpen: !state.searchOpen };
     case "TOGGLE_SETTINGS":
       return { ...state, settingsOpen: !state.settingsOpen };
-    case "TOGGLE_BOOKMARKS":
-      return { ...state, bookmarksOpen: !state.bookmarksOpen };
-    case "TOGGLE_WIRD":
-      return { ...state, wirdOpen: !state.wirdOpen };
-    case "TOGGLE_HISTORY":
-      return { ...state, historyOpen: !state.historyOpen };
-    case "TOGGLE_PLAYLIST":
-      return { ...state, playlistOpen: !state.playlistOpen };
+    case "TOGGLE_LIBRARY":
+      return { ...state, libraryOpen: !state.libraryOpen };
 
-    case "NAVIGATE_SURAH":
+    case "NAVIGATE_SURAH": {
+      const surah = clampSurah(action.payload?.surah);
       return {
         ...state,
-        currentSurah: action.payload.surah,
-        currentAyah: action.payload.ayah || 1,
+        currentSurah: surah,
+        currentAyah: clampAyah(surah, action.payload?.ayah),
         displayMode: "surah",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
+        legalPage: null,
         sidebarOpen: false,
       };
+    }
 
     case "NAVIGATE_PAGE":
       return {
         ...state,
-        currentPage: action.payload.page,
+        currentPage: clampPage(action.payload?.page),
+        // "scroll" when continuous reading moved the reader: the URL is
+        // replaced instead of pushed so Back does not walk every page.
+        pageNavigationSource: action.payload?.source === "scroll" ? "scroll" : "navigate",
         displayMode: "page",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
     case "NAVIGATE_JUZ":
       return {
         ...state,
-        currentJuz: action.payload.juz,
+        currentJuz: clampJuz(action.payload?.juz),
         displayMode: "juz",
         showHome: false,
         showDuas: false,
+        showPrayers: false,
+        legalPage: null,
         sidebarOpen: false,
       };
 
@@ -332,6 +441,13 @@ export function appReducer(state, action) {
     case "SET_FONT_SIZE":
       return { ...state, quranFontSize: clampQuranFontSize(action.payload, state.quranFontSize) };
 
+    // A face that cannot be loaded (network) is replaced for display only: the
+    // choice kept per riwaya is untouched, so it comes back when the face does.
+    case "SET_FONT_FALLBACK": {
+      const fallbackFont = normalizeFontId(action.payload, state.riwaya);
+      return state.fontFamily === fallbackFont ? state : { ...state, fontFamily: fallbackFont };
+    }
+
     case "SET_FONT_FAMILY":
       {
         const normalizedFont = normalizeFontId(action.payload, state.riwaya);
@@ -346,10 +462,14 @@ export function appReducer(state, action) {
       }
 
     case "SET_PLAYING": {
-      let ayah = action.payload.ayah ?? state.currentPlayingAyah;
-      // Normalize: ensure currentPlayingAyah is always an object or null
-      if (typeof ayah === "number") {
-        ayah = { surah: null, ayah: ayah, globalNumber: ayah };
+      const raw = action.payload.ayah !== undefined ? action.payload.ayah : state.currentPlayingAyah;
+      let ayah;
+      if (raw === null || raw === undefined) {
+        ayah = null;
+      } else if (typeof raw === "number") {
+        ayah = { surah: action.payload.surah ?? null, ayah: raw, globalNumber: raw };
+      } else {
+        ayah = raw;
       }
       return {
         ...state,
@@ -359,13 +479,13 @@ export function appReducer(state, action) {
     }
 
     case "SET_LOADING":
-      return { ...state, loading: action.payload, error: null };
+      return { ...state, loading: action.payload, ...(action.payload ? { error: null } : {}) };
 
     case "SET_ERROR":
       return { ...state, loading: false, error: action.payload };
 
     case "SPLASH_DONE":
-      return { ...state, splashDone: true };
+      return { ...state, splashDone: true, skipSplashAnimation: false };
 
     default:
       return state;
@@ -392,12 +512,14 @@ export function shallowEqual(a, b) {
 }
 
 export function AppProvider({ children }) {
-  const [state, dispatch] = useReducer(appReducer, initialState);
+  const [state, dispatch] = useReducer(appReducer, undefined, getInitialState);
   const saveTimerRef = useRef(null);
   const persistentSettingsRef = useRef(null);
   const stateRef = useRef(state);
+  const themeRef = useRef(state.theme);
   const selectorListenersRef = useRef(new Set());
   stateRef.current = state;
+  themeRef.current = state.theme;
 
   const selectorStore = useMemo(
     () => ({
@@ -415,10 +537,13 @@ export function AppProvider({ children }) {
     selectorListenersRef.current.forEach((listener) => listener());
   }, [state]);
 
-  // Create persistent settings object - memoized to avoid unnecessary recalculations
+  // Persistent settings split in two: stable settings (user preferences) and
+  // lastPosition (updated on every ayah scroll). Separating them prevents the
+  // debounced save from re-scheduling on every scroll.
   const persistentSettings = useMemo(() => ({
     lang: state.lang,
     theme: state.theme,
+    skipSplashAnimation: state.skipSplashAnimation,
     riwaya: state.riwaya,
     reciter: state.reciter,
     quranFontSize: state.quranFontSize,
@@ -430,15 +555,13 @@ export function AppProvider({ children }) {
     wordTranslationLang: state.wordTranslationLang,
     showTranslation: state.showTranslation,
     showTajwid: state.showTajwid,
-    showWordByWord: state.showWordByWord,
     showTransliteration: state.showTransliteration,
-    showWordTranslation: state.showWordTranslation,
     translationReadingMode: state.translationReadingMode,
-    pinnedAyahs: state.pinnedAyahs,
     showHome: state.showHome,
     showDuas: state.showDuas,
     displayMode: state.displayMode,
     mushafLayout: state.mushafLayout,
+    mushafPageFlow: state.mushafPageFlow,
     audioSpeed: state.audioSpeed,
     volume: state.volume,
     continuousPlay: state.continuousPlay,
@@ -455,20 +578,23 @@ export function AppProvider({ children }) {
     nightEnd: state.nightEnd,
     nightTheme: state.nightTheme,
     dayTheme: state.dayTheme,
-    usePrayerTimes: state.usePrayerTimes,
     karaokeFollow: state.karaokeFollow,
     surahRepeatCount: state.surahRepeatCount,
-    wirdGoalType: state.wirdGoalType,
-    wirdGoalAmount: state.wirdGoalAmount,
-    lastPosition: {
-      surah: state.currentSurah,
-      ayah: state.currentAyah,
-      page: state.currentPage,
-      juz: state.currentJuz,
-    },
+    audioPlaybackMode: state.audioPlaybackMode,
+    prayerTimesEnabled: state.prayerTimesEnabled,
+    prayerMethod: state.prayerMethod,
+    prayerMethodAuto: state.prayerMethodAuto,
+    prayerLocation: state.prayerLocation,
+    prayerReminders: state.prayerReminders,
+    prayerTimeOffsets: state.prayerTimeOffsets,
+    prayerNotifications: state.prayerNotifications,
+    prayerTrackingEnabled: state.prayerTrackingEnabled,
+    prayerPostAdhanDuas: state.prayerPostAdhanDuas,
+    dailyVerseNotification: state.dailyVerseNotification,
   }), [
     state.lang,
     state.theme,
+    state.skipSplashAnimation,
     state.riwaya,
     state.reciter,
     state.quranFontSize,
@@ -479,15 +605,13 @@ export function AppProvider({ children }) {
     state.wordTranslationLang,
     state.showTranslation,
     state.showTajwid,
-    state.showWordByWord,
     state.showTransliteration,
-    state.showWordTranslation,
     state.translationReadingMode,
-    state.pinnedAyahs,
     state.showHome,
     state.showDuas,
     state.displayMode,
     state.mushafLayout,
+    state.mushafPageFlow,
     state.audioSpeed,
     state.volume,
     state.continuousPlay,
@@ -504,36 +628,67 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
-    state.usePrayerTimes,
     state.karaokeFollow,
     state.surahRepeatCount,
-    state.wirdGoalType,
-    state.wirdGoalAmount,
-    state.currentSurah,
-    state.currentAyah,
-    state.currentPage,
-    state.currentJuz,
+    state.audioPlaybackMode,
+    state.prayerTimesEnabled,
+    state.prayerMethod,
+    state.prayerMethodAuto,
+    state.prayerLocation,
+    state.prayerReminders,
+    state.prayerTimeOffsets,
+    state.prayerNotifications,
+    state.prayerTrackingEnabled,
+    state.prayerPostAdhanDuas,
+    state.dailyVerseNotification,
   ]);
 
-  // Persist settings to localStorage on change (debounced — 500ms)
+  // Persist settings to localStorage on change (debounced — 500ms). The write
+  // patches the stored blob so keys owned by other savers, such as the reading
+  // position written by savePosition, keep the fields this list ignores.
   useEffect(() => {
-    persistentSettingsRef.current = persistentSettings;
-  }, [persistentSettings]);
+    persistentSettingsRef.current = {
+      ...persistentSettings,
+      lastPosition: {
+        surah: state.currentSurah,
+        ayah: state.currentAyah,
+        page: state.currentPage,
+        juz: state.currentJuz,
+      },
+    };
+  });
+
+  const persistenceSuspendedRef = useRef(false);
+  useEffect(() => {
+    const suspend = (event) => {
+      persistenceSuspendedRef.current = event.detail?.cancelled !== true;
+      clearTimeout(saveTimerRef.current);
+      saveTimerRef.current = null;
+    };
+    window.addEventListener(LOCAL_DATA_DELETION_EVENT, suspend);
+    return () => window.removeEventListener(LOCAL_DATA_DELETION_EVENT, suspend);
+  }, []);
 
   const flushSettings = useCallback(() => {
     if (saveTimerRef.current) {
       clearTimeout(saveTimerRef.current);
       saveTimerRef.current = null;
     }
-    if (persistentSettingsRef.current) {
-      saveSettings(persistentSettingsRef.current);
+    if (!persistenceSuspendedRef.current && persistentSettingsRef.current) {
+      mergeSettings(persistentSettingsRef.current);
+      // Record the bytes this tab wrote so the multi-tab guard never reads one
+      // of our own saves as an external change.
+      noteSettingsWrite();
     }
   }, []);
 
   useEffect(() => {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
-      saveSettings(persistentSettings);
+      if (!persistenceSuspendedRef.current) {
+        mergeSettings(persistentSettingsRef.current);
+        noteSettingsWrite();
+      }
       saveTimerRef.current = null;
     }, 500);
     return () => {
@@ -543,14 +698,21 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     const handleBeforeUnload = () => flushSettings();
+    const handleBeforePrivacyLock = () => flushSettings();
     const handleVisibilityChange = () => {
       if (document.visibilityState === "hidden") flushSettings();
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handleBeforeUnload);
+    window.addEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+    window.addEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handleBeforeUnload);
+      window.removeEventListener(PRIVACY_BEFORE_LOCK_EVENT, handleBeforePrivacyLock);
+      window.removeEventListener(PRIVACY_BEFORE_ROTATION_EVENT, handleBeforePrivacyLock);
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
   }, [flushSettings]);
@@ -561,18 +723,55 @@ export function AppProvider({ children }) {
   }, [state.theme]);
 
   useEffect(() => {
-    audioService.setLatencySnapshot(state.reciterLatencyByKey || {});
-  }, [state.reciterLatencyByKey]);
+    let active = true;
+    let unsubscribe = () => {};
+    let started = false;
 
-  useEffect(() => {
-    const unsubscribe = audioService.subscribeLatency((latencyMap) => {
-      dispatch({
-        type: "SET",
-        payload: { reciterLatencyByKey: latencyMap },
-      });
+    const initializeAudioMetrics = () => {
+      if (started) return;
+      started = true;
+      loadAudioService()
+        .then((audioService) => {
+          if (!active) return;
+          audioService.setLatencySnapshot(
+            stateRef.current.reciterLatencyByKey || {},
+          );
+          unsubscribe = audioService.subscribeLatency((latencyMap) => {
+            dispatch({
+              type: "SET",
+              payload: { reciterLatencyByKey: latencyMap },
+            });
+          });
+        })
+        .catch((error) => {
+          if (import.meta.env.DEV) {
+            console.warn("Audio service initialization failed:", error);
+          }
+          dispatch({
+            type: "SET",
+            payload: { audioServiceError: true },
+          });
+        });
+    };
+
+    window.addEventListener("pointerdown", initializeAudioMetrics, {
+      passive: true,
+      once: true,
     });
-    return unsubscribe;
-  }, []);
+    window.addEventListener("keydown", initializeAudioMetrics, { once: true });
+    window.addEventListener("touchstart", initializeAudioMetrics, {
+      passive: true,
+      once: true,
+    });
+
+    return () => {
+      active = false;
+      unsubscribe();
+      window.removeEventListener("pointerdown", initializeAudioMetrics);
+      window.removeEventListener("keydown", initializeAudioMetrics);
+      window.removeEventListener("touchstart", initializeAudioMetrics);
+    };
+  }, [dispatch]);
 
   useEffect(() => {
     if (!state.autoSelectFastestReciter || state.isPlaying) return;
@@ -586,15 +785,24 @@ export function AppProvider({ children }) {
     if (!hasFavoriteSignals && !hasLatencySignals && !hasAvailabilitySignals) {
       return;
     }
-    const preferredReciter = getPreferredReciterId(state.riwaya, {
-      currentReciterId: state.reciter,
-      favoriteReciters: state.favoriteReciters,
-      latencyByKey: state.reciterLatencyByKey,
-      availabilityById: state.reciterAvailabilityById,
-    });
-    if (preferredReciter && preferredReciter !== state.reciter) {
-      dispatch({ type: "SET_RECITER", payload: preferredReciter });
-    }
+    let active = true;
+    import("../utils/reciterRanking")
+      .then(({ getPreferredReciterId }) => {
+        if (!active) return;
+        const preferredReciter = getPreferredReciterId(state.riwaya, {
+          currentReciterId: state.reciter,
+          favoriteReciters: state.favoriteReciters,
+          latencyByKey: state.reciterLatencyByKey,
+          availabilityById: state.reciterAvailabilityById,
+        });
+        if (preferredReciter && preferredReciter !== state.reciter) {
+          dispatch({ type: "SET_RECITER", payload: preferredReciter });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
   }, [
     state.autoSelectFastestReciter,
     state.favoriteReciters,
@@ -624,7 +832,7 @@ export function AppProvider({ children }) {
       const target = isNight
         ? normalizeNightTheme(state.nightTheme)
         : normalizeDayTheme(state.dayTheme);
-      if (state.theme !== target) {
+      if (themeRef.current !== target) {
         dispatch({ type: "SET_THEME", payload: target });
       }
     };
@@ -637,34 +845,8 @@ export function AppProvider({ children }) {
     state.nightEnd,
     state.nightTheme,
     state.dayTheme,
-    state.theme,
     dispatch,
   ]);
-
-  // Prayer-time based auto-night: compute Fajr/Isha from geolocation
-  // Delay the geolocation request so startup stays responsive.
-  useEffect(() => {
-    if (!state.autoNightMode || !state.usePrayerTimes) return;
-    
-    let cancelled = false;
-    
-    // Delai pour ne pas bloquer le demarrage
-    const timer = setTimeout(() => {
-      if (cancelled) return;
-      fetchPrayerTimes((times) => {
-        if (cancelled || !times) return;
-        dispatch({
-          type: "SET",
-          payload: { nightEnd: times.fajr, nightStart: times.isha },
-        });
-      });
-    }, 2000); // Attendre 2 secondes apres le chargement initial
-    
-    return () => {
-      cancelled = true;
-      clearTimeout(timer);
-    };
-  }, [state.autoNightMode, state.usePrayerTimes]);
 
   // Listen for system dark-mode changes (auto-apply if user hasn't manually overridden)
   useEffect(() => {
@@ -679,7 +861,8 @@ export function AppProvider({ children }) {
     };
     mq.addEventListener("change", handler);
     return () => mq.removeEventListener("change", handler);
-  }, []);
+  // dispatch is stable (guaranteed by React), but listing it satisfies exhaustive-deps
+  }, [dispatch]);
 
   // Apply direction to <html>
   useEffect(() => {
@@ -688,15 +871,36 @@ export function AppProvider({ children }) {
     document.documentElement.lang = state.lang;
   }, [state.lang]);
 
+  // A language other than French is a lazily loaded chunk. Wait for it before
+  // switching (Settings), so the screen never flashes French copy; the effect
+  // below covers the paths that set the language without going through set().
   const set = useCallback(
-    (payload) => dispatch({ type: "SET", payload }),
+    (payload) => {
+      if (payload?.lang) {
+        ensureLocale(payload.lang).catch(() => null).finally(() => dispatch({ type: "SET", payload }));
+        return;
+      }
+      dispatch({ type: "SET", payload });
+    },
     [dispatch],
   );
 
+  const [localeTick, bumpLocale] = React.useReducer((tick) => tick + 1, 0);
+  useEffect(() => {
+    let active = true;
+    const before = getLocaleVersion();
+    ensureLocale(state.lang).then(() => {
+      if (active && getLocaleVersion() !== before) bumpLocale();
+    }).catch(() => null);
+    return () => {
+      active = false;
+    };
+  }, [state.lang]);
+
   const actionsValue = useMemo(() => ({ dispatch, set }), [dispatch, set]);
   const localeValue = useMemo(
-    () => ({ lang: state.lang, riwaya: state.riwaya }),
-    [state.lang, state.riwaya],
+    () => ({ lang: state.lang, riwaya: state.riwaya, localeTick }),
+    [state.lang, state.riwaya, localeTick],
   );
   const appValue = useMemo(
     () => ({ state, dispatch, set }),

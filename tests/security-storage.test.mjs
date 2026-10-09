@@ -1,14 +1,22 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
+import { readFileSync, readdirSync, statSync } from "node:fs";
+import { join, relative } from "node:path";
 import { DOMParser, XMLSerializer } from "@xmldom/xmldom";
 
-import { isAllowedExternalUrl, sanitizeSvgMarkup } from "../src/lib/security.js";
+import {
+  isAllowedExternalUrl,
+  isSafeLinkHref,
+  sanitizeHtml,
+  sanitizeSvgMarkup,
+} from "../src/lib/security.js";
 import { buildCspPolicy } from "../scripts/cspPolicy.mjs";
+import { auditDeploymentSecurityHeaders } from "../scripts/check-security-headers.mjs";
 import {
   readLocalStorageWithSchema,
   writeLocalStorageJson,
-  memorizationMapSchema,
+  downloadProgressMapSchema,
+  noteRecordSchema,
 } from "../src/services/storageValidation.js";
 
 function createMockStorage() {
@@ -26,12 +34,40 @@ function createMockStorage() {
   };
 }
 
+function collectSourceFiles(dir) {
+  return readdirSync(dir).flatMap((entry) => {
+    const path = join(dir, entry);
+    const stat = statSync(path);
+
+    if (stat.isDirectory()) return collectSourceFiles(path);
+    if (!/\.(jsx?|tsx?)$/.test(entry)) return [];
+    return [path];
+  });
+}
+
 test("security: allows only whitelisted https hosts", () => {
   assert.equal(isAllowedExternalUrl("https://wa.me/?text=ok"), true);
   assert.equal(isAllowedExternalUrl("https://twitter.com/test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com/sharer/sharer.php?u=test"), true);
+  assert.equal(isAllowedExternalUrl("https://www.facebook.com.evil.example/sharer"), false);
   assert.equal(isAllowedExternalUrl("https://evil.example.com"), false);
   assert.equal(isAllowedExternalUrl("https://ia800304.us.archive.org/audio/test.mp3"), false);
   assert.equal(isAllowedExternalUrl("javascript:alert(1)"), false);
+});
+
+test("security: runtime-sourced hrefs accept only link protocols", () => {
+  assert.equal(isSafeLinkHref("https://www.assabile.com/reciter/12"), true);
+  assert.equal(isSafeLinkHref("http://example.com/x"), true);
+  assert.equal(isSafeLinkHref("/data/reciter-profiles.json"), true);
+  assert.equal(isSafeLinkHref("data/x.json"), true);
+  assert.equal(isSafeLinkHref("javascript:alert(1)"), false);
+  assert.equal(isSafeLinkHref("JaVaScRiPt:alert(1)"), false);
+  assert.equal(isSafeLinkHref("data:text/html;base64,PHNjcmlwdD4="), false);
+  assert.equal(isSafeLinkHref("vbscript:msgbox(1)"), false);
+  assert.equal(isSafeLinkHref("  javascript:void(0)  "), false);
+  assert.equal(isSafeLinkHref(""), false);
+  assert.equal(isSafeLinkHref(undefined), false);
+  assert.equal(isSafeLinkHref("not a url: at all"), false);
 });
 
 test("security: production CSP excludes dev-only and unused risky sources", () => {
@@ -39,6 +75,46 @@ test("security: production CSP excludes dev-only and unused risky sources", () =
   assert.equal(csp.includes("'unsafe-eval'"), false);
   assert.equal(csp.includes("ia800304.us.archive.org"), false);
   assert.equal(csp.includes("ws://localhost"), false);
+  // Reciter portraits are the app's own files (public/images/reciters), so no third
+  // party is allowed to see an image request or a referrer from this origin.
+  assert.equal(csp.includes("img-src 'self' data: blob:;"), true);
+  assert.doesNotMatch(csp, /img-src[^;]*(assabile|qurancdn|static\.quran\.com|way2quran|pinimg|suratmp3|surahquran|wikimedia)/);
+  assert.doesNotMatch(csp, /media\.way2quran\.com|i\.pinimg\.com/);
+  assert.doesNotMatch(csp, /suratmp3\.com|surahquran\.com/);
+  assert.match(csp, /media-src[^;]*https:\/\/upload\.wikimedia\.org/);
+  assert.doesNotMatch(csp, /img-src[^;]*wikimedia\.org/);
+  assert.match(csp, /script-src-attr 'none'/);
+  assert.match(csp, /upgrade-insecure-requests/);
+  assert.doesNotMatch(csp, /https:\/\/\*\.quran\.com/);
+  assert.doesNotMatch(csp, /font-src[^;]*\bdata:/);
+  assert.doesNotMatch(csp, /fonts\.quranwbw\.com/);
+});
+
+test("fonts: the Hafs and Warsh faces are self-hosted as valid WOFF2 assets", () => {
+  const hafsFont = readFileSync("public/fonts/uthmanic-hafs-v18.woff2");
+  const warshFont = readFileSync("public/fonts/kfgqpc-warsh-21.woff2");
+  const loader = readFileSync("src/services/fontLoader.js", "utf8");
+
+  assert.equal(hafsFont.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.equal(warshFont.subarray(0, 4).toString("ascii"), "wOF2");
+  assert.ok(hafsFont.length > 80_000);
+  assert.ok(warshFont.length > 80_000);
+  assert.match(loader, /\/fonts\/uthmanic-hafs-v18\.woff2/);
+  assert.match(loader, /\/fonts\/kfgqpc-warsh-21\.woff2/);
+  assert.doesNotMatch(loader, /fonts\.quranwbw\.com/);
+  // E2E must exercise the same FontFace path a reader gets: an automation
+  // shortcut here would hide glyph and offline-fallback regressions.
+  assert.doesNotMatch(loader, /navigator\.webdriver|__playwright__/);
+});
+
+test("security: the HTML meta CSP stays compatible with local WebKit previews", () => {
+  const viteConfig = readFileSync(
+    new URL("../vite.config.js", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(viteConfig, /directive !== "upgrade-insecure-requests"/);
+  assert.match(viteConfig, /!directive\.startsWith\("frame-ancestors"\)/);
 });
 
 test("security: deployment CSP headers match the generated production policy", () => {
@@ -55,6 +131,33 @@ test("security: deployment CSP headers match the generated production policy", (
 
   assert.equal(netlify, generated);
   assert.equal(vercel, generated);
+});
+
+test("security: all deployable root headers match the centralized policy", () => {
+  assert.deepEqual(auditDeploymentSecurityHeaders(), []);
+});
+
+test("security: deployment assets use CORP and unused browser capabilities are denied", () => {
+  const netlify = readFileSync("netlify.toml", "utf8");
+  const vercel = readFileSync("vercel.json", "utf8");
+  for (const source of [netlify, vercel]) {
+    assert.match(source, /Cross-Origin-Resource-Policy/);
+    assert.match(source, /payment=\(\)/);
+    assert.match(source, /usb=\(\)/);
+    assert.match(source, /bluetooth=\(\)/);
+    assert.match(source, /screen-wake-lock=\(\)/);
+  }
+});
+
+test("security: reader failures do not expose raw provider errors to the UI", () => {
+  const readerData = readFileSync(
+    "src/components/QuranDisplay/useQuranDisplayData.js",
+    "utf8",
+  );
+  const warsh = readFileSync("src/services/warshService.js", "utf8");
+  assert.doesNotMatch(readerData, /setError\(err\.message\)/);
+  assert.doesNotMatch(readerData, /payload:\s*err\.message/);
+  assert.doesNotMatch(warsh, /fallbackErr\.message\s*\|\|\s*err\.message/);
 });
 
 test("security: SVG sanitizer strips active content and external references", () => {
@@ -95,22 +198,154 @@ test("security: SVG sanitizer strips active content and external references", ()
   }
 });
 
+test("security: sanitizers reject encoded SVG URLs and dangerous HTML", () => {
+  const previousWindow = globalThis.window;
+  const previousDOMParser = globalThis.DOMParser;
+  const previousXMLSerializer = globalThis.XMLSerializer;
+
+  globalThis.window = {};
+  globalThis.DOMParser = DOMParser;
+  globalThis.XMLSerializer = XMLSerializer;
+
+  try {
+    const svg = sanitizeSvgMarkup(`
+      <svg xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="safe"><stop offset="1" /></linearGradient></defs>
+        <rect fill="url(#safe)" filter="url(https://evil.example/filter.svg#x)" />
+        <text style="fill:red" href="data:text/html;base64,PHNjcmlwdD4=">safe</text>
+      </svg>
+    `);
+    assert.match(svg, /url\(#safe\)/);
+    assert.doesNotMatch(svg, /evil\.example|data:text\/html|style=/i);
+
+    const html = sanitizeHtml(`
+      <span onclick="alert(1)" style="background:url(javascript:alert(1))">
+        <img src="x" onerror="alert(1)" />
+        <svg onload="alert(1)"><script>alert(1)</script></svg>
+        <strong title="allowed" formaction="javascript:alert(1)">safe</strong>
+      </span>
+    `);
+    assert.match(html, /safe/);
+    assert.match(html, /title="allowed"/);
+    assert.doesNotMatch(
+      html,
+      /onclick|onerror|style=|formaction|javascript:|<img|<svg|<script/i,
+    );
+  } finally {
+    globalThis.window = previousWindow;
+    globalThis.DOMParser = previousDOMParser;
+    globalThis.XMLSerializer = previousXMLSerializer;
+  }
+});
+
+test("security: source avoids raw HTML injection sinks", () => {
+  const offenders = [];
+
+  for (const file of collectSourceFiles("src")) {
+    const source = readFileSync(file, "utf8");
+    if (
+      /dangerouslySetInnerHTML/.test(source) ||
+      /\.innerHTML\s*=/.test(source) ||
+      /insertAdjacentHTML\s*\(/.test(source)
+    ) {
+      offenders.push(relative(process.cwd(), file));
+    }
+  }
+
+  assert.deepEqual(offenders, []);
+});
+
 test("storage: rejects invalid localStorage key format", () => {
   globalThis.localStorage = createMockStorage();
   const ok = writeLocalStorageJson("bad key with space", { a: 1 });
   assert.equal(ok, false);
 });
 
-test("storage: validates schema and returns fallback on corruption", () => {
+test("storage: validates a saved note and returns fallback on corruption", () => {
   globalThis.localStorage = createMockStorage();
-  localStorage.setItem("mushafplus_memorization_v1", JSON.stringify({ "x:y": 99 }));
+  localStorage.setItem("mushafplus_note_test", JSON.stringify({ id: "x:y", text: 99 }));
 
   const fallback = {};
   const value = readLocalStorageWithSchema(
-    "mushafplus_memorization_v1",
-    memorizationMapSchema,
+    "mushafplus_note_test",
+    noteRecordSchema,
     fallback,
   );
 
   assert.deepEqual(value, fallback);
+});
+
+test("storage: keeps a valid offline download registry across reloads", () => {
+  globalThis.localStorage = createMockStorage();
+  const registry = {
+    "hafs:ar.alafasy:1": {
+      key: "hafs:ar.alafasy:1",
+      status: "done",
+      surahNum: 1,
+      reciterId: "ar.alafasy",
+      reciterName: "Mishary Alafasy",
+      riwaya: "hafs",
+      total: 7,
+      downloaded: 7,
+      failedCount: 0,
+      updatedAt: Date.now(),
+    },
+  };
+
+  assert.equal(
+    writeLocalStorageJson("mushaf_offline_progress_v2", registry),
+    true,
+  );
+  assert.deepEqual(
+    readLocalStorageWithSchema(
+      "mushaf_offline_progress_v2",
+      downloadProgressMapSchema,
+      {},
+    ),
+    registry,
+  );
+});
+
+test("storage: accepts an explicitly cancelled offline download", () => {
+  const result = downloadProgressMapSchema.safeParse({
+    "warsh:warsh-reader:114": {
+      key: "warsh:warsh-reader:114",
+      status: "cancelled",
+      surahNum: 114,
+      reciterId: "warsh-reader",
+      riwaya: "warsh",
+      total: 6,
+      downloaded: 2,
+      failedCount: 0,
+      updatedAt: Date.now(),
+    },
+  });
+
+  assert.equal(result.success, true);
+});
+
+test("the problem report is a draft with the version, the route and scrubbed local entries only", async () => {
+  const { buildIssueDraft } = await import("../src/services/issueDraft.js");
+  const draft = new URL(
+    buildIssueDraft(
+      { repositoryUrl: "https://github.com/owner/repo/", version: "1.2.3", lang: "fr" },
+      {
+        route: "/surah/2",
+        entries: [
+          { ts: "2026-10-06T10:00:00Z", type: "TypeError", msg: "x is undefined", context: "boundary" },
+          { ts: "2026-10-06T09:00:00Z", type: "Error", msg: "b", context: "window.error" },
+          { ts: "2026-10-06T08:00:00Z", type: "Error", msg: "c", context: "window.error" },
+          { ts: "2026-10-06T07:00:00Z", type: "Error", msg: "never shown", context: "window.error" },
+        ],
+      },
+    ),
+  );
+  assert.equal(draft.origin + draft.pathname, "https://github.com/owner/repo/issues/new");
+  const body = draft.searchParams.get("body");
+  assert.match(body, /Version : 1\.2\.3/);
+  assert.match(body, /Page : \/surah\/2/);
+  assert.match(body, /x is undefined/);
+  assert.doesNotMatch(body, /never shown/, "only the last three entries");
+  // No identifier of the reader: no user agent, no storage content.
+  assert.doesNotMatch(body, /Mozilla|localStorage|notes|bookmark/i);
 });

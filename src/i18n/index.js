@@ -1,9 +1,37 @@
 /* i18n - lightweight translation system */
-import ar from './ar';
-import fr from './fr';
-import en from './en';
+import fr from './fr.js';
+import ux from './ux.js';
 
-const LOCALES_MAP = { ar, fr, en };
+// French is the fallback of every missing key, so it ships with the entry.
+// English and Arabic are separate chunks, loaded when they are the reading
+// language (see ensureLocale): the entry no longer carries ~70 kB of copy the
+// reader never sees.
+const LOCALES_MAP = {
+  fr: { ...fr, ux: ux.fr },
+};
+
+const LOCALE_LOADERS = {
+  en: () => import('./en.js'),
+  ar: () => import('./ar.js'),
+};
+const pendingLocales = new Map();
+let localeVersion = 0;
+const localeListeners = new Set();
+
+/** Resolve once `lang` is translatable. Unknown or already loaded languages resolve at once. */
+export function ensureLocale(lang) {
+  if (LOCALES_MAP[lang] || !LOCALE_LOADERS[lang]) return Promise.resolve();
+  if (!pendingLocales.has(lang)) {
+    pendingLocales.set(lang, LOCALE_LOADERS[lang]().then((module) => {
+      LOCALES_MAP[lang] = { ...module.default, ux: ux[lang] };
+      localeVersion += 1;
+      localeListeners.forEach((listener) => listener());
+    }).finally(() => pendingLocales.delete(lang)));
+  }
+  return pendingLocales.get(lang);
+}
+
+export const getLocaleVersion = () => localeVersion;
 
 /**
  * Global translation function.
@@ -11,7 +39,29 @@ const LOCALES_MAP = { ar, fr, en };
  * @param {string} lang - The target language code ('ar', 'fr', 'en').
  * @returns {string} The translated string or the key itself if not found.
  */
-export function t(key, lang = 'fr') {
+/**
+ * Resolve Arabic plural form for a given count.
+ * Arabic has 6 grammatical numbers; we handle the 4 most common CLDR forms.
+ */
+function arPlural(count) {
+  const abs = Math.abs(count);
+  if (abs === 0) return 'zero';
+  if (abs === 1) return 'one';
+  if (abs === 2) return 'two';
+  if (abs % 100 >= 3 && abs % 100 <= 10) return 'few';
+  if (abs % 100 >= 11 && abs % 100 <= 99) return 'many';
+  return 'other';
+}
+
+function frPlural(count) {
+  return Math.abs(count) <= 1 ? 'one' : 'other';
+}
+
+function enPlural(count) {
+  return Math.abs(count) === 1 ? 'one' : 'other';
+}
+
+export function t(key, lang = 'fr', count) {
   if (key == null) return '';
   const safeLang = LOCALES_MAP[lang] ? lang : 'fr';
 
@@ -45,7 +95,14 @@ export function t(key, lang = 'fr') {
     val = val[k];
   }
 
-  if (val != null) return val;
+  if (val != null) {
+    // Pluralization: if the resolved value is an object with plural keys, pick the right form.
+    if (typeof val === 'object' && !Array.isArray(val) && count !== undefined) {
+      const form = safeLang === 'ar' ? arPlural(count) : safeLang === 'en' ? enPlural(count) : frPlural(count);
+      return (val[form] ?? val.other ?? val.one ?? Object.values(val)[0] ?? '').replace(/\{count\}/g, count);
+    }
+    return val;
+  }
 
   // Global fallback to French for missing keys in other languages.
   if (safeLang !== 'fr') {
@@ -59,11 +116,5 @@ export function t(key, lang = 'fr') {
 
   return safeKey;
 }
-
-export const LANGUAGES = [
-  { code: 'fr', label: 'Français', dir: 'ltr' },
-  { code: 'en', label: 'English', dir: 'ltr' },
-  { code: 'ar', label: 'العربية', dir: 'rtl' },
-];
 
 export default LOCALES_MAP;

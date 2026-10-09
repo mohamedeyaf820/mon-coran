@@ -1,30 +1,58 @@
 import React, { memo } from "react";
 import RowActions from "./RowActions";
 import { toAr } from "../../data/surahs";
+import { getSurahVerseCountByRiwaya } from "../../constants/warshSource";
+import { t } from "../../i18n";
 
-const SurahRecitationRow = memo(function SurahRecitationRow({ surah, lang, onPlay, onOpen, downloadUrl }) {
+const SurahRecitationRow = memo(function SurahRecitationRow({
+  surah,
+  lang,
+  onPlay,
+  onOpen,
+  onOpenIntent,
+  reciter,
+  riwaya,
+}) {
   const label = lang === "ar" ? surah.ar : lang === "fr" ? surah.fr : surah.en;
+  const ayahLabel = t("quran.versesWord", lang);
+  const verseCount = getSurahVerseCountByRiwaya(surah.n, riwaya) || surah.ayahs;
+  const isMeccan = surah.type === "Meccan";
+  const typeLabel = t(isMeccan ? "quran.meccanShort" : "quran.medinanShort", lang);
 
   return (
-    <div className="recitation-row group flex min-w-0 items-center gap-3 rounded-xl border border-border bg-bg-card/65 px-3 py-3 shadow-[0_1px_3px_rgba(0,0,0,0.04)] transition-all duration-200 hover:-translate-y-[1px] hover:border-primary/35 hover:bg-bg-card hover:shadow-[0_8px_24px_rgba(0,0,0,0.07)] sm:px-4">
-      <span className="recitation-row__index inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-[rgba(var(--primary-rgb),0.1)] text-[var(--primary)] text-xs font-black font-mono transition-all duration-300 group-hover:bg-[rgba(var(--primary-rgb),0.16)] group-hover:shadow-[0_2px_8px_rgba(var(--primary-rgb),0.15)]">
+    <div className="recitation-row group" role="listitem">
+      <span className="recitation-row__index">
         {lang === "ar" ? toAr(surah.n) : surah.n}
       </span>
-      
-      <div className="recitation-row__copy min-w-0 flex-1">
-        <div className="recitation-row__title truncate text-sm font-extrabold text-text-primary transition-colors duration-200 group-hover:text-primary">
-          {label}
+
+      <div className="recitation-row__copy">
+        <div className="recitation-row__title">
+          <span className="recitation-row__name">{label}</span>
+          <span
+            className={`recitation-row__type${isMeccan ? " recitation-row__type--meccan" : " recitation-row__type--medinan"}`}
+            aria-label={t(isMeccan ? "quran.meccanAria" : "quran.medinanAria", lang)}
+          >
+            {typeLabel}
+          </span>
         </div>
-        <div className="recitation-row__arabic mt-0.5 truncate text-[0.72rem] text-text-secondary opacity-80">
-          {surah.ar}
+        <div className="recitation-row__meta">
+          <span className="recitation-row__arabic" dir="rtl" lang="ar">
+            {surah.ar}
+          </span>
+          <span aria-hidden="true">·</span>
+          <span>{lang === "ar" ? toAr(verseCount) : verseCount} {ayahLabel}</span>
         </div>
       </div>
-      
+
       <RowActions
         lang={lang}
+        surahLabel={`${label} (${surah.n})`}
         onPlay={onPlay}
         onOpen={onOpen}
-        downloadUrl={downloadUrl}
+        onOpenIntent={onOpenIntent}
+        surah={surah}
+        reciter={reciter}
+        riwaya={riwaya}
       />
     </div>
   );

@@ -1,4 +1,5 @@
 import React from "react";
+import { Gauge, SlidersHorizontal, Volume2, Volume1, Square, VolumeOff } from "lucide-react";
 import { t } from "../../i18n";
 import { cn } from "../../lib/utils";
 
@@ -69,7 +70,7 @@ function makeLabels(lang) {
         ? "Ce r\u00e9citateur lit la sourate compl\u00e8te, donc la synchro mot \u00e0 mot n'est pas utilis\u00e9e."
         : lang === "ar"
           ? "\u0647\u0630\u0627 \u0627\u0644\u0642\u0627\u0631\u0626 \u064a\u0634\u063a\u0644 \u0627\u0644\u0633\u0648\u0631\u0629 \u0643\u0627\u0645\u0644\u0629\u060c \u0644\u0630\u0644\u0643 \u0644\u0627 \u062a\u0633\u062a\u062e\u062f\u0645 \u0645\u0632\u0627\u0645\u0646\u0629 \u0643\u0644\u0645\u0629 \u0628\u0643\u0644\u0645\u0629."
-          : "This reciter plays the full surah, so word-by-word sync is not used.",
+          : "This reciter plays the full surah, so precise verse synchronization is unavailable.",
     syncHint:
       lang === "fr"
         ? "Le suivi des versets est automatique. La calibration est m\u00e9moris\u00e9e par r\u00e9citateur."
@@ -82,20 +83,96 @@ function makeLabels(lang) {
         : lang === "ar"
           ? "\u062a\u0645"
           : "Done",
+    eq:
+      lang === "fr"
+        ? "\u00c9galiseur"
+        : lang === "ar"
+          ? "\u0627\u0644\u0645\u0639\u0627\u062f\u0644 \u0627\u0644\u0635\u0648\u062a\u064a"
+          : "Equalizer",
+    eqFlat:
+      lang === "fr" ? "Plat" : lang === "ar" ? "\u0645\u062d\u0627\u064a\u062f" : "Flat",
+    eqBass:
+      lang === "fr" ? "Basses" : lang === "ar" ? "\u062c\u0647\u064a\u0631" : "Bass",
+    eqTreble:
+      lang === "fr" ? "Aigus" : lang === "ar" ? "\u062d\u0627\u062f" : "Treble",
+    eqNear:
+      lang === "fr" ? "Proche" : lang === "ar" ? "\u0642\u0631\u064a\u0628" : "Near",
+    eqHall:
+      lang === "fr" ? "Salle" : lang === "ar" ? "\u0642\u0627\u0639\u0629" : "Hall",
+    eqVocals:
+      lang === "fr" ? "Voix" : lang === "ar" ? "\u0635\u0648\u062a" : "Vocals",
+    tartil:
+      lang === "fr"
+        ? "Mode Tartil (lecture lente)"
+        : lang === "ar"
+          ? "\u0648\u0636\u0639 \u0627\u0644\u062a\u0631\u062a\u064a\u0644"
+          : "Tartil mode (slow recitation)",
+    tartilHint:
+      lang === "fr"
+        ? "Ralentit la vitesse \u00e0 0.75\u00d7 pour une \u00e9coute m\u00e9ticuleuse."
+        : lang === "ar"
+          ? "\u064a\u0628\u0637\u0626 \u0627\u0644\u0633\u0631\u0639\u0629 \u0625\u0644\u0649 0.75\u00d7 \u0644\u0644\u0627\u0633\u062a\u0645\u0627\u0639 \u0627\u0644\u062f\u0642\u064a\u0642."
+          : "Slows speed to 0.75\u00d7 for careful listening.",
+    abRepeat:
+      lang === "fr"
+        ? "R\u00e9p\u00e9tition A-B"
+        : lang === "ar"
+          ? "\u062a\u0643\u0631\u0627\u0631 \u0623-\u0628"
+          : "A-B Repeat",
+    abRepeatActive:
+      lang === "fr"
+        ? "Actif \u2014 r\u00e9p\u00e9tition d'une plage de versets"
+        : lang === "ar"
+          ? "\u0646\u0634\u0637 \u2014 \u062a\u0643\u0631\u0627\u0631 \u0646\u0637\u0627\u0642 \u0627\u0644\u0622\u064a\u0627\u062a"
+          : "Active \u2014 repeating a verse range",
+    abRepeatInactive:
+      lang === "fr"
+        ? "Inactif \u2014 choisissez les points A et B pendant la r\u00e9citation"
+        : lang === "ar"
+          ? "\u063a\u064a\u0631 \u0646\u0634\u0637 \u2014 \u062d\u062f\u062f \u0627\u0644\u0646\u0642\u0637\u062a\u064a\u0646 \u0623 \u0648 \u0628 \u0623\u0646\u0627\u0621 \u0627\u0644\u062a\u0644\u0627\u0648\u0629"
+          : "Inactive \u2014 choose points A and B during recitation",
+    abRepeatNeedsPlayback:
+      lang === "fr"
+        ? "Lancez la r\u00e9citation pour d\u00e9finir les points A et B."
+        : lang === "ar"
+          ? "\u0627\u0628\u062f\u0623 \u0627\u0644\u062a\u0644\u0627\u0648\u0629 \u0644\u062d\u062f\u064a\u062f \u0627\u0644\u0646\u0642\u0637\u062a\u064a\u0646"
+          : "Start the recitation to set points A and B.",
+    abRepeatClear:
+      lang === "fr" ? "Effacer A-B" : lang === "ar" ? "\u0645\u0633\u062d \u0623-\u0628" : "Clear A-B",
+    abRepeatFrom:
+      lang === "fr" ? "D\u00e9part A" : lang === "ar" ? "\u0628\u062f\u0627\u064a\u0629 \u0623" : "Start A",
+    abRepeatTo:
+      lang === "fr" ? "Fin B" : lang === "ar" ? "\u0646\u0647\u0627\u064a\u0629 \u0628" : "End B",
+    listenMode: lang === "fr" ? "Mode d’écoute" : lang === "ar" ? "وضع الاستماع" : "Listening mode",
+    modeAuto: lang === "fr" ? "Auto" : lang === "ar" ? "تلقائي" : "Auto",
+    modeSurah: lang === "fr" ? "Sourate complète" : lang === "ar" ? "السورة كاملة" : "Full surah",
+    modeVerse: lang === "fr" ? "Verset par verset" : lang === "ar" ? "آية آية" : "Verse by verse",
+    listenHint:
+      lang === "fr"
+        ? "Auto : la sourate se lit d’un seul tenant, sans coupure même écran verrouillé. La lecture passe verset par verset pour la répétition A-B, le mode Tartil et les extraits (page, juz)."
+        : lang === "ar"
+          ? "تلقائي: تُقرأ السورة دفعة واحدة دون انقطاع حتى والشاشة مقفلة، وتنتقل التلاوة آية آية عند تكرار أ-ب ووضع الترتيل والمقاطع (صفحة، جزء)."
+          : "Auto: the surah plays in one piece, with no break even when the screen is locked. Playback goes verse by verse for A-B repeat, Tartil mode and extracts (page, juz).",
   };
 }
 
 export default function PlaybackSettingsPanel(props) {
   const {
+    abRepeatActive,
     audioSpeed,
+    canSetAbRepeat,
+    className,
     closeOptionsModal,
     cycleSpeed,
+    eqPreset,
+    handleApplyEqPreset,
+    handleClearAbRepeat,
+    handleSetAbPoint,
+    handleSetTartilMode,
     handleVolumeChange,
+    isMobile,
     isSurahStreamReciter,
     lang,
-    memMode,
-    memPause,
-    memRepeatCount,
     playerCardToggleClass,
     playerFadedTextClass,
     playerGoldMetaClass,
@@ -105,14 +182,16 @@ export default function PlaybackSettingsPanel(props) {
     playerSectionLabelClass,
     playerSoftSurfaceClass,
     playerSurfaceButtonClass,
-    set,
     setSurahRepeatSetting,
     setSyncOffsetMs,
-    showMemorizationControls,
     stop,
     surahRepeatCount,
     syncOffsetMs,
+    tartilMode,
     volume,
+    audioPlaybackMode,
+    setAudioPlaybackMode,
+    reciterHasBothModes,
   } = props;
 
   const labels = makeLabels(lang);
@@ -120,28 +199,79 @@ export default function PlaybackSettingsPanel(props) {
 
   return (
     <section
-      className="audio-playback-settings min-h-0 overflow-y-auto pr-1"
+      className={cn(
+        "audio-playback-settings audio-player-modal__tab-panel min-h-0 overflow-y-auto pr-1",
+        className,
+      )}
       data-scroll-panel="true"
     >
+      <div className="audio-settings-intro">
+        <span className="audio-settings-intro__icon" aria-hidden="true">
+          <SlidersHorizontal size={15} />
+        </span>
+        <span>
+          <strong>
+            {lang === "fr"
+              ? "Réglages audio avancés"
+              : lang === "ar"
+                ? "إعدادات الصوت المتقدمة"
+                : "Advanced audio settings"}
+          </strong>
+          <small>
+            {lang === "fr"
+              ? "Ajustez la lecture sans quitter votre verset."
+              : lang === "ar"
+                ? "اضبط التشغيل دون مغادرة الآية."
+                : "Tune playback without leaving your verse."}
+          </small>
+        </span>
+      </div>
+
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={cycleSpeed}
             className={cn(
-              playerCardToggleClass(false),
+              playerCardToggleClass(audioSpeed !== 1),
               "audio-settings-speed min-w-[7.5rem]",
             )}
             aria-label={`${labels.speed} ${audioSpeed}x`}
           >
             <span className="flex items-center gap-2">
-              <i className="fas fa-gauge-high text-[0.62rem]" />
+              <Gauge size={10} />
               {labels.speed}
             </span>
             <span>{audioSpeed}x</span>
           </button>
         </div>
       </div>
+
+      {reciterHasBothModes ? (
+        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className={playerSectionLabelClass} id="audio-listen-mode-label">{labels.listenMode}</span>
+          </div>
+          <div className="audio-settings-pills flex flex-wrap items-center gap-2" role="group" aria-labelledby="audio-listen-mode-label">
+            {[
+              ["auto", labels.modeAuto],
+              ["surah", labels.modeSurah],
+              ["verse", labels.modeVerse],
+            ].map(([value, text]) => (
+              <button
+                key={value}
+                type="button"
+                aria-pressed={audioPlaybackMode === value}
+                onClick={() => setAudioPlaybackMode(value)}
+                className={playerOptionPillClass(audioPlaybackMode === value)}
+              >
+                {text}
+              </button>
+            ))}
+          </div>
+          <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>{labels.listenHint}</p>
+        </div>
+      ) : null}
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -165,19 +295,19 @@ export default function PlaybackSettingsPanel(props) {
               className={playerNumberInputClass}
             />
           </label>
-          <button type="button" onClick={() => setSurahRepeatSetting(1)} className={playerOptionPillClass(surahRepeatCount === 1)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(1)} aria-pressed={surahRepeatCount === 1} className={playerOptionPillClass(surahRepeatCount === 1)}>
             {labels.once}
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(3)} className={playerOptionPillClass(surahRepeatCount === 3)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(3)} aria-pressed={surahRepeatCount === 3} className={playerOptionPillClass(surahRepeatCount === 3)}>
             x3
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(5)} className={playerOptionPillClass(surahRepeatCount === 5)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(5)} aria-pressed={surahRepeatCount === 5} className={playerOptionPillClass(surahRepeatCount === 5)}>
             x5
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(10)} className={playerOptionPillClass(surahRepeatCount === 10)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(10)} aria-pressed={surahRepeatCount === 10} className={playerOptionPillClass(surahRepeatCount === 10)}>
             x10
           </button>
-          <button type="button" onClick={() => setSurahRepeatSetting(0)} className={playerOptionPillClass(surahRepeatCount === 0)}>
+          <button type="button" onClick={() => setSurahRepeatSetting(0)} aria-pressed={surahRepeatCount === 0} className={playerOptionPillClass(surahRepeatCount === 0)}>
             {labels.infinite}
           </button>
         </div>
@@ -188,35 +318,33 @@ export default function PlaybackSettingsPanel(props) {
       </div>
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
-        <div className="mb-2 flex items-center justify-between gap-2">
-          <span className={playerSectionLabelClass}>{labels.volume}</span>
-          <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
-            {Math.round(volume * 100)}%
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
-            className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[rgba(132,205,228,0.9)] transition-colors duration-150 hover:bg-[rgba(110,204,233,0.14)]"
-            aria-label={labels.mute}
-          >
-            <i
-              className={`fas ${volume === 0 ? "fa-volume-xmark" : volume < 0.5 ? "fa-volume-low" : "fa-volume-high"}`}
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <span className={playerSectionLabelClass}>{labels.volume}</span>
+            <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums")}>
+              {Math.round(volume * 100)}%
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => handleVolumeChange(volume > 0 ? 0 : 1)}
+              className="audio-settings-icon-btn h-8 w-8 shrink-0 rounded-lg border border-white/12 bg-white/[0.06] text-[0.8rem] text-[color-mix(in_srgb,var(--theme-accent-bright)_90%,transparent_10%)] transition-colors duration-150 hover:bg-[rgba(var(--theme-primary-rgb),0.14)]"
+              aria-label={labels.mute}
+            >
+              {volume === 0 ? <VolumeOff size={13} /> : volume < 0.5 ? <Volume1 size={13} /> : <Volume2 size={13} />}
+            </button>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={volume}
+              onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
+              className="h-1.5 flex-1 cursor-pointer rounded-full accent-[var(--theme-primary)]"
+              aria-label={labels.volume}
             />
-          </button>
-          <input
-            type="range"
-            min="0"
-            max="1"
-            step="0.05"
-            value={volume}
-            onChange={(e) => handleVolumeChange(parseFloat(e.target.value))}
-            className="h-1.5 flex-1 cursor-pointer rounded-full accent-[rgb(110,204,233)]"
-            aria-label={labels.volume}
-          />
+          </div>
         </div>
-      </div>
 
       <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
         <div className="mb-2 flex items-center justify-between gap-2">
@@ -233,7 +361,7 @@ export default function PlaybackSettingsPanel(props) {
           value={syncOffsetMs}
           disabled={isSurahStreamReciter}
           onChange={(e) => setSyncOffsetMs(e.target.value)}
-          className="h-1.5 w-full cursor-pointer rounded-full accent-[rgb(110,204,233)]"
+          className="h-1.5 w-full cursor-pointer rounded-full accent-[var(--theme-primary)]"
           aria-label={labels.wordSync}
         />
         <div className="audio-settings-pills mt-2 flex flex-wrap items-center gap-1.5">
@@ -252,45 +380,101 @@ export default function PlaybackSettingsPanel(props) {
         </p>
       </div>
 
-      {showMemorizationControls && memMode && (
-        <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
-          <div className={playerSectionLabelClass}>
-            {t("audio.memorization", lang)}
-          </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <label className="flex items-center gap-1.5">
-              <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                {t("audio.repeat", lang)}
-              </span>
-              <input
-                type="number"
-                min={1}
-                max={100}
-                value={memRepeatCount}
-                onChange={(e) =>
-                  set({ memRepeatCount: parseInt(e.target.value, 10) || 1 })
-                }
-                className={playerNumberInputClass}
-              />
-            </label>
-            <label className="flex items-center gap-1.5">
-              <span className={cn(playerMutedTextClass, "text-[0.68rem]")}>
-                {`${t("audio.pause", lang)} (s)`}
-              </span>
-              <input
-                type="number"
-                min={0}
-                max={60}
-                value={memPause}
-                onChange={(e) =>
-                  set({ memPause: parseInt(e.target.value, 10) || 0 })
-                }
-                className={playerNumberInputClass}
-              />
-            </label>
-          </div>
+      {!isMobile && (
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="mb-2 flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.eq}</span>
+          <span className={cn(playerGoldMetaClass, "text-[0.64rem] tabular-nums uppercase")}>
+            {eqPreset}
+          </span>
         </div>
+        <div className="audio-settings-pills flex flex-wrap items-center gap-2">
+          {[
+            { id: "flat", label: labels.eqFlat },
+            { id: "bass", label: labels.eqBass },
+            { id: "treble", label: labels.eqTreble },
+            { id: "near", label: labels.eqNear },
+            { id: "hall", label: labels.eqHall },
+            { id: "vocals", label: labels.eqVocals },
+          ].map(({ id, label }) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => handleApplyEqPreset(id)}
+              aria-pressed={eqPreset === id}
+              className={playerOptionPillClass(eqPreset === id)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       )}
+
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.tartil}</span>
+          <button
+            type="button"
+            onClick={() => handleSetTartilMode(!tartilMode)}
+            className={cn(playerCardToggleClass(tartilMode), "min-w-[5rem] text-[0.65rem]")}
+            aria-pressed={tartilMode}
+          >
+            {tartilMode
+              ? t("audio.stateOn", lang)
+              : t("audio.stateOff", lang)}
+          </button>
+        </div>
+        <p className={cn(playerFadedTextClass, "mt-2 text-[0.62rem] leading-relaxed")}>
+          {labels.tartilHint}
+        </p>
+      </div>
+
+      <div className={cn("audio-settings-card mb-3 p-3", playerSoftSurfaceClass)}>
+        <div className="flex items-center justify-between gap-2">
+          <span className={playerSectionLabelClass}>{labels.abRepeat}</span>
+          {abRepeatActive && (
+            <button
+              type="button"
+              onClick={handleClearAbRepeat}
+              className={cn(playerOptionPillClass(false), "text-[0.65rem]")}
+            >
+              {labels.abRepeatClear}
+            </button>
+          )}
+        </div>
+        <p className={cn(playerFadedTextClass, "mt-1 text-[0.62rem] leading-relaxed")}>
+          {abRepeatActive
+            ? labels.abRepeatActive
+            : canSetAbRepeat
+              ? labels.abRepeatInactive
+              : labels.abRepeatNeedsPlayback}
+        </p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={() => handleSetAbPoint("a")}
+            disabled={!canSetAbRepeat}
+            className={cn(
+              playerOptionPillClass(false),
+              "text-[0.65rem] disabled:cursor-not-allowed disabled:opacity-45",
+            )}
+          >
+            {labels.abRepeatFrom}
+          </button>
+          <button
+            type="button"
+            onClick={() => handleSetAbPoint("b")}
+            disabled={!canSetAbRepeat}
+            className={cn(
+              playerOptionPillClass(false),
+              "text-[0.65rem] disabled:cursor-not-allowed disabled:opacity-45",
+            )}
+          >
+            {labels.abRepeatTo}
+          </button>
+        </div>
+      </div>
 
       <div className="audio-settings-actions flex flex-wrap items-center gap-2 pb-1">
         <button
@@ -298,7 +482,7 @@ export default function PlaybackSettingsPanel(props) {
           onClick={stop}
           className={cn(playerSurfaceButtonClass, "px-4 py-2 text-[0.68rem] font-semibold")}
         >
-          <i className="fas fa-stop mr-1" />
+          <Square size={10} className="mr-1" />
           {t("audio.stop", lang)}
         </button>
         <button

@@ -4,19 +4,25 @@
  * Optimized: AbortController, timeout, request deduplication, IndexedDB persistent cache.
  */
 
-import { WARSH_DATA_BASE_URL } from '../constants/warshSource';
 import { preloadWarshSurah } from './warshService';
+import {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+  getWarshTranslationEdition,
+  isWarshTranslationEdition,
+} from './warshTranslationService';
+import { shouldAvoidBackgroundWork } from '../utils/networkPolicy.js';
 import {
   canLoadFromQuranCom,
   fetchQuranComText,
   fetchQuranComTranslations,
 } from './quranComAPI';
 
-
 // Direct call to AlQuran Cloud public API (supports CORS).
 // No backend proxy needed — the app is a pure static SPA.
 const BASE = 'https://api.alquran.cloud/v1';
 const FETCH_TIMEOUT = 8000; // 8s timeout for API requests
+const EDITION_FALLBACK_TIMEOUT = 3000;
 const USE_QURAN_COM_TEXT = true;
 
 const EDITIONS = {
@@ -25,10 +31,6 @@ const EDITIONS = {
   // This fallback is only used if the local Warsh data fails to load.
   warsh: ['quran-uthmani', 'quran-uthmani-min'],
 };
-
-// Flag to track when Warsh text falls back to Hafs script
-let lastWarshFallback = false;
-export function wasWarshTextFallback() { return lastWarshFallback; }
 
 const TRANSLATION_EDITIONS = {
   fr: 'fr.hamidullah',
@@ -39,17 +41,43 @@ const TRANSLATION_EDITIONS = {
   ur: 'ur.junagarhi',
 };
 
+// Ids that double as a translationLangs token but are served from the vendored
+// Warsh translation assets (scripts/build-warsh-translation.mjs) instead of a
+// remote API. They never reach AlQuran Cloud: fetchTranslations splits them out
+// with warshTranslationService.isWarshTranslationEdition().
+
+/**
+ * Selectable translations: the six remote language shortcuts plus the
+ * Warsh-adapted French edition. `riwaya` marks an edition whose numbering only
+ * matches one riwaya's mushaf, so it attaches only in that reading.
+ */
+export const TRANSLATION_CHOICES = [
+  ...Object.keys(TRANSLATION_EDITIONS).map((id) => ({ id, label: id.toUpperCase() })),
+  {
+    id: WARSH_TRANSLATION_EDITION_ID,
+    label: 'FR · Warsh',
+    labelKey: 'settings.translationWarshLabel',
+    riwaya: 'warsh',
+  },
+  {
+    id: WARSH_TRANSLATION_EDITION_ID_EN,
+    label: 'EN · Warsh',
+    labelKey: 'settings.translationWarshLabelEn',
+    riwaya: 'warsh',
+  },
+];
+
+const QURAN_COM_TRANSLATION_LANGS = new Set(['fr', 'en']);
+
 // In-memory cache with size limit
 const cache = new Map();
 const CACHE_MAX_SIZE = 500;
 
-// Request deduplication: pending fetches by URL + abort signal identity.
+// Shared network fetches are keyed by URL. A screen may stop waiting without
+// cancelling a request that can still populate the cache for the next screen.
 const inflight = new Map();
 
-// Current AbortController for cancellable navigations
-let currentAbort = null;
-
-import { dbGet, dbSet, getDB } from './dbService';
+import { dbGet, dbPruneByPrefix, dbSet, getDB } from './dbService';
 import { normalizeArabicSearchText } from '../utils/searchIntelligence';
 
 const IDB_API_PREFIX = 'api:';
@@ -139,18 +167,6 @@ function validateApiDataShape(url, data) {
   return data;
 }
 
-/**
- * Create a new AbortController, cancelling the previous one.
- * This prevents stale requests from slower navigations.
- */
-export function abortPendingRequests() {
-  if (currentAbort) {
-    currentAbort.abort();
-  }
-  currentAbort = new AbortController();
-  return currentAbort.signal;
-}
-
 function pruneCache() {
   if (cache.size > CACHE_MAX_SIZE) {
     const keysToDelete = [...cache.keys()].slice(0, cache.size - CACHE_MAX_SIZE + 20);
@@ -158,7 +174,45 @@ function pruneCache() {
   }
 }
 
-async function fetchJSON(url, signal) {
+function waitForSharedRequest(promise, signal) {
+  if (!signal) return promise;
+  if (signal.aborted) {
+    return Promise.reject(new DOMException('Request aborted', 'AbortError'));
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const cleanup = () => signal.removeEventListener('abort', onAbort);
+    const onAbort = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      reject(new DOMException('Request aborted', 'AbortError'));
+    };
+
+    signal.addEventListener('abort', onAbort, { once: true });
+    promise.then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        cleanup();
+        reject(error);
+      },
+    );
+  });
+}
+
+async function fetchJSON(url, signal, timeoutMs = FETCH_TIMEOUT) {
+  if (signal?.aborted) {
+    throw new DOMException('Request aborted', 'AbortError');
+  }
+
   // 1. Check in-memory cache (instant, ~0ms)
   const cached = cache.get(url);
   if (cached) return cached;
@@ -186,27 +240,33 @@ async function fetchJSON(url, signal) {
     }
   } catch { /* IDB read failure — continue to network */ }
 
+  if (signal?.aborted) {
+    throw new DOMException('Request aborted', 'AbortError');
+  }
+
   // Reuse prefetches for fast riwaya/page switches.
-  if (inflight.has(url)) {
-    return inflight.get(url).promise;
+  const existing = inflight.get(url);
+  if (existing) {
+    return waitForSharedRequest(existing.promise, signal);
   }
 
   const entry = {
-    promise: _fetchFromNetwork(url, idbKey, signal),
+    promise: _fetchFromNetwork(url, idbKey, null, timeoutMs),
   };
   inflight.set(url, entry);
-  entry.promise.finally(() => {
+  const cleanup = () => {
     const current = inflight.get(url);
     if (current === entry) {
       inflight.delete(url);
     }
-  });
-  return entry.promise;
+  };
+  entry.promise.then(cleanup, cleanup);
+  return waitForSharedRequest(entry.promise, signal);
 }
 
-async function _fetchFromNetwork(url, idbKey, signal) {
+async function _fetchFromNetwork(url, idbKey, signal, timeoutMs = FETCH_TIMEOUT) {
   const timeoutCtrl = new AbortController();
-  const timeoutId = setTimeout(() => timeoutCtrl.abort(), FETCH_TIMEOUT);
+  const timeoutId = setTimeout(() => timeoutCtrl.abort(), timeoutMs);
 
   try {
     // Combine the navigation signal with the timeout signal
@@ -246,49 +306,40 @@ async function _fetchFromNetwork(url, idbKey, signal) {
       ts: now,
       kind: getCacheKindByUrl(url),
       expiryAt: now + getCacheTtlByUrl(url),
-    }).catch(() => { });
+    })
+      .then(() =>
+        dbPruneByPrefix(IDB_STORE, IDB_API_PREFIX, {
+          maxEntries: 900,
+          maxAgeMs: SEARCH_INDEX_TTL,
+        }),
+      )
+      .catch(() => { });
 
     return validatedData;
   } catch (err) {
     clearTimeout(timeoutId);
+    if (
+      err?.name === 'AbortError' &&
+      timeoutCtrl.signal.aborted &&
+      !signal?.aborted
+    ) {
+      throw new Error(`API request timed out after ${timeoutMs}ms: ${url}`);
+    }
     throw err;
   }
 }
+
+// One background refresh per cache key at a time: N callers hitting the same
+// expired entry must not fire N identical network requests.
+const _backgroundRefreshInFlight = new Set();
 
 function _refreshInBackground(url, idbKey) {
-  // Don't deduplicate background refreshes — they're best-effort
-  _fetchFromNetwork(url, idbKey, null).catch(() => { });
-}
-
-async function fetchJSONWithCustomTimeout(url, signal, timeoutMs = FETCH_TIMEOUT) {
-  const timeoutCtrl = new AbortController();
-  const timeoutId = setTimeout(() => timeoutCtrl.abort(), timeoutMs);
-
-  try {
-    const combinedSignal = signal
-      ? createMergedAbortSignal([signal, timeoutCtrl.signal])
-      : timeoutCtrl.signal;
-
-    const res = await fetch(url, { signal: combinedSignal });
-    clearTimeout(timeoutId);
-
-    if (!res.ok) throw new Error(`API error ${res.status}: ${url}`);
-    const json = await res.json();
-
-    if (!json || typeof json !== 'object') {
-      throw new Error('Malformed API response');
-    }
-
-    if (json.code !== 200 || json.status !== 'OK') {
-      const msg = typeof json.data === 'string' ? json.data : JSON.stringify(json.data) || 'Unknown API error';
-      throw new Error(msg);
-    }
-
-    return validateApiDataShape(url, json.data);
-  } catch (err) {
-    clearTimeout(timeoutId);
-    throw err;
-  }
+  const key = idbKey || (IDB_API_PREFIX + url);
+  if (_backgroundRefreshInFlight.has(key)) return;
+  _backgroundRefreshInFlight.add(key);
+  _fetchFromNetwork(url, idbKey, null)
+    .catch(() => { })
+    .finally(() => _backgroundRefreshInFlight.delete(key));
 }
 
 function sanitizeText(text) {
@@ -330,25 +381,7 @@ function isValidSearchIndex(index) {
   );
 }
 
-function buildArabicSearchIndexFromQuran(quranData) {
-  const surahs = Array.isArray(quranData?.surahs) ? quranData.surahs : [];
-  return surahs.flatMap((surah) =>
-    (Array.isArray(surah?.ayahs) ? surah.ayahs : [])
-      .map((ayah) => {
-        const text = sanitizeText(ayah?.text || '');
-        return {
-          surah: surah?.number || ayah?.surah?.number || 0,
-          numberInSurah: ayah?.numberInSurah || 0,
-          number: ayah?.number || 0,
-          text,
-          normalized: normalizeArabicSearchText(text),
-        };
-      })
-      .filter((ayah) => ayah.surah > 0 && ayah.numberInSurah > 0 && ayah.normalized)
-  );
-}
-
-async function loadArabicSearchIndex(signal) {
+async function loadArabicSearchIndex() {
   if (arabicSearchIndex) return arabicSearchIndex;
   if (arabicSearchIndexPromise) return arabicSearchIndexPromise;
 
@@ -379,11 +412,12 @@ async function loadArabicSearchIndex(signal) {
 }
 
 async function searchArabicLocally(query, surahNum = null, signal) {
+  if (signal?.aborted) throw new DOMException('Request aborted', 'AbortError');
   const normalizedQuery = normalizeArabicSearchText(query);
   if (!normalizedQuery) return { matches: [] };
 
   const queryWords = normalizedQuery.split(' ').filter(Boolean);
-  const index = await loadArabicSearchIndex(signal);
+  const index = await loadArabicSearchIndex();
   const matches = [];
 
   for (const ayah of index) {
@@ -415,11 +449,10 @@ async function searchArabicLocally(query, surahNum = null, signal) {
   };
 }
 
-async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
+async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal, options = {}) {
   if (USE_QURAN_COM_TEXT && canLoadFromQuranCom(pathPrefix, riwaya)) {
     try {
-      lastWarshFallback = false;
-      const data = await fetchQuranComText(pathPrefix, signal);
+      const data = await fetchQuranComText(pathPrefix, signal, options);
       if (!Array.isArray(data?.ayahs) || data.ayahs.length) return data;
       throw new Error('Empty Quran.com text payload');
     } catch (err) {
@@ -431,12 +464,13 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
 
-  // Track Warsh fallback (text is always Hafs orthography for Warsh)
-  lastWarshFallback = (riwaya === 'warsh');
-
   for (const edition of editions) {
     try {
-      const data = await fetchJSON(`${BASE}/${pathPrefix}/${edition}`, signal);
+      const data = await fetchJSON(
+        `${BASE}/${pathPrefix}/${edition}`,
+        signal,
+        EDITION_FALLBACK_TIMEOUT,
+      );
       const normalized = normalizeQuranPayload(data);
       return {
         ...normalized,
@@ -454,78 +488,77 @@ async function fetchWithEditionFallback(pathPrefix, riwaya = 'hafs', signal) {
   throw lastError || new Error(`No edition available for riwaya: ${riwaya}`);
 }
 
+/** surah/N, juz/N, page/N: the scopes a translation is requested for. */
+function parseTranslationScope(pathPrefix) {
+  const [type, value] = String(pathPrefix || '').split('/');
+  if (!['surah', 'juz', 'page'].includes(type)) return null;
+  const number = Number(value);
+  return Number.isInteger(number) && number > 0 ? { type, value: number } : null;
+}
+
+async function fetchRemoteTranslations(pathPrefix, langArray, signal) {
+  const canUseQuranCom = langArray.every((lang) => QURAN_COM_TRANSLATION_LANGS.has(lang));
+
+  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
+  try {
+    // AlQuran Cloud returns a complete surah/juz/page and several editions in
+    // one response. Using it first avoids up to six paginated requests during
+    // the initial reader paint.
+    const data = await fetchJSON(`${BASE}/${pathPrefix}/${editions}`, signal);
+    return Array.isArray(data) ? data : [data];
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    if (!canUseQuranCom) throw err;
+    console.warn('AlQuran.cloud translation fallback to Quran.com:', err);
+    return fetchQuranComTranslations(pathPrefix, langArray, signal);
+  }
+}
+
+async function fetchTranslations(pathPrefix, langs = ['fr'], signal) {
+  const langArray = Array.isArray(langs) ? langs : [langs];
+  const localLangs = langArray.filter(isWarshTranslationEdition);
+  const remoteLangs = langArray.filter((lang) => !isWarshTranslationEdition(lang));
+
+  if (!localLangs.length) return fetchRemoteTranslations(pathPrefix, remoteLangs, signal);
+
+  // Vendored editions answer from the local assets, so they also work offline.
+  // A scope they cannot place returns nothing rather than Hafs-keyed verses.
+  const scope = parseTranslationScope(pathPrefix);
+  const [localEditions, remoteEditions] = await Promise.all([
+    scope
+      ? Promise.all(
+          localLangs.map((editionId) => getWarshTranslationEdition(scope.type, scope.value, editionId)),
+        )
+      : Promise.resolve([]),
+    remoteLangs.length
+      ? fetchRemoteTranslations(pathPrefix, remoteLangs, signal).catch((err) => {
+          if (err.name === 'AbortError') throw err;
+          // A failed edition is not an absent one: rethrow so the reader sees
+          // the error state instead of a silently missing translation.
+          console.warn('Remote translation editions unavailable:', err);
+          throw err;
+        })
+      : Promise.resolve([]),
+  ]);
+
+  return [...localEditions, ...remoteEditions].filter(Boolean);
+}
+
 /* ── Surah Text ──────────────────────────────── */
 
-export async function getSurahText(surahNum, riwaya = 'hafs', signal) {
-  return fetchWithEditionFallback(`surah/${surahNum}`, riwaya, signal);
+/**
+ * @param {{ onFirstPage?: (partial: object) => void }} [options] Called with the
+ *   first page of verses while the rest of a long surah is still loading.
+ */
+export async function getSurahText(surahNum, riwaya = 'hafs', signal, options = {}) {
+  return fetchWithEditionFallback(`surah/${surahNum}`, riwaya, signal, options);
 }
 
 export async function getSurahTranslation(surahNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`surah/${surahNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/surah/${surahNum}/${editions}`, signal);
-  // AlQuran Cloud returns an array if multiple editions are requested, otherwise a single object
-  return Array.isArray(data) ? data : [data];
-}
-
-/**
- * Fetch surah text + multiple translations in parallel
- */
-export async function getSurahFull(surahNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
-  const needsHafsForTranslit = riwaya === 'warsh';
-
-  const promises = [
-    getSurahText(surahNum, riwaya, signal),
-    getSurahTranslation(surahNum, transLangs, signal),
-  ];
-
-  if (needsHafsForTranslit) {
-    promises.push(getSurahText(surahNum, 'hafs', signal));
-  }
-
-  const results = await Promise.allSettled(promises);
-
-  if (results[0].status !== 'fulfilled') {
-    throw results[0].reason || new Error('Arabic text fetch failed');
-  }
-
-  const arabic = results[0].value;
-  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
-
-  if (needsHafsForTranslit && results[2].status === 'fulfilled') {
-    const hafs = results[2].value;
-    if (arabic.ayahs && hafs.ayahs) {
-      const hafsByKey = new Map(
-        hafs.ayahs.map((ayah) => [
-          `${ayah.surah?.number}:${ayah.numberInSurah}`,
-          ayah,
-        ]),
-      );
-      arabic.ayahs = arabic.ayahs.map((a) => {
-        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
-        return {
-          ...a,
-          hafsText: hafsAyah?.text || null
-        };
-      });
-    }
-  }
-
-  return { arabic, translations };
+  return fetchTranslations(`surah/${surahNum}`, langs, signal);
 }
 
 /* ── Single Ayah ─────────────────────────────── */
-
-export async function getAyah(surahNum, ayahNum, riwaya = 'hafs', signal) {
-  return fetchWithEditionFallback(`ayah/${surahNum}:${ayahNum}`, riwaya, signal);
-}
 
 /* ── Juz ─────────────────────────────────────── */
 
@@ -534,17 +567,7 @@ export async function getJuz(juzNum, riwaya = 'hafs', signal) {
 }
 
 export async function getJuzTranslation(juzNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`juz/${juzNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/juz/${juzNum}/${editions}`, signal);
-  return Array.isArray(data) ? data : [data];
+  return fetchTranslations(`juz/${juzNum}`, langs, signal);
 }
 
 /* ── Page (Mushaf page 1-604) ────────────────── */
@@ -554,84 +577,84 @@ export async function getPage(pageNum, riwaya = 'hafs', signal) {
 }
 
 export async function getPageTranslation(pageNum, langs = ['fr'], signal) {
-  try {
-    return await fetchQuranComTranslations(`page/${pageNum}`, langs, signal);
-  } catch (err) {
-    if (err.name === 'AbortError') throw err;
-    console.warn('Quran.com translation fallback to AlQuran.cloud:', err);
-  }
-
-  const langArray = Array.isArray(langs) ? langs : [langs];
-  const editions = langArray.map(l => TRANSLATION_EDITIONS[l] || TRANSLATION_EDITIONS.fr).join(',');
-  const data = await fetchJSON(`${BASE}/page/${pageNum}/${editions}`, signal);
-  return Array.isArray(data) ? data : [data];
-}
-
-export async function getPageFull(pageNum, riwaya = 'hafs', transLangs = ['fr'], signal) {
-  const needsHafsForTranslit = riwaya === 'warsh';
-
-  const promises = [
-    getPage(pageNum, riwaya, signal),
-    getPageTranslation(pageNum, transLangs, signal),
-  ];
-
-  if (needsHafsForTranslit) {
-    promises.push(getPage(pageNum, 'hafs', signal));
-  }
-
-  const results = await Promise.allSettled(promises);
-
-  if (results[0].status !== 'fulfilled') {
-    throw results[0].reason || new Error('Arabic page fetch failed');
-  }
-
-  const arabic = results[0].value;
-  const translations = results[1].status === 'fulfilled' ? results[1].value : [];
-
-  if (needsHafsForTranslit && results[2].status === 'fulfilled') {
-    const hafs = results[2].value;
-    if (arabic.ayahs && hafs.ayahs) {
-      const hafsByKey = new Map(
-        hafs.ayahs.map((ayah) => [
-          `${ayah.surah?.number}:${ayah.numberInSurah}`,
-          ayah,
-        ]),
-      );
-      arabic.ayahs = arabic.ayahs.map((a) => {
-        const hafsAyah = hafsByKey.get(`${a.surah?.number}:${a.numberInSurah}`);
-        return {
-          ...a,
-          hafsText: hafsAyah?.text || null
-        };
-      });
-    }
-  }
-
-  return { arabic, translations };
+  return fetchTranslations(`page/${pageNum}`, langs, signal);
 }
 
 /* ── Search ──────────────────────────────────── */
 
+// AlQuran Cloud answers a query with no match with HTTP 404, so a 404 on a
+// search route means "nothing found", not "the index is down". Reporting it as
+// an outage sends the reader to retry a query that can never match.
+const SEARCH_NO_MATCH_RE = /^API error 404\b/;
+function isSearchNoMatch(error) {
+  return SEARCH_NO_MATCH_RE.test(String(error?.message || ''));
+}
+
+// A no-match search returns HTTP 404 from api.alquran.cloud, which fetchJSON
+// throws on before it can cache (only 2xx payloads are stored). So repeating an
+// exhausted query — back/forward, re-opening a term, a debounced re-run of the
+// same candidates — re-fires the whole edition × language fan-out every time.
+// A short, search-only in-memory memo collapses those repeats to one round
+// trip. It is deliberately tiny-lived (never persisted) so a phrase that only
+// matches later is not stale-suppressed, and it caches only resolved values.
+const SEARCH_MEMO = new Map();
+const SEARCH_MEMO_TTL_MS = 60 * 1000;
+function searchMemoGet(key) {
+  const hit = SEARCH_MEMO.get(key);
+  if (!hit) return undefined;
+  if (hit.expiry <= Date.now()) {
+    SEARCH_MEMO.delete(key);
+    return undefined;
+  }
+  return hit.value;
+}
+function searchMemoSet(key, value) {
+  if (SEARCH_MEMO.size >= 120) {
+    SEARCH_MEMO.delete(SEARCH_MEMO.keys().next().value);
+  }
+  SEARCH_MEMO.set(key, { value, expiry: Date.now() + SEARCH_MEMO_TTL_MS });
+}
+
 export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
+  const memoKey = `${riwaya}|${surahNum ?? ''}|${query}`;
+  const memoized = searchMemoGet(memoKey);
+  if (memoized !== undefined) return memoized;
+
   const scope = surahNum ? `/${surahNum}` : '';
   const editions = EDITIONS[riwaya] || EDITIONS.hafs;
   let lastError = null;
+  let everyEditionMissed = true;
 
   for (const edition of editions) {
     try {
-      return await fetchJSON(`${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`, signal);
+      const result = await fetchJSON(`${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`, signal);
+      searchMemoSet(memoKey, result);
+      return result;
     } catch (err) {
       if (err.name === 'AbortError') throw err;
       lastError = err;
+      // Keep trying the other editions: their orthography differs, so a miss in
+      // one script can still be a hit in another.
+      if (!isSearchNoMatch(err)) everyEditionMissed = false;
     }
   }
 
+  if (everyEditionMissed) {
+    const empty = { matches: [] };
+    searchMemoSet(memoKey, empty);
+    return empty;
+  }
+
   try {
-    return await searchArabicLocally(query, surahNum, signal);
+    const local = await searchArabicLocally(query, surahNum, signal);
+    searchMemoSet(memoKey, local);
+    return local;
   } catch (fallbackError) {
     if (fallbackError.name === 'AbortError') throw fallbackError;
   }
 
+  // A genuine network/server failure (not a 404 miss) is never memoized, so a
+  // retry hits the network again instead of replaying the error for a minute.
   throw lastError || new Error('Search failed');
 }
 
@@ -640,14 +663,22 @@ export async function search(query, riwaya = 'hafs', surahNum = null, signal) {
  * Returns { matches: [{ surah, numberInSurah, text, translationText }] }
  */
 export async function searchTranslation(query, lang = 'fr', surahNum = null, signal) {
+  // The vendored Warsh edition has no search index yet: selecting it searches
+  // the remote Hafs 'fr' edition, whose hits are Hafs-numbered.
   const edition = TRANSLATION_EDITIONS[lang] || TRANSLATION_EDITIONS.fr;
   const scope = surahNum ? `/${surahNum}` : '';
-  const data = await fetchJSON(
-    `${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`,
-    signal,
-  );
-  // data.matches items have { surah, numberInSurah, text } where text is the translation
-  return data;
+  try {
+    const data = await fetchJSON(
+      `${BASE}/search/${encodeURIComponent(query)}/all/${edition}${scope}`,
+      signal,
+    );
+    // data.matches items have { surah, numberInSurah, text } where text is the translation
+    return data;
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    if (isSearchNoMatch(err)) return { matches: [] };
+    throw err;
+  }
 }
 
 /* ── Helpers ─────────────────────────────────── */
@@ -673,51 +704,20 @@ export async function clearCache() {
 }
 
 /**
- * Build audio URL for a specific ayah.
- * Uses the Islamic.network CDN structure — requires the global ayah number (1-6236).
- * @param {string} reciterCdn - reciter CDN folder name
- * @param {number} globalAyahNumber - global ayah number in the whole Quran (1-6236)
+ * Warm only the current Arabic text during the splash screen.
+ * Secondary text, translations and audio stay deferred until they are useful.
  */
-export function getAudioUrl(reciterCdn, globalAyahNumber) {
-  return `https://cdn.islamic.network/quran/audio/128/${reciterCdn}/${globalAyahNumber}.mp3`;
-}
-
-/**
- * Alternative: use ayah reference from API which includes audioUrl
- */
-export function getAudioUrlFromAyah(ayahData) {
-  return ayahData?.audio || ayahData?.audioSecondary?.[0] || null;
-}
-
-/**
- * Prefetch initial data during splash screen so it's cached when the app mounts.
- * Fire-and-forget — errors are silently ignored.
- */
-export function prefetchInitialData(surahNum, riwaya, translationLang = 'fr') {
+export function prefetchInitialData(surahNum, riwaya) {
   try {
-    const transEdition = TRANSLATION_EDITIONS[translationLang] || TRANSLATION_EDITIONS.fr;
-    const transUrl = `${BASE}/surah/${surahNum}/${transEdition}`;
+    if (shouldAvoidBackgroundWork()) return Promise.resolve();
 
     if (riwaya === 'warsh') {
-      // Prefetch the Warsh dataset from the shared remote source + Hafs text (for karaoke) + translation
-      preloadWarshSurah(surahNum);
-      // Also warm the Hafs text cache for karaoke word weighting
-      const editions = EDITIONS.hafs;
-      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
-      fetchJSON(transUrl).catch(() => { });
-    } else {
-      // Prefetch Hafs text + translation into the in-memory cache
-      const editions = EDITIONS[riwaya] || EDITIONS.hafs;
-      fetchJSON(`${BASE}/surah/${surahNum}/${editions[0]}`).catch(() => { });
-      fetchJSON(transUrl).catch(() => { });
-      // Also prefetch next surah for instant navigation
-      if (surahNum < 114) {
-        fetchJSON(`${BASE}/surah/${surahNum + 1}/${editions[0]}`).catch(() => { });
-        fetchJSON(`${BASE}/surah/${surahNum + 1}/${transEdition}`).catch(() => { });
-      }
+      return preloadWarshSurah(surahNum);
     }
+
+    return getSurahText(surahNum, riwaya).catch(() => null);
   } catch {
-    // Prefetch is best-effort
+    return Promise.resolve();
   }
 }
 

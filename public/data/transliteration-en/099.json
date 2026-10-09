@@ -1,0 +1,40 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 99,
+  "number_of_ayahs": 8,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "idhā zul'zilati l-arḍu zil'zālahā"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wa-akhrajati l-arḍu athqālahā"
+    },
+    {
+      "ayah_number": 3,
+      "text": "waqāla l-insānu mā lahā"
+    },
+    {
+      "ayah_number": 4,
+      "text": "yawma-idhin tuḥaddithu akhbārahā"
+    },
+    {
+      "ayah_number": 5,
+      "text": "bi-anna rabbaka awḥā lahā"
+    },
+    {
+      "ayah_number": 6,
+      "text": "yawma-idhin yaṣduru l-nāsu ashtātan liyuraw aʿmālahum"
+    },
+    {
+      "ayah_number": 7,
+      "text": "faman yaʿmal mith'qāla dharratin khayran yarahu"
+    },
+    {
+      "ayah_number": 8,
+      "text": "waman yaʿmal mith'qāla dharratin sharran yarahu"
+    }
+  ]
+}

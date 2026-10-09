@@ -1,0 +1,57 @@
+{
+  "schema": "mushafplus-warsh-translation-en-v1",
+  "edition": "en.pickthall-warsh",
+  "surah_number": 1,
+  "number_of_ayahs": 7,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "Praise be to Allah, Lord of the Worlds,"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "The Beneficent, the Merciful."
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "Master of the Day of Judgment,"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "Thee (alone) we worship; Thee (alone) we ask for help."
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "Show us the straight path,"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "The path of those whom Thou hast favoured; Not the (path) of those who earn Thine anger nor of those who go astray."
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "The path of those whom Thou hast favoured; Not the (path) of those who earn Thine anger nor of those who go astray."
+    }
+  ]
+}

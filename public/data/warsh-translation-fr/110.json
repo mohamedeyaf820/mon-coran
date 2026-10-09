@@ -1,0 +1,29 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 110,
+  "number_of_ayahs": 3,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Lorsque viendra le secours d’Allah (annonçant) la victoire,"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "et que tu verras les hommes entrer dans la religion d’Allah en foules,"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "rends gloire alors à ton Seigneur, célèbre Ses louanges et implore Son pardon ! Car Il est Tout Absoluteur !"
+    }
+  ]
+}

@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 const SETTINGS_KEY = "mushaf-plus-settings";
 
@@ -11,7 +12,7 @@ async function seedReader(page, overrides = {}) {
           key,
           JSON.stringify({
             ...previous,
-            splashDone: true,
+            skipSplashAnimation: true,
             showHome: false,
             showDuas: false,
             sidebarOpen: false,
@@ -68,7 +69,7 @@ async function assertNoBlockingVeil(page) {
       ".audio-player-modal",
       ".sidebar-clickout-overlay",
       ".modal-overlay",
-      ".search-modal-shell",
+      ".search-pro-overlay",
     ];
 
     return selectors.flatMap((selector) =>
@@ -95,6 +96,7 @@ async function assertNoBlockingVeil(page) {
 }
 
 test("reading refresh keeps mushaf visible without stale blur overlay", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await seedReader(page, { mushafLayout: "mushaf" });
   await page.setViewportSize({ width: 390, height: 844 });
 
@@ -115,9 +117,58 @@ test("reading refresh keeps mushaf visible without stale blur overlay", async ({
   expect(reloadedSize).toBeGreaterThanOrEqual(24);
   expect(reloadedSize).toBeLessThanOrEqual(72);
   expect(Math.abs(reloadedSize - firstSize)).toBeLessThanOrEqual(8);
+
+  const mushafFlow = await page.locator(".mushaf-text-block").first().evaluate((element) => {
+    const blockStyle = window.getComputedStyle(element);
+    const verseStyle = window.getComputedStyle(
+      element.querySelector(".quran-verse-inline"),
+    );
+    return {
+      lineHeightRatio:
+        Number.parseFloat(blockStyle.lineHeight) /
+        Number.parseFloat(blockStyle.fontSize),
+      textAlignLast: blockStyle.textAlignLast,
+      verseDisplay: verseStyle.display,
+    };
+  });
+  expect(mushafFlow.verseDisplay).toBe("inline");
+  expect(mushafFlow.lineHeightRatio).toBeGreaterThanOrEqual(1.64);
+  // Continuous-mushaf leads at the 2.2 ratio verified in arabicTypography.js
+  // (glyph ink reaches ~1.8em); the budget follows that value, not the old
+  // per-face list ratios.
+  expect(mushafFlow.lineHeightRatio).toBeLessThanOrEqual(2.21);
+  expect(mushafFlow.textAlignLast).not.toBe("center");
+});
+
+test("continuous Mushaf markers preserve a clear gap before the following ayah", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await seedReader(page, { mushafLayout: "mushaf" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/surah/3");
+  await waitForReader(page);
+
+  // The marker is a native glyph of the reading face: it stays attached to
+  // its verse with a narrow no-break space, and the next verse starts after
+  // an ordinary space, as in the printed mushaf.
+  const markers = page.locator(".mushaf-text-block .native-ayah-marker");
+  await expect.poll(() => markers.count()).toBeGreaterThan(1);
+  const spacing = await markers.first().evaluate((element) => {
+    const before = element.previousSibling;
+    const verse = element.closest(".cpv-verse");
+    const after = verse?.nextSibling;
+    return {
+      before: before?.nodeType === Node.TEXT_NODE ? before.textContent : null,
+      after: after?.nodeType === Node.TEXT_NODE ? after.textContent : null,
+      inline: getComputedStyle(element).display,
+    };
+  });
+  expect(spacing.before).toBe("\u202F");
+  expect(spacing.after).toBe(" ");
+  expect(["inline", "inline-flex"]).toContain(spacing.inline);
 });
 
 test("reading page stays usable after riwaya refresh and browser history navigation", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
   await seedReader(page, {
     riwaya: "warsh",
     fontFamily: "qpc-warsh",
@@ -136,9 +187,10 @@ test("reading page stays usable after riwaya refresh and browser history navigat
   await expect(page.locator(".quran-display--warsh").first()).toBeVisible();
   await assertNoHorizontalOverflow(page);
 
-  const warshSize = await getArabicFontSize(page);
-  expect(warshSize).toBeGreaterThanOrEqual(22);
-  expect(warshSize).toBeLessThanOrEqual(72);
+  // The first verse node can be swapped right after its first paint (a detached
+  // node reports an empty size, parsed as 0): wait for a settled, in-range value.
+  await expect.poll(() => getArabicFontSize(page)).toBeGreaterThanOrEqual(22);
+  await expect.poll(() => getArabicFontSize(page)).toBeLessThanOrEqual(72);
 
   await page.goto("/surah/3");
   await waitForReader(page);
@@ -148,4 +200,72 @@ test("reading page stays usable after riwaya refresh and browser history navigat
   await waitForReader(page);
   await expect(page.locator(".quran-display--warsh").first()).toBeVisible();
   await assertNoBlockingVeil(page);
+});
+
+test("cold Hafs reading keeps study actions usable without speculative audio or Warsh requests", async ({
+  page,
+}) => {
+  await installQuranNetworkFixtures(page);
+  await seedReader(page, {
+    showTranslation: false,
+    riwaya: "hafs",
+    mushafLayout: "list",
+    lastPosition: {
+      surah: 1,
+      ayah: 1,
+      page: 1,
+      juz: 1,
+    },
+  });
+  await page.addInitScript(() => {
+    window.__readerCumulativeLayoutShift = 0;
+    window.__readerLayoutShifts = [];
+    new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        if (!entry.hadRecentInput) {
+          window.__readerCumulativeLayoutShift += entry.value;
+          window.__readerLayoutShifts.push({
+            value: entry.value,
+            at: entry.startTime,
+            sources: entry.sources.map((source) =>
+              source.node instanceof Element
+                ? `${source.node.tagName.toLowerCase()}.${source.node.className}`
+                : "unknown"),
+          });
+        }
+      }
+    }).observe({ type: "layout-shift", buffered: true });
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+
+  const requests = [];
+  page.on("request", (request) => requests.push(request.url()));
+
+  await page.goto("/surah/1", { waitUntil: "domcontentloaded" });
+  await waitForReader(page);
+  await page.waitForTimeout(1_000);
+
+  const firstCard = page.locator(".qc-list-card").first();
+  await expect(firstCard.locator(".ayah-action--play")).toHaveCount(1);
+  await expect(firstCard.locator(".ayah-action--bookmark")).toHaveCount(1);
+  await expect(firstCard.locator(".ayah-action--options")).toHaveCount(1);
+  await expect(firstCard.locator(".qcom-list-study-links")).toHaveCount(0);
+
+  const parsedRequests = requests.map((url) => new URL(url));
+  expect(
+    parsedRequests.filter((url) => url.pathname.includes("/recitations/")),
+  ).toHaveLength(0);
+  expect(
+    parsedRequests.filter(
+      (url) =>
+        url.pathname.includes("/warsh_text/") ||
+        url.pathname.endsWith("/warshData_v2-1.json"),
+    ),
+  ).toHaveLength(0);
+  const layoutStability = await page.evaluate(() => ({
+    total: window.__readerCumulativeLayoutShift || 0,
+    shifts: window.__readerLayoutShifts || [],
+  }));
+  expect(layoutStability.total, JSON.stringify(layoutStability.shifts)).toBeLessThan(0.1);
+  await assertNoHorizontalOverflow(page);
 });

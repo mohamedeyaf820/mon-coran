@@ -21,6 +21,8 @@ const ALLOWED_EXTERNAL_HOSTS = new Set([
   "t.me",
   "x.com",
   "twitter.com",
+  "facebook.com",
+  "www.facebook.com",
   "quran.com",
   "raw.githubusercontent.com",
   "alquran.cloud",
@@ -56,6 +58,12 @@ export function sanitizeSvgMarkup(svg) {
   try {
     const parser = new DOMParser();
     const doc = parser.parseFromString(String(svg || ""), "image/svg+xml");
+    if (
+      String(doc?.documentElement?.tagName || "").toLowerCase() !== "svg" ||
+      doc.getElementsByTagName?.("parsererror")?.length
+    ) {
+      return "";
+    }
 
     getSvgElements(doc).forEach((element) => {
       const tag = String(element.tagName || "").toLowerCase();
@@ -68,15 +76,24 @@ export function sanitizeSvgMarkup(svg) {
         const name = attribute.name.toLowerCase();
         const valueRaw = String(attribute.value || "");
         const value = valueRaw.toLowerCase();
+        const compactValue = value.replace(/[\u0000-\u0020]+/g, "");
 
-        if (name.startsWith("on")) {
+        if (
+          name.startsWith("on") ||
+          ["src", "srcset", "poster", "action", "formaction"].includes(name)
+        ) {
           element.removeAttribute(attribute.name);
           return;
         }
 
         if (
-          name === "style" &&
-          (value.includes("javascript:") || value.includes("expression(") || value.includes("url("))
+          name === "style" ||
+          compactValue.includes("javascript:") ||
+          compactValue.includes("vbscript:") ||
+          compactValue.includes("data:text/html") ||
+          compactValue.includes("expression(") ||
+          compactValue.includes("@import") ||
+          compactValue.includes("-moz-binding")
         ) {
           element.removeAttribute(attribute.name);
           return;
@@ -87,6 +104,14 @@ export function sanitizeSvgMarkup(svg) {
           if (!isFragmentRef || value.startsWith("javascript:") || value.startsWith("data:")) {
             element.removeAttribute(attribute.name);
           }
+          return;
+        }
+
+        const urlReferences = [...valueRaw.matchAll(/url\(\s*(['"]?)(.*?)\1\s*\)/gi)];
+        if (
+          urlReferences.some((match) => !String(match[2] || "").trim().startsWith("#"))
+        ) {
+          element.removeAttribute(attribute.name);
         }
       });
     });
@@ -102,28 +127,34 @@ const ALLOWED_HTML_TAGS = new Set([
   "u", "s", "del", "ins", "abbr", "code", "kbd", "samp", "var",
 ]);
 
+const ALLOWED_HTML_ATTRIBUTES = new Set(["class", "title", "lang", "dir"]);
+
+function isSafeHtmlAttribute(name, value) {
+  if (!ALLOWED_HTML_ATTRIBUTES.has(name)) return false;
+  if (name === "dir") return ["ltr", "rtl", "auto"].includes(value.toLowerCase());
+  if (name === "lang") return /^[a-z]{2,8}(?:-[a-z0-9]{1,8})*$/i.test(value);
+  if (name === "class") return /^[a-z0-9 _-]{0,160}$/i.test(value);
+  return value.length <= 300;
+}
+
 export function sanitizeHtml(html) {
-  if (!html || typeof html !== "string") return "";
+  if (!html || typeof html !== "string" || typeof DOMParser === "undefined") return "";
   try {
     const doc = new DOMParser().parseFromString(html, "text/html");
+    const browserBody = doc.body;
+    const root = browserBody || doc.documentElement;
+    if (!root) return "";
     const walk = (node) => {
       if (node.nodeType === 1) {
         const tag = node.tagName.toLowerCase();
         if (!ALLOWED_HTML_TAGS.has(tag)) {
-          node.remove();
+          removeNode(node);
           return;
         }
         const attrs = [...node.attributes];
         for (const attr of attrs) {
           const name = attr.name.toLowerCase();
-          const value = attr.value.toLowerCase();
-          if (
-            name.startsWith("on") ||
-            (name === "href" && (value.startsWith("javascript:") || value.startsWith("data:"))) ||
-            (name === "src" && value.startsWith("javascript:")) ||
-            (name === "style" && (value.includes("javascript:") || value.includes("expression(") || value.includes("behavior"))) ||
-            name === "formaction"
-          ) {
+          if (!isSafeHtmlAttribute(name, String(attr.value || ""))) {
             node.removeAttribute(attr.name);
           }
         }
@@ -133,8 +164,19 @@ export function sanitizeHtml(html) {
         walk(child);
       }
     };
-    walk(doc.body);
-    return doc.body.innerHTML;
+    if (browserBody) {
+      const children = [...root.childNodes];
+      for (const child of children) walk(child);
+      return browserBody.innerHTML;
+    }
+    if (!ALLOWED_HTML_TAGS.has(String(root.tagName || "").toLowerCase())) {
+      return "";
+    }
+    walk(root);
+    if (typeof XMLSerializer !== "undefined") {
+      return new XMLSerializer().serializeToString(root);
+    }
+    return "";
   } catch {
     return "";
   }
@@ -159,9 +201,21 @@ export function isAllowedExternalUrl(url) {
   }
 }
 
-export function openExternalUrl(url, target = "_blank", features = "noopener,noreferrer") {
-  if (typeof window === "undefined") return false;
-  if (!isAllowedExternalUrl(url)) return false;
-  window.open(url, target, features);
-  return true;
+const SAFE_LINK_PROTOCOLS = new Set(["https:", "http:", "mailto:", "tel:"]);
+
+/**
+ * Protocol guard for hrefs built from data loaded at runtime (the reciter
+ * catalogue, source lists). React 18 hands a `javascript:` href to the DOM
+ * unchanged, so the check has to happen before rendering.
+ */
+export function isSafeLinkHref(url) {
+  if (typeof url !== "string") return false;
+  const candidate = url.trim();
+  if (!candidate) return false;
+  if (!candidate.includes(":")) return true;
+  try {
+    return SAFE_LINK_PROTOCOLS.has(new URL(candidate).protocol);
+  } catch {
+    return false;
+  }
 }

@@ -7,25 +7,31 @@ import {
 import { t } from "../../i18n";
 import audioService from "../../services/audioService";
 import { getAudioTimingsForAyahs } from "../../services/quranComAudioTimingService";
-import { getSurahText } from "../../services/quranAPI";
-import { getWarshSurahFormatted } from "../../services/warshService";
+import {
+  getReadingAudioScopeKey,
+  isPlaylistEndForActiveScope,
+} from "../../utils/audioNavigationScope";
+import { buildSurahAudioPlaylist } from "../../utils/audioPlaylist";
+import { hafsNumbersForAyah } from "../../constants/warshSource";
+import { toast } from "../../lib/utils";
 
-function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map()) {
-  return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => ({
-    surah: ayah.surah?.number || currentSurah,
-    numberInSurah: ayah.numberInSurah,
-    number: ayah.number,
-    text: ayah.text,
-    quranComAudioTiming: timingMap.get(`${ayah.surah?.number || currentSurah}:${ayah.numberInSurah}`) || null,
-  }));
-}
-
-function extractAyahs(payload) {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.ayahs)) return payload.ayahs;
-  if (Array.isArray(payload?.data?.ayahs)) return payload.data.ayahs;
-  if (Array.isArray(payload?.data)) return payload.data;
-  return [];
+function toPlaylistAyahs(ayahs, currentSurah, timingMap = new Map(), riwaya = "hafs") {
+  return (Array.isArray(ayahs) ? ayahs : []).map((ayah) => {
+    const surahNumber = ayah.surah?.number || currentSurah;
+    const hafsNumbers = hafsNumbersForAyah(ayah, riwaya) ?? [];
+    const hafsNumber = hafsNumbers[0] ?? null;
+    return {
+      surah: surahNumber,
+      numberInSurah: ayah.numberInSurah,
+      hafsNumber,
+      hafsNumbers,
+      riwaya,
+      number: ayah.number,
+      text: ayah.text,
+      quranComAudioTiming:
+        timingMap.get(`${surahNumber}:${hafsNumber ?? ayah.numberInSurah}`) || null,
+    };
+  });
 }
 
 export default function useQuranDisplayAudio({
@@ -36,6 +42,7 @@ export default function useQuranDisplayAudio({
   continuousPlay,
   displayMode,
   dispatch,
+  isPlaying,
   lang,
   reciter,
   riwaya,
@@ -45,7 +52,49 @@ export default function useQuranDisplayAudio({
 }) {
   const [preparingSurah, setPreparingSurah] = useState(null);
   const [audioTimingMap, setAudioTimingMap] = useState(new Map());
+  const timingReciterRef = useRef(null);
   const continuousAutoPlayRef = useRef(false);
+  const playbackNavigationRef = useRef(null);
+  const activePlaylistScopeRef = useRef(null);
+  const gapsAnnouncedRef = useRef("");
+
+  // QuranPedia does not serve every verse of every set, and the missing files
+  // are dropped so recitation keeps flowing. Without a word about it the
+  // recitation simply stops short, so say it once per loaded list.
+  const announcePlaylistGaps = useCallback(
+    (reciterCdn) => {
+      const count = audioService.playlistGapCount;
+      if (count <= 0) {
+        gapsAnnouncedRef.current = "";
+        return;
+      }
+      const key = `${reciterCdn}:${count}`;
+      if (gapsAnnouncedRef.current === key) return;
+      gapsAnnouncedRef.current = key;
+      toast(t("audio.gapSkipped", lang, count), "warning");
+    },
+    [lang],
+  );
+  const readingScopeKey = useMemo(
+    () =>
+      getReadingAudioScopeKey({
+        currentJuz,
+        currentPage,
+        currentSurah,
+        displayMode,
+      }),
+    [currentJuz, currentPage, currentSurah, displayMode],
+  );
+  playbackNavigationRef.current = {
+    continuousPlay,
+    currentJuz,
+    currentPage,
+    currentSurah,
+    dispatch,
+    displayMode,
+    readingScopeKey,
+    set,
+  };
   const audioPlaylistKey = useMemo(
     () =>
       ayahs
@@ -55,20 +104,39 @@ export default function useQuranDisplayAudio({
   );
 
   useEffect(() => {
-    if (!continuousPlay) return;
     return audioService.addEndListener(() => {
-      if (displayMode === "surah" && currentSurah < 114) {
+      const {
+        continuousPlay: shouldContinue,
+        currentJuz: activeJuz,
+        currentPage: activePage,
+        currentSurah: activeSurah,
+        dispatch: navigate,
+        displayMode: activeMode,
+        readingScopeKey: activeScopeKey,
+        set: update,
+      } = playbackNavigationRef.current;
+      if (!shouldContinue) return;
+      if (
+        !isPlaylistEndForActiveScope(
+          activePlaylistScopeRef.current,
+          activeScopeKey,
+        )
+      ) {
+        return;
+      }
+
+      if (activeMode === "surah" && activeSurah < 114) {
         continuousAutoPlayRef.current = true;
-        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah + 1, ayah: 1 } });
-      } else if (displayMode === "juz" && currentJuz < 30) {
+        navigate({ type: "NAVIGATE_SURAH", payload: { surah: activeSurah + 1, ayah: 1 } });
+      } else if (activeMode === "juz" && activeJuz < 30) {
         continuousAutoPlayRef.current = true;
-        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
-      } else if (displayMode === "page" && currentPage < 604) {
+        navigate({ type: "NAVIGATE_JUZ", payload: { juz: activeJuz + 1 } });
+      } else if (activeMode === "page" && activePage < 604) {
         continuousAutoPlayRef.current = true;
-        set({ currentPage: currentPage + 1 });
+        update({ currentPage: activePage + 1 });
       }
     });
-  }, [continuousPlay, currentJuz, currentPage, currentSurah, dispatch, displayMode, set]);
+  }, []);
 
   useEffect(() => {
     if (!continuousPlay) continuousAutoPlayRef.current = false;
@@ -85,17 +153,22 @@ export default function useQuranDisplayAudio({
       return;
     }
 
+    const safeTimingMap =
+      timingReciterRef.current === safeReciterId ? audioTimingMap : new Map();
     audioService.loadPlaylist(
-      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap),
+      toPlaylistAyahs(ayahs, currentSurah, safeTimingMap, riwaya),
       currentReciter.cdn,
-      currentReciter.cdnType || "islamic",
+      currentReciter.cdnType || "everyayah",
     );
+    announcePlaylistGaps(currentReciter.cdn);
+    activePlaylistScopeRef.current = readingScopeKey;
 
     if (continuousAutoPlayRef.current && continuousPlay) {
       continuousAutoPlayRef.current = false;
       audioService.play();
     }
   }, [
+    announcePlaylistGaps,
     audioPlaylistKey,
     audioTimingMap,
     ayahs,
@@ -103,6 +176,7 @@ export default function useQuranDisplayAudio({
     currentSurah,
     lang,
     reciter,
+    readingScopeKey,
     riwaya,
     setError,
     warshStrictMode,
@@ -113,15 +187,25 @@ export default function useQuranDisplayAudio({
     const safeReciterId = ensureReciterForRiwaya(reciter, riwaya);
 
     if (riwaya !== "hafs" || ayahs.length === 0) {
-      setAudioTimingMap(new Map());
+      setAudioTimingMap((current) =>
+        current.size === 0 ? current : new Map(),
+      );
       return () => {
         cancelled = true;
       };
     }
 
+    // Segment timings are useful only once playback begins. Loading them while
+    // someone is simply reading previously added several paginated requests to
+    // every cold reader visit.
+    if (!isPlaying) return undefined;
+
     getAudioTimingsForAyahs(safeReciterId, ayahs)
       .then((map) => {
-        if (!cancelled) setAudioTimingMap(map);
+        if (!cancelled) {
+          timingReciterRef.current = safeReciterId;
+          setAudioTimingMap(map);
+        }
       })
       .catch(() => {
         if (!cancelled) setAudioTimingMap(new Map());
@@ -130,7 +214,7 @@ export default function useQuranDisplayAudio({
     return () => {
       cancelled = true;
     };
-  }, [audioPlaylistKey, ayahs, reciter, riwaya]);
+  }, [audioPlaylistKey, ayahs, isPlaying, reciter, riwaya]);
 
   const playSurah = useCallback(() => {
     const currentReciter = getReciter(ensureReciterForRiwaya(reciter, riwaya), riwaya);
@@ -140,12 +224,80 @@ export default function useQuranDisplayAudio({
       return;
     }
     audioService.loadPlaylist(
-      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap),
+      toPlaylistAyahs(ayahs, currentSurah, audioTimingMap, riwaya),
       currentReciter.cdn,
-      currentReciter.cdnType || "islamic",
+      currentReciter.cdnType || "everyayah",
     );
+    announcePlaylistGaps(currentReciter.cdn);
+    activePlaylistScopeRef.current = readingScopeKey;
     audioService.play();
-  }, [audioTimingMap, ayahs, currentSurah, lang, reciter, riwaya, setError, warshStrictMode]);
+  }, [
+    announcePlaylistGaps,
+    audioTimingMap,
+    ayahs,
+    currentSurah,
+    lang,
+    readingScopeKey,
+    reciter,
+    riwaya,
+    setError,
+    warshStrictMode,
+  ]);
+
+  const playAyah = useCallback(async (targetAyah, sourceAyahs = ayahs) => {
+    const currentReciter = getReciter(ensureReciterForRiwaya(reciter, riwaya), riwaya);
+    if (!currentReciter || !targetAyah) return;
+    if (riwaya === "warsh" && warshStrictMode && !isWarshVerifiedReciter(currentReciter)) {
+      setError(t("errors.warshStrict", lang));
+      return;
+    }
+
+    const playlist = toPlaylistAyahs(sourceAyahs, currentSurah, audioTimingMap, riwaya);
+    const ayahSurah = Number(targetAyah?.surah?.number || targetAyah?.surah || currentSurah);
+    const index = playlist.findIndex(
+      (entry) =>
+        Number(entry.surah) === ayahSurah &&
+        Number(entry.numberInSurah) === Number(targetAyah.numberInSurah),
+    );
+    if (index < 0) return;
+
+    audioService.loadPlaylist(
+      playlist,
+      currentReciter.cdn,
+      currentReciter.cdnType || "everyayah",
+    );
+    announcePlaylistGaps(currentReciter.cdn);
+    activePlaylistScopeRef.current = readingScopeKey;
+    // Filtering moves verses up: re-resolve the tapped one inside the loaded list.
+    const targetIndex =
+      audioService.playlistGapCount > 0 || audioService.isWholeSurahPlayback
+        ? audioService.indexOfAyah(ayahSurah, Number(targetAyah.numberInSurah))
+        : index;
+    if (targetIndex < 0) {
+      setError(t("audio.verseUnavailable", lang));
+      return;
+    }
+    try {
+      await audioService.loadAndPlay(targetIndex, { ayah: Number(targetAyah.numberInSurah) });
+    } catch {
+      setError(
+        lang === "fr"
+          ? "Impossible de lancer la récitation de ce verset."
+          : "Unable to play this verse.",
+      );
+    }
+  }, [
+    announcePlaylistGaps,
+    audioTimingMap,
+    ayahs,
+    currentSurah,
+    lang,
+    readingScopeKey,
+    reciter,
+    riwaya,
+    setError,
+    warshStrictMode,
+  ]);
 
   const playSpecificSurah = useCallback(async (surahNumber) => {
     if (!surahNumber || preparingSurah === surahNumber) return;
@@ -161,21 +313,10 @@ export default function useQuranDisplayAudio({
     setError(null);
 
     try {
-      let surahData;
-      if (riwaya === "warsh") {
-        surahData = await getWarshSurahFormatted(surahNumber).catch(() =>
-          getSurahText(surahNumber, "hafs"),
-        );
-      } else {
-        surahData = await getSurahText(surahNumber, riwaya);
-      }
-
-      const sourceAyahs = extractAyahs(surahData);
-      const timingMap =
-        riwaya === "hafs"
-          ? await getAudioTimingsForAyahs(currentReciter.id || ensureReciterForRiwaya(reciter, riwaya), sourceAyahs)
-          : new Map();
-      const playlistAyahs = toPlaylistAyahs(sourceAyahs, surahNumber, timingMap);
+      // Starting a recitation only requires canonical verse coordinates. The
+      // previous path waited for Quran text and timing APIs before requesting
+      // audio, which was especially noticeable for Warsh and page/juz jumps.
+      const playlistAyahs = buildSurahAudioPlaylist(surahNumber);
       if (playlistAyahs.length === 0) {
         setError(
           lang === "fr"
@@ -188,9 +329,14 @@ export default function useQuranDisplayAudio({
       audioService.loadPlaylist(
         playlistAyahs,
         currentReciter.cdn,
-        currentReciter.cdnType || "islamic",
+        currentReciter.cdnType || "everyayah",
       );
-      audioService.play();
+      announcePlaylistGaps(currentReciter.cdn);
+      activePlaylistScopeRef.current =
+        displayMode === "surah" && surahNumber === currentSurah
+          ? readingScopeKey
+          : null;
+      await audioService.play();
     } catch {
       setError(
         lang === "fr"
@@ -200,7 +346,18 @@ export default function useQuranDisplayAudio({
     } finally {
       setPreparingSurah(null);
     }
-  }, [lang, preparingSurah, reciter, riwaya, setError, warshStrictMode]);
+  }, [
+    announcePlaylistGaps,
+    currentSurah,
+    displayMode,
+    lang,
+    preparingSurah,
+    readingScopeKey,
+    reciter,
+    riwaya,
+    setError,
+    warshStrictMode,
+  ]);
 
   useEffect(() => {
     const handler = () => playSurah();
@@ -208,5 +365,5 @@ export default function useQuranDisplayAudio({
     return () => window.removeEventListener("mushaf:play-surah", handler);
   }, [playSurah]);
 
-  return { playSpecificSurah, playSurah, preparingSurah };
+  return { playAyah, playSpecificSurah, playSurah, preparingSurah };
 }

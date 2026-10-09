@@ -1,102 +1,194 @@
 // ─── MushafPlus Service Worker ──────────────────────────────────────────────
 // Stratégies de cache :
-//   • /fonts/        → Cache-First  (rarement modifiés)
+//   • /fonts/        → Cache-First  (fichiers versionnés, immuables)
+//   • verses.quran.foundation/fonts/ → Cache-First (polices de page QCF, cache dédié)
 //   • /assets/       → Cache-First  (hachés à la compilation)
 //   • images locales → Stale-While-Revalidate
 //   • HTML           → Network-First  (évite les pages blanches avec SW obsolète)
-//   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate  (texte coranique offline)
+//   • api.quran.com/api/v4/verses/ → jamais mis en cache ici : l'application les
+//     conserve dans IndexedDB (compressé par le navigateur). Les garder aussi
+//     dans Cache Storage, non compressés, coûtait ~16 Mo pour ~4 Mo côté
+//     IndexedDB après sept lectures (mesuré), soit les deux tiers du stockage.
+//   • api.alquran.cloud & api.quran.com → Stale-While-Revalidate (le cache répond
+//     instantanément, le réseau rafraîchit les traductions révisées en arrière-plan)
 //   • Reste          → Network-First avec fallback cache
 // ──────────────────────────────────────────────────────────────────────────────
 
-const CACHE_NAME = "mushaf-plus-v6";
-const API_CACHE_NAME = "mushaf-plus-api-v2";
+const CACHE_NAME = "mushaf-plus-v22";
+const API_CACHE_NAME = "mushaf-plus-api-v6";
+const QCF_FONT_CACHE_NAME = "mushaf-plus-qcf-fonts-v1";
+const AUDIO_CACHE_NAME = "mushafplus-audio-v2";
+const CACHE_LIMITS = {
+  [CACHE_NAME]: 300,
+  [API_CACHE_NAME]: 200,
+  [QCF_FONT_CACHE_NAME]: 100,
+};
+// Byte ceilings next to the entry ceilings. Entries are a poor proxy for
+// storage here: one QCF4 page font measures 1,95-2,19 MB (measured over the
+// wire), so the 100-entry font cache alone could hold ~100 MB and push the
+// origin past the browser quota - which is how a reader loses their IndexedDB
+// notes and bookmarks. 32 MiB keeps ~15 page fonts warm, i.e. roughly 200
+// mushaf pages of contiguous reading.
+const MIB = 1024 * 1024;
+const CACHE_BYTE_BUDGETS = {
+  [CACHE_NAME]: 16 * MIB,
+  [API_CACHE_NAME]: 24 * MIB,
+  [QCF_FONT_CACHE_NAME]: 32 * MIB,
+};
+// A cached response without Content-Length (typically an opaque CDN entry) is
+// counted at this size so a budget is never silently skipped.
+const DEFAULT_ENTRY_BYTES = 512 * 1024;
+// Revalidation throttle for the Quran API cache: a cached payload older than
+// this delay is refetched in the background. It keeps instant offline/return
+// navigation without re-downloading the same surah on every page change.
+const API_REVALIDATE_MIN_INTERVAL_MS = 5 * 60 * 1000;
+const apiRevalidatedAt = new Map();
+let claimClientsOnActivate = true;
 
 // Ressources de l'app shell à pré-cacher à l'installation
 const ASSETS_TO_CACHE = [
   "/boot-recovery.js",
   "/manifest.json",
-  "/logo.png",
-  "/favicon.svg",
+  "/logo-ui.webp",
+  "/favicon.png",
+  "/data/reciter-profiles.json",
+  "/data/editorial-copy.json",
+  // /data/warsh-page-source.json (2,76 Mo) is deliberately NOT precached: it
+  // only serves the Warsh page view, so blocking every install — Hafs readers
+  // included — on it was a large, wasted boot download. The same-origin
+  // Network-First rule caches it on the first Warsh page opened, and it stays
+  // available offline from then on.
+  // The reading faces are needed on every route once offline.
+  "/fonts/uthmanic-hafs-v18.woff2",
+  "/fonts/kfgqpc-warsh-21.woff2",
   "/fonts/scheherazade-new-400.woff2",
-  "/fonts/scheherazade-new-700.woff2",
-];
-
-// Endpoints de l'API Coran à pré-cacher pour le support offline de base.
-// Ces appels sont effectués en arrière-plan lors de l'installation du SW.
-// En cas d'échec réseau, l'installation continue (pas bloquant).
-const QURAN_API_BASE = "https://api.alquran.cloud/v1";
-const API_ENDPOINTS_TO_PRECACHE = [
-  // Al-Fatiha – texte arabe (Hafs)
-  `${QURAN_API_BASE}/surah/1/quran-simple`,
-  // Al-Fatiha – traduction française
-  `${QURAN_API_BASE}/surah/1/fr.hamidullah`,
-  // Al-Fatiha – traduction anglaise
-  `${QURAN_API_BASE}/surah/1/en.sahih`,
-  // Al-Baqarah partielle (versets fréquemment lus) - surah complète
-  `${QURAN_API_BASE}/surah/2/quran-simple`,
-  // Al-Kahf – lecture courante du vendredi
-  `${QURAN_API_BASE}/surah/18/quran-simple`,
-  // Yā-Sīn – sourate très fréquente
-  `${QURAN_API_BASE}/surah/36/quran-simple`,
-  // Ar-Rahman – sourate très fréquente
-  `${QURAN_API_BASE}/surah/55/quran-simple`,
-  // Al-Mulk – récitée le soir
-  `${QURAN_API_BASE}/surah/67/quran-simple`,
+  "/fonts/alkalami-3000.woff2",
+  "/fonts/amiri-quran-v19-arabic.woff2",
+  "/fonts/noto-naskh-arabic-v44-ui.woff2",
+  "/fonts/noto-naskh-arabic-v44-arabic.woff2",
+  "/fonts/sura_names.woff2",
 ];
 
 // ─── Installation ─────────────────────────────────────────────────────────────
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    Promise.all([
-      // 1. Pré-cache de l'app shell (bloquant)
-      caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS_TO_CACHE)),
-
-      // 2. Pré-cache des données coraniques (non bloquant – best effort)
-      precacheQuranApi(),
-    ]).then(() => self.skipWaiting()),
-  );
+  event.waitUntil(precacheAppShell());
 });
 
-/**
- * Pré-cache les endpoints de l'API Coran de façon silencieuse.
- * Les erreurs réseau sont ignorées afin de ne pas bloquer l'installation du SW.
- */
-async function precacheQuranApi() {
-  let apiCache;
+async function precacheAppShell() {
+  const cache = await caches.open(CACHE_NAME);
+  await precacheUrls(cache, ASSETS_TO_CACHE);
+
+  // The entry document is parsed to discover the hashed chunks it loads. A
+  // failure must not abort the install: the shell manifest below, the
+  // CACHE_SHELL_URLS message from the page, and the runtime strategies all
+  // refill those entries on the next online visit.
+  const indexAssetUrls = [];
   try {
-    apiCache = await caches.open(API_CACHE_NAME);
-  } catch {
-    return; // Impossible d'ouvrir le cache – on abandonne silencieusement
-  }
-
-  const results = await Promise.allSettled(
-    API_ENDPOINTS_TO_PRECACHE.map(async (url) => {
-      // Ne pas re-télécharger si déjà en cache
-      const existing = await apiCache.match(url);
-      if (existing) return;
-
-      const res = await fetch(url, {
-        cache: "no-cache",
-        headers: { Accept: "application/json" },
-      });
-      if (res.ok) {
-        await apiCache.put(url, res);
-      }
-    }),
-  );
-
-  // Log en dev uniquement (supprimé par esbuild en production)
-  const failed = results.filter((r) => r.status === "rejected").length;
-  if (failed > 0) {
-    // eslint-disable-next-line no-console
+    const indexResponse = await fetch("/index.html", { cache: "reload" });
+    if (indexResponse.ok) {
+      const html = await indexResponse.clone().text();
+      await cache.put("/index.html", indexResponse);
+      indexAssetUrls.push(
+        ...Array.from(
+          html.matchAll(/(?:src|href)=["'](\/assets\/[^"']+)["']/g),
+          (match) => match[1],
+        ),
+      );
+    } else {
+      console.warn(
+        `[sw] /index.html precache skipped: ${indexResponse.status}`,
+      );
+    }
+  } catch (error) {
     console.warn(
-      `[SW] ${failed}/${API_ENDPOINTS_TO_PRECACHE.length} endpoints API non mis en cache (réseau indisponible?)`,
+      `[sw] /index.html precache skipped: ${error?.name || "network error"}`,
     );
   }
+
+  let shellAssetUrls = [];
+  try {
+    const shellManifestResponse = await fetch("/shell-assets.json", {
+      cache: "reload",
+    });
+    if (shellManifestResponse.ok) {
+      const manifest = await shellManifestResponse.clone().json();
+      shellAssetUrls = (Array.isArray(manifest) ? manifest : []).filter(
+        (assetUrl) =>
+          typeof assetUrl === "string" && assetUrl.startsWith("/assets/"),
+      );
+      await cache.put("/shell-assets.json", shellManifestResponse);
+    }
+  } catch {
+    // The entry assets parsed from index.html still provide a usable shell.
+  }
+  await precacheUrls(
+    cache,
+    [...new Set([...indexAssetUrls, ...shellAssetUrls])],
+  );
+  await trimCache(cache, CACHE_LIMITS[CACHE_NAME], CACHE_BYTE_BUDGETS[CACHE_NAME]);
+}
+
+/**
+ * Precaches a batch of URLs without letting a single missing asset cost the
+ * whole installation. Every failure is collected and reported, the remaining
+ * URLs keep being cached, and the worker still reaches `activated` so the
+ * reader keeps the offline shell instead of silently staying on an old worker.
+ */
+async function precacheUrls(cache, urls, concurrency = 4) {
+  let cursor = 0;
+  const failures = [];
+  const workers = Array.from(
+    { length: Math.min(concurrency, urls.length) },
+    async () => {
+      while (cursor < urls.length) {
+        const url = urls[cursor];
+        cursor += 1;
+        try {
+          const response = await fetch(url, { cache: "reload" });
+          if (!response.ok) {
+            failures.push(`${url} (${response.status})`);
+            continue;
+          }
+          await cache.put(url, response);
+        } catch (error) {
+          failures.push(`${url} (${error?.name || "network error"})`);
+        }
+      }
+    },
+  );
+  await Promise.all(workers);
+  if (failures.length) {
+    console.warn(
+      `[sw] ${failures.length} precache miss(es), install continues:`,
+      failures.slice(0, 10).join(", "),
+    );
+  }
+  return failures;
 }
 
 // ─── Activation ───────────────────────────────────────────────────────────────
+
+// Les pages de versets Quran.com (≈ 0,5 à 1 Mo chacune une fois décodées) étaient
+// copiées ici en plus d'IndexedDB. Elles n'y sont plus écrites ; celles déjà
+// stockées sont retirées pour rendre l'espace.
+function isVersePayload(url) {
+  return url.hostname === "api.quran.com" && url.pathname.startsWith("/api/v4/verses/");
+}
+
+async function dropCachedVersePayloads() {
+  try {
+    const cache = await caches.open(API_CACHE_NAME);
+    const requests = await cache.keys();
+    await Promise.all(
+      requests
+        .filter((request) => isVersePayload(new URL(request.url)))
+        .map((request) => cache.delete(request)),
+    );
+  } catch {
+    // Best effort: the entries age out through the cache budget anyway.
+  }
+}
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
@@ -109,11 +201,15 @@ self.addEventListener("activate", (event) => {
             (key) =>
               key.startsWith("mushaf-plus") &&
               key !== CACHE_NAME &&
-              key !== API_CACHE_NAME,
+              key !== API_CACHE_NAME &&
+              key !== QCF_FONT_CACHE_NAME,
           )
           .map((key) => caches.delete(key)),
       );
-      await self.clients.claim();
+      await dropCachedVersePayloads();
+      if (claimClientsOnActivate) {
+        await self.clients.claim();
+      }
     })(),
   );
 });
@@ -127,9 +223,25 @@ self.addEventListener("fetch", (event) => {
   const url = new URL(event.request.url);
   const isSameOrigin = url.origin === self.location.origin;
 
+  // Explicitly downloaded recitations live in Cache Storage. Serving them
+  // here lets the native audio element keep the same URL online and offline.
+  if (isTrustedAudioRequest(event.request, url)) {
+    event.respondWith(audioCacheFirst(event.request));
+    return;
+  }
+
   // ── 1. Polices – Cache-First ────────────────────────────────────────────────
   if (isSameOrigin && url.pathname.startsWith("/fonts/")) {
     event.respondWith(cacheFirst(event.request, CACHE_NAME));
+    return;
+  }
+  // Les polices de page QCF (Hafs) viennent du CDN verses.quran.foundation.
+  // Une fois une page ouverte, son glyphe reste disponible hors ligne.
+  if (
+    url.hostname === "verses.quran.foundation" &&
+    url.pathname.startsWith("/fonts/")
+  ) {
+    event.respondWith(cacheFirst(event.request, QCF_FONT_CACHE_NAME));
     return;
   }
 
@@ -144,13 +256,29 @@ self.addEventListener("fetch", (event) => {
     isSameOrigin &&
     /\.(png|jpe?g|webp|avif|svg|gif|ico)$/i.test(url.pathname)
   ) {
-    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME));
+    event.respondWith(staleWhileRevalidate(event.request, CACHE_NAME, event));
     return;
   }
 
-  // ── 4. API Coran (alquran.cloud & quran.com) – Stale-While-Revalidate ──────
+  // Verse pages: the page keeps its own durable copy (IndexedDB); the browser
+  // fetches them directly.
+  if (isVersePayload(url)) return;
+
+  // ── 4. API Coran – Stale-While-Revalidate ──────────────────────────────────
+  // Le texte coranique est immuable, mais les traductions et tafsirs servis par
+  // ces hôtes sont révisés en amont : le cache-first les épinglait pour toujours.
+  // Le JSON en cache répond toujours instantanément (retour en arrière, hors
+  // ligne) pendant que le réseau le rafraîchit en arrière-plan, au plus une
+  // fois par API_REVALIDATE_MIN_INTERVAL_MS pour une même URL.
   if (url.hostname === "api.alquran.cloud" || url.hostname === "api.quran.com") {
-    event.respondWith(staleWhileRevalidate(event.request, API_CACHE_NAME));
+    event.respondWith(
+      staleWhileRevalidate(
+        event.request,
+        API_CACHE_NAME,
+        event,
+        API_REVALIDATE_MIN_INTERVAL_MS,
+      ),
+    );
     return;
   }
 
@@ -173,69 +301,310 @@ self.addEventListener("fetch", (event) => {
 
 // ─── Messages (communication avec l'app) ─────────────────────────────────────
 
+function isTrustedAudioRequest(request, url) {
+  if (request.destination && request.destination !== "audio") return false;
+  if (!/\.mp3$/i.test(url.pathname)) return false;
+  const host = url.hostname.toLowerCase();
+  return (
+    host === "everyayah.com" ||
+    host === "www.everyayah.com" ||
+    host === "download.quranicaudio.com" ||
+    host === "mirrors.quranicaudio.com" ||
+    host === "audio.qurancdn.com" ||
+    host === "files.quranpedia.net" ||
+    host === "upload.wikimedia.org" ||
+    host === "verses.quran.com" ||
+    /^server\d+\.mp3quran\.net$/i.test(host)
+  );
+}
+
+async function createPartialResponse(response, rangeHeader) {
+  // Opaque cross-origin responses cannot be sliced. Preserve their body.
+  if (response.type === "opaque" || response.status !== 200) return response;
+  const matches = /^bytes=(\d*)-(\d*)$/.exec(rangeHeader.trim());
+  // Ignore unsupported/malformed ranges without consuming the full response.
+  if (!matches || (!matches[1] && !matches[2])) return response;
+  try {
+    // A Blob slice keeps the cached body in one backing store: decoding every
+    // range request into an ArrayBuffer would copy the whole surah per scrub.
+    const blob = await response.clone().blob();
+    const total = blob.size;
+    const suffix = !matches[1];
+    const start = suffix ? Math.max(0, total - Number(matches[2])) : Number(matches[1]);
+    const end = suffix || !matches[2] ? total - 1 : Math.min(Number(matches[2]), total - 1);
+    if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start >= total || start > end) {
+      return new Response(null, {
+        status: 416,
+        statusText: "Range Not Satisfiable",
+        headers: {
+          "Content-Range": `bytes */${total}`,
+          "Accept-Ranges": "bytes",
+        },
+      });
+    }
+    const sliced = blob.slice(start, end + 1);
+    return new Response(sliced, {
+      status: 206,
+      statusText: "Partial Content",
+      headers: {
+        "Content-Type": response.headers.get("Content-Type") || "audio/mpeg",
+        "Content-Range": `bytes ${start}-${end}/${total}`,
+        "Content-Length": String(sliced.size),
+        "Accept-Ranges": "bytes",
+        "Cache-Control": "public, max-age=31536000",
+      },
+    });
+  } catch {
+    return response;
+  }
+}
+
+async function audioCacheFirst(request) {
+  try {
+    const cache = await caches.open(AUDIO_CACHE_NAME);
+    const cached = await cache.match(request, { ignoreVary: true });
+    if (cached && cached.type !== "opaque" && cached.status === 200 &&
+        /audio\/(mpeg|mp3)/i.test(cached.headers.get("content-type") || "")) {
+      const rangeHeader = request.headers.get("range");
+      return rangeHeader ? createPartialResponse(cached, rangeHeader) : cached;
+    }
+  } catch { /* Storage unavailable must not prevent online streaming. */ }
+
+  try {
+    // Streaming stays network-only until the user explicitly downloads it.
+    return await fetch(request);
+  } catch {
+    return Response.error();
+  }
+}
+
+function isTrustedClientMessage(event) {
+  const senderUrl = event.source?.url;
+  if (!senderUrl) return false;
+  try {
+    const sender = new URL(senderUrl);
+    const scope = new URL(self.registration.scope);
+    return (
+      sender.origin === self.location.origin &&
+      sender.href.startsWith(scope.href)
+    );
+  } catch {
+    return false;
+  }
+}
+
 self.addEventListener("message", (event) => {
+  if (!isTrustedClientMessage(event)) return;
   if (!event.data || typeof event.data !== "object") return;
 
   switch (event.data.type) {
-    // L'app demande au SW de mettre en cache des URLs supplémentaires
-    // (ex : sourates récemment lues)
-    case "CACHE_QURAN_URLS": {
-      const urls = Array.isArray(event.data.urls) ? event.data.urls : [];
-      cacheQuranUrls(urls);
+    // The page lists the same-origin assets and fonts it loaded before this
+    // worker took control (the first visit): they must be in the shell cache
+    // for an offline reload.
+    case "CACHE_SHELL_URLS": {
+      const urls = (Array.isArray(event.data.urls) ? event.data.urls : [])
+        .filter(
+          (value) =>
+            typeof value === "string" &&
+            (value.startsWith("/assets/") || value.startsWith("/fonts/")),
+        )
+        .slice(0, 200);
+      event.waitUntil(
+        caches
+          .open(CACHE_NAME)
+          .then(async (cache) => {
+            const missing = [];
+            for (const url of urls) {
+              if (!(await cache.match(url))) missing.push(url);
+            }
+            if (missing.length) await precacheUrls(cache, missing);
+            await trimCache(cache, CACHE_LIMITS[CACHE_NAME], CACHE_BYTE_BUDGETS[CACHE_NAME]);
+          })
+          .catch(() => {}),
+      );
       break;
     }
 
     // L'app demande l'invalidation du cache API (ex : après un repair)
     case "CLEAR_API_CACHE": {
-      caches.delete(API_CACHE_NAME).then(() => {
-        event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
-      });
+      event.waitUntil(
+        caches.delete(API_CACHE_NAME).then(() => {
+          event.source?.postMessage?.({ type: "API_CACHE_CLEARED" });
+        }),
+      );
       break;
     }
 
     // L'app demande au SW de skipWaiting (mise à jour immédiate)
-    case "SKIP_WAITING":
-      self.skipWaiting();
+    case "SKIP_WAITING": {
+      claimClientsOnActivate = true;
+      event.waitUntil(self.skipWaiting());
       break;
+    }
 
     default:
       break;
   }
 });
 
-/**
- * Met en cache une liste d'URLs API de façon asynchrone (best effort).
- * Utilisée par l'app pour mettre en cache les sourates récemment visitées.
- */
-async function cacheQuranUrls(urls) {
-  if (!urls.length) return;
+// ─── Notifications push ───────────────────────────────────────────────────────
+// MushafPlus n'a pas encore de serveur d'envoi (VAPID) : ces handlers ne
+// reçoivent donc rien aujourd'hui. Ils rendent le worker prêt pour un backend
+// push futur et pour tout `registration.showNotification` déclenché par la
+// page (rappels de prière, verset du jour), en centralisant le clic.
+
+self.addEventListener("push", (event) => {
+  let payload;
   try {
-    const apiCache = await caches.open(API_CACHE_NAME);
-    await Promise.allSettled(
-      urls
-        .filter((u) => {
-          try {
-            const parsed = new URL(u);
-            return parsed.hostname === "api.alquran.cloud" || parsed.hostname === "api.quran.com";
-          } catch {
-            return false;
-          }
-        })
-        .map(async (url) => {
-          const existing = await apiCache.match(url);
-          if (existing) return; // Déjà en cache, inutile de re-télécharger
-          const res = await fetch(url, {
-            headers: { Accept: "application/json" },
-          });
-          if (res.ok) await apiCache.put(url, res);
-        }),
-    );
+    payload = event.data ? event.data.json() : null;
   } catch {
-    // Silencieux – le cache API n'est pas critique
+    payload = { body: event.data ? event.data.text() : "" };
+  }
+  if (!payload || typeof payload !== "object") payload = {};
+  const title = payload.title || "MushafPlus";
+  const safeUrl = typeof payload.url === "string" && payload.url.startsWith("/")
+    ? payload.url
+    : "/";
+  event.waitUntil(
+    self.registration.showNotification(title, {
+      body: typeof payload.body === "string" ? payload.body.slice(0, 300) : "",
+      tag: typeof payload.tag === "string" ? payload.tag.slice(0, 64) : undefined,
+      icon: "/logo-ui.webp",
+      badge: "/favicon.png",
+      data: { url: safeUrl },
+    }),
+  );
+});
+
+self.addEventListener("notificationclick", (event) => {
+  event.notification.close();
+  const notificationData = event.notification?.data || {};
+  const answer = notificationData.prayerAnswer;
+  // Les boutons-réponse de la notification de suivi ("J'ai prié" / "Pas
+  // encore") sont relayés à une page ouverte ; sans page ouverte, le clic
+  // mène à la page de suivi qui reposit la question.
+  const answered =
+    !!answer &&
+    answer.dayKey &&
+    answer.prayerKey &&
+    (event.action === "prayed" || event.action === "not-yet");
+  if (answered) {
+    event.waitUntil(
+      (async () => {
+        const clientList = await self.clients.matchAll({
+          type: "window",
+          includeUncontrolled: true,
+        });
+        const message = {
+          type: "mushafplus-prayer-answer",
+          dayKey: String(answer.dayKey).slice(0, 16),
+          prayerKey: String(answer.prayerKey).slice(0, 16),
+          answer: event.action,
+        };
+        for (const client of clientList) {
+          client.postMessage(message);
+          if ("focus" in client) await client.focus();
+          return;
+        }
+        await self.clients.openWindow("/prires");
+      })(),
+    );
+    return;
+  }
+  const targetUrl = new URL(notificationData.url || "/", self.location.origin);
+  if (targetUrl.origin !== self.location.origin) return;
+  event.waitUntil(
+    (async () => {
+      const clientList = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true,
+      });
+      for (const client of clientList) {
+        if ("focus" in client) {
+          if (client.url !== targetUrl.href && "navigate" in client) {
+            try {
+              await client.navigate(targetUrl);
+            } catch {
+              // A navigation refused by the browser still focuses the client.
+            }
+          }
+          return client.focus();
+        }
+      }
+      return self.clients.openWindow(targetUrl);
+    })(),
+  );
+});
+
+// ─── Stratégies de cache ──────────────────────────────────────────────────────
+
+/**
+ * Fetch with AbortController timeout (default 8s).
+ */
+function fetchWithTimeout(request, timeoutMs = 8000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  return fetch(request, { signal: controller.signal }).finally(() =>
+    clearTimeout(timer),
+  );
+}
+
+/**
+ * `cache.keys()` follows write order, not usage order, so a plain trim would
+ * evict the entries written first — the app shell precached at install. The
+ * shell URLs are pinned instead: once the cap is reached, the oldest
+ * *non-shell* entries leave, and the cache may briefly sit a few entries over
+ * its limit. A full LRU would still need a timestamp per read.
+ */
+const SHELL_PROTECTED_PATHS = new Set([
+  ...ASSETS_TO_CACHE,
+  "/index.html",
+  "/shell-assets.json",
+]);
+
+async function trimCache(cache, maxEntries, maxBytes) {
+  if (!Number.isFinite(maxEntries) || maxEntries < 1) return;
+  const keys = await cache.keys();
+  let overflow = keys.length - maxEntries;
+  if (overflow > 0) {
+    for (const key of keys) {
+      if (overflow <= 0) break;
+      const url = key.request?.url;
+      if (url && SHELL_PROTECTED_PATHS.has(new URL(url).pathname)) continue;
+      await cache.delete(key);
+      overflow -= 1;
+    }
+  }
+  if (!Number.isFinite(maxBytes) || maxBytes < 1) return;
+  await enforceByteBudget(cache, maxBytes);
+}
+
+/** Evicts the oldest non-shell entries until the cache fits `maxBytes`.
+ *  Header sizes only - a body is never read. `cache.keys()` yields Requests,
+ *  which carry no Content-Length, so the responses come from `matchAll()`. */
+async function enforceByteBudget(cache, maxBytes) {
+  const entries = [];
+  let counted = 0;
+  for (const response of await cache.matchAll()) {
+    const url = response.url;
+    if (url && SHELL_PROTECTED_PATHS.has(new URL(url).pathname)) continue;
+    const size = Number(response.headers.get("content-length"));
+    const known = Number.isFinite(size) ? size : DEFAULT_ENTRY_BYTES;
+    entries.push({ url, size: known });
+    counted += known;
+  }
+  if (counted <= maxBytes) return;
+  for (const entry of entries) {
+    await cache.delete(entry.url);
+    counted -= entry.size;
+    if (counted <= maxBytes) break;
   }
 }
 
-// ─── Stratégies de cache ──────────────────────────────────────────────────────
+async function putBounded(cache, request, response, cacheName) {
+  await cache.put(request, response);
+  await trimCache(cache, CACHE_LIMITS[cacheName], CACHE_BYTE_BUDGETS[cacheName]);
+}
 
 /**
  * Cache-First : retourne la réponse en cache si disponible.
@@ -243,13 +612,18 @@ async function cacheQuranUrls(urls) {
  */
 async function cacheFirst(request, cacheName) {
   const cache = await caches.open(cacheName);
-  const cached = await cache.match(request);
+  // Static shell files are identical with or without the Origin header.
+  // Vary: Origin must not hide files fetched during worker installation.
+  const url = new URL(request.url);
+  const immutableShell = cacheName === CACHE_NAME &&
+    url.origin === self.location.origin && /^\/(assets|fonts)\//.test(url.pathname);
+  const cached = await cache.match(request, { ignoreVary: immutableShell });
   if (cached) return cached;
 
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {
@@ -260,22 +634,51 @@ async function cacheFirst(request, cacheName) {
 /**
  * Stale-While-Revalidate : retourne le cache immédiatement (si dispo)
  * et met à jour le cache en arrière-plan depuis le réseau.
+ *
+ * `revalidateAfterMs` borne la cadence de revalidation par URL : sans lui, un
+ * changement de sourate ou de page relancerait chaque requête déjà vue. Une
+ * entrée absente du cache interroge toujours le réseau.
  */
-async function staleWhileRevalidate(request, cacheName) {
+async function staleWhileRevalidate(
+  request,
+  cacheName,
+  event,
+  revalidateAfterMs = 0,
+) {
   const cache = await caches.open(cacheName);
   const cached = await cache.match(request);
+  const now = Date.now();
+  const lastRevalidation = apiRevalidatedAt.get(request.url) || 0;
+  const throttled =
+    !!cached && revalidateAfterMs > 0 && now - lastRevalidation < revalidateAfterMs;
 
-  const networkPromise = fetch(request)
-    .then((response) => {
-      if (response && (response.status === 200 || response.type === "opaque")) {
-        cache.put(request, response.clone());
+  let networkPromise = null;
+  if (!throttled) {
+    if (revalidateAfterMs > 0) {
+      apiRevalidatedAt.set(request.url, now);
+      if (apiRevalidatedAt.size > 300) {
+        for (const [url, at] of apiRevalidatedAt) {
+          if (now - at >= revalidateAfterMs) apiRevalidatedAt.delete(url);
+        }
       }
-      return response;
-    })
-    .catch(() => null);
+    }
+    networkPromise = fetchWithTimeout(request)
+      .then(async (response) => {
+        if (response?.ok) {
+          await putBounded(cache, request, response.clone(), cacheName);
+        }
+        return response;
+      })
+      .catch(() => null);
+  }
 
-  // Retourner le cache immédiatement, ou attendre le réseau si pas de cache
-  return cached || (await networkPromise) || Response.error();
+  if (cached) {
+    if (networkPromise) {
+      event?.waitUntil(networkPromise.then(() => undefined));
+    }
+    return cached;
+  }
+  return (await networkPromise) || Response.error();
 }
 
 /**
@@ -284,11 +687,11 @@ async function staleWhileRevalidate(request, cacheName) {
  */
 async function networkFirstHtml(request) {
   try {
-    const networkResponse = await fetch(request);
+    const networkResponse = await fetchWithTimeout(request, 6000);
     const cache = await caches.open(CACHE_NAME);
     // Ne stocker que les réponses valides
     if (networkResponse.status === 200) {
-      cache.put(request, networkResponse.clone());
+      await putBounded(cache, request, networkResponse.clone(), CACHE_NAME);
     }
     return networkResponse;
   } catch {
@@ -311,10 +714,10 @@ async function networkFirstHtml(request) {
  */
 async function networkFirstWithFallback(request, cacheName) {
   try {
-    const response = await fetch(request);
+    const response = await fetchWithTimeout(request);
     if (response && response.status === 200) {
       const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
+      await putBounded(cache, request, response.clone(), cacheName);
     }
     return response;
   } catch {
@@ -332,7 +735,7 @@ function offlineFallbackHtml() {
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MushafPlus – Hors ligne</title>
+  <title>MushafPlus – Offline</title>
   <style>
     :root { --green: #1b5e3a; --bg: #fefaf3; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -359,7 +762,7 @@ function offlineFallbackHtml() {
       opacity: 0.75;
       margin: 0.5rem 0;
     }
-    button {
+    .retry {
       margin-top: 0.5rem;
       padding: 0.75rem 1.75rem;
       background: var(--green);
@@ -369,19 +772,65 @@ function offlineFallbackHtml() {
       font-size: 0.95rem;
       font-weight: 600;
       cursor: pointer;
+      text-decoration: none;
     }
-    button:hover { opacity: 0.88; }
+    .retry:hover { opacity: 0.88; }
+    .lang-block { display: none; }
+    :lang(ar) { direction: rtl; }
   </style>
 </head>
 <body>
   <div class="icon">📖</div>
   <div class="arabic">﷽</div>
-  <h1>MushafPlus – Hors ligne</h1>
-  <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
-  <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">
-    Les sourates récemment consultées restent disponibles dans l'application.
-  </p>
-  <button onclick="window.location.reload()">Réessayer</button>
+  <div class="lang-block" lang="fr">
+    <h1>MushafPlus – Hors ligne</h1>
+    <p>Vous n'êtes pas connecté à Internet. Reconnectez-vous pour accéder au Coran complet.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Les sourates récemment consultées restent disponibles dans l'application.</p>
+    <a class="retry" href="/">Réessayer</a>
+  </div>
+  <div class="lang-block" lang="en">
+    <h1>MushafPlus – Offline</h1>
+    <p>You are not connected to the Internet. Reconnect to access the full Quran.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">Recently visited surahs remain available in the app.</p>
+    <a class="retry" href="/">Retry</a>
+  </div>
+  <div class="lang-block" lang="ar">
+    <h1>مصحف بلس – غير متصل</h1>
+    <p>أنت غير متصل بالإنترنت. أعد الاتصال للوصول إلى القرآن الكريم كاملاً.</p>
+    <p style="margin-top:0.5rem;font-size:0.82rem;color:#9ca3af;">السور التي زرتها مؤخراً لا تزال متاحة في التطبيق.</p>
+    <a class="retry" href="/">إعادة المحاولة</a>
+  </div>
+  <noscript>
+    <h1>MushafPlus – Offline</h1>
+    <p>No internet connection. Reconnect to access the full Quran.</p>
+    <a class="retry" href="/">Retry</a>
+  </noscript>
+  <script>
+    (function() {
+      var lang = (navigator.language || 'fr').split('-')[0];
+      var supported = ['fr', 'en', 'ar'];
+      var display = supported.indexOf(lang) !== -1 ? lang : 'en';
+      var blocks = document.querySelectorAll('.lang-block');
+      var matched = false;
+      for (var i = 0; i < blocks.length; i++) {
+        if (blocks[i].lang === display) {
+          blocks[i].style.display = 'block';
+          matched = true;
+        } else {
+          blocks[i].style.display = 'none';
+        }
+      }
+      if (!matched) {
+        for (var j = 0; j < blocks.length; j++) {
+          if (blocks[j].lang === 'en') { blocks[j].style.display = 'block'; break; }
+        }
+      }
+      if (lang === 'ar') {
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+      }
+    })();
+  </script>
 </body>
 </html>`;
 }

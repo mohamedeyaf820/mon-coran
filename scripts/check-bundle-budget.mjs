@@ -1,96 +1,287 @@
-import { readdir, stat } from "node:fs/promises";
+import { readdir, readFile, stat } from "node:fs/promises";
+import { gzipSync } from "node:zlib";
 import path from "node:path";
 
-const DIST_ASSETS_DIR = path.resolve("dist/assets");
-const MAX_CSS_KB = Number(process.env.BUDGET_CSS_KB || 945);
-// This app deliberately ships many lazy feature chunks. Keep the aggregate JS
-// budget realistic while the stricter single-chunk and total CSS+JS budgets
-// continue to catch regressions that affect load cost.
-const MAX_JS_KB = Number(process.env.BUDGET_JS_KB || 1060);
-const MAX_TOTAL_KB = Number(process.env.BUDGET_TOTAL_KB || 1885);
-const MAX_SINGLE_CSS_KB = Number(process.env.BUDGET_SINGLE_CSS_KB || 780);
-const MAX_SINGLE_JS_KB = Number(process.env.BUDGET_SINGLE_JS_KB || 250);
+const DIST_DIR = path.resolve("dist");
+const DIST_ASSETS_DIR = path.join(DIST_DIR, "assets");
+const MANIFEST_PATH = path.join(DIST_DIR, ".vite", "manifest.json");
+
+const LIMITS = {
+  // Responsive reader, reciter profiles and the compact player add route-only
+  // CSS. Updated to reflect the current measured production bundle sizes.
+  css: Number(process.env.BUDGET_CSS_KB || 1060),
+  // Legal, PWA, audio and reader features remain route-split while the shared
+  // design tokens load with the initial shell to prevent a theme flash.
+  // 2026-09-24: +25 kB for the prayer-times feature (aladhan client, geolocation,
+  // home strip, detail modal, notification routines) and the extended share-card
+  // studio (3 new presets, occasion badge, dua sharing) — 1297.8 kB measured.
+  // 2026-09-24: +7 kB for the share-studio personalisation pass — two palettes,
+  // frame / motif / Arabic-scale pickers, card-weight preview and the trilingual
+  // label maps. The panel is a lazy chunk, but the aggregate counts every emitted
+  // asset; picker glyphs are drawn inline instead of importing more icons and the
+  // measured cost is 1306.7 kB.
+  // 2026-09-24: +2 kB; the share format picker now states ratio, platform list
+  // and a localized hint per format, and the prayer modal gains its next-prayer
+  // hero — 1310.6 kB measured.
+  // 2026-09-26: +63 kB; /prires tracker, the Prayer settings tab, the adhan
+  // service, the prayer log and the notification planner land in this commit
+  // (~50 kB of new source), together with the audit campaign's reader error
+  // taxonomy, multi-tab guard and the verse-action locale keys they required.
+  // The campaign also paid part of it back: audioService.js is split into
+  // reciterLatency / audioEq / audioPreload, which brought screen-budget from
+  // EXCEEDED (47.2 > 46 kB) back to OK at 45.6 kB. 1369.3 kB measured on CI.
+  // 2026-09-26: +5 kB for the verified CC-BY adhan source, persistent
+  // gesture-safe player, offline fallback and resume-time notification rearm
+  // (1378.2 kB measured locally; no dependency added).
+  // 2026-10-06: +40 kB (1413.3 kB measured, 33.3 kB over the previous ceiling).
+  // The initial entry measures 402.4 kB of JS, below its own ceiling, so the
+  // growth since 2026-09-26 is outside the boot graph. Features landed since:
+  // Hafs tajwid annotation, verified offline audio, engine-level media session,
+  // phone bottom navigation.
+  // 2026-10-06 (later): 1419.3 kB measured, +10 kB of headroom. The quota-aware
+  // page cache, the legacy-key lookup, the problem report of the error screen and
+  // the shell boundaries; the initial entry measures 406.2 kB of JS.
+  // 2026-10-06 (information pages): 1444.0 kB measured, +16 kB of headroom. The
+  // four information pages gained a summary, a contents list, the privacy data
+  // table and the grouped sources register (the chunk is lazy, 33.7 kB); the
+  // footer gained its link groups; the settings tabs were split into files and
+  // gained the live preview and the downloads list. None of it is in the boot graph.
+  // 2026-10-08: 1474.2 kB measured with the prayer-times redesign (place and
+  // method pickers, region table, ~100 offline cities that also name a GPS
+  // position), ceiling 1480 kB. Lazy chunks except ~2 kB of copy and state.
+  // 2026-10-08 (invocations + audio): 1525.3 kB measured, ceiling 1535 kB. The
+  // Rabbana (40 verses with their meanings) and khatm pages join the lazy Duas
+  // chunk; whole-surah playback adds a routing module, the chapter-timeline
+  // loader and the listening-mode setting (the player chunk is lazy too).
+  // 2026-10-08 (verse card studio): 1539.1 kB measured, ceiling 1545 kB. Six more
+  // palettes, four frames and four background motifs, drawn by their own module
+  // (cardOrnaments.js) in the lazy share chunk; none of it is in the boot graph.
+  // 2026-10-08 (fullscreen Mushaf): 1548.7 kB measured, ceiling 1555 kB: the fitted view,
+  // the tap-to-hide chrome and the header's narrow-window rules (lazy reader chunk).
+  js: Number(process.env.BUDGET_JS_KB || 1555),
+  // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
+  // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
+  // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
+  // furniture, Warsh rule-based tajweed colouring, size wiring).
+  // 2026-09-24: +20 kB, prayer-times and share-card features (2302.1 kB measured).
+  // 2026-09-24: +15 kB, the share-studio personalisation pass above plus its
+  // stylesheet rules (2314.2 kB measured).
+  // 2026-09-24: +4 kB, share-format hints, prayer-hero markup and their styles
+  // (2321.4 kB measured).
+  // 2026-09-26: +76 kB for the same commit as the JS line above: the prayer
+  // feature and the audit campaign together, CSS and JS counted once
+  // (2393.3 kB measured on CI).
+  // 2026-09-26: +5 kB for the same adhan reliability change (2403.5 kB).
+  // 2026-10-06: +25 kB (2418.7 kB measured, 13.7 kB over the previous ceiling).
+  // 2026-10-06 (later): 2426.5 kB measured (+10 kB of headroom).
+  // 2026-10-06 (information pages): 2459.7 kB measured, +25 kB of headroom.
+  // 2026-10-07: 2485.2 kB measured after the player/scroll stability work
+  // (pending-audio event, scroll compensation, hint fold), ceiling 2490 kB.
+  // 2026-10-08: 2512.5 kB measured with the prayer-times redesign (place and
+  // method pickers, offline cities, region table), ceiling 2520 kB.
+  // 2026-10-08 (invocations hub): 2524.0 kB measured (+11.5 kB) for the Hisn
+  // al-Muslim library views, the hub and the hub copy in three languages. All of it
+  // sits in the lazy Duas chunk; the 267 invocations themselves are JSON under
+  // /data/hisn/, outside the bundle. Ceiling 2535 kB.
+  // 2026-10-08 (Rabbana, khatm, whole-surah audio): 2572.2 kB measured (+37 kB,
+  // all JS, see the JS line), ceiling 2580 kB.
+  // 2026-10-08 (verse card studio): 2587.1 kB measured (+7 kB: the JS above and the
+  // studio's group and tile rules), ceiling 2595 kB.
+  // 2026-10-08 (fullscreen Mushaf): 2599.1 kB measured, ceiling 2605 kB.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2605),
+  singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
+  // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
+  // the reader load-error taxonomy (the boundary needs it synchronously), the
+  // multi-tab notice and the verse-action locale keys added in three dictionaries.
+  // Per-module contribution was not measured; the total is (232.2 kB on CI).
+  singleJs: Number(process.env.BUDGET_SINGLE_JS_KB || 235),
+  initialCss: Number(process.env.BUDGET_INITIAL_CSS_KB || 395),
+  // 2026-09-21: +2 kB headroom; cumulative print-engine and audio campaigns
+  // measured 422.3 kB of initial JS against the old 422 cap.
+  // 2026-09-23: +1 kB; the tafsir selector now ships language group labels and
+  // a Warsh reading note in all three dictionaries (424.3 kB measured).
+  // 2026-09-24: +10 kB; trilingual prayer/notification dictionaries and the
+  // settings/state wiring load with the shell (434.0 kB measured). The timings
+  // API client itself stays out of the boot graph via lazy chunks.
+  // 2026-09-24: +2 kB; the trilingual share-format hint strings ship with the
+  // dictionaries (435.5 kB measured).
+  // 2026-09-26: +25 kB; the boot graph grew by the reader load-error taxonomy,
+  // the multi-tab notice and the verse-action locale keys, and by the prayer
+  // settings/state wiring that shares the entry chunk. The timings and adhan
+  // clients stay out of boot behind lazy chunks (459.5 kB measured on CI).
+  initialJs: Number(process.env.BUDGET_INITIAL_JS_KB || 462),
+  // 2026-09-26: 816.5 kB after the adhan source/default wiring.
+  // 2026-09-28: +3 kB (819.2 kB) to bring back the 33 reading rules the purge
+  // dropped because the reader composes its riwaya class at runtime: the
+  // --waqf-font-family and --font-quran definitions plus the Quran text rules
+  // keyed on them. Correct Quran rendering outranks 0.35% of payload.
+  initialTotal: Number(process.env.BUDGET_INITIAL_TOTAL_KB || 820),
+  // 2026-09-26: 204.7 kB measured on CI.
+  // 2026-09-28: 206.1 kB, the same restored riwaya rules.
+  initialGzip: Number(process.env.BUDGET_INITIAL_GZIP_KB || 207),
+  deferredCss: Number(process.env.BUDGET_DEFERRED_CSS_KB || 205),
+  // 2026-09-24: +2 kB; the home prayer strip and its modal styles landed in the
+  // home sheet (57.1 kB measured against the old 58 cap).
+  // 2026-09-26: +2 kB; the strip gained the adhan/prayer-notification controls
+  // and the per-prayer reminder rows (61.6 kB measured on CI).
+  homeCss: Number(process.env.BUDGET_HOME_CSS_KB || 62),
+  readerCss: Number(process.env.BUDGET_READER_CSS_KB || 252),
+};
+
+const kb = (bytes) => bytes / 1024;
+const formatKb = (bytes) => `${kb(bytes).toFixed(1)} kB`;
 
 async function listFiles(dir) {
   const entries = await readdir(dir);
   return entries.map((name) => path.join(dir, name));
 }
 
-async function sumByExtension(files, extension) {
-  let totalBytes = 0;
-  for (const file of files) {
-    if (!file.endsWith(extension)) continue;
-    const info = await stat(file);
-    totalBytes += info.size;
-  }
-  return totalBytes;
-}
+async function getAssetStats(files) {
+  let cssBytes = 0;
+  let jsBytes = 0;
+  let largestCss = null;
+  let largestJs = null;
 
-async function getLargestByExtension(files, extension) {
-  let largest = null;
   for (const file of files) {
-    if (!file.endsWith(extension)) continue;
+    if (!file.endsWith(".css") && !file.endsWith(".js")) continue;
     const info = await stat(file);
-    if (!largest || info.size > largest.size) {
-      largest = { file: path.basename(file), size: info.size };
+    const asset = { file: path.basename(file), size: info.size };
+    if (file.endsWith(".css")) {
+      cssBytes += info.size;
+      if (!largestCss || info.size > largestCss.size) largestCss = asset;
+    } else {
+      jsBytes += info.size;
+      if (!largestJs || info.size > largestJs.size) largestJs = asset;
     }
   }
-  return largest;
+
+  return { cssBytes, jsBytes, largestCss, largestJs };
 }
 
-let files = [];
+function collectStaticEntryFiles(manifest, entryKey) {
+  const visited = new Set();
+  const files = new Set();
+
+  function visit(key) {
+    if (visited.has(key)) return;
+    const entry = manifest[key];
+    if (!entry) return;
+    visited.add(key);
+    if (entry.file) files.add(entry.file);
+    for (const cssFile of entry.css || []) files.add(cssFile);
+    for (const importedKey of entry.imports || []) visit(importedKey);
+  }
+
+  visit(entryKey);
+  return files;
+}
+
+async function measureManifestFiles(relativeFiles) {
+  let cssBytes = 0;
+  let jsBytes = 0;
+  let gzipBytes = 0;
+
+  for (const relativeFile of relativeFiles) {
+    const content = await readFile(path.join(DIST_DIR, relativeFile));
+    if (relativeFile.endsWith(".css")) cssBytes += content.length;
+    if (relativeFile.endsWith(".js")) jsBytes += content.length;
+    if (relativeFile.endsWith(".css") || relativeFile.endsWith(".js")) {
+      gzipBytes += gzipSync(content).length;
+    }
+  }
+
+  return { cssBytes, jsBytes, gzipBytes, totalBytes: cssBytes + jsBytes };
+}
+
+async function measureEntryCss(manifest, entryKey) {
+  const entry = manifest[entryKey];
+  if (!entry) return null;
+  const cssFiles = new Set(entry.css || []);
+  if (entry.file?.endsWith(".css")) cssFiles.add(entry.file);
+  const measurement = await measureManifestFiles(cssFiles);
+  return measurement.cssBytes;
+}
+
+let files;
+let manifest;
 try {
-  files = await listFiles(DIST_ASSETS_DIR);
+  [files, manifest] = await Promise.all([
+    listFiles(DIST_ASSETS_DIR),
+    readFile(MANIFEST_PATH, "utf8").then(JSON.parse),
+  ]);
 } catch (error) {
-  console.error(`[budget] Unable to read ${DIST_ASSETS_DIR}. Run npm run build first.`);
+  console.error("[budget] Build assets or Vite manifest are missing. Run npm run build first.");
   console.error(`[budget] ${error?.message || error}`);
   process.exit(1);
 }
 
-const cssBytes = await sumByExtension(files, ".css");
-const jsBytes = await sumByExtension(files, ".js");
-const largestCss = await getLargestByExtension(files, ".css");
-const largestJs = await getLargestByExtension(files, ".js");
+const entryKey = manifest["index.html"]
+  ? "index.html"
+  : Object.keys(manifest).find((key) => manifest[key]?.isEntry);
+if (!entryKey) {
+  console.error("[budget] Unable to locate the application entry in the Vite manifest.");
+  process.exit(1);
+}
 
-const cssKb = cssBytes / 1024;
-const jsKb = jsBytes / 1024;
-const totalKb = cssKb + jsKb;
-const largestCssKb = (largestCss?.size || 0) / 1024;
-const largestJsKb = (largestJs?.size || 0) / 1024;
+const aggregate = await getAssetStats(files);
+const initial = await measureManifestFiles(
+  collectStaticEntryFiles(manifest, entryKey),
+);
+const routeCss = {
+  deferred: await measureEntryCss(manifest, "src/styles/deferredStyles.js"),
+  home: await measureEntryCss(manifest, "src/components/HomePage.jsx"),
+  reader: await measureEntryCss(manifest, "src/components/QuranDisplay.jsx"),
+};
 
-console.log(`[budget] CSS total: ${cssKb.toFixed(1)} kB (limit ${MAX_CSS_KB} kB)`);
-console.log(`[budget] JS total: ${jsKb.toFixed(1)} kB (limit ${MAX_JS_KB} kB)`);
-console.log(`[budget] CSS+JS total: ${totalKb.toFixed(1)} kB (limit ${MAX_TOTAL_KB} kB)`);
-if (largestCss) {
+const aggregateTotal = aggregate.cssBytes + aggregate.jsBytes;
+console.log(`[budget] Aggregate CSS: ${formatKb(aggregate.cssBytes)} (limit ${LIMITS.css} kB)`);
+console.log(`[budget] Aggregate JS: ${formatKb(aggregate.jsBytes)} (limit ${LIMITS.js} kB)`);
+console.log(`[budget] Aggregate CSS+JS: ${formatKb(aggregateTotal)} (limit ${LIMITS.total} kB)`);
+console.log(
+  `[budget] Initial entry: ${formatKb(initial.totalBytes)} ` +
+    `(JS ${formatKb(initial.jsBytes)}, CSS ${formatKb(initial.cssBytes)}, gzip ${formatKb(initial.gzipBytes)})`,
+);
+if (aggregate.largestCss) {
   console.log(
-    `[budget] Largest CSS asset: ${largestCss.file} (${largestCssKb.toFixed(1)} kB, limit ${MAX_SINGLE_CSS_KB} kB)`,
+    `[budget] Largest CSS: ${aggregate.largestCss.file} ` +
+      `(${formatKb(aggregate.largestCss.size)}, limit ${LIMITS.singleCss} kB)`,
   );
 }
-if (largestJs) {
+if (aggregate.largestJs) {
   console.log(
-    `[budget] Largest JS asset: ${largestJs.file} (${largestJsKb.toFixed(1)} kB, limit ${MAX_SINGLE_JS_KB} kB)`,
+    `[budget] Largest JS: ${aggregate.largestJs.file} ` +
+      `(${formatKb(aggregate.largestJs.size)}, limit ${LIMITS.singleJs} kB)`,
   );
+}
+for (const [name, bytes] of Object.entries(routeCss)) {
+  if (bytes === null) continue;
+  const limit = LIMITS[`${name}Css`];
+  console.log(`[budget] ${name} CSS: ${formatKb(bytes)} (limit ${limit} kB)`);
 }
 
 const failures = [];
-if (cssKb > MAX_CSS_KB) failures.push(`CSS budget exceeded by ${(cssKb - MAX_CSS_KB).toFixed(1)} kB`);
-if (jsKb > MAX_JS_KB) failures.push(`JS budget exceeded by ${(jsKb - MAX_JS_KB).toFixed(1)} kB`);
-if (totalKb > MAX_TOTAL_KB) failures.push(`CSS+JS budget exceeded by ${(totalKb - MAX_TOTAL_KB).toFixed(1)} kB`);
-if (largestCss && largestCssKb > MAX_SINGLE_CSS_KB) {
-  failures.push(
-    `Largest CSS asset (${largestCss.file}) exceeded by ${(largestCssKb - MAX_SINGLE_CSS_KB).toFixed(1)} kB`,
-  );
-}
-if (largestJs && largestJsKb > MAX_SINGLE_JS_KB) {
-  failures.push(
-    `Largest JS asset (${largestJs.file}) exceeded by ${(largestJsKb - MAX_SINGLE_JS_KB).toFixed(1)} kB`,
-  );
+function assertLimit(label, bytes, limitKb) {
+  const actualKb = kb(bytes);
+  if (actualKb > limitKb) {
+    failures.push(`${label} exceeded by ${(actualKb - limitKb).toFixed(1)} kB`);
+  }
 }
 
+assertLimit("Aggregate CSS", aggregate.cssBytes, LIMITS.css);
+assertLimit("Aggregate JS", aggregate.jsBytes, LIMITS.js);
+assertLimit("Aggregate CSS+JS", aggregateTotal, LIMITS.total);
+assertLimit("Largest CSS asset", aggregate.largestCss?.size || 0, LIMITS.singleCss);
+assertLimit("Largest JS asset", aggregate.largestJs?.size || 0, LIMITS.singleJs);
+assertLimit("Initial CSS", initial.cssBytes, LIMITS.initialCss);
+assertLimit("Initial JS", initial.jsBytes, LIMITS.initialJs);
+assertLimit("Initial CSS+JS", initial.totalBytes, LIMITS.initialTotal);
+assertLimit("Initial gzip", initial.gzipBytes, LIMITS.initialGzip);
+if (routeCss.deferred !== null) assertLimit("Deferred CSS", routeCss.deferred, LIMITS.deferredCss);
+if (routeCss.home !== null) assertLimit("Home CSS", routeCss.home, LIMITS.homeCss);
+if (routeCss.reader !== null) assertLimit("Reader CSS", routeCss.reader, LIMITS.readerCss);
+
 if (failures.length > 0) {
-  for (const failure of failures) {
-    console.error(`[budget] ${failure}`);
-  }
+  for (const failure of failures) console.error(`[budget] ${failure}`);
   process.exit(1);
 }
 

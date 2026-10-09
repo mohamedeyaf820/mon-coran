@@ -1,0 +1,236 @@
+import fs from "node:fs";
+import path from "node:path";
+import { expect, test } from "@playwright/test";
+import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
+
+const CLIP = fs.readFileSync(path.join("tests", "fixtures", "silent-2s.mp3"));
+const AUDIO_CACHE = "mushafplus-audio-v2";
+
+test.use({ serviceWorkers: "allow" });
+
+async function seedPlayer(page) {
+  await installQuranNetworkFixtures(page);
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({
+        skipSplashAnimation: true,
+        showHome: true,
+        showDuas: false,
+        sidebarOpen: false,
+        displayMode: "surah",
+        mushafLayout: "list",
+        lang: "fr",
+        riwaya: "hafs",
+        reciter: "muhammad_ayyoub",
+        showTranslation: false,
+        showWordByWord: false,
+        lastPosition: { surah: 1, ayah: 1, page: 1, juz: 1 },
+      }),
+    );
+    const NativeAudio = window.Audio;
+    const createdAudioElements = [];
+    window.Audio = function TrackedAudio(...args) {
+      const audio = new NativeAudio(...args);
+      createdAudioElements.push(audio);
+      return audio;
+    };
+    window.Audio.prototype = NativeAudio.prototype;
+    Object.defineProperty(window, "__playerAudio", {
+      configurable: true,
+      get() {
+        const serviceElements = createdAudioElements.filter((audio) =>
+          audio.hasAttribute("webkit-playsinline"));
+        return serviceElements.findLast((audio) => audio.currentSrc || audio.src) ||
+          serviceElements.at(-1) || createdAudioElements.at(-1);
+      },
+    });
+  });
+  await page.route(/\.mp3(?:\?.*)?$/i, (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: "audio/mpeg",
+      body: CLIP,
+    }),
+  );
+}
+
+async function openControlledShell(page) {
+  await page.goto("/");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect
+    .poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller)))
+    .toBe(true);
+}
+
+async function downloadFatiha(page) {
+  await page.getByRole("tab", { name: "Audio", exact: true }).click();
+  await page
+    .getByRole("textbox", { name: /Rechercher un récitateur/ })
+    .fill("Ayyoub");
+  const firstCard = page.locator('[data-reciter-card="true"]').first();
+  await expect(firstCard).toBeVisible();
+  await firstCard.locator(".reciter-card__main").click();
+  await page.getByRole("textbox", { name: "Rechercher une sourate" }).fill("Fatiha");
+  await page
+    .getByRole("button", {
+      name: /Télécharger pour l’écoute hors connexion.*L'Ouverture \(1\)/,
+    })
+    .click();
+  await expect(
+    page.getByRole("button", {
+      name: /Disponible hors connexion.*L'Ouverture \(1\)/,
+    }),
+  ).toBeVisible({ timeout: 30_000 });
+}
+
+async function playerState(page) {
+  return page.evaluate(() => {
+    const audio = window.__playerAudio;
+    return audio
+      ? {
+          time: Number(audio.currentTime.toFixed(2)),
+          paused: audio.paused,
+          file: audio.src.startsWith("blob:") ? "local" : (audio.currentSrc || "").split("/").pop(),
+          source: audio.src,
+        }
+      : null;
+  });
+}
+
+test("a downloaded surah keeps playing verse by verse with no network", async ({
+  page,
+  context,
+}) => {
+  await seedPlayer(page);
+  await openControlledShell(page);
+  await downloadFatiha(page);
+
+  await expect
+    .poll(
+      async () =>
+        page.evaluate(async (cacheName) => {
+          const cache = await caches.open(cacheName);
+          const keys = (await cache.keys()).map((request) =>
+            new URL(request.url).pathname.split("/").pop(),
+          );
+          return keys.sort().join(",");
+        }, AUDIO_CACHE),
+      { message: "every downloaded verse is in the offline cache" },
+    )
+    .toBe(
+      [1, 2, 3, 4, 5, 6, 7]
+        .map((ayah) => `00100${ayah}.mp3`)
+        .join(","),
+    );
+
+  await page.goto("/surah/1");
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({
+    timeout: 30_000,
+  });
+
+  await context.setOffline(true);
+  await page.locator(".srh-play-btn").first().click();
+
+  await expect
+    .poll(async () => (await playerState(page))?.file)
+    .toBe("local");
+
+  const first = await playerState(page);
+  expect(first, "the player opened an audio element").not.toBeNull();
+  expect(first.file).toBe("local");
+  expect(first.paused, "the cached verse plays with no network").toBe(false);
+  await expect
+    .poll(() => page.locator(".is-playing").count(), { timeout: 10_000 })
+    .toBeGreaterThan(0);
+
+  // Drive the media boundary deterministically. Browser media clocks can be
+  // throttled when the complete suite runs several workers, while the ended
+  // event is the production boundary this test needs to verify.
+  await page.evaluate(() => {
+    window.__playerAudio.dispatchEvent(new Event("ended"));
+  });
+  await expect
+    .poll(async () => (await playerState(page)).source, { timeout: 20_000 })
+    .not.toBe(first.source);
+  const next = await playerState(page);
+  expect(next.paused, "the following verse kept playing").toBe(false);
+  await page.evaluate(() => {
+    window.__routeAudio = window.__playerAudio;
+    window.__routeAudio.loop = true;
+  });
+  await page.getByTestId("mobile-home-logo").click();
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  expect(await page.evaluate(() => window.__routeAudio === window.__playerAudio), "route changes preserve the native player").toBe(true);
+  const afterRoute = await playerState(page);
+  expect(afterRoute.source).toBe(next.source);
+  expect(afterRoute.paused).toBe(false);
+});
+
+test("a missing cached verse is no longer advertised as offline on mobile", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await seedPlayer(page);
+  await openControlledShell(page);
+  await downloadFatiha(page);
+
+  await page.evaluate(async (cacheName) => {
+    const cache = await caches.open(cacheName);
+    await cache.delete("https://everyayah.com/data/Muhammad_Ayyoub_128kbps/001001.mp3");
+    window.dispatchEvent(new Event("pageshow"));
+  }, AUDIO_CACHE);
+
+  await expect(
+    page.getByRole("button", { name: /Télécharger pour l’écoute hors connexion.*L'Ouverture \(1\)/ }),
+  ).toBeVisible();
+  const overflow = await page.evaluate(() => document.documentElement.scrollWidth - innerWidth);
+  expect(overflow).toBeLessThanOrEqual(1);
+});
+
+test("playback keeps running when the reader loses the foreground", async ({
+  page,
+}) => {
+  await seedPlayer(page);
+  await openControlledShell(page);
+  await downloadFatiha(page);
+
+  await page.goto("/surah/1");
+  await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible({
+    timeout: 30_000,
+  });
+  await page.locator(".srh-play-btn").first().click();
+  await expect
+    .poll(async () => {
+      const state = await playerState(page);
+      return Boolean(state?.file && !state.paused);
+    })
+    .toBe(true);
+
+  const started = await playerState(page);
+  // What a phone does when the user leaves the app: another document takes
+  // the foreground and the browser stops running animation frames here.
+  await page.evaluate(() => {
+    Object.defineProperty(document, "hidden", { configurable: true, get: () => true });
+    Object.defineProperty(document, "visibilityState", {
+      configurable: true,
+      get: () => "hidden",
+    });
+    document.dispatchEvent(new Event("visibilitychange"));
+    // Browsers stop delivering animation frames in the background; they do
+    // not throw from requestAnimationFrame itself.
+    window.requestAnimationFrame = () => 0;
+  });
+
+  await expect.poll(async () => {
+    const during = await playerState(page);
+    return Boolean(during && !during.paused &&
+      (during.source !== started.source || during.time > started.time));
+  }, { timeout: 20_000, message: "the verse position or file advances while hidden" }).toBe(true);
+  await expect
+    .poll(async () => (await playerState(page)).source, { timeout: 20_000 })
+    .not.toBe(started.source);
+});

@@ -1,0 +1,68 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 91,
+  "number_of_ayahs": 15,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "wal-shamsi waḍuḥāhā"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wal-qamari idhā talāhā"
+    },
+    {
+      "ayah_number": 3,
+      "text": "wal-nahāri idhā jallāhā"
+    },
+    {
+      "ayah_number": 4,
+      "text": "wa-al-layli idhā yaghshāhā"
+    },
+    {
+      "ayah_number": 5,
+      "text": "wal-samāi wamā banāhā"
+    },
+    {
+      "ayah_number": 6,
+      "text": "wal-arḍi wamā ṭaḥāhā"
+    },
+    {
+      "ayah_number": 7,
+      "text": "wanafsin wamā sawwāhā"
+    },
+    {
+      "ayah_number": 8,
+      "text": "fa-alhamahā fujūrahā wataqwāhā"
+    },
+    {
+      "ayah_number": 9,
+      "text": "qad aflaḥa man zakkāhā"
+    },
+    {
+      "ayah_number": 10,
+      "text": "waqad khāba man dassāhā"
+    },
+    {
+      "ayah_number": 11,
+      "text": "kadhabat thamūdu biṭaghwāhā"
+    },
+    {
+      "ayah_number": 12,
+      "text": "idhi inbaʿatha ashqāhā"
+    },
+    {
+      "ayah_number": 13,
+      "text": "faqāla lahum rasūlu l-lahi nāqata l-lahi wasuq'yāhā"
+    },
+    {
+      "ayah_number": 14,
+      "text": "fakadhabūhu faʿaqarūhā fadamdama ʿalayhim rabbuhum bidhanbihim fasawwāhā"
+    },
+    {
+      "ayah_number": 15,
+      "text": "walā yakhāfu ʿuq'bāhā"
+    }
+  ]
+}

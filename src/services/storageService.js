@@ -3,18 +3,172 @@
  * Stores: notes, bookmarks, reading-position, cached text, settings.
  */
 
-import { dbGet, dbSet, dbDelete, dbGetAll } from "./dbService.js";
+import {
+  dbGet,
+  dbSet,
+  dbDelete,
+  dbGetAll,
+  dbReplaceStores,
+  dbCompareAndSet,
+} from "./dbService.js";
 import {
   encryptData,
   decryptDataWithMeta,
-  isEncryptionUnlocked,
 } from "./cryptoUtil.js";
 import { ACCEPTED_FONT_IDS, DEFAULT_FONT_ID, normalizeFontId } from "../data/fonts.js";
+import { getSurahAyahCount } from "../data/surahs.js";
+import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
+import {
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+} from "../constants/warshTranslationEditions.js";
+import {
+  normalizeDayTheme,
+  normalizeNightTheme,
+  normalizeThemeId,
+} from "../data/themes.js";
 import { bookmarkRecordSchema, noteRecordSchema } from "./storageValidation.js";
+
+// Mirrors PRAYER_METHODS in prayerTimesService (kept out of the boot graph:
+// storageService loads at startup, the timings API client must not).
+const VALID_PRAYER_METHOD_IDS = [1, 2, 3, 4, 5, 8, 9, 10, 11, 12, 13, 17, 18, 19, 20, 21, 22, 23];
+
+function normalizePrayerMethodSetting(value, lang) {
+  const parsed = Number(value);
+  if (VALID_PRAYER_METHOD_IDS.includes(parsed)) return parsed;
+  // French-speaking readers overwhelmingly follow the UOIF 12°/12° convention.
+  return lang === "fr" ? 12 : 3;
+}
+
+function sanitizePrayerLocation(value) {
+  if (!value || typeof value !== "object") return null;
+  const latitude = Number(value.latitude);
+  const longitude = Number(value.longitude);
+  if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) return null;
+  if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180) return null;
+  return {
+    latitude: Math.round(latitude * 10000) / 10000,
+    longitude: Math.round(longitude * 10000) / 10000,
+    label: typeof value.label === "string" ? value.label.slice(0, 80) : "",
+  };
+}
+
+// Mirrors applyPrayerOffsets/sanitizePrayerNotifications in
+// prayerTimesService (see the boot-graph comment above for why these are
+// duplicated rather than imported).
+const PRAYER_OFFSET_KEYS = ["Fajr", "Dhuhr", "Asr", "Maghrib", "Isha"];
+
+function sanitizePrayerOffsetsSetting(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const out = {};
+  for (const key of PRAYER_OFFSET_KEYS) {
+    const parsed = Number(source[key]);
+    out[key] = Number.isFinite(parsed) ? Math.max(-60, Math.min(60, Math.round(parsed))) : 0;
+  }
+  return out;
+}
+
+const ADHAN_VOLUME_CHOICES = [0.2, 0.4, 0.6, 0.8, 1];
+const PRE_REMINDER_CHOICES = [0, 5, 10, 15, 20];
+const POST_REMINDER_CHOICES = [0, 10, 15, 20, 30, 45];
+
+function sanitizePrayerNotificationsSetting(value) {
+  const source = value && typeof value === "object" && !Array.isArray(value) ? value : {};
+  const volume = Number(source.adhanVolume);
+  const pre = Number(source.preReminderMinutes);
+  const post = Number(source.postReminderMinutes);
+  const prayers =
+    source.prayers && typeof source.prayers === "object" && !Array.isArray(source.prayers)
+      ? source.prayers
+      : {};
+  return {
+    adhanEnabled: source.adhanEnabled !== false,
+    adhanSourceId: typeof source.adhanSourceId === "string" ? source.adhanSourceId.slice(0, 40) : "",
+    adhanVolume: Number.isFinite(volume)
+      ? ADHAN_VOLUME_CHOICES.reduce((best, step) =>
+        Math.abs(step - volume) < Math.abs(best - volume) ? step : best,
+      )
+      : 1,
+    silent: Boolean(source.silent),
+    preReminderMinutes: PRE_REMINDER_CHOICES.includes(pre) ? pre : 0,
+    postReminderMinutes: POST_REMINDER_CHOICES.includes(post) ? post : 0,
+    catchUp: source.catchUp !== false,
+    prayers: Object.fromEntries(
+      PRAYER_OFFSET_KEYS.map((key) => [key, prayers[key] !== false]),
+    ),
+  };
+}
 
 function parseRecordOrNull(schema, value) {
   const result = schema.safeParse(value);
   return result.success ? result.data : null;
+}
+
+const PRIVATE_RECORD_FORMAT = "mushafplus-encrypted-record-v2";
+
+function encodePrivateRecord(record) {
+  return {
+    id: record.id,
+    format: PRIVATE_RECORD_FORMAT,
+    payload: encryptData(record),
+  };
+}
+
+function decodePrivateRecord(schema, value) {
+  if (value?.format === PRIVATE_RECORD_FORMAT && typeof value.payload === "string") {
+    const result = decryptDataWithMeta(value.payload);
+    return {
+      record: parseRecordOrNull(schema, result.data),
+      needsMigration: Boolean(result.needsMigration),
+    };
+  }
+  return {
+    record: parseRecordOrNull(schema, value),
+    needsMigration: Boolean(value),
+  };
+}
+
+async function writePrivateRecord(storeName, schema, value) {
+  const record = parseRecordOrNull(schema, value);
+  if (!record) return false;
+  const key = await dbSet(storeName, encodePrivateRecord(record));
+  return key !== undefined;
+}
+
+async function migratePrivateRecord(storeName, schema, raw, value) {
+  const record = parseRecordOrNull(schema, value);
+  if (!record) return false;
+  return dbCompareAndSet(storeName, record.id, raw, encodePrivateRecord(record));
+}
+
+async function readPrivateRecord(storeName, schema, key) {
+  const raw = await dbGet(storeName, key);
+  const decoded = decodePrivateRecord(schema, raw);
+  if (decoded.record && decoded.needsMigration) {
+    await migratePrivateRecord(storeName, schema, raw, decoded.record);
+    const current = await dbGet(storeName, key);
+    return decodePrivateRecord(schema, current).record;
+  }
+  return decoded.record;
+}
+
+async function readAllPrivateRecords(storeName, schema) {
+  const rawRecords = await dbGetAll(storeName, { strict: true });
+  const decoded = (Array.isArray(rawRecords) ? rawRecords : [])
+    .map((value) => ({ ...decodePrivateRecord(schema, value), raw: value }))
+    .filter(({ record }) => Boolean(record));
+  const migrations = decoded.filter(({ needsMigration }) => needsMigration);
+  if (migrations.length) {
+    await Promise.all(
+      migrations.map(({ record, raw }) =>
+        migratePrivateRecord(storeName, schema, raw, record)),
+    );
+    const current = await dbGetAll(storeName, { strict: true });
+    return current
+      .map((value) => decodePrivateRecord(schema, value).record)
+      .filter(Boolean);
+  }
+  return decoded.map(({ record }) => record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -23,12 +177,17 @@ function parseRecordOrNull(schema, value) {
 
 export async function saveNote(surah, ayah, text) {
   const id = `${surah}:${ayah}`;
-  await dbSet("notes", { id, surah, ayah, text, updatedAt: Date.now() });
+  return writePrivateRecord("notes", noteRecordSchema, {
+    id,
+    surah,
+    ayah,
+    text,
+    updatedAt: Date.now(),
+  });
 }
 
 export async function getNote(surah, ayah) {
-  const raw = await dbGet("notes", `${surah}:${ayah}`);
-  return parseRecordOrNull(noteRecordSchema, raw);
+  return readPrivateRecord("notes", noteRecordSchema, `${surah}:${ayah}`);
 }
 
 export async function deleteNote(surah, ayah) {
@@ -36,10 +195,11 @@ export async function deleteNote(surah, ayah) {
 }
 
 export async function getAllNotes() {
-  const raw = await dbGetAll("notes");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(noteRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("notes", noteRecordSchema);
+}
+
+export async function importNoteRecord(record) {
+  return writePrivateRecord("notes", noteRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -48,7 +208,13 @@ export async function getAllNotes() {
 
 export async function addBookmark(surah, ayah, label = "") {
   const id = `${surah}:${ayah}`;
-  await dbSet("bookmarks", { id, surah, ayah, label, createdAt: Date.now() });
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, {
+    id,
+    surah,
+    ayah,
+    label,
+    createdAt: Date.now(),
+  });
 }
 
 export async function removeBookmark(surah, ayah) {
@@ -56,15 +222,17 @@ export async function removeBookmark(surah, ayah) {
 }
 
 export async function isBookmarked(surah, ayah) {
-  const val = await dbGet("bookmarks", `${surah}:${ayah}`);
-  return !!parseRecordOrNull(bookmarkRecordSchema, val);
+  return Boolean(
+    await readPrivateRecord("bookmarks", bookmarkRecordSchema, `${surah}:${ayah}`),
+  );
 }
 
 export async function getAllBookmarks() {
-  const raw = await dbGetAll("bookmarks");
-  return (Array.isArray(raw) ? raw : [])
-    .map((entry) => parseRecordOrNull(bookmarkRecordSchema, entry))
-    .filter(Boolean);
+  return readAllPrivateRecords("bookmarks", bookmarkRecordSchema);
+}
+
+export async function importBookmarkRecord(record) {
+  return writePrivateRecord("bookmarks", bookmarkRecordSchema, record);
 }
 
 /* ═══════════════════════════════════════════ */
@@ -75,21 +243,34 @@ const SETTINGS_KEY = "mushaf-plus-settings";
 
 // Valeurs valides pour validation
 const VALID_LANGS = ["fr", "en", "ar"];
-const VALID_TRANSLATION_LANGS = ["fr", "en", "es", "de", "tr", "ur"];
+// The vendored Warsh-adapted editions are selectable like a language: their
+// edition id doubles as the translationLangs token (see quranAPI TRANSLATION_CHOICES).
+const VALID_TRANSLATION_LANGS = [
+  "fr",
+  "en",
+  "es",
+  "de",
+  "tr",
+  "ur",
+  WARSH_TRANSLATION_EDITION_ID,
+  WARSH_TRANSLATION_EDITION_ID_EN,
+];
 const VALID_WORD_TRANSLATION_LANGS = ["fr", "en"];
-const VALID_THEMES = ["light", "sepia", "dark"];
-const LEGACY_THEME_MAP = {
-  "premium-beige": "sepia",
-  ocean: "dark",
-  "night-blue": "dark",
-  "quran-night": "dark",
-  forest: "dark",
-  oled: "dark",
-};
 const VALID_RIWAYAS = ["hafs", "warsh"];
 const VALID_DISPLAY_MODES = ["surah", "page", "juz"];
 const VALID_AUDIO_PLAYER_SKINS = ["orbit", "classic"];
 const VALID_FONTS = ACCEPTED_FONT_IDS;
+
+function clampSurah(value) {
+  return Math.max(1, Math.min(114, Number(value) || 1));
+}
+
+function clampAyahForSurah(surahValue, ayahValue, riwaya = "hafs") {
+  const surah = clampSurah(surahValue);
+  const maxAyah =
+    getSurahVerseCountByRiwaya(surah, riwaya) || getSurahAyahCount(surah);
+  return Math.max(1, Math.min(maxAyah, Number(ayahValue) || 1));
+}
 
 function sanitizeFavoriteReciters(input) {
   if (!Array.isArray(input)) return [];
@@ -97,33 +278,6 @@ function sanitizeFavoriteReciters(input) {
     .filter((value) => typeof value === "string" && value.trim())
     .map((value) => value.trim().slice(0, 80))
     .slice(0, 24);
-}
-
-function sanitizePinnedAyahs(input) {
-  if (!Array.isArray(input)) return [];
-
-  const seen = new Set();
-  return input
-    .map((item) => ({
-      surah: Math.max(1, Math.min(114, Number(item?.surah) || 1)),
-      ayah: Math.max(1, Math.min(286, Number(item?.ayah) || 1)),
-      number: Number.isFinite(Number(item?.number)) ? Number(item.number) : null,
-      text:
-        typeof item?.text === "string"
-          ? item.text.trim().slice(0, 1200)
-          : "",
-      surahName:
-        typeof item?.surahName === "string"
-          ? item.surahName.trim().slice(0, 120)
-          : "",
-    }))
-    .filter((item) => {
-      const key = `${item.surah}:${item.ayah}`;
-      if (seen.has(key)) return false;
-      seen.add(key);
-      return true;
-    })
-    .slice(0, 4);
 }
 
 function sanitizeTranslationLangs(input, fallback = "fr") {
@@ -159,6 +313,11 @@ function isValidClockTime(value) {
   const hours = Number(match[1]);
   const minutes = Number(match[2]);
   return hours >= 0 && hours <= 23 && minutes >= 0 && minutes <= 59;
+}
+
+/** Whole surah in one recording, verse files, or decided per playlist. */
+function sanitizeAudioPlaybackMode(value) {
+  return value === "surah" || value === "verse" ? value : "auto";
 }
 
 function sanitizeAudioPlayerSkin(value) {
@@ -229,6 +388,7 @@ function sanitizeReciterAvailabilityMap(input) {
 const DEFAULT_SETTINGS = {
   lang: "fr",
   theme: "light",
+  skipSplashAnimation: false,
   riwaya: "hafs",
   reciter: "ar.alafasy",
   fontSize: 25,
@@ -244,20 +404,18 @@ const DEFAULT_SETTINGS = {
   wordTranslationLang: "fr",
   showTranslation: true,
   showTajwid: true,
-  showWordByWord: false,
   showTransliteration: true,
-  showWordTranslation: true,
   translationReadingMode: false,
-  pinnedAyahs: [],
   displayMode: "surah", // 'surah' | 'page' | 'juz'
   mushafLayout: "list", // 'list' | 'mushaf'
+  mushafPageFlow: "vertical", // 'vertical' | 'horizontal'
   audioSpeed: 1,
   volume: 1,
   continuousPlay: true,
   warshStrictMode: true,
   syncOffsetsMs: {},
   favoriteReciters: [],
-  autoSelectFastestReciter: false,
+  autoSelectFastestReciter: true,
   reciterLatencyByKey: {},
   reciterAvailabilityById: {},
   autoNightMode: false,
@@ -265,10 +423,27 @@ const DEFAULT_SETTINGS = {
   nightEnd: "06:00",
   nightTheme: "dark",
   dayTheme: "light",
-  usePrayerTimes: false,
-  wirdGoalType: "pages",
-  wirdGoalAmount: 5,
   surahRepeatCount: 1,
+  audioPlaybackMode: "auto",
+  prayerTimesEnabled: false,
+  prayerMethod: 12,
+  prayerMethodAuto: true,
+  prayerLocation: null,
+  prayerReminders: false,
+  prayerTimeOffsets: { Fajr: 0, Dhuhr: 0, Asr: 0, Maghrib: 0, Isha: 0 },
+  prayerNotifications: {
+    adhanEnabled: true,
+    adhanSourceId: "prophets-mosque-ejaz215",
+    adhanVolume: 1,
+    silent: false,
+    preReminderMinutes: 0,
+    postReminderMinutes: 0,
+    catchUp: true,
+    prayers: { Fajr: true, Dhuhr: true, Asr: true, Maghrib: true, Isha: true },
+  },
+  prayerTrackingEnabled: false,
+  prayerPostAdhanDuas: true,
+  dailyVerseNotification: false,
   showHome: true,
   showDuas: false,
   focusReading: false,
@@ -284,22 +459,12 @@ function cloneDefaultSettings() {
   return JSON.parse(JSON.stringify(DEFAULT_SETTINGS));
 }
 
-function normalizeTheme(theme, fallback = "light") {
-  if (VALID_THEMES.includes(theme)) return theme;
-  if (typeof theme === "string" && LEGACY_THEME_MAP[theme]) {
-    return LEGACY_THEME_MAP[theme];
-  }
-  return fallback;
-}
-
-function normalizeDayTheme(theme) {
-  const normalized = normalizeTheme(theme, "light");
-  return ["light", "sepia"].includes(normalized) ? normalized : "light";
-}
-
-function normalizeNightTheme(theme) {
-  const normalized = normalizeTheme(theme, "dark");
-  return normalized === "dark" ? normalized : "dark";
+// The default is opt-in for fresh installs only: a stored boolean, including
+// `false`, must survive so automatic reciter selection can really be disabled.
+function normalizeFastestReciterPreference(value) {
+  return typeof value === "boolean"
+    ? value
+    : DEFAULT_SETTINGS.autoSelectFastestReciter;
 }
 
 function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
@@ -312,12 +477,55 @@ function sanitizeFontFamilyByRiwaya(input, fallbackFont, fallbackRiwaya) {
   };
 }
 
+// An unreadable settings blob must survive the defaults that replace it:
+// saveSettings would otherwise overwrite the key and lose the reading
+// position for good. Archive once per session, keeping the ciphertext as-is.
+let corruptArchivedThisSession = false;
+function archiveCorruptSettingsBlob(raw) {
+  if (corruptArchivedThisSession || typeof raw !== "string" || !raw) return;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      if (localStorage.key(i)?.startsWith(`${SETTINGS_KEY}.corrupt.`)) {
+        corruptArchivedThisSession = true;
+        return;
+      }
+    }
+    localStorage.setItem(`${SETTINGS_KEY}.corrupt.${Date.now()}`, raw);
+    corruptArchivedThisSession = true;
+  } catch {
+    // Quota or private mode: nothing further we can do.
+  }
+}
+
+// boot-recovery.js runs before the bundle and needs to know whether the Warsh
+// mushaf face is worth a 90 kB preload. The settings blob is opaque once a
+// passphrase is set, so mirror only that yes/no bit — never the riwaya, the
+// font name or the reading position.
+export const WARSH_PRELOAD_KEY = "mushaf-plus-warsh-preload";
+function mirrorWarshFacePreload(safe) {
+  const warshFont = safe.fontFamilyByRiwaya?.warsh ?? safe.fontFamily;
+  const needed = safe.riwaya === "warsh" && warshFont !== "scheherazade-new-warsh";
+  try {
+    localStorage.setItem(WARSH_PRELOAD_KEY, needed ? "1" : "0");
+  } catch {
+    // Quota or private mode: boot simply falls back to reading the legacy blob.
+  }
+}
+
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);
     if (!raw) return cloneDefaultSettings();
-    const { data: decrypted, usedLegacy } = decryptDataWithMeta(raw);
-    const parsed = decrypted || JSON.parse(raw);
+    const {
+      data: decrypted,
+      needsMigration,
+      locked,
+    } = decryptDataWithMeta(raw);
+    if (locked) {
+      archiveCorruptSettingsBlob(raw);
+      return cloneDefaultSettings();
+    }
+    const parsed = decrypted ?? JSON.parse(raw);
     if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
       return cloneDefaultSettings();
     }
@@ -344,32 +552,49 @@ export function getSettings() {
       ),
       syncOffsetsMs: sanitizeSyncOffsetsMap(parsed?.syncOffsetsMs),
       favoriteReciters: sanitizeFavoriteReciters(parsed?.favoriteReciters),
-      pinnedAyahs: sanitizePinnedAyahs(parsed?.pinnedAyahs),
-      autoSelectFastestReciter:
-        parsed?.autoSelectFastestReciter !== undefined
-          ? Boolean(parsed.autoSelectFastestReciter)
-          : DEFAULT_SETTINGS.autoSelectFastestReciter,
+      autoSelectFastestReciter: normalizeFastestReciterPreference(
+        parsed?.autoSelectFastestReciter,
+      ),
       reciterLatencyByKey: sanitizeLatencyMap(parsed?.reciterLatencyByKey),
       reciterAvailabilityById: sanitizeReciterAvailabilityMap(
         parsed?.reciterAvailabilityById,
       ),
       audioPlayerSkin: sanitizeAudioPlayerSkin(parsed?.audioPlayerSkin),
-      usePrayerTimes:
-        parsed?.usePrayerTimes !== undefined
-          ? Boolean(parsed.usePrayerTimes)
-          : DEFAULT_SETTINGS.usePrayerTimes,
       surahRepeatCount:
         Number.isFinite(Number(parsed?.surahRepeatCount))
           ? Math.max(0, Math.min(999, Math.floor(Number(parsed.surahRepeatCount))))
           : DEFAULT_SETTINGS.surahRepeatCount,
+      audioPlaybackMode: sanitizeAudioPlaybackMode(parsed?.audioPlaybackMode),
+      prayerTimesEnabled: Boolean(parsed?.prayerTimesEnabled),
+      prayerMethod: normalizePrayerMethodSetting(parsed?.prayerMethod, parsed?.lang),
+      // A reader who already has a place and a method keeps them until they ask
+      // the app to follow their region; a new reader starts automatic.
+      prayerMethodAuto:
+        parsed?.prayerMethodAuto !== undefined
+          ? Boolean(parsed.prayerMethodAuto)
+          : !sanitizePrayerLocation(parsed?.prayerLocation),
+      prayerLocation: sanitizePrayerLocation(parsed?.prayerLocation),
+      prayerReminders: Boolean(parsed?.prayerReminders),
+      prayerTimeOffsets: sanitizePrayerOffsetsSetting(parsed?.prayerTimeOffsets),
+      prayerNotifications: sanitizePrayerNotificationsSetting(parsed?.prayerNotifications),
+      prayerTrackingEnabled: Boolean(parsed?.prayerTrackingEnabled),
+      prayerPostAdhanDuas:
+        parsed?.prayerPostAdhanDuas !== undefined
+          ? Boolean(parsed.prayerPostAdhanDuas)
+          : DEFAULT_SETTINGS.prayerPostAdhanDuas,
+      dailyVerseNotification: Boolean(parsed?.dailyVerseNotification),
     };
 
-    if (usedLegacy && isEncryptionUnlocked()) {
+    if (needsMigration) {
+      // Toujours migrer depuis la clé legacy (publique) vers la clé appareil,
+      // sans attendre le déverrouillage de la passphrase utilisateur.
       saveSettings(normalized);
     }
 
     return normalized;
-  } catch {
+  } catch (err) {
+    archiveCorruptSettingsBlob(localStorage.getItem(SETTINGS_KEY));
+    console.warn("[storage] Réglages illisibles : defaults restaurés, copie archivée pour récupération.", err);
     return cloneDefaultSettings();
   }
 }
@@ -378,13 +603,16 @@ export function getSettings() {
 function sanitizeSettings(settings) {
   const safeInput = settings && typeof settings === "object" ? settings : {};
   const safeSyncOffsets = sanitizeSyncOffsetsMap(safeInput.syncOffsetsMs);
+  const lastSurah = clampSurah(safeInput.lastPosition?.surah);
+  const normalizedRiwaya = VALID_RIWAYAS.includes(safeInput.riwaya)
+    ? safeInput.riwaya
+    : "hafs";
 
   return {
     lang: VALID_LANGS.includes(safeInput.lang) ? safeInput.lang : "fr",
-    theme: normalizeTheme(safeInput.theme, "light"),
-    riwaya: VALID_RIWAYAS.includes(safeInput.riwaya)
-      ? safeInput.riwaya
-      : "hafs",
+    theme: normalizeThemeId(safeInput.theme, "light"),
+    skipSplashAnimation: Boolean(safeInput.skipSplashAnimation),
+    riwaya: normalizedRiwaya,
     reciter:
       typeof safeInput.reciter === "string"
         ? safeInput.reciter.slice(0, 50)
@@ -434,6 +662,9 @@ function sanitizeSettings(settings) {
     mushafLayout: ["list", "mushaf"].includes(safeInput.mushafLayout)
       ? safeInput.mushafLayout
       : "list",
+    mushafPageFlow: ["vertical", "horizontal"].includes(safeInput.mushafPageFlow)
+      ? safeInput.mushafPageFlow
+      : "vertical",
     audioSpeed: [0.5, 0.75, 1, 1.25, 1.5, 2].includes(safeInput.audioSpeed)
       ? safeInput.audioSpeed
       : 1,
@@ -441,10 +672,9 @@ function sanitizeSettings(settings) {
     warshStrictMode: Boolean(safeInput.warshStrictMode),
     syncOffsetsMs: safeSyncOffsets,
     favoriteReciters: sanitizeFavoriteReciters(safeInput.favoriteReciters),
-    autoSelectFastestReciter:
-      safeInput.autoSelectFastestReciter !== undefined
-        ? Boolean(safeInput.autoSelectFastestReciter)
-        : DEFAULT_SETTINGS.autoSelectFastestReciter,
+    autoSelectFastestReciter: normalizeFastestReciterPreference(
+      safeInput.autoSelectFastestReciter,
+    ),
     reciterLatencyByKey: sanitizeLatencyMap(safeInput.reciterLatencyByKey),
     reciterAvailabilityById: sanitizeReciterAvailabilityMap(
       safeInput.reciterAvailabilityById,
@@ -458,31 +688,18 @@ function sanitizeSettings(settings) {
       : "06:00",
     nightTheme: normalizeNightTheme(safeInput.nightTheme),
     dayTheme: normalizeDayTheme(safeInput.dayTheme),
-    usePrayerTimes:
-      safeInput.usePrayerTimes !== undefined
-        ? Boolean(safeInput.usePrayerTimes)
-        : DEFAULT_SETTINGS.usePrayerTimes,
     volume:
       typeof safeInput.volume === "number"
         ? Math.max(0, Math.min(1, safeInput.volume))
         : 1,
-    showWordByWord:
-      safeInput.showWordByWord !== undefined
-        ? Boolean(safeInput.showWordByWord)
-        : false,
     showTransliteration:
       safeInput.showTransliteration !== undefined
         ? Boolean(safeInput.showTransliteration)
-        : true,
-    showWordTranslation:
-      safeInput.showWordTranslation !== undefined
-        ? Boolean(safeInput.showWordTranslation)
         : true,
     translationReadingMode:
       safeInput.translationReadingMode !== undefined
         ? Boolean(safeInput.translationReadingMode)
         : false,
-    pinnedAyahs: sanitizePinnedAyahs(safeInput.pinnedAyahs),
     showHome:
       safeInput.showHome !== undefined ? Boolean(safeInput.showHome) : true,
     showDuas:
@@ -500,26 +717,30 @@ function sanitizeSettings(settings) {
       Number.isFinite(Number(safeInput.surahRepeatCount))
         ? Math.max(0, Math.min(999, Math.floor(Number(safeInput.surahRepeatCount))))
         : DEFAULT_SETTINGS.surahRepeatCount,
-    wirdGoalType: ["pages", "hizb", "juz"].includes(safeInput.wirdGoalType)
-      ? safeInput.wirdGoalType
-      : "pages",
-    wirdGoalAmount: Math.max(
-      1,
-      Math.min(30, Number(safeInput.wirdGoalAmount) || 5),
-    ),
+    audioPlaybackMode: sanitizeAudioPlaybackMode(safeInput.audioPlaybackMode),
     karaokeFollow:
       safeInput.karaokeFollow !== undefined
         ? Boolean(safeInput.karaokeFollow)
         : true,
+    prayerTimesEnabled: Boolean(safeInput.prayerTimesEnabled),
+    prayerMethod: normalizePrayerMethodSetting(safeInput.prayerMethod, safeInput.lang),
+    prayerMethodAuto:
+      safeInput.prayerMethodAuto !== undefined
+        ? Boolean(safeInput.prayerMethodAuto)
+        : !sanitizePrayerLocation(safeInput.prayerLocation),
+    prayerLocation: sanitizePrayerLocation(safeInput.prayerLocation),
+    prayerReminders: Boolean(safeInput.prayerReminders),
+    prayerTimeOffsets: sanitizePrayerOffsetsSetting(safeInput.prayerTimeOffsets),
+    prayerNotifications: sanitizePrayerNotificationsSetting(safeInput.prayerNotifications),
+    prayerTrackingEnabled: Boolean(safeInput.prayerTrackingEnabled),
+    prayerPostAdhanDuas:
+      safeInput.prayerPostAdhanDuas !== undefined
+        ? Boolean(safeInput.prayerPostAdhanDuas)
+        : true,
+    dailyVerseNotification: Boolean(safeInput.dailyVerseNotification),
     lastPosition: {
-      surah: Math.max(
-        1,
-        Math.min(114, Number(safeInput.lastPosition?.surah) || 1),
-      ),
-      ayah: Math.max(
-        1,
-        Math.min(286, Number(safeInput.lastPosition?.ayah) || 1),
-      ),
+      surah: lastSurah,
+      ayah: clampAyahForSurah(lastSurah, safeInput.lastPosition?.ayah, normalizedRiwaya),
       page: Math.max(
         1,
         Math.min(604, Number(safeInput.lastPosition?.page) || 1),
@@ -529,20 +750,103 @@ function sanitizeSettings(settings) {
   };
 }
 
+let storageFailureAnnounced = false;
+
 export function saveSettings(settings) {
   const safe = sanitizeSettings(settings);
   try {
     localStorage.setItem(SETTINGS_KEY, encryptData(safe));
+    mirrorWarshFacePreload(safe);
+    return true;
   } catch {
-    // Storage might be unavailable (private mode/quota exceeded)
+    // Never fall back to plaintext when encryption/storage is unavailable.
+    // Callers ignore the false return, so say once per session that reading
+    // state is no longer being persisted (QuotaExceeded, private mode, …).
+    if (!storageFailureAnnounced && typeof window !== "undefined") {
+      storageFailureAnnounced = true;
+      import("../lib/utils.js")
+        .then(({ toast }) => {
+          import("../i18n/index.js").then(({ t }) => {
+            toast(t("errors.storageFull", safe.lang), "error");
+          });
+        })
+        .catch(() => {});
+    }
+    return false;
   }
 }
 
-export function updateSetting(key, value) {
-  const settings = getSettings();
-  settings[key] = value;
-  saveSettings(settings);
-  return settings;
+export async function readPrivateDataSnapshot() {
+  return {
+    settings: getSettings(),
+    notes: await getAllNotes(),
+    bookmarks: await getAllBookmarks(),
+  };
+}
+
+export async function readRawPrivateDataSnapshot() {
+  return {
+    settings: localStorage.getItem(SETTINGS_KEY),
+    notes: await dbGetAll("notes", { strict: true }),
+    bookmarks: await dbGetAll("bookmarks", { strict: true }),
+  };
+}
+
+export async function rewritePrivateDataSnapshot(snapshot) {
+  if (!snapshot) {
+    throw new Error("Unable to persist protected settings");
+  }
+  const notes = (snapshot.notes || []).map((value) => {
+    const record = parseRecordOrNull(noteRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected note");
+    return encodePrivateRecord(record);
+  });
+  const bookmarks = (snapshot.bookmarks || []).map((value) => {
+    const record = parseRecordOrNull(bookmarkRecordSchema, value);
+    if (!record) throw new Error("Unable to validate a protected bookmark");
+    return encodePrivateRecord(record);
+  });
+  if (!saveSettings(snapshot.settings)) {
+    throw new Error("Unable to persist protected settings");
+  }
+  if (!(await dbReplaceStores({ notes, bookmarks }))) {
+    throw new Error("Unable to rotate private IndexedDB stores");
+  }
+  return true;
+}
+
+export async function restoreRawPrivateDataSnapshot(snapshot) {
+  try {
+    if (typeof snapshot?.settings === "string") {
+      localStorage.setItem(SETTINGS_KEY, snapshot.settings);
+    } else {
+      localStorage.removeItem(SETTINGS_KEY);
+    }
+    return dbReplaceStores({
+      notes: snapshot?.notes || [],
+      bookmarks: snapshot?.bookmarks || [],
+    });
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Patches the stored settings instead of replacing the whole blob. Callers
+ * that persist a subset of keys (reading position, one audio preference) must
+ * not reset the keys they ignore, so unspecified keys keep their stored value
+ * and `lastPosition` is merged field by field.
+ */
+export function mergeSettings(patch) {
+  const current = getSettings();
+  return saveSettings({
+    ...current,
+    ...patch,
+    lastPosition: {
+      ...current.lastPosition,
+      ...(patch?.lastPosition || {}),
+    },
+  });
 }
 
 /* ═══════════════════════════════════════════ */
@@ -550,22 +854,15 @@ export function updateSetting(key, value) {
 /* ═══════════════════════════════════════════ */
 
 export function savePosition(surah, ayah, page) {
-  updateSetting("lastPosition", { surah, ayah, page });
-}
-
-export function getPosition() {
-  return getSettings().lastPosition;
+  const settings = getSettings();
+  settings.lastPosition = { ...settings.lastPosition, surah, ayah, page };
+  saveSettings(settings);
+  return settings.lastPosition;
 }
 
 function clampSyncOffset(ms) {
   const n = Number(ms) || 0;
   return Math.max(-500, Math.min(500, n));
-}
-
-export function getSyncOffsetMs(riwaya, reciterId) {
-  const settings = getSettings();
-  const key = `${riwaya}:${reciterId}`;
-  return clampSyncOffset(settings.syncOffsetsMs?.[key] ?? 0);
 }
 
 export function setSyncOffsetMs(riwaya, reciterId, offsetMs) {

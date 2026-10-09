@@ -119,7 +119,7 @@ const SURAHS = [
   },
   {
     n: 14,
-    ar: "ابراهيم",
+    ar: "إبراهيم",
     en: "Ibrahim",
     fr: "Abraham",
     type: "Meccan",
@@ -1037,6 +1037,13 @@ export function getSurah(n) {
 
 export function getSurahAyahCount(n) {
   return SURAHS[n - 1]?.ayahs || 1;
+}
+
+export function getSurahLigature(n) {
+  const surahNumber = Number.parseInt(n, 10);
+  return Number.isInteger(surahNumber) && surahNumber >= 1 && surahNumber <= 114
+    ? String(surahNumber).padStart(3, "0")
+    : "";
 }
 
 const AR_DIGITS = ["٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"];

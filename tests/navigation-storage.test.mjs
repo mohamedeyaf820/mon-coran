@@ -2,6 +2,14 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import { parseInitialRoute } from "../src/hooks/useUrlSync.js";
+import {
+  appendNativeAyahMarker,
+  getAyahTextForFont,
+  getFontOptionsForRiwaya,
+  getNativeAyahMarker,
+  getQuranWordTextForFont,
+  normalizeFontId,
+} from "../src/data/fonts.js";
 import { getSettings, saveSettings } from "../src/services/storageService.js";
 
 function createMockStorage() {
@@ -31,57 +39,72 @@ function setPathname(pathname) {
   };
 }
 
-test("navigation: parses surah, page, juz and duas routes safely", () => {
+test("navigation: parses reading, duas and legal routes safely", () => {
   setPathname("/surah/2/255");
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "surah",
     currentSurah: 2,
     currentAyah: 255,
+    routeNotFound: false,
   });
 
   setPathname("/page/604");
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "page",
     currentPage: 604,
+    routeNotFound: false,
   });
 
   setPathname("/juz/30");
   assert.deepEqual(parseInitialRoute(), {
     showHome: false,
     showDuas: false,
+    showPrayers: false,
     displayMode: "juz",
     currentJuz: 30,
+    routeNotFound: false,
   });
 
   setPathname("/duas");
-  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true });
-});
+  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: true, showPrayers: false, duasRoute: "" });
 
-test("navigation: clamps invalid route numbers", () => {
-  setPathname("/surah/999/999");
+  setPathname('/prires');
+  assert.deepEqual(parseInitialRoute(), { showHome: false, showDuas: false, showPrayers: true });
+
+  setPathname("/privacy");
   assert.deepEqual(parseInitialRoute(), {
+    legalPage: "privacy",
     showHome: false,
     showDuas: false,
-    displayMode: "surah",
-    currentSurah: 114,
-    currentAyah: 6,
+    showPrayers: false,
   });
+});
 
-  setPathname("/surah/2/999");
-  assert.equal(parseInitialRoute().currentAyah, 286);
+test("navigation: rejects invalid route numbers", () => {
+  for (const pathname of [
+    "/surah/999/999",
+    "/surah/2/999",
+    "/surah/1/999",
+    "/page/0",
+    "/juz/-2",
+  ]) {
+    setPathname(pathname);
+    assert.equal(parseInitialRoute().routeNotFound, true, pathname);
+  }
+});
 
-  setPathname("/surah/1/999");
-  assert.equal(parseInitialRoute().currentAyah, 7);
+test("navigation: rejects partial route matches", () => {
+  setPathname("/page/12abc");
+  assert.equal(parseInitialRoute().routeNotFound, true);
 
-  setPathname("/page/0");
-  assert.equal(parseInitialRoute().currentPage, 1);
-
-  setPathname("/juz/-2");
-  assert.deepEqual(parseInitialRoute(), { showHome: true, showDuas: false });
+  setPathname("/surah/2/3/extra");
+  assert.equal(parseInitialRoute().routeNotFound, true);
 });
 
 test("storage: settings round-trip encrypted and sanitized", () => {
@@ -90,6 +113,7 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   saveSettings({
     lang: "fr",
     theme: "dark",
+    skipSplashAnimation: true,
     riwaya: "warsh",
     reciter: "ar.alafasy",
     quranFontSize: 200,
@@ -104,15 +128,35 @@ test("storage: settings round-trip encrypted and sanitized", () => {
   const settings = getSettings();
   assert.equal(settings.lang, "fr");
   assert.equal(settings.theme, "dark");
+  assert.equal(settings.skipSplashAnimation, true);
   assert.equal(settings.riwaya, "warsh");
   assert.equal(settings.quranFontSize, 96);
   assert.equal(settings.volume, 1);
   assert.deepEqual(settings.lastPosition, {
     surah: 9,
-    ayah: 286,
+    ayah: 130,
     page: 604,
     juz: 30,
   });
+
+  // Same position under Hafs must clamp to the Hafs total (129), proving the
+  // clamp follows the saved riwaya instead of always quoting Hafs.
+  saveSettings({ lang: "fr", riwaya: "hafs", lastPosition: { surah: 9, ayah: 999 } });
+  assert.equal(getSettings().lastPosition.ayah, 129);
+});
+
+test("storage: retired comparison pins are discarded", () => {
+  globalThis.localStorage = createMockStorage();
+
+  saveSettings({
+    pinnedAyahs: [
+      { surah: 1, ayah: 999, text: "x" },
+      { surah: 9, ayah: 999, text: "y" },
+    ],
+  });
+
+  const settings = getSettings();
+  assert.equal(Object.hasOwn(settings, "pinnedAyahs"), false);
 });
 
 test("storage: preserves per-riwaya Quran font choices", () => {
@@ -120,18 +164,18 @@ test("storage: preserves per-riwaya Quran font choices", () => {
 
   saveSettings({
     riwaya: "warsh",
-    fontFamily: "kfgqpc-warsh",
+    fontFamily: "qpc-warsh",
     fontFamilyByRiwaya: {
       hafs: "qpc-indopak",
-      warsh: "kfgqpc-warsh",
+      warsh: "qpc-warsh",
     },
   });
 
   const settings = getSettings();
-  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.equal(settings.fontFamily, "qpc-warsh");
   assert.deepEqual(settings.fontFamilyByRiwaya, {
     hafs: "qpc-indopak",
-    warsh: "kfgqpc-warsh",
+    warsh: "qpc-warsh",
   });
 });
 
@@ -148,9 +192,113 @@ test("storage: migrates removed local-only Warsh font aliases", () => {
   });
 
   const settings = getSettings();
-  assert.equal(settings.fontFamily, "kfgqpc-warsh");
+  assert.equal(settings.fontFamily, "qpc-warsh");
   assert.deepEqual(settings.fontFamilyByRiwaya, {
     hafs: "qpc-indopak",
-    warsh: "kfgqpc-warsh",
+    warsh: "qpc-warsh",
   });
+
+  // "kfgqpc-warsh" was a second menu entry for the same Warsh 10 woff2, so a
+  // preference saved before the merge must land on the surviving id.
+  globalThis.localStorage = createMockStorage();
+  saveSettings({ riwaya: "warsh", fontFamily: "kfgqpc-warsh" });
+  assert.equal(getSettings().fontFamily, "qpc-warsh");
+});
+
+test("fonts: exposes riwaya-safe native ayah markers", () => {
+  assert.deepEqual(
+    getFontOptionsForRiwaya("hafs").map((font) => font.id),
+    [
+      "qpc-hafs",
+      "qpc-indopak",
+      "scheherazade-new",
+      "amiri-quran",
+      "noto-naskh-arabic",
+    ],
+  );
+  assert.deepEqual(
+    getFontOptionsForRiwaya("warsh").map((font) => font.id),
+    ["qpc-warsh", "scheherazade-new-warsh", "alkalami-warsh", "qpc-uthmani-warsh", "amiri-quran-warsh", "noto-naskh-arabic-warsh"],
+  );
+
+  assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
+  assert.equal(getNativeAyahMarker(10, "qpc-hafs", "hafs"), "\u0661\u0660");
+  assert.equal(getNativeAyahMarker(100, "qpc-hafs", "hafs"), "\u0661\u0660\u0660");
+  assert.equal(getNativeAyahMarker(1, "qpc-indopak", "hafs"), "\u0661");
+  assert.equal(getNativeAyahMarker(1, "qpc-warsh", "warsh"), "\u0661");
+  assert.equal(getNativeAyahMarker(10, "qpc-warsh", "warsh"), "\u0661\u0660");
+  assert.equal(getNativeAyahMarker(100, "qpc-warsh", "warsh"), "\u0661\u0660\u0660");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u0661");
+  assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u0661");
+  assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
+  assert.equal(normalizeFontId("amiri-quran", "warsh"), "amiri-quran-warsh");
+  // The generic Hafs default in old settings must still resolve to the Warsh
+  // default. Its alternate style is selected explicitly by its Warsh id.
+  assert.equal(normalizeFontId("qpc-hafs", "warsh"), "qpc-warsh");
+  assert.equal(normalizeFontId("noto-naskh-arabic", "warsh"), "noto-naskh-arabic-warsh");
+  assert.equal(normalizeFontId("qpc-indopak", "warsh"), "qpc-warsh");
+  // The merged Warsh entry keeps answering to the id older preferences stored.
+  assert.equal(normalizeFontId("kfgqpc-warsh", "warsh"), "qpc-warsh");
+  assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
+  // The Madani page cut left the menu (a duplicate name for the same face) but
+  // stays a valid id for the preferences that selected it while it was there.
+  assert.equal(normalizeFontId("qpc-madani-page", "hafs"), "qpc-madani-page");
+  assert.ok(!getFontOptionsForRiwaya("hafs").some((font) => font.id === "qpc-madani-page"));
+});
+
+test("fonts: appends native ayah markers without duplicates", () => {
+  // A narrow no-break space keeps the marker on the verse's line.
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f", 7, "qpc-hafs", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u0667", 7, "qpc-hafs", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-indopak", "hafs"),
+    "\u0627\u0644\u062d\u0645\u062f\u202f\u0667",
+  );
+});
+
+test("fonts: strips source markers before a separate ayah marker is rendered", () => {
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0667", 7, "qpc-hafs", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u06dd\u06f7", 7, "qpc-indopak", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \u0661\u0661 \u0661\u0661", 11, "qpc-hafs", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
+  assert.equal(
+    appendNativeAyahMarker("\u0627\u0644\u062d\u0645\u062f \ufd3e\u0661\u0661\ufd3f", 11, "qpc-hafs", "hafs", false),
+    "\u0627\u0644\u062d\u0645\u062f",
+  );
+});
+
+test("fonts: selects Quran.com text compatible with the active Hafs font", () => {
+  const ayah = {
+    text: "fallback",
+    quranCom: {
+      textQpcHafs: "qpc hafs",
+      textIndopak: "indopak",
+      textUthmani: "uthmani",
+    },
+  };
+  const word = {
+    text: "fallback word",
+    textQpcHafs: "qpc word",
+    textIndopak: "indopak word",
+    textUthmani: "uthmani word",
+  };
+
+  assert.equal(getAyahTextForFont(ayah, "qpc-hafs", "hafs"), "qpc hafs");
+  assert.equal(getAyahTextForFont(ayah, "qpc-indopak", "hafs"), "indopak");
+  assert.equal(getAyahTextForFont(ayah, "amiri-quran", "hafs"), "uthmani");
+  assert.equal(getQuranWordTextForFont(word, "qpc-indopak", "hafs"), "indopak word");
 });

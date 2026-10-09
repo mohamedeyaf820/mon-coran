@@ -79,14 +79,14 @@ const KARAOKE_STYLE_PRESETS = {
 };
 
 // Per-reciter fine-tuning.  Overrides win over style presets + auto-calibration.
-// islamic.network CDN is generally faster to buffer → slightly lower offset.
+// Quran.com CDN is generally faster to buffer → slightly lower offset.
 // everyayah.com CDN can have higher first-packet delay → +0.03 s extra.
 //
 // Smoothing is raised to 0.92 across the board (vs. old 0.88) for snappier
 // response; mujawwad styles keep a lower value to avoid jitter on long syllables.
 const KARAOKE_RECITER_OVERRIDES = {
   hafs: {
-    // ── islamic.network CDN ────────────────────────────────────────────────
+    // ── Quran.com CDN (Alafasy/Minshawi) + Husary on EveryAyah ─────────────
     // Alafasy: brisk murattal pace, responsive CDN → moderate lead
     "ar.alafasy": {
       offsetSec: 0.18,
@@ -194,7 +194,7 @@ const KARAOKE_RECITER_OVERRIDES = {
     },
   },
   warsh: {
-    // Warsh reciters are all everyayah.com CDN; style is murattal unless noted.
+    // Warsh reciters stream per ayah from EveryAyah or QuranPedia.
     warsh_abdulbasit: {
       offsetSec: 0.22,
       lagWordsBase: 0,
@@ -220,32 +220,8 @@ const KARAOKE_RECITER_OVERRIDES = {
       lagWordsLong: 0,
       smoothing: 0.9,
     },
-    warsh_omar_al_qazabri: {
-      offsetSec: 0.2,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
-    warsh_mohammad_saayed: {
-      offsetSec: 0.23,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
-    warsh_al_qaria_yassen: {
-      offsetSec: 0.24,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
     warsh_aloyoon_al_koshi: {
       offsetSec: 0.23,
-      lagWordsBase: 0,
-      lagWordsLong: 0,
-      smoothing: 0.9,
-    },
-    warsh_rachid_belalya: {
-      offsetSec: 0.22,
       lagWordsBase: 0,
       lagWordsLong: 0,
       smoothing: 0.9,

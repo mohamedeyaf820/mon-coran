@@ -1,177 +1,569 @@
-/* ── SurahInfoPanel ─────────────────────────────────────── */
+/* Surah information dossier */
+.surah-info-modal__overlay {
+  padding: clamp(0.75rem, 3vw, 1.5rem);
+}
+
+.surah-info-modal {
+  display: flex;
+  height: min(92dvh, 60rem);
+  max-width: min(calc(100vw - 2rem), 64rem);
+  max-height: min(92dvh, 60rem);
+  width: min(100%, 64rem);
+  overflow: hidden;
+  flex-direction: column;
+  border-color: var(--border);
+  border-radius: 1rem;
+  background: var(--bg-card);
+  box-shadow: 0 20px 55px rgb(0 0 0 / 20%);
+}
+
+.surah-info-modal > .modal-title {
+  position: relative;
+  z-index: 10;
+  flex: 0 0 auto;
+  min-height: 3.5rem;
+  padding: 1.05rem 4rem 0.9rem 1.35rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg-card);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.surah-info-modal > button:first-of-type {
+  position: absolute;
+  top: 0.72rem;
+  right: 0.8rem;
+  min-width: 44px;
+  min-height: 44px;
+  border-color: color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: var(--bg-card);
+  box-shadow: none;
+}
+
+.surah-info-modal > button:first-of-type:hover {
+  border-color: color-mix(in srgb, var(--primary) 42%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg-card));
+}
+
+.surah-info-modal > div:last-child {
+  min-height: 0;
+  padding-top: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: color-mix(in srgb, var(--primary) 38%, transparent) transparent;
+  scrollbar-gutter: stable;
+  -webkit-overflow-scrolling: touch;
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar {
+  width: 0.42rem;
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 34%, transparent);
+}
+
+.surah-info-modal > div:last-child::-webkit-scrollbar-track {
+  background: transparent;
+}
 
 .sip-root {
-  margin-top: 0.25rem;
-  padding: clamp(0.65rem, 1.5vw, 0.9rem) clamp(0.75rem, 2vw, 1.1rem);
-  border-top: 1px solid var(--border);
-  animation: sip-in 0.18s ease-out;
+  padding: clamp(0.9rem, 2.2vw, 1.3rem);
+  color: var(--text-primary);
 }
 
-@keyframes sip-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Header row */
 .sip-header {
-  display: flex;
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.6rem;
-  margin-bottom: 0.75rem;
-  flex-wrap: wrap;
+  gap: clamp(0.75rem, 2vw, 1.1rem);
+  min-height: 7.25rem;
+  padding: clamp(1rem, 2.6vw, 1.35rem);
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--bg-secondary);
 }
 
-.sip-header__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 10px;
-  background: color-mix(in srgb, var(--primary) 10%, transparent 90%);
-  color: var(--primary);
-  flex-shrink: 0;
+.sip-header::before {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 4px;
+  background: var(--primary);
+  content: "";
 }
 
 .sip-header__text {
-  flex: 1;
   min-width: 0;
+}
+
+.sip-eyebrow,
+.sip-overview__kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--primary);
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sip-eyebrow__number {
+  display: inline-grid;
+  place-items: center;
+  min-width: 2.35rem;
+  min-height: 1.45rem;
+  padding-inline: 0.42rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--primary) 8%, transparent);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
 }
 
 .sip-header__name {
   display: block;
-  font-size: 0.9rem;
-  font-weight: 750;
+  margin-top: 0.28rem;
+  overflow: hidden;
   color: var(--text-primary);
-  line-height: 1.2;
+  font-size: clamp(1.25rem, 3.3vw, 1.85rem);
+  font-weight: 760;
+  line-height: 1.1;
+  letter-spacing: -0.025em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .sip-header__desc {
   display: block;
-  font-size: 0.72rem;
+  margin-top: 0.28rem;
   color: var(--text-muted);
-  line-height: 1.4;
-  margin-top: 0.1rem;
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 .sip-header__arabic {
-  font-family: var(--font-quran, serif);
-  font-size: clamp(1rem, 3vw, 1.5rem);
-  color: var(--text-primary);
-  direction: rtl;
-  flex-shrink: 0;
-  opacity: 0.7;
-}
-
-/* Stats grid */
-.sip-grid {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
-}
-
-/* Stat tile */
-.sip-tile {
-  display: flex;
-  align-items: center;
-  gap: 0.45rem;
-  padding: 0.52rem 0.6rem;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  transition: border-color 0.15s;
-}
-
-.sip-tile--accent {
-  border-color: color-mix(in srgb, var(--primary) 30%, transparent 70%);
-  background: color-mix(in srgb, var(--primary) 6%, var(--bg-secondary) 94%);
-}
-
-.sip-tile--gold {
-  border-color: color-mix(in srgb, var(--color-gold, #c8a84b) 35%, transparent 65%);
-  background: color-mix(in srgb, var(--color-gold, #c8a84b) 6%, var(--bg-secondary) 94%);
-}
-
-.sip-tile__icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 7px;
-  background: color-mix(in srgb, var(--primary) 8%, transparent 92%);
+  position: relative;
+  z-index: 1;
+  max-width: 11rem;
   color: var(--primary);
-  flex-shrink: 0;
+  font-family: var(--font-surah-name, var(--font-quran), serif);
+  font-size: clamp(2rem, 4.8vw, 2.8rem);
+  line-height: 1.35;
+  text-align: end;
 }
 
-.sip-tile--gold .sip-tile__icon {
-  background: color-mix(in srgb, var(--color-gold, #c8a84b) 10%, transparent 90%);
-  color: var(--color-gold, #c8a84b);
+.sip-overview {
+  margin-top: 0.7rem;
+  padding: clamp(0.85rem, 2.4vw, 1.1rem);
+  border: 1px solid var(--border);
+  border-radius: 0.85rem;
+  background: var(--bg-card);
 }
 
-.sip-tile__body {
+.sip-overview__head,
+.sip-overview__footer {
   display: flex;
-  flex-direction: column;
-  min-width: 0;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.8rem;
 }
 
-.sip-tile__value {
-  font-size: 0.82rem;
-  font-weight: 750;
+.sip-overview__head h3 {
+  margin: 0.2rem 0 0;
   color: var(--text-primary);
-  line-height: 1.2;
-  white-space: nowrap;
+  font-size: 0.98rem;
+  font-weight: 750;
 }
 
-.sip-tile__label {
-  font-size: 0.62rem;
-  font-weight: 600;
+.sip-language {
+  flex: 0 0 auto;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
   color: var(--text-muted);
-  line-height: 1.2;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
+  font-size: 0.62rem;
+  font-weight: 700;
+}
+
+.sip-language::before {
+  display: inline-block;
+  width: 0.38rem;
+  height: 0.38rem;
+  margin-inline-end: 0.35rem;
+  border-radius: 50%;
+  background: var(--primary);
+  content: "";
+}
+
+.sip-overview__text,
+.sip-overview__fallback {
+  margin: 0.75rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  line-height: 1.7;
+}
+
+.sip-overview__fallback {
+  padding-inline-start: 0.7rem;
+  border-inline-start: 2px solid color-mix(in srgb, var(--primary) 42%, transparent);
+}
+
+.sip-overview__loading {
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.85rem;
+}
+
+.sip-skeleton {
+  display: block;
+  width: 72%;
+  height: 0.65rem;
+  border-radius: 999px;
+  background: var(--border);
+  animation: sip-shimmer 1.2s ease-in-out infinite alternate;
+}
+
+.sip-skeleton--long {
+  width: 96%;
+}
+
+@keyframes sip-shimmer {
+  to { opacity: 0.4; }
+}
+
+.sip-dossier {
+  margin-top: 0.9rem;
+}
+
+.sip-dossier__facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 0.7rem;
+  margin: 0 0 1.15rem;
+}
+
+.sip-dossier__facts > div {
+  min-width: 0;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  background: var(--bg-secondary);
+}
+
+.sip-dossier__facts dt {
+  color: var(--text-muted);
+  font-size: 0.7rem;
+}
+
+.sip-dossier__facts dd {
+  margin: 0.3rem 0 0;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.sip-dossier__copy {
+  display: grid;
+  gap: 0.7rem;
+  margin-top: 0.85rem;
+}
+
+.sip-dossier__copy h4 {
+  position: relative;
+  margin: 0.35rem 0 -0.15rem;
+  padding-inline-start: 0.85rem;
+  color: var(--text-primary);
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+}
+
+.sip-dossier__copy h4::before {
+  position: absolute;
+  inset: 0.18rem auto 0.18rem 0;
+  width: 3px;
+  border-radius: 999px;
+  background: var(--primary);
+  content: "";
+}
+
+.sip-dossier__copy p {
+  margin: 0;
+  color: var(--text-secondary);
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+.sip-overview__footer {
+  align-items: center;
+  margin-top: 0.9rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+}
+
+.sip-source {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.63rem;
+  line-height: 1.35;
+  text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Dark mode */
-[data-theme="dark"] .sip-tile {
-  background: rgba(13,25,22,0.7);
-  border-color: rgba(196,219,208,0.12);
+.sip-source-link {
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+  gap: 0.3rem;
+  min-height: 2.75rem;
+  padding: 0.36rem 0.58rem;
+  border-radius: 0.65rem;
+  color: var(--primary);
+  font-size: 0.69rem;
+  font-weight: 750;
+  border: 1px solid color-mix(in srgb, var(--primary) 20%, transparent);
+  background: color-mix(in srgb, var(--primary) 7%, transparent);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
 }
 
-[data-theme="dark"] .sip-tile--accent {
-  border-color: rgba(47,208,142,0.22);
-  background: rgba(47,208,142,0.06);
+.sip-source-link:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 
-[data-theme="dark"] .sip-tile--gold {
-  border-color: rgba(214,179,92,0.25);
-  background: rgba(214,179,92,0.06);
+.sip-source-link:hover {
+  background: color-mix(in srgb, var(--primary) 9%, transparent);
 }
 
-[data-theme="dark"] .sip-tile__icon {
-  background: rgba(47,208,142,0.1);
-  color: #2fd08e;
-}
+@media (max-width: 640px) {
+  .surah-info-modal__overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
 
-[data-theme="dark"] .sip-tile--gold .sip-tile__icon {
-  background: rgba(214,179,92,0.1);
-  color: #d6b35c;
-}
+  .surah-info-modal {
+    max-width: 100%;
+    width: 100%;
+    height: calc(100dvh - max(0.7rem, env(safe-area-inset-top)));
+    max-height: calc(100dvh - max(0.7rem, env(safe-area-inset-top)));
+    border-radius: 0.85rem 0.85rem 0 0;
+  }
 
-[data-theme="dark"] .sip-header__icon {
-  background: rgba(47,208,142,0.1);
-  color: #2fd08e;
-}
+  .surah-info-modal > button:first-of-type {
+    top: 0.55rem;
+    right: 0.55rem;
+  }
 
-/* Responsive */
-@media (max-width: 480px) {
-  .sip-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  .surah-info-modal > .modal-title {
+    padding: 1rem 3.7rem 0.8rem 1rem;
+  }
+
+  .sip-root {
+    padding: 0.72rem;
+  }
+
+  .sip-header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.7rem;
+    min-height: 0;
+    padding: 0.9rem;
+    border-radius: 0.75rem;
+  }
+
+  .sip-header__arabic {
+    max-width: 7.5rem;
+    padding: 0;
+    border: 0;
+    font-size: clamp(1.55rem, 8vw, 2.1rem);
+    text-align: end;
+  }
+
+  .sip-overview__head {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.45rem;
+  }
+
+  .sip-language {
+    align-self: flex-start;
+  }
+
+  .sip-overview__footer {
+    align-items: flex-start;
+    flex-direction: column;
     gap: 0.35rem;
   }
 
-  .sip-tile {
-    padding: 0.42rem 0.5rem;
+  .sip-source {
+    max-width: 100%;
+    white-space: normal;
+  }
+}
+
+@media (max-width: 420px) {
+  .surah-info-modal > .modal-title {
+    min-height: 3.15rem;
+    padding: 0.88rem 3.45rem 0.72rem 0.9rem;
+    font-size: 11px;
+  }
+
+  .surah-info-modal > button:first-of-type {
+    top: 0.42rem;
+    right: 0.42rem;
+    width: 2.75rem;
+    height: 2.75rem;
+  }
+
+  .sip-root {
+    padding: 0.55rem;
+  }
+
+  .sip-header {
+    gap: 0.5rem;
+    padding: 0.78rem;
+    border-radius: 0.7rem;
+  }
+
+  .sip-eyebrow {
+    gap: 0.28rem;
+    font-size: 10px;
+    letter-spacing: 0.065em;
+  }
+
+  .sip-eyebrow__number {
+    min-width: 1.95rem;
+    min-height: 1.25rem;
+    padding-inline: 0.28rem;
+    font-size: 10px;
+  }
+
+  .sip-header__name {
+    margin-top: 0.2rem;
+    font-size: 17px;
+  }
+
+  .sip-header__desc {
+    margin-top: 0.18rem;
+    font-size: 11px;
+  }
+
+  .sip-header__arabic {
+    max-width: 5.8rem;
+    font-size: 1.55rem;
+  }
+
+  .sip-overview {
+    margin-top: 0.5rem;
+    padding: 0.78rem;
+    border-radius: 0.7rem;
+  }
+
+  .sip-overview__head {
+    gap: 0.32rem;
+  }
+
+  .sip-overview__head h3 {
+    font-size: 15px;
+  }
+
+  .sip-overview__kicker {
+    font-size: 11px;
+  }
+
+  .sip-language {
+    padding: 0.24rem 0.42rem;
+    font-size: 10px;
+  }
+
+  .sip-overview__text,
+  .sip-overview__fallback,
+  .sip-dossier__copy p {
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .sip-overview__footer {
+    margin-top: 0.72rem;
+    padding-top: 0.62rem;
+  }
+
+  .sip-source-link {
+    min-height: 44px;
+    font-size: 12px;
+  }
+
+  .sip-dossier__facts dt,
+  .sip-source {
+    font-size: 11px;
+  }
+
+  .sip-dossier__facts dd {
+    font-size: 15px;
+  }
+
+  .sip-dossier__copy h4 {
+    font-size: 16px;
+  }
+
+  .sip-dossier__facts {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.45rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .sip-dossier__facts > div {
+    padding: 0.55rem 0.62rem;
+  }
+
+  .sip-dossier__facts > div:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sip-skeleton,
+  .sip-source-link {
+    animation: none;
+    transition: none;
+  }
+}
+
+/* ── Calligraphic surah name (the ligature font used across the app) ─────── */
+
+/* The name sits in a cartouche on the trailing side of the header: a tinted
+   plate with a hairline, large enough for the calligraphy to read. */
+.sip-header .sip-header__arabic--glyph {
+  display: grid;
+  min-width: clamp(5.5rem, 16vw, 8rem);
+  max-width: none;
+  place-items: center;
+  padding: 0.45rem 0.9rem;
+  border: 1px solid color-mix(in srgb, var(--primary) 24%, var(--border));
+  border-radius: 1rem;
+  background: color-mix(in srgb, var(--primary) 10%, var(--bg-primary, #fff)) !important;
+  color: var(--primary);
+  font-family: "surahnames", var(--font-quran, serif);
+  font-size: clamp(2.2rem, 7vw, 3.4rem);
+  line-height: 1.15;
+  text-align: center;
+}
+
+@media (max-width: 420px) {
+  .sip-header .sip-header__arabic--glyph {
+    min-width: 4.6rem;
+    padding: 0.35rem 0.6rem;
+    border-radius: 0.8rem;
+    font-size: clamp(1.9rem, 11vw, 2.4rem);
   }
 }

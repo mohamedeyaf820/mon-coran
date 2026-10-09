@@ -1,0 +1,20 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 110,
+  "number_of_ayahs": 3,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "idhā jāa naṣru l-lahi wal-fatḥu"
+    },
+    {
+      "ayah_number": 2,
+      "text": "wara-ayta l-nāsa yadkhulūna fī dīni l-lahi afwājan"
+    },
+    {
+      "ayah_number": 3,
+      "text": "fasabbiḥ biḥamdi rabbika wa-is'taghfir'hu innahu kāna tawwāban"
+    }
+  ]
+}

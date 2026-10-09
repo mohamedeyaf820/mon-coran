@@ -1,0 +1,85 @@
+{
+  "schema": "mushafplus-warsh-translation-fr-v1",
+  "edition": "fr.montada-warsh",
+  "surah_number": 100,
+  "number_of_ayahs": 11,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "hafs_numbers": [
+        1
+      ],
+      "text": "Par les coursiers haletant,"
+    },
+    {
+      "ayah_number": 2,
+      "hafs_numbers": [
+        2
+      ],
+      "text": "faisant jaillir des étincelles (en galopant),"
+    },
+    {
+      "ayah_number": 3,
+      "hafs_numbers": [
+        3
+      ],
+      "text": "qui attaquent au petit jour,"
+    },
+    {
+      "ayah_number": 4,
+      "hafs_numbers": [
+        4
+      ],
+      "text": "et font voler la poussière (sous leurs sabots),"
+    },
+    {
+      "ayah_number": 5,
+      "hafs_numbers": [
+        5
+      ],
+      "text": "puis percent au milieu (des rangs ennemis) !"
+    },
+    {
+      "ayah_number": 6,
+      "hafs_numbers": [
+        6
+      ],
+      "text": "L’homme est, en vérité, bien ingrat envers son Seigneur."
+    },
+    {
+      "ayah_number": 7,
+      "hafs_numbers": [
+        7
+      ],
+      "text": "Il en est d’ailleurs lui-même témoin."
+    },
+    {
+      "ayah_number": 8,
+      "hafs_numbers": [
+        8
+      ],
+      "text": "Et certes, il porte aux biens (terrestres) un amour très intense."
+    },
+    {
+      "ayah_number": 9,
+      "hafs_numbers": [
+        9
+      ],
+      "text": "Ne sait-il donc pas que lorsque sera dispersé ce qu’il y a dans les tombes,"
+    },
+    {
+      "ayah_number": 10,
+      "hafs_numbers": [
+        10
+      ],
+      "text": "et que sera révélé ce que cachent les cœurs,"
+    },
+    {
+      "ayah_number": 11,
+      "hafs_numbers": [
+        11
+      ],
+      "text": "ce jour-là, leur Seigneur sera à leur sujet parfaitement Informé ?"
+    }
+  ]
+}

@@ -1,0 +1,465 @@
+/* ==========================================================================
+   Shell — calm chrome
+
+   Loaded last in the core cascade. Elevation comes from hairlines and a
+   single light shadow on the one floating element (the audio player); the
+   header and its controls are flat; the reading panel is a surface, not a
+   card. Paddings tighten so the content, not the chrome, sets the rhythm.
+   Colours stay on the existing tokens.
+   ========================================================================== */
+
+/* --- Header ---------------------------------------------------------------- */
+
+.app-root { --mobile-nav-h: 0px; }
+.mobile-navigation { display: none; }
+.compact-menu-trigger { display: none; }
+
+@media (max-width: 1024px) {
+  html { --header-h: 0px !important; }
+  html body .app-root > .mp-header,
+  html body .app-root > .app-header-loading { display: none !important; }
+  .app-root { --mobile-nav-h: calc(64px + env(safe-area-inset-bottom, 0px)); }
+  .app-root.immersive-mode { --mobile-nav-h: 0px; }
+
+  html body .app-root .mobile-navigation {
+    position: fixed;
+    inset: auto 0 0;
+    z-index: var(--z-dock);
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    height: var(--mobile-nav-h);
+    padding: 4px max(4px, env(safe-area-inset-right)) env(safe-area-inset-bottom, 0px) max(4px, env(safe-area-inset-left));
+    border-top: 1px solid var(--border);
+    background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    backdrop-filter: blur(14px) saturate(140%);
+    box-shadow: 0 -6px 20px -12px rgba(0, 0, 0, 0.22);
+  }
+  /* Bottom bar: a sheet with rounded top corners, a soft shadow instead of a
+     hard rule, and an active destination that reads at a glance (filled pill,
+     heavier icon stroke, bold label). Inactive ones stay quiet. */
+  html body .app-root .mobile-navigation {
+    border-top: 0;
+    border-radius: 22px 22px 0 0;
+    background: color-mix(in srgb, var(--bg-card) 92%, transparent);
+    box-shadow:
+      0 -1px 0 color-mix(in srgb, var(--border) 80%, transparent),
+      0 -14px 32px -14px rgba(0, 0, 0, 0.32);
+    gap: 2px;
+  }
+  html body .app-root .mobile-navigation__item { gap: 2px; }
+  html body .app-root .mobile-navigation__icon { width: 64px; height: 32px; }
+  html body .app-root .mobile-navigation__item:not([aria-current="page"]):not([aria-expanded="true"]) { color: var(--text-secondary); }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__icon {
+    background: color-mix(in srgb, var(--primary) 22%, var(--bg-card));
+  }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__icon svg { stroke-width: 2.3; }
+  html body .app-root .mobile-navigation__label { font-size: 11.5px; letter-spacing: 0.01em; }
+  html body .app-root .mobile-navigation__item[aria-current="page"] .mobile-navigation__label { font-weight: 800; color: var(--primary); }
+
+  /* Bottom bar stepped away on a page that is not the reader (see `navAway` in
+     App.jsx): it slides down in place and hands its band back to the content
+     and to the player dock. The bar keeps its own height so it can slide. */
+  html body .app-root .mobile-navigation { transition: transform 220ms ease, visibility 0s linear 0s; }
+  .app-root.nav-away { --mobile-nav-h: 0px; }
+  html body .app-root.nav-away .mobile-navigation {
+    height: calc(64px + env(safe-area-inset-bottom, 0px));
+    transform: translateY(100%);
+    visibility: hidden;
+    pointer-events: none;
+    transition: transform 220ms ease, visibility 0s linear 220ms;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html body .app-root .mobile-navigation,
+    html body .app-root.nav-away .mobile-navigation { transition: none; }
+  }
+  html body .app-root.immersive-mode .mobile-navigation { display: none !important; }
+  html body .app-root.immersive-mode .compact-menu-trigger { display: none !important; }
+
+  /* Compact menu trigger — the recitation-page hamburger, restored on the
+     viewports where the header is hidden. Self-styled (not mp-header__icon-btn)
+     because responsive-all.css forces a 2.15rem !important size on
+     .app-root .mp-header__icon-btn below 1024px, breaking the 44px contract. */
+  .compact-menu-trigger {
+    position: fixed;
+    top: calc(0.65rem + env(safe-area-inset-top, 0px));
+    inset-inline-start: 0.65rem;
+    z-index: calc(var(--z-dock) + 1);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0;
+    border: 1px solid color-mix(in srgb, var(--primary) 14%, var(--border));
+    border-radius: 0.85rem;
+    background: color-mix(in srgb, var(--bg-card) 88%, var(--primary) 5%);
+    color: var(--text-primary);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+    cursor: pointer;
+    transition: background-color 160ms ease, transform 160ms ease;
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .compact-menu-trigger:hover {
+      background: color-mix(in srgb, var(--primary) 10%, var(--bg-card) 90%);
+      border-color: color-mix(in srgb, var(--primary) 34%, var(--border) 66%);
+    }
+  }
+
+  .compact-menu-trigger:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--primary) 75%, #fff);
+    outline-offset: 2px;
+  }
+
+  .compact-menu-trigger:active {
+    transform: scale(0.96);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .compact-menu-trigger {
+      transition: none;
+    }
+  }
+  html body #root .app-root.immersive-mode .mp-audio-player.mp-audio-player {
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* Riwaya: one segmented control, so the two readings read as a single choice. */
+  .mobile-navigation-menu__riwaya {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin: 2px 2px 6px;
+    padding: 3px;
+    border-radius: 999px;
+    background: var(--bg-secondary);
+  }
+  .mobile-navigation-menu__riwaya button {
+    min-height: 44px;
+    min-width: 44px;
+    border: 0;
+    border-radius: 999px;
+    color: var(--text-secondary);
+    background: transparent;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: background-color 160ms ease, color 160ms ease, box-shadow 160ms ease;
+  }
+  .mobile-navigation-menu__riwaya button[aria-pressed="true"] {
+    color: var(--primary);
+    background: var(--bg-card);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14), 0 0 0 1px color-mix(in srgb, var(--primary) 28%, transparent);
+    font-weight: 700;
+  }
+  .mobile-navigation-menu__riwaya button:focus-visible { outline: 2px solid var(--primary); outline-offset: 1px; }
+
+  html body .app-root .mobile-navigation__item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 2px;
+    border: 0;
+    border-radius: var(--ux-radius-control, 0.75rem);
+    background: transparent;
+    color: var(--text-secondary);
+    transition: color 160ms ease;
+  }
+  .mobile-navigation__icon {
+    display: grid;
+    place-items: center;
+    width: 56px;
+    height: 30px;
+    border-radius: 999px;
+    transition: background-color 200ms ease, transform 160ms ease;
+  }
+  .mobile-navigation__item:active .mobile-navigation__icon { transform: scale(0.92); }
+  .mobile-navigation__label {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    line-height: 1.2;
+    font-weight: 600;
+  }
+  .mobile-navigation__item[aria-current="page"] .mobile-navigation__label { font-weight: 800; }
+  html body #root#root .mobile-navigation__icon svg {
+    width: 20px !important;
+    height: 20px !important;
+    min-width: 20px;
+    max-width: 20px !important;
+    max-height: 20px !important;
+    transform: none !important;
+  }
+  html body .app-root .mobile-navigation__item:is([aria-current="page"], [aria-expanded="true"]) { color: var(--primary); }
+  .mobile-navigation__item[aria-current="page"] .mobile-navigation__icon {
+    background: color-mix(in srgb, var(--primary) 18%, var(--bg-card));
+  }
+  .mobile-navigation__item[aria-expanded="true"] .mobile-navigation__icon {
+    background: color-mix(in srgb, var(--primary) 10%, var(--bg-card));
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-navigation__icon, .mobile-navigation__item, .mobile-navigation-menu__riwaya button { transition: none; }
+    .mobile-navigation__item:active .mobile-navigation__icon { transform: none; }
+  }
+  .mobile-navigation__item:focus-visible { outline: 2px solid var(--primary); outline-offset: -3px; }
+  .app-root[data-view="home"][data-home-section="audio"] .home-overview { display: none; }
+  html body .app-root[data-view="home"][data-home-section="audio"] .home-content-toolbar > [role="tablist"] {
+    display: none !important;
+  }
+  html body .app-root[data-view="home"][data-home-section="audio"] .app-main--home {
+    background: var(--bg-card);
+  }
+  html body .app-root[data-view="home"][data-home-section="audio"] .app-view-home::before {
+    display: none;
+  }
+  html body .app-root[data-view="home"][data-home-section="audio"] .home-content-zone {
+    margin-top: 0 !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    background: transparent !important;
+  }
+  .home-collection-heading .home-audio-title {
+    margin: 0.35rem 0 0;
+    color: var(--text-primary);
+    font-size: clamp(1.15rem, 1rem + 0.8vw, 1.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+  }
+}
+
+.mobile-navigation-menu {
+  width: min(18rem, calc(100vw - 24px));
+  max-height: calc(100dvh - 100px);
+  overflow-y: auto;
+  padding: 8px;
+  border-radius: 1.25rem;
+  box-shadow: 0 18px 44px -12px rgba(0, 0, 0, 0.32), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+.mobile-navigation-menu__divider {
+  height: 1px;
+  margin: 4px 10px;
+  background: var(--border);
+}
+.mobile-navigation-menu .mobile-navigation-menu__item {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 6px 10px;
+  border: 0;
+  border-radius: 0.9rem;
+  background: transparent;
+  color: var(--text-primary);
+  font-size: 0.97rem;
+  font-weight: 600;
+  text-align: start;
+}
+.mobile-navigation-menu__item > svg {
+  flex-shrink: 0;
+  box-sizing: content-box;
+  padding: 8px;
+  border-radius: 0.7rem;
+  color: var(--primary);
+  background: color-mix(in srgb, var(--primary) 9%, var(--bg-card));
+}
+.mobile-navigation-menu__item:is(:hover, :active) { background: var(--bg-secondary); }
+.mobile-navigation-menu__item:focus-visible {
+  background: var(--bg-secondary);
+  outline: 2px solid var(--primary);
+  outline-offset: -2px;
+}
+
+html body .app-root .mp-header__bar {
+  background: var(--bg-card);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-bottom: 1px solid var(--border);
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand) {
+  border-color: transparent;
+  border-radius: var(--ux-radius-control, 0.75rem);
+  background: transparent;
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand):hover,
+html body .app-root .mp-header__bar :is(.mp-header__icon-btn, .mp-header__more, .mp-header__search, .mp-header__action, .mp-header__nav-arrow, .mp-header__brand):focus-visible {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.07));
+}
+
+html body .app-root .mp-header__bar .mp-header__icon-btn.is-active {
+  background: var(--reader-active, rgba(var(--primary-rgb), 0.12));
+  color: var(--primary);
+}
+
+/* The riwaya switch and the surah title are controls: a quiet filled field. */
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn) {
+  border-color: transparent;
+  border-radius: var(--ux-radius-control, 0.75rem);
+  background: var(--bg-secondary);
+  box-shadow: none;
+}
+
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn):hover,
+html body .app-root .mp-header__bar :is(.mp-header__riwaya-toggle, .mp-header__title-btn):focus-visible {
+  background: var(--reader-card-hover, rgba(var(--primary-rgb), 0.09));
+}
+
+/* --- Reading panel --------------------------------------------------------- */
+
+html body .app-root .quran-display.quran-display--platform {
+  border-color: var(--border) !important;
+  box-shadow: none !important;
+  padding-top: clamp(0.5rem, 0.8vw, 0.75rem);
+}
+
+html body .app-root .app-view-shell {
+  padding-top: clamp(0.35rem, 0.6vw, 0.6rem);
+}
+
+/* --- Audio player: the one floating element ---------------------------- */
+
+html body .app-root .mp-audio-player.audio-player-simple {
+  border: 1px solid var(--border) !important;
+  border-radius: 1rem !important;
+  background: var(--bg-card) !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06), 0 8px 24px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* --- Home cards ------------------------------------------------------------ */
+
+html body .app-root .hp-card {
+  border: 1px solid var(--border);
+  box-shadow: none;
+}
+
+html body .app-root .hp-card:hover {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+/* A surah card keeps a comfortable row height from tablets up. */
+@media (min-width: 768px) {
+  html body .app-root .hp-card--surah {
+    min-height: 88px;
+  }
+}
+
+/* --- Reading panel takes the page: no frame, no rounded inset ------------ */
+
+html body #root .app-root .quran-display.quran-display--platform,
+html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem) !important;
+}
+
+html body #root .app-root .app-view-shell,
+html body #root .app-root[data-view="reading"] .app-view-shell,
+html body #root .app-root .app-main-shell,
+html body #root .app-root .app-layout-shell {
+  padding-inline: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+html body #root .app-root .quran-display--platform .rd-wrapper,
+html body #root .app-root .quran-display--platform .quran-mode-pane,
+html body #root .app-root .app-view-reading {
+  border-radius: 0 !important;
+  box-shadow: none !important;
+}
+
+/* The reader toolbar uses the whole reading width: one row on desktop. */
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .reader-control-deck,
+html body .app-root[data-view="reading"] .quran-display--platform .quran-mode-pane--mushaf .qc-surah-header-wrap {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* --- Audio player: a separate card above navigation on every device ---- */
+/* Layout only: opacity, transform, transition and animation stay with the
+   player and the immersive mode, which slides it away while reading. */
+
+html body #root .app-root .mp-audio-player.audio-player-simple[data-player-state="compact"],
+html body #root .app-root .mp-audio-player.mp-audio-player--desktop[data-player-state="compact"],
+html body #root .app-root .mp-audio-player.mp-audio-player--desktop.is-minimized[data-player-state="compact"] {
+  inset: auto max(.5rem, env(safe-area-inset-right)) calc(var(--mobile-nav-h, 0px) + max(.5rem, env(safe-area-inset-bottom))) max(.5rem, env(safe-area-inset-left)) !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  margin: 0 !important;
+  transform-origin: bottom center;
+}
+
+html body #root .app-root .mp-audio-player .simple-player__compact-row,
+html body #root .app-root .mp-audio-player .simple-player__timeline {
+  width: min(100%, 72rem);
+  margin-inline: auto;
+}
+
+/* The player appears in place: no entrance, rise or breathing animation.
+   The immersive mode still slides it away with its own transition. */
+html body #root .app-root .mp-audio-player,
+html body #root .app-root .mp-audio-player.audio-player-simple,
+html body #root .app-root .mp-audio-player--desktop,
+html body #root .app-root .mp-audio-player--mobile.mp-audio-player--dock {
+  animation: none !important;
+}
+
+/* The reading view is a plain surface: no decorative rounded glow behind it,
+   and the panel spans the reading area. */
+html body #root .app-root .app-view-shell.app-view-reading::before,
+html body #root .app-root .app-view-shell.app-view-reading::after {
+  display: none !important;
+}
+
+html body #root .app-root[data-view="reading"] .quran-display.quran-display--platform {
+  width: 100% !important;
+  max-width: none !important;
+}
+
+/* While a recitation plays, the player stays reachable: the immersive mode
+   only takes the header away. Hiding the transport mid-recitation reads as
+   the player opening and closing on its own. */
+html body #root .app-root.immersive-mode.immersive-keep-player .mp-audio-player.mp-audio-player {
+  transform: none !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* Replacing the reading content must not drag the viewport along with the
+   navigation bar that was in view (browser scroll anchoring). Page streaming
+   keeps its own explicit anchor. */
+html body #root .app-root .app-main-shell {
+  overflow-anchor: none;
+}
+
+/* Expanded touch player shares the compact card's placement, including when
+   navigation is hidden on a supporting page. */
+html body #root .app-root .audio-player-simple.simple-player--mobile-open {
+  inset: auto max(.5rem, env(safe-area-inset-right)) calc(var(--mobile-nav-h, 0px) + max(.5rem, env(safe-area-inset-bottom))) max(.5rem, env(safe-area-inset-left)) !important;
+  width: auto !important;
+  max-width: none !important;
+  margin: 0 !important;
+  box-sizing: border-box !important;
+}
+html body #root .app-root.nav-away .audio-player-simple.simple-player,
+html body #root .app-root.immersive-mode .audio-player-simple.simple-player {
+  bottom: max(.5rem, env(safe-area-inset-bottom)) !important;
+}

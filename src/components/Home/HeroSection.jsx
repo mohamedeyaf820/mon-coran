@@ -1,282 +1,243 @@
-import SURAHS from "../../data/surahs";
-import { cn } from "../../lib/utils";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  Bookmark,
+  CirclePlay,
+  Feather,
+  HandHeart,
+  ListMusic,
+  Sparkles,
+  StickyNote,
+} from "lucide-react";
+import SURAHS, { getSurahLigature } from "../../data/surahs";
+import { t } from "../../i18n";
 import PlatformLogo from "../PlatformLogo";
-import { EmptyState } from "./HomePrimitives";
+import PrayerTimesCard from "./PrayerTimesCard";
+
+function TodaySuggestion({ isRtl, lang, onClick, onIntent, surah }) {
+  const data = SURAHS[surah.n - 1] || surah;
+  const ligature = getSurahLigature(surah.n);
+  const label = lang === "ar" ? data.ar : lang === "en" ? data.en : data.fr;
+
+  return (
+    <button
+      type="button"
+      className="home-today-suggestion"
+      onClick={onClick}
+      onPointerEnter={onIntent}
+      onFocus={onIntent}
+      onTouchStart={onIntent}
+      aria-label={`${label}, ${surah.n}`}
+    >
+      <span className="home-today-suggestion__number">{surah.n}</span>
+      <span className="home-today-suggestion__copy">
+        <strong>{label}</strong>
+        <small>
+          {t("home.hero.suggestedReading", lang)}
+        </small>
+      </span>
+      <span
+        className="home-today-suggestion__arabic font-surah-names"
+        aria-hidden="true"
+        dir={ligature ? "ltr" : "rtl"}
+        lang={ligature ? "en" : "ar"}
+      >
+        {ligature || data.ar}
+      </span>
+      <span className="home-today-suggestion__arrow" aria-hidden="true">
+        {isRtl ? <ArrowLeft size={13} /> : <ArrowRight size={13} />}
+      </span>
+    </button>
+  );
+}
 
 export default function HeroSection({
   lang,
   isRtl,
   now,
   riwayaLabel,
-  currentPrayer,
   greeting,
   hasReadingHistory,
   primaryReadingCtaLabel,
   surahLabel,
-  continueReading,
-  goSurah,
-  openDuas,
-  t,
-  activeInfo,
-  onSelectInfo,
-  infoTabs,
+  readingTarget,
   bookmarks,
   notes,
+  playlists,
+  continueReading,
+  goSurah,
+  onWarmSurah,
+  openLibrary,
+  openDuas,
   suggestionSet,
-  goSurahAyah,
-  children,
+  dailyVerse,
+  vodSurahNum,
+  vodAyahNum,
+  prayerStatus,
+  prayerNext,
+  prayerTimings,
+  onOpenPrayer,
 }) {
-  const uiLang = lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en";
-  const heroCopy =
-    uiLang === "ar"
-      ? "\u0627\u0642\u0631\u0623 \u0627\u0644\u0642\u0631\u0622\u0646 \u0628\u0647\u062f\u0648\u0621\u060c \u0627\u0633\u062a\u0645\u0639\u060c \u0648\u0627\u062d\u0641\u0638 \u0628\u0648\u062a\u064a\u0631\u062a\u0643."
-      : uiLang === "fr"
-        ? "Lisez, \u00e9coutez et m\u00e9morisez le Coran dans une interface claire, rapide et apais\u00e9e."
-        : "Read, listen and memorize the Quran in a clear, fast and calm interface.";
-  const startReadingLabel =
-    uiLang === "ar"
-      ? "\u0627\u0628\u062f\u0623 \u0627\u0644\u0642\u0631\u0627\u0621\u0629"
-      : uiLang === "fr"
-        ? "Commencer la lecture"
-        : "Start reading";
-  const fatihaLabel =
-    uiLang === "ar" ? "\u0627\u0644\u0641\u0627\u062a\u062d\u0629" : "Al-Fatiha";
+  const locale = lang === "ar" ? "ar-SA" : lang === "en" ? "en-GB" : "fr-FR";
+  const greetingLabel = greeting[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"];
+  const surahLigature = getSurahLigature(surahLabel?.n);
+  const heroTitle = t("home.hero.title", lang);
+  const targetLabel = hasReadingHistory
+    ? t("home.hero.nextReading", lang)
+    : t("home.hero.startWith", lang);
 
   return (
-    <section className="home-hero-compact home-hero-shell relative z-10 overflow-hidden rounded-2xl border border-border/75 bg-bg-primary px-4 py-5 shadow-lg sm:px-6 sm:py-6 lg:p-7">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-primary/8 via-transparent to-transparent" />
+    <section className="home-overview" aria-labelledby="home-resume-title">
+      <article className="home-resume-panel">
+        <div className="home-resume-panel__glow" aria-hidden="true" />
+        <div className="home-resume-panel__watermark" aria-hidden="true">
+          {surahLigature || surahLabel?.ar}
+        </div>
 
-      <div
-        className={cn(
-          "home-hero-layout relative z-10 grid gap-5 xl:gap-7",
-        )}
-      >
-        <div className="home-hero-main flex min-w-0 flex-col">
-          <div className="home-hero-kicker-row mb-4 flex flex-wrap items-center gap-2">
-            <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-[0.68rem] font-bold uppercase tracking-[0.1em] text-primary">
-              <i className={`fas ${currentPrayer.icon}`} />
-              <span>{greeting[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}</span>
-            </div>
-            <span className="rounded-full border border-border/50 bg-bg-secondary/80 px-3 py-1.5 text-[0.72rem] font-medium text-text-secondary">
-              {now.toLocaleDateString(
-                lang === "ar" ? "ar-SA" : lang === "fr" ? "fr-FR" : "en-GB",
-                { weekday: "short", day: "numeric", month: "short" },
-              )}
+        <header className="home-resume-panel__header">
+          <div className="home-resume-panel__brand">
+            <PlatformLogo
+              className="home-resume-panel__logo"
+              imgClassName="h-full w-full object-cover"
+              decorative
+            />
+            <span>MushafPlus</span>
+          </div>
+          <div className="home-resume-panel__meta">
+            <span className="home-resume-panel__greeting">
+              <Sparkles size={12} aria-hidden="true" />
+              {greetingLabel}
+            </span>
+            <time dateTime={now.toISOString()}>
+              {now.toLocaleDateString(locale, {
+                weekday: "short",
+                day: "numeric",
+                month: "short",
+              })}
+            </time>
+          </div>
+        </header>
+
+        <div className="home-resume-panel__body">
+          <span className="home-resume-panel__eyebrow">
+            <Feather size={12} aria-hidden="true" />
+            {riwayaLabel}
+          </span>
+          <h1 id="home-resume-title">{heroTitle}</h1>
+          <div className="home-resume-panel__target">
+            <small className="home-resume-panel__target-label">{targetLabel}</small>
+            <span className="home-resume-panel__target-line">
+              <strong>{readingTarget}</strong>
+              {surahLabel ? (
+                <span
+                  className="home-resume-panel__target-arabic font-surah-names"
+                  aria-label={surahLabel.ar}
+                  role="img"
+                  dir={surahLigature ? "ltr" : "rtl"}
+                  lang={surahLigature ? "en" : "ar"}
+                >
+                  <span aria-hidden="true">{surahLigature || surahLabel.ar}</span>
+                </span>
+              ) : null}
             </span>
           </div>
 
-          <div className="home-brand-row flex items-center gap-4 max-[520px]:items-start max-[520px]:gap-3">
-            <PlatformLogo
-              className="h-14 w-14 shrink-0 rounded-2xl shadow-sm sm:h-16 sm:w-16"
-              imgClassName="h-10 w-10 object-cover sm:h-12 sm:w-12"
-              decorative
+          <nav
+            className="home-resume-panel__library"
+            aria-label={t("home.hero.personalLibrary", lang)}
+          >
+            {[
+              ["favorites", Bookmark, bookmarks.length, "home.hero.favorites"],
+              ["notes", StickyNote, notes.length, "home.hero.notes"],
+              ["playlists", ListMusic, playlists.length, "home.hero.lists"],
+            ].map(([tab, Icon, count, label]) => (
+              <button type="button" key={tab} onClick={() => openLibrary(tab)}>
+                <Icon size={14} aria-hidden="true" />
+                {/* A zero says nothing: the count appears once there is one. */}
+                <span>{count > 0 ? <strong>{count}</strong> : null} {t(label, lang)}</span>
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        <footer className="home-resume-panel__actions">
+          <button
+            type="button"
+            className="home-resume-panel__primary"
+            aria-label={`${primaryReadingCtaLabel}: ${readingTarget}`}
+            onClick={hasReadingHistory ? continueReading : () => goSurah(1)}
+            onPointerEnter={() => onWarmSurah(hasReadingHistory ? undefined : 1)}
+            onFocus={() => onWarmSurah(hasReadingHistory ? undefined : 1)}
+          >
+            {hasReadingHistory ? <CirclePlay size={16} aria-hidden="true" /> : <BookOpen size={16} aria-hidden="true" />}
+            <span>{primaryReadingCtaLabel}</span>
+            {isRtl ? <ArrowLeft size={14} aria-hidden="true" /> : <ArrowRight size={14} aria-hidden="true" />}
+          </button>
+          <button type="button" className="home-resume-panel__secondary" onClick={openDuas}>
+            <HandHeart size={15} aria-hidden="true" />
+            <span>{t("nav.duas", lang)}</span>
+          </button>
+        </footer>
+      </article>
+
+      <aside className="home-today-panel" aria-labelledby="home-today-title">
+        <header className="home-today-panel__header">
+          <span>
+            <Sparkles size={13} aria-hidden="true" />
+            <strong id="home-today-title">{t("home.hero.today", lang)}</strong>
+          </span>
+          <small>
+            {suggestionSet.period?.[lang === "ar" ? "ar" : lang === "en" ? "en" : "fr"]}
+          </small>
+        </header>
+
+        <PrayerTimesCard
+          lang={lang}
+          isRtl={isRtl}
+          status={prayerStatus}
+          next={prayerNext}
+          timings={prayerTimings}
+          now={now}
+          onOpen={onOpenPrayer}
+        />
+
+        <button
+          type="button"
+          className="home-today-verse"
+          onClick={() => vodSurahNum && goSurah(vodSurahNum, vodAyahNum)}
+          disabled={!vodSurahNum}
+        >
+          <span className="home-today-verse__label">
+            {t("home.hero.verseOfDay", lang)}
+          </span>
+          <span className="home-today-verse__arabic" dir="rtl" lang="ar">
+            {dailyVerse.text}
+          </span>
+          {lang === "fr" && dailyVerse.trans_fr ? (
+            <span className="home-today-verse__translation">{dailyVerse.trans_fr}</span>
+          ) : lang === "en" && dailyVerse.trans_en ? (
+            <span className="home-today-verse__translation">{dailyVerse.trans_en}</span>
+          ) : null}
+          <span className="home-today-verse__reference">
+            {dailyVerse.ref}
+            {isRtl ? <ArrowLeft size={12} aria-hidden="true" /> : <ArrowRight size={12} aria-hidden="true" />}
+          </span>
+        </button>
+
+        <div className="home-today-panel__suggestions" aria-label={t("home.hero.suggestions", lang)}>
+          {suggestionSet.surahs.slice(0, 5).map((surah) => (
+            <TodaySuggestion
+              key={surah.n}
+              isRtl={isRtl}
+              lang={lang}
+              surah={surah}
+              onClick={() => goSurah(surah.n)}
+              onIntent={() => onWarmSurah(surah.n)}
             />
-            <div className="min-w-0">
-              <div className="home-brand-ar pointer-events-none mb-1 text-right font-quran text-2xl text-text-muted/30" dir="rtl">
-                ﷽
-              </div>
-              <h1 className="home-hero-title mb-2 text-[clamp(1.75rem,4vw,2.45rem)] font-black leading-none tracking-tight text-text-primary">
-                MushafPlus
-              </h1>
-              <div className="flex flex-wrap gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-bg-secondary px-3 py-1 text-[0.74rem] font-semibold text-text-secondary">
-                  <i className="fas fa-feather-pointed text-[0.7rem]" />
-                  {riwayaLabel}
-                </span>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-border/40 bg-bg-secondary px-3 py-1 text-[0.74rem] font-semibold text-text-secondary">
-                  <i className={`fas ${currentPrayer.icon}`} />
-                  {currentPrayer[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <p className="home-hero-copy mt-4 max-w-[58ch] text-[0.95rem] leading-relaxed text-text-secondary max-[520px]:text-[0.88rem] max-[520px]:leading-snug">
-            {lang === "ar"
-              ? "اقرأ القرآن الكريم وتدبر معانيه في مساحة أكثر سكينة"
-              : lang === "fr"
-                ? "Lisez, méditez, mémorisez - La Parole d'Allah dans toute sa beauté"
-                : "Read, reflect and memorize the Holy Quran in beauty"}
-          </p>
-
-          <p className="home-hero-copy home-hero-copy-clean mt-4 max-w-[58ch] text-[0.95rem] leading-relaxed text-text-secondary max-[520px]:text-[0.88rem] max-[520px]:leading-snug">
-            {heroCopy}
-          </p>
-
-          <div className="home-hero-actions mt-5 flex flex-wrap items-center gap-3 max-[520px]:gap-2">
-            <button
-              className="home-cta-primary inline-flex h-12 items-center gap-2.5 rounded-2xl bg-primary px-5 text-[0.9rem] font-bold text-white shadow-lg shadow-primary/25 transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary-dark max-[520px]:w-full max-[520px]:justify-center"
-              aria-label={primaryReadingCtaLabel}
-              onClick={hasReadingHistory ? continueReading : () => goSurah(1)}
-              type="button"
-            >
-              <i className={`fas ${hasReadingHistory ? "fa-circle-play" : "fa-book-open"} text-[1.1rem]`} />
-              <span className="home-cta-label-clean truncate max-[520px]:max-w-[62vw]">
-                {hasReadingHistory ? t("continueReading") : startReadingLabel}
-              </span>
-              {!hasReadingHistory && (
-                <span className="home-cta-badge-clean ml-1 rounded-md bg-white/20 px-2 py-0.5 text-[0.75rem] max-[520px]:hidden">
-                  {fatihaLabel}
-                </span>
-              )}
-              <span className="truncate max-[520px]:max-w-[62vw]">
-                {hasReadingHistory
-                  ? t("continueReading")
-                  : lang === "ar"
-                    ? "ابدأ القراءة"
-                    : lang === "fr"
-                      ? "Commencer la lecture"
-                      : "Start reading"}
-              </span>
-              {!hasReadingHistory && (
-                <span className="ml-1 rounded-md bg-white/20 px-2 py-0.5 text-[0.75rem] max-[520px]:hidden">
-                  الفاتحة
-                </span>
-              )}
-            </button>
-
-            <button
-              className="home-cta-secondary inline-flex h-12 items-center gap-2 rounded-2xl bg-bg-secondary px-5 text-[0.9rem] font-bold text-text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-bg-tertiary max-[520px]:w-full max-[520px]:justify-center"
-              onClick={openDuas}
-              type="button"
-            >
-              <i className="fas fa-hands-praying" />
-              <span>{t("duas")}</span>
-            </button>
-          </div>
-
+          ))}
         </div>
-
-        <div className="home-hero-side flex min-w-0 flex-col gap-4">
-          <aside className="home-info-panel">
-            <div className="home-info-card overflow-hidden rounded-2xl border border-border/50 bg-bg-secondary/40 backdrop-blur-md">
-              <div className="flex items-center overflow-x-auto border-b border-border/50 no-scrollbar">
-                {infoTabs.map((tab) => (
-                  <button
-                    key={tab.id}
-                    className={cn(
-                      "flex items-center gap-2 whitespace-nowrap border-b-2 border-transparent px-4 py-3 text-[0.82rem] font-semibold text-text-secondary transition-colors hover:text-text-primary",
-                      activeInfo === tab.id && "border-primary bg-primary/5 text-primary",
-                    )}
-                    onClick={() => onSelectInfo(tab.id)}
-                    type="button"
-                  >
-                    <i className={`fas ${tab.icon} text-[0.9rem]`} />
-                    <span>{tab.label}</span>
-                    {tab.count > 0 && (
-                      <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-primary/10 px-1.5 text-[0.65rem] font-bold text-primary">
-                        {tab.count}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </div>
-
-              <div className="flex max-h-[188px] flex-col overflow-y-auto p-2 no-scrollbar">
-                {activeInfo === "bookmarks" &&
-                  (bookmarks.length === 0 ? (
-                    <div className="py-5">
-                      <EmptyState icon="fa-bookmark" text={t("noBookmarks")} />
-                    </div>
-                  ) : (
-                    bookmarks.slice(0, 6).map((bk) => {
-                      const s = SURAHS[bk.surah - 1];
-                      return (
-                        <button
-                          key={bk.id}
-                          className="group flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
-                          onClick={() => goSurahAyah(bk.surah, bk.ayah)}
-                          type="button"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
-                            <i className="fas fa-bookmark" />
-                          </span>
-                          <div className="flex min-w-0 flex-1 flex-col">
-                            <span className="mb-0.5 text-right font-quran text-[1.05rem] text-text-primary">
-                              {s?.ar}
-                            </span>
-                            <span className="truncate text-[0.78rem] text-text-secondary">
-                              {lang === "fr" ? s?.fr : s?.en} · v.{bk.ayah}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })
-                  ))}
-
-                {activeInfo === "notes" &&
-                  (notes.length === 0 ? (
-                    <div className="py-5">
-                      <EmptyState icon="fa-note-sticky" text={t("noNotes")} />
-                    </div>
-                  ) : (
-                    notes.slice(0, 6).map((note) => {
-                      const s = SURAHS[note.surah - 1];
-                      return (
-                        <button
-                          key={note.id}
-                          className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
-                          onClick={() => goSurahAyah(note.surah, note.ayah)}
-                          type="button"
-                        >
-                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-gold shadow-sm">
-                            <i className="fas fa-note-sticky" />
-                          </span>
-                          <div className="min-w-0 flex-1">
-                            <span className="block truncate text-[0.82rem] font-semibold text-text-primary">
-                              {lang === "fr" ? s?.fr : s?.en} · v.{note.ayah}
-                            </span>
-                            <span className="line-clamp-1 text-[0.74rem] text-text-secondary">
-                              {note.text}
-                            </span>
-                          </div>
-                        </button>
-                      );
-                    })
-                  ))}
-
-                {activeInfo === "suggest" && (
-                  <>
-                    <div className="home-suggestion-heading mb-2 flex items-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-primary">
-                      <i className={`fas ${suggestionSet.icon}`} aria-hidden="true" />
-                      <span className="text-[0.86rem] font-extrabold">
-                        {suggestionSet.period[lang === "ar" ? "ar" : lang === "fr" ? "fr" : "en"]}
-                      </span>
-                    </div>
-                    {suggestionSet.surahs.map((s) => (
-                      <button
-                        key={s.n}
-                        className="flex w-full items-center gap-3 rounded-xl p-2.5 text-left transition-colors hover:bg-bg-tertiary"
-                        onClick={() => goSurah(s.n)}
-                        type="button"
-                      >
-                        <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-bg-primary text-primary shadow-sm">
-                          {s.n}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <span className="block truncate text-[0.85rem] font-bold text-text-primary">
-                            {lang === "fr" ? s.fr : s.en}
-                          </span>
-                          <span className="block text-right font-quran text-[1rem] text-text-secondary" dir="rtl">
-                            {s.ar}
-                          </span>
-                        </div>
-                        <i className={`fas fa-chevron-${isRtl ? "left" : "right"} text-[0.75rem] text-text-muted`} />
-                      </button>
-                    ))}
-                  </>
-                )}
-              </div>
-            </div>
-          </aside>
-
-          {children && (
-            <div className="home-hero-compact__side flex flex-col gap-4">
-              {children}
-            </div>
-          )}
-        </div>
-      </div>
+      </aside>
     </section>
   );
 }

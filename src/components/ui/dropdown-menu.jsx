@@ -48,7 +48,7 @@ const DropdownMenuSubContent = React.forwardRef(
     <DropdownMenuPrimitive.SubContent
       ref={ref}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-xl border p-1",
+        "z-[var(--z-modal)] min-w-[8rem] overflow-hidden rounded-xl border p-1",
         "bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border)]",
         "shadow-[0_10px_38px_-10px_rgba(22,23,24,0.35),0_10px_20px_-15px_rgba(22,23,24,0.2)]",
         "data-[state=open]:animate-in data-[state=closed]:animate-out",
@@ -71,7 +71,7 @@ const DropdownMenuContent = React.forwardRef(
         ref={ref}
         sideOffset={sideOffset}
         className={cn(
-          "z-[500] min-w-[8rem] overflow-hidden rounded-xl border p-1.5",
+          "z-[var(--z-modal)] min-w-[8rem] overflow-hidden rounded-xl border p-1.5",
           "bg-[var(--bg-card)] text-[var(--text-primary)] border-[var(--border-strong)]",
           "shadow-[0_16px_48px_-12px_rgba(0,0,0,0.25),0_0_0_1px_rgba(0,0,0,0.05)]",
           "data-[state=open]:animate-in data-[state=closed]:animate-out",

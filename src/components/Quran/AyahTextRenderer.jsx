@@ -1,157 +1,184 @@
-import React, { useMemo, useRef, useEffect, useState } from "react";
-import { useKaraoke } from "../../hooks/useKaraoke";
+import React, { useMemo } from "react";
+import { splitTajwidIntoWords } from "../../utils/tajwidWords";
+import useKaraokeWordIndex from "../../hooks/useKaraokeWordIndex";
 import audioService from "../../services/audioService";
-import TajweedText from "./TajweedText";
+import { useAppLocale } from "../../context/AppContext";
+import TajweedText, { getWaqfHelp } from "./TajweedText";
+import { t } from "../../i18n";
+import { playWordAudio, getWordAudioUrl } from "../../utils/wordAudio";
+import { hasCoherentWordData, isAyahMarkerToken } from "../../utils/wordCoherence";
 
-const AYAH_MARKER_TOKEN_RE = /^[۝۞۩﴿﴾\d٠-٩۰-۹]+$/u;
+function getVerseLabel(lang, ayahNumber) {
+  if (!ayahNumber) return undefined;
+  const word = t("quran.verseLabel", lang);
+  return `${word} ${ayahNumber}`;
+}
 
-function isAyahMarkerToken(word) {
-  if (!word) return false;
-  const compact = String(word).replace(/\s+/g, "");
-  if (!compact) return false;
-  return AYAH_MARKER_TOKEN_RE.test(compact);
+function CanonicalQuranText({
+  text,
+  riwaya,
+  words,
+  surahNum,
+  ayahNumber,
+  wordAudioIsAligned,
+}) {
+  const { lang } = useAppLocale();
+  const verseLabel = getVerseLabel(lang, ayahNumber);
+  if (riwaya === "warsh") {
+    // Keep the canonical word and ayah-marker layout, but let a tap reach
+    // the verse action. The available word audio clips are Hafs recordings.
+    const parts = String(text).match(/\s+|\S+/gu) || [];
+    return (
+      <span className="quran-canonical-text" dir="rtl" lang="ar">
+        {parts.map((word, index) => {
+          if (/^\s+$/u.test(word)) return <React.Fragment key={index}>{word}</React.Fragment>;
+          const isMarker = isAyahMarkerToken(word);
+          return (
+            <React.Fragment key={index}>
+              <span
+                className={isMarker ? "native-ayah-marker" : "quran-word-item"}
+                aria-label={isMarker ? verseLabel : undefined}
+                title={getWaqfHelp(word, lang)}
+                style={{ display: "inline" }}
+              >
+                {word}
+              </span>
+            </React.Fragment>
+          );
+        })}
+      </span>
+    );
+  }
+
+  const parts = String(text).match(/\s+|\S+/gu) || [];
+  // `words` carries recitable words only, while `parts` also holds the ayah-end
+  // marker, so the recitable count is the index that lines up with word data.
+  let recitablePosition = 0;
+  return (
+    <span className="quran-canonical-text" dir="rtl" lang="ar">
+      {parts.map((wordStr, index) => {
+        if (/^\s+$/u.test(wordStr)) return <React.Fragment key={index}>{wordStr}</React.Fragment>;
+        const isMarker = isAyahMarkerToken(wordStr);
+        if (!isMarker) recitablePosition += 1;
+        const wordPos = recitablePosition;
+        const canRecite =
+          !isMarker && wordAudioIsAligned && Boolean(surahNum && ayahNumber);
+        const audioUrl = canRecite
+          ? (words?.[wordPos - 1]?.audioUrl || getWordAudioUrl(surahNum, ayahNumber, wordPos))
+          : null;
+
+        const handleClick = (e) => {
+          e.stopPropagation();
+          playWordAudio(audioUrl);
+        };
+
+        return (
+          <React.Fragment key={index}>
+            <span
+              className={
+                isMarker
+                  ? "native-ayah-marker"
+                  : canRecite
+                    ? "quran-word-item cursor-pointer"
+                    : "quran-word-item"
+              }
+              onClick={canRecite ? handleClick : undefined}
+              role={canRecite ? "button" : undefined}
+              tabIndex={canRecite ? 0 : undefined}
+              aria-label={isMarker ? verseLabel : undefined}
+              style={{ display: "inline" }}
+            >
+              {wordStr}
+            </span>
+          </React.Fragment>
+        );
+      })}
+    </span>
+  );
 }
 
 /**
- * HafsKaraokeText – word-by-word karaoke for Hafs text.
- *
- * Improvements vs. old KaraokeAyahText:
- * • Uses the calibration passed from SmartAyahRenderer (no rebuild internally).
- * • Applies per-word tajweed colours when available.
- * • Prevents backward jumps with lastIdxRef (same as KaraokeWarshText).
- * • Ramps in lag at the beginning to avoid mis-highlighting the first word.
+ * Hafs karaoke text. Native ayah markers are rendered in the flow but are not
+ * counted as recitable words, so timings and highlight indexes stay aligned.
  */
 export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   text,
   isFirstAyah,
   calibration,
+  words,
 }) {
-  const lastIdxRef = useRef(0);
-  const [exactWordIdx, setExactWordIdx] = useState(-1);
-
-  const words = useMemo(() => {
-    if (!text) return [];
-    return text.split(/\s+/).filter((w) => w.length > 0);
-  }, [text]);
-
-  // Reset highlighted word index when the ayah changes
-  useEffect(() => {
-    lastIdxRef.current = 0;
-    setExactWordIdx(-1);
-  }, [text]);
-
-  // Proportional word weights (identical algorithm used in KaraokeWarshText)
-  const wordWeights = useMemo(() => {
-    if (words.length === 0) return [];
-    const raw = words.map((w, idx) => {
-      const base = w.replace(/[\u064B-\u065F\u0670\u06D6-\u06ED\u06E1]/g, "");
-      let weight = Math.max(1, base.length);
-      const maddCount = (w.match(/[اوي\u0670\u0649]/g) || []).length;
-      weight += maddCount * 0.8;
-      if (/[اوي][\u0621\u0623\u0625\u0624\u0626]/.test(w)) weight += 1.0;
-      const shaddaCount = (w.match(/\u0651/g) || []).length;
-      weight += shaddaCount * 0.5;
-      if (/[\u064B\u064C\u064D]/.test(w)) weight += 0.4;
-      if (/الله/.test(w)) weight += 0.8;
-      if (idx === 0) weight += 0.3;
-      if (idx === words.length - 1) weight += 0.5;
-      return weight;
+  const wordEntries = useMemo(() => splitTajwidIntoWords([{ text }]).words, [text]);
+  const displayWords = useMemo(() => wordEntries.map(word => word.text), [wordEntries]);
+  const recitableWords = useMemo(
+    () => displayWords.filter((word) => !isAyahMarkerToken(word)),
+    [displayWords],
+  );
+  const recitableIndexByDisplayIndex = useMemo(() => {
+    let nextIndex = -1;
+    return displayWords.map((word) => {
+      if (isAyahMarkerToken(word)) return -1;
+      nextIndex += 1;
+      return nextIndex;
     });
-    const total = raw.reduce((s, v) => s + v, 0);
-    let cum = 0;
-    return raw.map((w) => {
-      cum += w / total;
-      return cum;
-    });
-  }, [words]);
-
-  const { progress, seekCount } = useKaraoke({
+  }, [displayWords]);
+  const dataWords = useMemo(
+    () => words?.filter((w) => w.charType !== "end") ?? [],
+    [words],
+  );
+  const currentIdx = useKaraokeWordIndex({
+    text,
     isFirstAyah,
-    wordCount: words.length,
     calibration,
+    recitableWords,
   });
 
-  const lagWords = useMemo(() => {
-    if (!calibration) return 0;
-    return words.length >= 24
-      ? Number(calibration.lagWordsLong ?? 0)
-      : Number(calibration.lagWordsBase ?? 0);
-  }, [calibration, words.length]);
-
-  // Reset highlighted word index when user seeks in audio
-  useEffect(() => {
-    lastIdxRef.current = 0;
-  }, [seekCount]);
-
-  useEffect(() => {
-    const updateFromSegments = (timeSec = audioService.currentTime || 0) => {
-      const segments = Array.isArray(audioService.currentAyah?.segments)
-        ? audioService.currentAyah.segments
-        : [];
-
-      if (segments.length === 0) {
-        setExactWordIdx(-1);
-        return;
-      }
-
-      const timeMs = timeSec * 1000;
-      let nextIndex = -1;
-      for (const segment of segments) {
-        if (timeMs >= segment.startMs && timeMs <= segment.endMs) {
-          nextIndex = Number.isFinite(segment.wordIndex)
-            ? segment.wordIndex
-            : Math.max(0, Number(segment.wordPosition || 1) - 1);
-          break;
-        }
-        if (timeMs > segment.endMs) {
-          nextIndex = Number.isFinite(segment.wordIndex)
-            ? segment.wordIndex
-            : Math.max(0, Number(segment.wordPosition || 1) - 1);
-        }
-      }
-      setExactWordIdx(nextIndex);
-    };
-
-    updateFromSegments();
-    return audioService.addTimeUpdateListener(updateFromSegments);
-  }, [text]);
-
-  const currentIdx = useMemo(() => {
-    if (exactWordIdx >= 0) return Math.min(words.length - 1, exactWordIdx);
-    let idx = 0;
-    for (let i = 0; i < wordWeights.length; i++) {
-      if (progress < wordWeights[i]) {
-        idx = i;
-        break;
-      }
-      idx = i;
-    }
-    const adjustedIdx = Math.max(0, idx - Math.max(0, lagWords));
-    const last = lastIdxRef.current;
-    const finalIdx = Math.max(last, adjustedIdx);
-    lastIdxRef.current = finalIdx;
-    return finalIdx;
-  }, [exactWordIdx, progress, wordWeights, lagWords, words.length]);
-
-  if (words.length === 0) return <span>{text}</span>;
+  if (displayWords.length === 0) return <span>{text}</span>;
 
   return (
-    <span className="wbw-container hafs-karaoke">
-      {words.map((word, i) => {
-        const isRead = i < currentIdx;
-        const isCurrent = i === currentIdx;
+    <span className="wbw-container hafs-karaoke" dir="rtl" lang="ar">
+      {displayWords.map((word, index) => {
         const isMarkerToken = isAyahMarkerToken(word);
+        const recitableIndex = recitableIndexByDisplayIndex[index];
+        const isRead = !isMarkerToken && recitableIndex < currentIdx;
+        const isCurrent = !isMarkerToken && recitableIndex === currentIdx;
 
         let cls = "wbw-word";
         if (isRead) cls += " wbw-read";
         else if (isCurrent) cls += " wbw-current";
         else cls += " wbw-upcoming";
-        if (isMarkerToken) cls += " wbw-marker-token";
+        if (isMarkerToken) cls += " wbw-marker-token native-ayah-marker";
 
+        const wordAudioUrl = !isMarkerToken ? dataWords[recitableIndex]?.audioUrl : null;
+        // While the ayah is being recited, a word click resumes the
+        // recitation from that word (word timings), like a seek.
+        const seekToWord = !isMarkerToken
+          ? () => {
+              const segments = Array.isArray(audioService.currentAyah?.segments)
+                ? audioService.currentAyah.segments
+                : [];
+              const segment = segments.find((item) =>
+                (Number.isFinite(item.wordIndex)
+                  ? item.wordIndex
+                  : Number(item.wordPosition || 1) - 1) === recitableIndex,
+              );
+              if (segment && Number.isFinite(segment.startMs)) {
+                audioService.seek(segment.startMs / 1000);
+                if (audioService.audio?.paused) audioService.resume?.();
+                return;
+              }
+              if (wordAudioUrl) playWordAudio(wordAudioUrl);
+            }
+          : undefined;
         return (
-          <React.Fragment key={i}>
-            <span className={cls}>{word}</span>
-            {i < words.length - 1 && " "}
+          <React.Fragment key={index}>
+            <span
+              className={cls}
+              onClick={seekToWord}
+              role={seekToWord ? "button" : undefined}
+            >
+              {wordEntries[index].prefix || ""}{word}
+            </span>
+            {wordEntries[index].separator || ""}
           </React.Fragment>
         );
       })}
@@ -159,42 +186,106 @@ export const HafsKaraokeText = React.memo(function HafsKaraokeText({
   );
 });
 
-// Keep the old export name alive so any remaining import doesn't break
+
 export { HafsKaraokeText as KaraokeAyahText };
 
-/**
- * AyahTextRenderer – routes Hafs ayah rendering.
- * • isPlaying  → HafsKaraokeText (word-by-word highlight with timing calibration)
- * • !isPlaying → TajweedText     (coloured tajweed segments or plain text)
- */
-export function AyahTextRenderer({
+function AyahTextRendererComponent({
   text,
   tajweedText,
+  tajwidSource,
   showTajwid,
   isPlaying,
   isFirstAyah,
   calibration,
   riwaya,
   tajweedColors,
+  words,
+  fontFamily,
+  surahNum,
+  ayahNumber,
 }) {
+  const wordData = useMemo(() => ({
+    clickableWords: Array.isArray(words)
+      ? words.filter((word) => !word.charType || word.charType === "word")
+      : [],
+  }), [words]);
+  const { clickableWords } = wordData;
+  // A word tap recites the qurancdn clip at that word's position, so it is only
+  // honest while the word data lines up with the glyphs on screen. The verse
+  // text comes from the verse-level field, which on rare verses (15:7) splits
+  // into a different number of words than the array: indexing it anyway reads
+  // out a neighbouring word. With no array at all the standard Hafs division is
+  // the intended source, and Warsh taps are already disclosed as Hafs audio, so
+  // only a divergent Hafs array removes them.
+  const wordAudioIsAligned = useMemo(
+    () =>
+      riwaya === "warsh" ||
+      clickableWords.length === 0 ||
+      hasCoherentWordData(clickableWords, text, fontFamily, riwaya, surahNum, ayahNumber),
+    [ayahNumber, clickableWords, fontFamily, riwaya, surahNum, text],
+  );
+
   if (!text) return null;
 
-  if (isPlaying) {
+  if (riwaya === "hafs" && isPlaying && !(showTajwid && tajweedText)) {
     return (
       <HafsKaraokeText
         text={text}
         isFirstAyah={isFirstAyah}
         calibration={calibration}
+        words={words}
+      />
+    );
+  }
+
+  if (!showTajwid || !tajweedText) {
+    return (
+      <CanonicalQuranText
+        text={text}
+        riwaya={riwaya}
+        words={clickableWords}
+        wordAudioIsAligned={wordAudioIsAligned}
+        surahNum={surahNum}
+        ayahNumber={ayahNumber}
       />
     );
   }
 
   return (
     <TajweedText
-      text={showTajwid && tajweedText ? tajweedText : text}
-      enabled={showTajwid}
+      text={tajweedText}
+      originalText={text}
+      tajwidSource={tajwidSource}
+      wordAudioIsAligned={wordAudioIsAligned}
+      enabled
       riwaya={riwaya}
       tajweedColors={tajweedColors}
+      surahNum={surahNum}
+      ayahNumber={ayahNumber}
+      karaoke={isPlaying ? { isFirstAyah, calibration } : null}
     />
   );
 }
+
+function areAyahTextRendererEqual(prev, next) {
+  return (
+    prev.text === next.text &&
+    prev.tajweedText === next.tajweedText &&
+    prev.tajwidSource === next.tajwidSource &&
+    prev.showTajwid === next.showTajwid &&
+    prev.isPlaying === next.isPlaying &&
+    prev.isFirstAyah === next.isFirstAyah &&
+    prev.calibration === next.calibration &&
+    prev.riwaya === next.riwaya &&
+    prev.tajweedColors === next.tajweedColors &&
+    prev.words === next.words &&
+    prev.fontFamily === next.fontFamily &&
+    prev.surahNum === next.surahNum &&
+    prev.ayahNumber === next.ayahNumber
+  );
+}
+
+export const AyahTextRenderer = React.memo(
+  AyahTextRendererComponent,
+  areAyahTextRendererEqual,
+);

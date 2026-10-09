@@ -1,4 +1,8 @@
 import { test, expect } from "@playwright/test";
+import { getRecitersByRiwaya } from "../../src/data/reciters.js";
+import { revealReadingChrome } from "./helpers/quick-menu.mjs";
+
+const WARSH_RECITER_COUNT = getRecitersByRiwaya("warsh").length;
 
 async function openReader(page) {
   await page.goto("/");
@@ -8,6 +12,36 @@ async function openReader(page) {
   await expect(start.first()).toBeVisible();
   await start.first().click();
   await expect(page.locator(".qc-ayah-text-ar").first()).toBeVisible();
+}
+
+async function ensureWarsh(page) {
+  await revealReadingChrome(page);
+  const mobileMore = page.locator('.mobile-navigation [data-destination="more"]');
+  if (await mobileMore.waitFor({ state: "visible", timeout: 5_000 }).then(() => true).catch(() => false)) {
+    await mobileMore.click();
+    await page.locator('.mobile-navigation-menu [data-riwaya-choice="warsh"]').click();
+    await expect(page.locator(".app-root")).toHaveAttribute("data-riwaya", "warsh");
+    return;
+  }
+  await page.locator(".mp-header").waitFor({ state: "visible" });
+  const toggle = page.locator(".mp-header__riwaya-toggle:visible").first();
+  const hasVisibleToggle = await toggle
+    .waitFor({ state: "visible", timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false);
+
+  if (hasVisibleToggle) {
+    if (!/WARSH/i.test((await toggle.textContent()) || "")) {
+      await toggle.click();
+    }
+  } else {
+    await page.locator(".mp-header__more").first().click();
+    const mobileRiwaya = page.getByTestId("header-mobile-riwaya");
+    await expect(mobileRiwaya).toBeVisible();
+    await mobileRiwaya.getByRole("button", { name: "Warsh", exact: true }).click();
+  }
+
+  await expect(page.locator(".app-root")).toHaveAttribute("data-riwaya", "warsh");
 }
 
 test("E2E: audio player minimized click restores panel and options modal opens", async ({ page }) => {
@@ -27,7 +61,7 @@ test("E2E: audio player minimized click restores panel and options modal opens",
 
   if (!startsMinimized) {
     const minimizeBtn = desktopPlayer
-      .locator("button:has(i.fa-chevron-down), button:has(i.fa-window-minimize), button:has(i.fa-minus)")
+      .locator("button[aria-label*='Réduire'], button[aria-label*='Minimize'], button[aria-label='تصغير']")
       .first();
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click();
@@ -62,6 +96,7 @@ test.describe("mobile", () => {
     });
 
     await openReader(page);
+    await ensureWarsh(page);
 
     const mobilePlayer = page.locator(".mp-audio-player--mobile").first();
     await expect(mobilePlayer).toBeVisible();
@@ -81,22 +116,111 @@ test.describe("mobile", () => {
     const optionsModal = page.locator(".audio-player-modal").first();
     await expect(optionsModal).toBeVisible();
 
+    const reciterPanel = optionsModal.locator(".audio-reciter-options");
+    const reciterCards = reciterPanel.locator(".audio-reciter-options__item");
+    await expect(reciterPanel.locator(".audio-reciter-options__count")).toContainText(
+      `${WARSH_RECITER_COUNT} voix`,
+    );
+    await expect(reciterCards).toHaveCount(WARSH_RECITER_COUNT);
+    await expect(reciterPanel.locator('[data-state="selected"]')).toHaveCount(1);
+    await expect(reciterPanel.locator('[data-state="selected"] .audio-reciter-options__check')).toBeVisible();
+    await expect(reciterCards.first().locator(".audio-reciter-options__meta")).toContainText("Warsh");
+    await expect(reciterCards.first().locator(".audio-reciter-options__photo")).toBeVisible();
+
+    const layout = await reciterPanel.evaluate((panel) => {
+      const grid = panel.querySelector(".audio-reciter-options__grid");
+      const card = panel.querySelector(".audio-reciter-options__item");
+      const selected = panel.querySelector('[data-state="selected"]');
+      const idle = panel.querySelector('[data-state="idle"]');
+      return {
+        columns: grid ? getComputedStyle(grid).gridTemplateColumns.split(" ").length : 0,
+        cardHeight: card?.getBoundingClientRect().height || 0,
+        noHorizontalOverflow: panel.scrollWidth <= panel.clientWidth + 1,
+        selectionIsDistinct:
+          Boolean(selected && idle) &&
+          getComputedStyle(selected).backgroundColor !== getComputedStyle(idle).backgroundColor,
+      };
+    });
+
+    expect(layout.columns).toBe(1);
+    expect(layout.cardHeight).toBeGreaterThanOrEqual(44);
+    expect(layout.noHorizontalOverflow).toBe(true);
+    expect(layout.selectionIsDistinct).toBe(true);
+
     await page.keyboard.press("Escape");
     await expect(optionsModal).toBeHidden();
 
     const minimizeBtn = dockPlayer
-      .locator("button[aria-label*='Minimiser le lecteur'], button[aria-label*='Minimize player'], button:has(i.fa-chevron-down)")
+      .locator("button[aria-label*='Réduire'], button[aria-label*='Minimize'], button[aria-label='تصغير']")
       .first();
     await expect(minimizeBtn).toBeVisible();
     await minimizeBtn.click();
 
-    const minimizedPlayer = page.locator(".mp-audio-player--mobile:not(.mp-audio-player--dock)").first();
+    const minimizedPlayer = page
+      .locator(
+        '.mp-audio-player--mobile.is-minimized[data-testid="audio-player-compact"]',
+      )
+      .first();
     await expect(minimizedPlayer).toBeVisible();
 
     const reopenBtn = minimizedPlayer.locator(".mp-player-minimized-open").first();
     await expect(reopenBtn).toBeVisible();
     await reopenBtn.click();
 
-    await expect(page.locator(".mp-audio-player--mobile.mp-audio-player--dock").first()).toBeVisible();
+    await expect(
+      page.locator(".mp-audio-player--mobile.simple-player--mobile-open").first(),
+    ).toBeVisible();
+  });
+
+  test("E2E mobile: une fiche Warsh charge la biographie et le portrait", async ({ page }) => {
+    await page.addInitScript(() => {
+      try {
+        localStorage.clear();
+      } catch {}
+    });
+
+    await page.goto("/");
+    await ensureWarsh(page);
+
+    // Phones switch to the audio library from the bottom navigation.
+    const audioDestination = page.locator('.mobile-navigation [data-destination="audio"]');
+    await audioDestination.click();
+    await expect(audioDestination).toHaveAttribute("aria-current", "page");
+
+    const reciterButton = page.getByRole("button", {
+      name: "Ibrahim Al-Dosari (Warsh)",
+      exact: true,
+    });
+    await expect(reciterButton).toBeVisible();
+    await reciterButton.click();
+
+    const detail = page.locator(".reciter-detail");
+    await expect(detail).toBeVisible();
+    await expect(detail.locator("#reciter-modal-title")).toContainText("Ibrahim Al-Dosari");
+    await expect(detail.locator(".reciter-detail__bio p")).toContainText(/Riyad/i);
+    await expect(detail.locator(".reciter-detail__bio p")).toContainText(/doctorat/i);
+
+    // The sheet no longer carries a "Verified sources" block (removed with the
+    // reciter-sheet reorder): the provider links are not asserted here.
+
+    const portrait = detail.locator(".reciter-hero__avatar");
+    await expect(portrait).toBeVisible();
+    const portraitTag = await portrait.evaluate((element) => element.tagName);
+    if (portraitTag === "IMG") {
+      await expect(portrait).toHaveAttribute(
+        "src",
+        /\/images\/reciters\/warsh_ibrahim_aldosari\.webp/,
+      );
+    } else {
+      await expect(portrait).toHaveClass(/reciter-hero__avatar--fallback/);
+      await expect(portrait).toContainText("IA");
+    }
+
+    const detailLayout = await detail.evaluate((dialog) => ({
+      noHorizontalOverflow: dialog.scrollWidth <= dialog.clientWidth + 1,
+      fitsViewport: dialog.getBoundingClientRect().width <= window.innerWidth,
+    }));
+    expect(detailLayout.noHorizontalOverflow).toBe(true);
+    expect(detailLayout.fitsViewport).toBe(true);
   });
 });

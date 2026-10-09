@@ -1,10 +1,50 @@
+import { getAllPlaylists, importPlaylistRecord } from "./playlistService.js";
 /**
  * Export / Import service – JSON format.
- * Exports: bookmarks, notes, settings.
+ * Exports: bookmarks, notes, playlists, settings.
  */
 
-import { getAllBookmarks, getAllNotes, getSettings, saveSettings } from './storageService';
-import { getDB } from './dbService';
+import {
+  getAllBookmarks,
+  getAllNotes,
+  getSettings,
+  importBookmarkRecord,
+  importNoteRecord,
+  saveSettings,
+} from './storageService';
+import { getErrorReport } from './errorAnalytics.js';
+import { getPerformanceReport } from './performanceMetrics.js';
+import { getStorageSnapshot } from './storageQuotaService.js';
+
+function downloadBlob(content, mime, filename) {
+  const blob = new Blob([content], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  URL.revokeObjectURL(url);
+}
+
+export async function downloadDiagnostics() {
+  const payload = {
+    app: 'MushafPlus',
+    version: 1,
+    type: 'local-diagnostics',
+    exportedAt: new Date().toISOString(),
+    performance: getPerformanceReport(),
+    errors: getErrorReport(),
+    storage: await getStorageSnapshot(),
+  };
+  downloadBlob(
+    JSON.stringify(payload, null, 2),
+    'application/json',
+    `mushafplus-diagnostic-${new Date().toISOString().slice(0, 10)}.json`,
+  );
+  return payload;
+}
 
 /**
  * Export all user data to a JSON string.
@@ -13,13 +53,15 @@ export async function exportData() {
   const bookmarks = await getAllBookmarks();
   const notes = await getAllNotes();
   const settings = getSettings();
+  const playlists = await getAllPlaylists();
 
   const payload = {
     app: 'MushafPlus',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     bookmarks,
     notes,
+    playlists,
     settings,
   };
 
@@ -31,15 +73,11 @@ export async function exportData() {
  */
 export async function downloadExport() {
   const json = await exportData();
-  const blob = new Blob([json], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `mushafplus-backup-${new Date().toISOString().slice(0, 10)}.json`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  downloadBlob(
+    json,
+    'application/json',
+    `mushafplus-backup-${new Date().toISOString().slice(0, 10)}.json`,
+  );
 }
 
 /**
@@ -62,41 +100,35 @@ export async function importData(jsonString) {
     throw new Error('Invalid MushafPlus backup file');
   }
 
-  const db = await getDB();
-
   // Import bookmarks
   const bookmarks = Array.isArray(data.bookmarks) ? data.bookmarks : [];
-  if (bookmarks.length) {
-    const tx = db.transaction('bookmarks', 'readwrite');
-    for (const bm of bookmarks) {
-      if (bm && typeof bm === 'object' && typeof bm.id === 'string') {
-        await tx.store.put(bm);
-      }
-    }
-    await tx.done;
+  let importedBookmarks = 0;
+  for (const bookmark of bookmarks) {
+    if (await importBookmarkRecord(bookmark)) importedBookmarks += 1;
   }
 
   // Import notes
   const notes = Array.isArray(data.notes) ? data.notes : [];
-  if (notes.length) {
-    const tx = db.transaction('notes', 'readwrite');
-    for (const note of notes) {
-      if (note && typeof note === 'object' && typeof note.id === 'string') {
-        await tx.store.put(note);
-      }
-    }
-    await tx.done;
+  let importedNotes = 0;
+  for (const note of notes) {
+    if (await importNoteRecord(note)) importedNotes += 1;
+  }
+
+  let importedPlaylists = 0;
+  for (const playlist of Array.isArray(data.playlists) ? data.playlists : []) {
+    if (await importPlaylistRecord(playlist)) importedPlaylists += 1;
   }
 
   // Import settings (merge)
   if (data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)) {
     const current = getSettings();
-    saveSettings({ ...current, ...data.settings });
+    if (!saveSettings({ ...current, ...data.settings })) throw new Error("Unable to restore settings");
   }
 
   return {
-    bookmarks: bookmarks.length,
-    notes: notes.length,
+    bookmarks: importedBookmarks,
+    notes: importedNotes,
+    playlists: importedPlaylists,
     settingsRestored: !!(data.settings && typeof data.settings === 'object' && !Array.isArray(data.settings)),
   };
 }

@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef } from "react";
 import { useKaraoke } from "../../hooks/useKaraoke";
 import { withWordCountCalibrationBump } from "../../utils/karaokeUtils";
+import { getNativeAyahMarker } from "../../data/fonts";
 import WarshWordText from "./WarshWordText";
 
-const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
+const AYAH_MARKER_TOKEN_RE = /^[\u06dd\u06de\u06e9\uFC00-\uFD1C\ufd3f\ufd3e\d\u0660-\u0669\u06f0-\u06f9]+$/u;
 const WAQF_MARKER_TOKEN_RE = /^[\u06d6-\u06dc]+$/u;
 const DEFAULT_WARSH_CALIBRATION = {
   offsetSec: 0.2,
@@ -55,13 +56,20 @@ export default function KaraokeWarshText({
   words,
   isFirstAyah,
   calibration,
-  tajweedColors,
+  showTajwid = false,
   fallbackText,
+  ayahNumber,
+  fontFamily,
+  appendNativeMarker = true,
 }) {
   const lastIdxRef = useRef(0);
-  const normalizedWords = useMemo(
+  const allWords = useMemo(
     () => (Array.isArray(words) ? words.map(getWordText).filter(Boolean) : []),
     [words],
+  );
+  const normalizedWords = useMemo(
+    () => allWords.filter((word) => !isAyahMarkerToken(word)),
+    [allWords],
   );
   const effectiveCalibration = withWordCountCalibrationBump(
     calibration || DEFAULT_WARSH_CALIBRATION,
@@ -74,7 +82,7 @@ export default function KaraokeWarshText({
   });
   const wordWeights = useMemo(() => buildWordWeights(normalizedWords), [normalizedWords]);
   const markerFlags = useMemo(
-    () => normalizedWords.map((word) => isAyahMarkerToken(getWordText(word))),
+    () => normalizedWords.map(() => false),
     [normalizedWords],
   );
   const lagWords =
@@ -101,12 +109,22 @@ export default function KaraokeWarshText({
   }
 
   return (
-    <WarshWordText
-      words={normalizedWords}
-      highlightIdx={highlightIdx >= 0 ? highlightIdx : undefined}
-      tajweedColors={tajweedColors}
-      fallbackText={fallbackText}
-      markerFlags={markerFlags}
-    />
+    <>
+      <WarshWordText
+        words={normalizedWords}
+        highlightIdx={highlightIdx >= 0 ? highlightIdx : undefined}
+        showTajwid={showTajwid}
+        fallbackText={fallbackText}
+        markerFlags={markerFlags}
+      />
+      {appendNativeMarker ? (
+        <span className="native-ayah-marker" style={{ display: "inline" }}>
+          {"\u202F"}
+          {/* Faces that need the U+06DD prefix lose the medallion if the playing
+              ayah falls back to the default Warsh id. */}
+          {getNativeAyahMarker(ayahNumber, fontFamily, "warsh")}
+        </span>
+      ) : null}
+    </>
   );
 }

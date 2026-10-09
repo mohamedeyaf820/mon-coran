@@ -3,29 +3,63 @@
  * Stores progress by riwaya + reciter + surah so multiple readers can coexist.
  */
 
-import { AudioService } from "./audioService";
-import { getRecentVisits } from "./recentHistoryService";
-import SURAHS from "../data/surahs";
-import { buildAudioPlaylistForSurah } from "../utils/audioPlaylist";
+import * as AudioService from "./audioUrlBuilder.js";
+import { inspectAudioResponse, OFFLINE_AUDIO_CACHE_NAME } from "./offlineAudioStore.js";
+export { OFFLINE_AUDIO_CACHE_NAME } from "./offlineAudioStore.js";
+import SURAHS from "../data/surahs.js";
+import { getReciter } from "../data/reciters.js";
+import {
+  buildAudioPlaylistForSurah,
+  buildSurahAudioPlaylist,
+  expandAyahsToAudioFiles,
+} from "../utils/audioPlaylist.js";
+import { getSurahVerseCountByRiwaya } from "../constants/warshSource.js";
+import { filterAyahAudioGaps } from "../data/audioAvailability.js";
+import { isTrustedAudioUrl } from "./audioSources.js";
+import { logError } from "./errorAnalytics.js";
+import { hasBasmalaPreroll } from "./audioUrlBuilder.js";
 import {
   downloadProgressMapSchema,
   readLocalStorageWithSchema,
   writeLocalStorageJson,
-} from "./storageValidation";
+} from "./storageValidation.js";
+import {
+  ensureStorageCapacity,
+  estimateAudioDownloadBytes,
+  requestPersistentStorage,
+} from "./storageQuotaService.js";
+import { startPerformanceTimer } from "./performanceMetrics.js";
 
-const CACHE_NAME = "mushafplus-audio-v2";
 const PROGRESS_KEY = "mushaf_offline_progress_v2";
+export const OFFLINE_DOWNLOADS_CHANGED_EVENT = "mushafplus-offline-downloads-changed";
+export const OFFLINE_FULL_QURAN_PROGRESS_EVENT = "mushafplus-full-quran-download-progress";
+const activeDownloads = new Map();
+const activeFullQuranDownloads = new Map();
+const FILE_COUNT_CACHE = new Map();
+
+function devLog(method, ...args) {
+  if (import.meta.env?.DEV && typeof console !== "undefined") {
+    console[method]?.(...args);
+  }
+}
 
 function loadProgress() {
   return readLocalStorageWithSchema(PROGRESS_KEY, downloadProgressMapSchema, {});
 }
 
 function saveProgress(progress) {
-  writeLocalStorageJson(PROGRESS_KEY, progress);
+  const saved = writeLocalStorageJson(PROGRESS_KEY, progress);
+  if (saved && typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(OFFLINE_DOWNLOADS_CHANGED_EVENT));
+  }
+  return saved;
 }
 
-function surahAyahCount(surahMeta) {
-  return surahMeta?.ayahs || 7;
+function surahAyahCount(surahMeta, riwaya = "hafs") {
+  const number = Number(surahMeta?.n || surahMeta?.number) || 0;
+  return (
+    getSurahVerseCountByRiwaya(number, riwaya) || surahMeta?.ayahs || 7
+  );
 }
 
 function getSurahGlobalStart(surahNum) {
@@ -41,17 +75,53 @@ function buildProgressKey({ surahNum, reciterId = "", riwaya = "hafs" }) {
   return `${riwaya}:${reciterId || "unknown"}:${surahNum}`;
 }
 
+function saveProgressEntry(key, entry) {
+  const latestProgress = loadProgress();
+  latestProgress[key] = entry;
+  return saveProgress(latestProgress);
+}
+
+function buildFullQuranKey(reciterId = "unknown", riwaya = "hafs") {
+  return `${riwaya}:${reciterId || "unknown"}`;
+}
+
+function expectedItemCountForSurah(surahMeta, isSurahStream, riwaya = "hafs", cdnType = "everyayah") {
+  if (isSurahStream) return 1;
+  // The download counts files, not verses, and for a Hafs-keyed CDN the two
+  // spaces differ: a Warsh surah can show more verses than the CDN has files
+  // (two verses inside one mp3) or fewer (one verse split over two mp3s). Using
+  // the same normalised list the downloader walks keeps the progress bar able to
+  // reach 100 %.
+  const number = Number(surahMeta?.n || surahMeta?.number) || 0;
+  const key = `${riwaya}:${cdnType}:${number}`;
+  if (!FILE_COUNT_CACHE.has(key)) {
+    FILE_COUNT_CACHE.set(
+      key,
+      expandAyahsToAudioFiles(buildSurahAudioPlaylist(number, riwaya), cdnType).length +
+        Number(hasBasmalaPreroll(cdnType, number)),
+    );
+  }
+  return FILE_COUNT_CACHE.get(key);
+}
+
+function dispatchFullQuranProgress(detail) {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(
+    new CustomEvent(OFFLINE_FULL_QURAN_PROGRESS_EVENT, { detail }),
+  );
+}
+
 function normalizeDownloadOptions({
   surahMeta,
   reciter,
   riwaya = "hafs",
   reciterId,
   reciterCdn,
-  cdnType = "islamic",
+  cdnType = "everyayah",
 }) {
   const resolvedReciterId = reciter?.id || reciterId || "unknown";
   const resolvedCdn = reciter?.cdn || reciterCdn || "";
-  const resolvedCdnType = reciter?.cdnType || cdnType || "islamic";
+  const resolvedCdnType = reciter?.cdnType || cdnType || "everyayah";
   const surahNum = Number(surahMeta?.n || surahMeta?.number || 0);
   return {
     surahMeta,
@@ -66,18 +136,6 @@ function normalizeDownloadOptions({
       riwaya,
     }),
   };
-}
-
-function getAyahAudioUrl({ surahNum, ayahIndex, globalBase, reciterCdn, cdnType }) {
-  return AudioService.buildUrl(
-    reciterCdn,
-    {
-      surah: surahNum,
-      numberInSurah: ayahIndex,
-      number: globalBase + ayahIndex - 1,
-    },
-    cdnType,
-  );
 }
 
 async function buildDownloadAudioItems(normalized) {
@@ -99,54 +157,151 @@ async function buildDownloadAudioItems(normalized) {
     normalized.surahNum,
     normalized.riwaya,
   );
-  if (playlist.length) return playlist;
-
-  const total = surahAyahCount(normalized.surahMeta);
-  const globalBase =
-    normalized.surahMeta?.globalStart || getSurahGlobalStart(normalized.surahNum);
-  return Array.from({ length: total }, (_, index) => ({
-    surah: normalized.surahNum,
-    surahNumber: normalized.surahNum,
-    ayah: index + 1,
-    numberInSurah: index + 1,
-    number: globalBase + index,
-  }));
+  const items = playlist.length
+    ? playlist
+    : Array.from(
+        { length: surahAyahCount(normalized.surahMeta, normalized.riwaya) },
+        (_, index) => ({
+          surah: normalized.surahNum,
+          surahNumber: normalized.surahNum,
+          ayah: index + 1,
+          numberInSurah: index + 1,
+          number:
+            (normalized.surahMeta?.globalStart ||
+              getSurahGlobalStart(normalized.surahNum)) + index,
+        }),
+      );
+  // Same file list the player builds: for a Hafs-keyed CDN a Warsh surah has
+  // more verses than files, and expanding is what keeps the offline copy from
+  // fetching one verse twice and another never.
+  const normalizedItems = expandAyahsToAudioFiles(items, normalized.cdnType);
+  const files = filterAyahAudioGaps(
+    normalizedItems,
+    normalized.cdnType,
+    normalized.reciterCdn,
+  );
+  // The player pre-rolls the basmala ahead of verse 1, so the offline copy has
+  // to carry it or the first verse of every downloaded surah loses its opening.
+  return hasBasmalaPreroll(normalized.cdnType, normalized.surahNum)
+    ? [{ surah: 1, ayah: 1, hafsNumber: 1 }, ...files]
+    : files;
 }
 
 function getAudioUrlCandidates({ item, normalized }) {
-  if (typeof AudioService.buildUrlCandidates === "function") {
-    return AudioService.buildUrlCandidates(
+  return AudioService.withQuranComPrimary(
+    AudioService.buildUrlCandidates(
       normalized.reciterCdn,
       item,
       normalized.cdnType,
-    );
-  }
-
-  return [
-    getAyahAudioUrl({
-      surahNum: item.surah || item.surahNumber || normalized.surahNum,
-      ayahIndex: item.ayah || item.numberInSurah || 1,
-      globalBase:
-        normalized.surahMeta?.globalStart ||
-        getSurahGlobalStart(normalized.surahNum),
-      reciterCdn: normalized.reciterCdn,
-      cdnType: normalized.cdnType,
-    }),
-  ];
+    ),
+    item.quranComAudioTiming,
+  );
 }
 
-export function getDownloadedSurahs(reciterId = null, riwaya = null) {
-  const progress = loadProgress();
-  return Object.entries(progress)
-    .filter(([key, value]) => {
-      if (value?.status !== "done") return false;
-      const [entryRiwaya, entryReciterId] = key.split(":");
-      if (riwaya && entryRiwaya !== riwaya) return false;
-      if (reciterId && entryReciterId !== reciterId) return false;
-      return true;
-    })
-    .map(([, value]) => value.surahNum)
-    .filter((value, index, all) => all.indexOf(value) === index);
+// The candidate list may be prepended with a remote-supplied timing.url, so
+// the downloader applies the same allow-list the player enforces at playback
+// (audioService._loadUrlWithRetry): a URL it would refuse to play must never
+// be fetched or cached either — an opaque cached response cannot be inspected
+// afterwards. Deletion paths keep the unfiltered list so legacy entries stay
+// removable.
+function getTrustedAudioUrlCandidates({ item, normalized }) {
+  const trusted = [];
+  for (const url of getAudioUrlCandidates({ item, normalized })) {
+    if (isTrustedAudioUrl(url)) trusted.push(url);
+    else devLog("warn", "[download] URL outside the audio allow-list, skipped:", url);
+  }
+  return trusted;
+}
+
+let cacheInventoryPromise = null;
+function getCachedAudioUrls() {
+  if (!cacheInventoryPromise) {
+    cacheInventoryPromise = (async () => {
+      if (typeof caches === "undefined") return null;
+      try {
+        const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
+        const valid = new Map();
+        for (const request of await cache.keys()) {
+          const checked = await inspectAudioResponse(await cache.match(request));
+          if (checked) valid.set(request.url, checked.bytes);
+        }
+        return valid;
+      } catch {
+        return null;
+      }
+    })();
+    const pending = cacheInventoryPromise;
+    pending.finally(() => {
+      if (cacheInventoryPromise === pending) cacheInventoryPromise = null;
+    });
+  }
+  return cacheInventoryPromise;
+}
+
+async function verifySurahWithInventory(normalized, cachedUrls, { persist = true } = {}) {
+  const entry = getSurahDownloadEntry(
+    normalized.surahNum,
+    normalized.reciterId,
+    normalized.riwaya,
+  );
+  if (entry?.status !== "done" || !cachedUrls) return entry;
+
+  const items = await buildDownloadAudioItems(normalized);
+  const present = items.reduce((count, item) => {
+    const candidates = getTrustedAudioUrlCandidates({ item, normalized });
+    return count + Number(candidates.some((url) => cachedUrls.has(url)));
+  }, 0);
+  if (present === items.length && entry.validationVersion === 1) return entry;
+
+  // The browser can remove cached media independently of our progress record.
+  // Only replace a completed entry; an active download owns its own progress.
+  const latest = getSurahDownloadEntry(
+    normalized.surahNum,
+    normalized.reciterId,
+    normalized.riwaya,
+  );
+  if (latest?.status !== "done") return latest;
+  const repaired = {
+    ...latest,
+    status: present === items.length ? "done" : "partial",
+    validationVersion: 1,
+    total: items.length,
+    downloaded: present,
+    failedCount: items.length - present,
+    updatedAt: Date.now(),
+  };
+  if (persist) saveProgressEntry(normalized.key, repaired);
+  return repaired;
+}
+
+export async function verifySurahDownloadForReciter({ surahMeta, reciter, riwaya = "hafs" }) {
+  const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  const cachedUrls = await getCachedAudioUrls();
+  const entry = await verifySurahWithInventory(normalized, cachedUrls);
+  return entry ? { ...entry, verified: Boolean(cachedUrls) } : null;
+}
+
+export async function verifyFullQuranDownloadForReciter({ reciter, riwaya = "hafs" }) {
+  if (!reciter?.id) return getFullQuranDownloadSummary(reciter, riwaya);
+  const cachedUrls = await getCachedAudioUrls();
+  if (!cachedUrls) return { ...getFullQuranDownloadSummary(reciter, riwaya), verified: false };
+  const repairs = [];
+  for (const surahMeta of SURAHS) {
+    const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+    const checked = await verifySurahWithInventory(normalized, cachedUrls, { persist: false });
+    if (checked?.status === "partial") repairs.push([normalized.key, checked]);
+  }
+  if (repairs.length > 0) {
+    const progress = loadProgress();
+    let changed = false;
+    for (const [key, checked] of repairs) {
+      if (progress[key]?.status !== "done") continue;
+      progress[key] = checked;
+      changed = true;
+    }
+    if (changed) saveProgress(progress);
+  }
+  return { ...getFullQuranDownloadSummary(reciter, riwaya), verified: true };
 }
 
 export function getOfflineAudioEntries() {
@@ -155,19 +310,122 @@ export function getOfflineAudioEntries() {
     .sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 }
 
-export function getSurahDownloadStatus(surahNum, reciterId = null, riwaya = null) {
-  const progress = loadProgress();
-  if (reciterId && riwaya) {
-    return progress[buildProgressKey({ surahNum, reciterId, riwaya })]?.status || null;
+export async function getVerifiedOfflineAudioEntries() {
+  const inventory = await getCachedAudioUrls();
+  const result = [];
+  for (const entry of getOfflineAudioEntries()) {
+    const reciter = getReciter(entry.reciterId, entry.riwaya) || (entry.reciterCdn ? {
+      id: entry.reciterId, cdn: entry.reciterCdn, cdnType: entry.cdnType,
+    } : null);
+    const surahMeta = SURAHS.find(surah => surah.n === entry.surahNum);
+    if (!reciter || !surahMeta || !inventory) { result.push({ ...entry, verified: false }); continue; }
+    const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya: entry.riwaya });
+    const items = await buildDownloadAudioItems(normalized);
+    let downloaded = 0;
+    let bytes = 0;
+    for (const item of items) {
+      for (const url of getTrustedAudioUrlCandidates({ item, normalized })) {
+        if (!inventory.has(url)) continue;
+        downloaded++; bytes += inventory.get(url); break;
+      }
+    }
+    const checked = { ...entry, downloaded, bytes, total: items.length,
+      status: downloaded === items.length ? "done" : "partial", validationVersion: 1,
+      verified: true, reciterCdn: reciter.cdn, cdnType: reciter.cdnType };
+    if (!activeDownloads.has(entry.key) && (entry.bytes !== bytes || entry.status !== checked.status || entry.downloaded !== downloaded || entry.validationVersion !== 1)) saveProgressEntry(entry.key, checked);
+    result.push(checked);
   }
-  const statuses = Object.values(progress).filter(
-    (entry) => Number(entry?.surahNum) === Number(surahNum),
+  return result;
+}
+
+export function cancelOfflineDownload(key) {
+  const controller = activeDownloads.get(key);
+  if (!controller) return false;
+  controller.abort();
+  return true;
+}
+
+export function getSurahDownloadEntry(surahNum, reciterId, riwaya) {
+  if (!reciterId || !riwaya) return null;
+  const progress = loadProgress();
+  return (
+    progress[buildProgressKey({ surahNum, reciterId, riwaya })] || null
   );
-  return statuses[0]?.status || null;
+}
+
+export function getFullQuranDownloadSummary(reciter, riwaya = "hafs") {
+  const reciterId = reciter?.id || "unknown";
+  const isSurahStream = AudioService.isSurahStreamCdn(reciter?.cdnType);
+  const progress = loadProgress();
+  let completedSurahs = 0;
+  let downloadedItems = 0;
+  let failedItems = 0;
+
+  for (const surah of SURAHS) {
+    const expectedItems = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
+    const entry = progress[buildProgressKey({
+      surahNum: surah.n,
+      reciterId,
+      riwaya,
+    })];
+    if (!entry) continue;
+    if (entry.status === "done") completedSurahs += 1;
+    downloadedItems += Math.min(
+      expectedItems,
+      Math.max(0, Number(entry.downloaded || 0)),
+    );
+    failedItems += Math.max(0, Number(entry.failedCount || 0));
+  }
+
+  const totalItems = SURAHS.reduce(
+    (total, surah) => total + expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType),
+    0,
+  );
+  const remainingItems = Math.max(0, totalItems - downloadedItems);
+  const status =
+    completedSurahs === SURAHS.length
+      ? "done"
+      : downloadedItems > 0
+        ? "partial"
+        : "idle";
+
+  return {
+    key: buildFullQuranKey(reciterId, riwaya),
+    status,
+    completedSurahs,
+    totalSurahs: SURAHS.length,
+    downloadedItems,
+    totalItems,
+    failedItems,
+    percent: totalItems > 0
+      ? Math.min(100, Math.round((downloadedItems / totalItems) * 100))
+      : 0,
+    estimatedBytes: estimateAudioDownloadBytes(totalItems, isSurahStream),
+    estimatedRemainingBytes: remainingItems > 0
+      ? estimateAudioDownloadBytes(remainingItems, isSurahStream)
+      : 0,
+    isSurahStream,
+  };
+}
+
+export function isFullQuranDownloadActive(reciterId, riwaya = "hafs") {
+  return activeFullQuranDownloads.has(buildFullQuranKey(reciterId, riwaya));
+}
+
+export function cancelFullQuranDownload(reciterId, riwaya = "hafs") {
+  const fullKey = buildFullQuranKey(reciterId, riwaya);
+  const controller = activeFullQuranDownloads.get(fullKey);
+  if (!controller) return false;
+  controller.abort();
+  const prefix = `${riwaya}:${reciterId}:`;
+  activeDownloads.forEach((surahController, key) => {
+    if (key.startsWith(prefix)) surahController.abort();
+  });
+  return true;
 }
 
 export async function downloadSurahForReciter(
-  { surahMeta, reciter, riwaya = "hafs" },
+  { surahMeta, reciter, riwaya = "hafs", signal: parentSignal = null },
   onProgress,
 ) {
   if (!("caches" in window)) {
@@ -176,159 +434,386 @@ export async function downloadSurahForReciter(
   }
 
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  if (activeDownloads.has(normalized.key)) return "partial";
+
+  const controller = new AbortController();
+  let settleDownload;
+  controller.settled = new Promise(resolve => { settleDownload = resolve; });
+  if (parentSignal?.aborted) return "cancelled";
+  const abortFromParent = () => controller.abort();
+  parentSignal?.addEventListener?.("abort", abortFromParent, { once: true });
+  activeDownloads.set(normalized.key, controller);
   let done = 0;
   let successCount = 0;
   let failedCount = 0;
   const progress = loadProgress();
+  const finishMetric = startPerformanceTimer("offline_download_ms");
 
   try {
     const audioItems = await buildDownloadAudioItems(normalized);
     const total = audioItems.length;
     if (total === 0) return "error";
-    progress[normalized.key] = {
+    await requestPersistentStorage();
+    const alreadyDownloaded = Math.max(
+      0,
+      Number(progress[normalized.key]?.downloaded || 0),
+    );
+    const remainingItems = Math.max(1, total - alreadyDownloaded);
+    const capacity = await ensureStorageCapacity({
+      estimatedAdditionalBytes: estimateAudioDownloadBytes(
+        remainingItems,
+        AudioService.isSurahStreamCdn(normalized.cdnType),
+      ),
+    });
+    if (!capacity.allowed) return "storage-full";
+    const initialEntry = {
+      ...progress[normalized.key],
+      key: normalized.key,
       status: "partial",
       surahNum: normalized.surahNum,
       reciterId: normalized.reciterId,
+      reciterCdn: normalized.reciterCdn,
+      cdnType: normalized.cdnType,
       reciterName: reciter?.nameFr || reciter?.nameEn || reciter?.name || normalized.reciterId,
       riwaya: normalized.riwaya,
       total,
       updatedAt: Date.now(),
     };
-    saveProgress(progress);
+    saveProgressEntry(normalized.key, initialEntry);
 
-    const cache = await caches.open(CACHE_NAME);
-    const requestMode = AudioService.isSurahStreamCdn(normalized.cdnType)
-      ? "no-cors"
-      : "cors";
+    const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
+    const connection =
+      typeof navigator !== "undefined" ? navigator.connection : null;
+    const workerCount =
+      connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || "")
+        ? 1
+        : 3;
 
-    for (const item of audioItems) {
-      const urlCandidates = getAudioUrlCandidates({ item, normalized });
-      let existing = null;
+    let bytes = 0;
+    let storageFull = false;
+    const downloadOne = async (item) => {
+      const urlCandidates = getTrustedAudioUrlCandidates({ item, normalized });
       for (const url of urlCandidates) {
-        existing = await cache.match(url);
-        if (existing) break;
+        const checked = await inspectAudioResponse(await cache.match(url, { ignoreVary: true }));
+        if (checked) { bytes += checked.bytes; return true; }
       }
-      let downloaded = Boolean(existing);
-      if (!existing) {
-        for (const url of urlCandidates) {
-          try {
-            const response = await fetch(url, { mode: requestMode });
-            if (response.ok || response.type === "opaque") {
-              await cache.put(url, response.clone());
-              downloaded = true;
-              break;
-            }
-          } catch {
-            // Try the next URL candidate, then continue with the rest of the surah.
-          }
-        }
-        if (!downloaded) {
-          try {
-            const fallbackUrl = urlCandidates[0];
-            const response = await fetch(fallbackUrl, { mode: "cors" });
-            if (response.ok) {
-              await cache.put(fallbackUrl, response.clone());
-              downloaded = true;
-            }
-          } catch {
-            // Best effort: continue with the rest of the surah.
-          }
-        }
-      } else if (AudioService.isSurahStreamCdn(normalized.cdnType)) {
-        for (const url of urlCandidates) {
-          const hasCandidate = await cache.match(url);
-          if (!hasCandidate) {
-            try {
-              const response = await fetch(url, { mode: requestMode });
-              if (response.ok || response.type === "opaque") {
-                await cache.put(url, response.clone());
-              }
-            } catch {
-              // The primary cached URL is enough for offline status.
-            }
-          }
+      for (const url of urlCandidates) {
+        if (controller.signal.aborted || storageFull) return false;
+        try {
+          // Opaque responses cannot prove completeness or serve Safari ranges.
+          const response = await fetch(url, { signal: controller.signal });
+          const checked = await inspectAudioResponse(response);
+          if (!checked) continue;
+          if (controller.signal.aborted) return false;
+          await cache.put(url, new Response(checked.blob, { headers: {
+            "Content-Type": "audio/mpeg", "Content-Length": String(checked.bytes),
+          } }));
+          const stored = await inspectAudioResponse(await cache.match(url));
+          if (!stored) continue;
+          bytes += stored.bytes;
+          return true;
+        } catch (error) {
+          if (error?.name === "QuotaExceededError") { storageFull = true; return false; }
         }
       }
+      return false;
+    };
 
-      if (!downloaded && urlCandidates.length > 1) {
-        for (const url of urlCandidates) {
-          const retryExisting = await cache.match(url);
-          if (retryExisting) {
-            downloaded = true;
-            break;
-          }
+    let nextIndex = 0;
+    let lostNetwork = false;
+    const worker = async () => {
+      while (nextIndex < audioItems.length) {
+        if (controller.signal.aborted) throw new Error("Download cancelled");
+        if (typeof navigator !== "undefined" && navigator.onLine === false) {
+          // Every remaining file would fail the same way; park the surah so it
+          // resumes where it stopped instead of reporting a dead reciter.
+          lostNetwork = true;
+          return;
+        }
+        const index = nextIndex;
+        nextIndex += 1;
+        const downloaded = await downloadOne(audioItems[index]);
+        if (downloaded) successCount += 1;
+        else failedCount += 1;
+        done += 1;
+        onProgress?.(successCount, total, {
+          ...normalized,
+          successCount,
+          bytes,
+          failedCount,
+        });
+        if (done % 10 === 0) {
+          saveProgressEntry(normalized.key, {
+            ...initialEntry,
+            status: "partial",
+            bytes,
+            downloaded: successCount,
+            failedCount,
+            updatedAt: Date.now(),
+          });
+          // Yield so a long surah cannot block the main thread.
+          await new Promise((resolve) => setTimeout(resolve, 0));
         }
       }
+    };
+    const workerResults = await Promise.allSettled(
+      Array.from({ length: Math.min(workerCount, audioItems.length) }, worker),
+    );
+    const workerFailure = workerResults.find(
+      (result) => result.status === "rejected",
+    );
+    if (workerFailure) throw workerFailure.reason;
 
-      if (downloaded) successCount += 1;
-      else failedCount += 1;
-
-      done += 1;
-      onProgress?.(done, total, {
-        ...normalized,
-        successCount,
+    if (lostNetwork) {
+      saveProgressEntry(normalized.key, {
+        ...initialEntry,
+        status: "partial",
+        downloaded: successCount,
         failedCount,
+        updatedAt: Date.now(),
       });
-      if (done % 5 === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 0));
-      }
+      finishMetric();
+      return "partial";
     }
 
     const status =
       failedCount === 0 ? "done" : successCount > 0 ? "partial" : "error";
 
-    progress[normalized.key] = {
-      ...progress[normalized.key],
+    const completedEntry = {
+      ...initialEntry,
       status,
+      bytes,
+      validationVersion: 1,
       downloaded: successCount,
       failedCount,
       updatedAt: Date.now(),
     };
-    saveProgress(progress);
-    return status;
+    saveProgressEntry(normalized.key, completedEntry);
+    return storageFull ? "storage-full" : status;
   } catch (error) {
-    console.error("Download error:", error);
-    const total = progress[normalized.key]?.total || surahAyahCount(normalized.surahMeta);
-    progress[normalized.key] = {
-      ...progress[normalized.key],
-      status: "error",
+    const cancelled = controller.signal.aborted;
+    if (!cancelled) {
+      // terser strips console.error from the production bundle, so mirror the
+      // failure into the local error log the diagnostics export ships.
+      console.error("Download error:", error);
+      logError(error, `download:${normalized.key}`);
+    }
+    const latestEntry = loadProgress()[normalized.key] || progress[normalized.key];
+    const total =
+      latestEntry?.total ||
+      surahAyahCount(normalized.surahMeta, normalized.riwaya);
+    const failedEntry = {
+      ...latestEntry,
+      key: normalized.key,
+      status: cancelled ? "cancelled" : "error",
       downloaded: successCount,
-      failedCount: Math.max(failedCount, total - successCount),
+      failedCount: cancelled
+        ? failedCount
+        : Math.max(failedCount, total - successCount),
       updatedAt: Date.now(),
     };
-    saveProgress(progress);
-    return "error";
+    saveProgressEntry(normalized.key, failedEntry);
+    finishMetric();
+    return cancelled ? "cancelled" : "error";
+  } finally {
+    finishMetric();
+    activeDownloads.delete(normalized.key);
+    settleDownload();
+    parentSignal?.removeEventListener?.("abort", abortFromParent);
   }
 }
 
-export async function downloadRecentSurahsForReciter(
-  { reciter, riwaya = "hafs", recentVisits = getRecentVisits(), resolveSurahMeta },
-  onBatchProgress,
+export async function downloadFullQuranForReciter(
+  { reciter, riwaya = "hafs" },
+  onProgress,
 ) {
-  const visits = Array.isArray(recentVisits) ? recentVisits.filter(Boolean) : [];
-  if (visits.length === 0) return [];
+  if (!reciter?.id || !reciter?.cdn || !("caches" in window)) return "error";
+  const fullKey = buildFullQuranKey(reciter.id, riwaya);
+  if (activeFullQuranDownloads.has(fullKey)) return "partial";
 
-  const results = [];
-  for (let index = 0; index < visits.length; index += 1) {
-    const visit = visits[index];
-    const surahMeta = resolveSurahMeta?.(visit.surah);
-    if (!surahMeta) continue;
-    const status = await downloadSurahForReciter(
-      { surahMeta, reciter, riwaya },
-      (done, total, normalized) =>
-        onBatchProgress?.({
-          mode: "surah",
-          done,
-          total,
-          currentIndex: index + 1,
-          totalSurahs: visits.length,
-          visit,
-          normalized,
-        }),
+  const verifiedSummary = await verifyFullQuranDownloadForReciter({ reciter, riwaya });
+  if (!verifiedSummary.verified) return "error";
+  const initialSummary = verifiedSummary;
+  if (initialSummary.status === "done") return "done";
+
+  await requestPersistentStorage();
+  const capacity = await ensureStorageCapacity({
+    estimatedAdditionalBytes: initialSummary.estimatedRemainingBytes,
+  });
+  if (!capacity.allowed) return "storage-full";
+
+  const controller = new AbortController();
+  activeFullQuranDownloads.set(fullKey, controller);
+  const progressRegistry = loadProgress();
+  const isSurahStream = initialSummary.isSurahStream;
+  const downloadedBySurah = new Map();
+  const completedSurahNumbers = new Set();
+  const failedBySurah = new Map();
+  let lastReportedPercent = -1;
+
+  for (const surah of SURAHS) {
+    const entry = progressRegistry[buildProgressKey({
+      surahNum: surah.n,
+      reciterId: reciter.id,
+      riwaya,
+    })];
+    const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
+    downloadedBySurah.set(
+      surah.n,
+      entry?.status === "done"
+        ? expected
+        : Math.min(expected, Math.max(0, Number(entry?.downloaded || 0))),
     );
-    results.push({ surah: visit.surah, status });
+    if (entry?.status === "done") completedSurahNumbers.add(surah.n);
+    failedBySurah.set(surah.n, Math.max(0, Number(entry?.failedCount || 0)));
   }
-  return results;
+
+  const notify = (surahNum = null, force = false) => {
+    const downloadedItems = [...downloadedBySurah.values()].reduce(
+      (total, value) => total + value,
+      0,
+    );
+    const completedSurahs = completedSurahNumbers.size;
+    const percent = initialSummary.totalItems > 0
+      ? Math.min(100, Math.round((downloadedItems / initialSummary.totalItems) * 100))
+      : 0;
+    if (!force && percent === lastReportedPercent) return;
+    lastReportedPercent = percent;
+    const detail = {
+      key: fullKey,
+      status: controller.signal.aborted ? "cancelled" : "downloading",
+      reciterId: reciter.id,
+      riwaya,
+      surahNum,
+      completedSurahs,
+      totalSurahs: SURAHS.length,
+      downloadedItems,
+      totalItems: initialSummary.totalItems,
+      failedItems: [...failedBySurah.values()].reduce(
+        (total, value) => total + value,
+        0,
+      ),
+      percent,
+    };
+    onProgress?.(detail);
+    dispatchFullQuranProgress(detail);
+  };
+
+  const pendingSurahs = SURAHS.filter(
+    (surah) => !completedSurahNumbers.has(surah.n),
+  );
+  let nextIndex = 0;
+  let terminalResult = null;
+
+  const connection = typeof navigator !== "undefined" ? navigator.connection : null;
+  const workerCount = connection?.saveData || /(^|-)2g$/.test(connection?.effectiveType || "")
+    ? 1
+    : 2;
+
+  const worker = async () => {
+    while (!controller.signal.aborted) {
+      const index = nextIndex;
+      nextIndex += 1;
+      if (index >= pendingSurahs.length) return;
+      const surah = pendingSurahs[index];
+      const expected = expectedItemCountForSurah(surah, isSurahStream, riwaya, reciter?.cdnType);
+      const result = await downloadSurahForReciter(
+        { surahMeta: surah, reciter, riwaya, signal: controller.signal },
+        (done, total, meta) => {
+          downloadedBySurah.set(
+            surah.n,
+            Math.min(expected, Math.max(0, Number(meta?.successCount ?? done))),
+          );
+          failedBySurah.set(surah.n, Math.max(0, Number(meta?.failedCount || 0)));
+          notify(surah.n);
+        },
+      );
+      if (result === "done") {
+        downloadedBySurah.set(surah.n, expected);
+        completedSurahNumbers.add(surah.n);
+      }
+      if (result === "storage-full") {
+        terminalResult = "storage-full";
+        controller.abort();
+      }
+      notify(surah.n, true);
+    }
+  };
+
+  try {
+    notify(null, true);
+    await Promise.all(
+      Array.from({ length: Math.min(workerCount, pendingSurahs.length) }, worker),
+    );
+    if (terminalResult) return terminalResult;
+    if (controller.signal.aborted) return "cancelled";
+    const finalSummary = getFullQuranDownloadSummary(reciter, riwaya);
+    return finalSummary.status === "done"
+      ? "done"
+      : finalSummary.downloadedItems > 0
+        ? "partial"
+        : "error";
+  } finally {
+    activeFullQuranDownloads.delete(fullKey);
+    const summary = getFullQuranDownloadSummary(reciter, riwaya);
+    const detail = {
+      ...summary,
+      key: fullKey,
+      reciterId: reciter.id,
+      riwaya,
+      status: terminalResult || (controller.signal.aborted ? "cancelled" : summary.status),
+    };
+    onProgress?.(detail);
+    dispatchFullQuranProgress(detail);
+  }
+}
+
+export async function removeFullQuranCacheForReciter({
+  reciter,
+  riwaya = "hafs",
+}) {
+  if (!reciter?.id) return false;
+  cancelFullQuranDownload(reciter.id, riwaya);
+  await Promise.all([...activeDownloads.entries()].filter(([key]) => key.startsWith(`${riwaya}:${reciter.id}:`)).map(([, controller]) => controller.settled));
+
+  if ("caches" in window) {
+    try {
+      const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
+      let nextIndex = 0;
+      const workers = Array.from({ length: 3 }, async () => {
+        while (nextIndex < SURAHS.length) {
+          const surah = SURAHS[nextIndex];
+          nextIndex += 1;
+          const normalized = normalizeDownloadOptions({
+            surahMeta: surah,
+            reciter,
+            riwaya,
+          });
+          const audioItems = await buildDownloadAudioItems(normalized);
+          for (const item of audioItems) {
+            const candidates = getAudioUrlCandidates({ item, normalized });
+            for (const url of candidates) await cache.delete(url);
+          }
+        }
+      });
+      await Promise.all(workers);
+    } catch {
+      // Continue cleaning the registry even if the browser already evicted files.
+    }
+  }
+
+  const progress = loadProgress();
+  const prefix = `${riwaya}:${reciter.id}:`;
+  Object.keys(progress).forEach((key) => {
+    if (key.startsWith(prefix)) delete progress[key];
+  });
+  saveProgress(progress);
+  dispatchFullQuranProgress({
+    ...getFullQuranDownloadSummary(reciter, riwaya),
+    reciterId: reciter.id,
+    riwaya,
+  });
+  return true;
 }
 
 export async function removeSurahCacheForReciter({
@@ -338,70 +823,66 @@ export async function removeSurahCacheForReciter({
 }) {
   if (!("caches" in window)) return;
   const normalized = normalizeDownloadOptions({ surahMeta, reciter, riwaya });
+  const active = activeDownloads.get(normalized.key);
+  active?.abort();
+  await active?.settled;
+  const keepSharedBasmala = Object.values(loadProgress()).some(
+    (entry) => entry?.reciterId === normalized.reciterId &&
+      entry?.riwaya === normalized.riwaya &&
+      Number(entry?.surahNum) !== normalized.surahNum &&
+      Number(entry?.downloaded) > 0 &&
+      hasBasmalaPreroll(normalized.cdnType, Number(entry?.surahNum)),
+  );
 
-  try {
-    const cache = await caches.open(CACHE_NAME);
+  {
+    const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
     const audioItems = await buildDownloadAudioItems(normalized);
     for (const item of audioItems) {
+      if (keepSharedBasmala && Number(item.surah) === 1 && Number(item.ayah) === 1) continue;
       const urlCandidates = getAudioUrlCandidates({ item, normalized });
       for (const url of urlCandidates) {
         await cache.delete(url);
       }
     }
-  } catch {}
+  }
 
   const progress = loadProgress();
   delete progress[normalized.key];
   saveProgress(progress);
 }
 
+export async function clearAllOfflineAudio() {
+  activeFullQuranDownloads.forEach((controller) => controller.abort());
+  const active = [...activeDownloads.values()];
+  active.forEach(controller => controller.abort());
+  await Promise.all(active.map(controller => controller.settled));
+  if (typeof caches !== "undefined") {
+    await caches.delete(OFFLINE_AUDIO_CACHE_NAME);
+  }
+  try {
+    localStorage.removeItem(PROGRESS_KEY);
+  } catch {
+    // Storage may be unavailable in a private browsing context.
+  }
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent(OFFLINE_DOWNLOADS_CHANGED_EVENT));
+  }
+}
+
 export async function getCacheSize() {
   if (!("caches" in window)) return 0;
   try {
-    const cache = await caches.open(CACHE_NAME);
+    const cache = await caches.open(OFFLINE_AUDIO_CACHE_NAME);
     const keys = await cache.keys();
     let totalBytes = 0;
-    for (const request of keys.slice(0, 20)) {
+    for (const request of keys) {
       const response = await cache.match(request);
-      const blob = await response?.blob();
-      if (blob) totalBytes += blob.size;
+      if (response && response.type !== "opaque") totalBytes += (await response.blob()).size;
     }
-    const avgPerFile = keys.length > 0 ? totalBytes / Math.min(20, keys.length) : 0;
-    return Math.round(((avgPerFile * keys.length) / 1_048_576) * 10) / 10;
+    return Math.round((totalBytes / 1_048_576) * 100) / 100;
+
   } catch {
     return 0;
   }
 }
 
-export async function downloadSurah(surahMeta, reciterCdn, cdnType = "islamic", onProgress) {
-  return downloadSurahForReciter(
-    {
-      surahMeta,
-      riwaya: "hafs",
-      reciter: {
-        id: reciterCdn,
-        cdn: reciterCdn,
-        cdnType,
-        nameEn: reciterCdn,
-      },
-    },
-    onProgress,
-  );
-}
-
-export async function removeSurahCache(
-  surahMeta,
-  reciterCdn,
-  cdnType = "islamic",
-) {
-  return removeSurahCacheForReciter({
-    surahMeta,
-    riwaya: "hafs",
-    reciter: {
-      id: reciterCdn,
-      cdn: reciterCdn,
-      cdnType,
-      nameEn: reciterCdn,
-    },
-  });
-}

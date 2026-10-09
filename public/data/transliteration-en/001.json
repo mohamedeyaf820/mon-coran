@@ -1,0 +1,36 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 1,
+  "number_of_ayahs": 7,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "bis'mi l-lahi l-raḥmāni l-raḥīmi"
+    },
+    {
+      "ayah_number": 2,
+      "text": "al-ḥamdu lillahi rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 3,
+      "text": "al-raḥmāni l-raḥīmi"
+    },
+    {
+      "ayah_number": 4,
+      "text": "māliki yawmi l-dīni"
+    },
+    {
+      "ayah_number": 5,
+      "text": "iyyāka naʿbudu wa-iyyāka nastaʿīnu"
+    },
+    {
+      "ayah_number": 6,
+      "text": "ih'dinā l-ṣirāṭa l-mus'taqīma"
+    },
+    {
+      "ayah_number": 7,
+      "text": "ṣirāṭa alladhīna anʿamta ʿalayhim ghayri l-maghḍūbi ʿalayhim walā l-ḍālīna"
+    }
+  ]
+}

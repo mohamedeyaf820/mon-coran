@@ -8,8 +8,8 @@ export function buildCspPolicy(mode = "production") {
   
   // Connect sources - API endpoints and CDNs
   const connectSrc = isDev
-    ? "'self' https://api.alquran.cloud https://api.quran.com https://*.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net ws://localhost:* http://localhost:*"
-    : "'self' https://api.alquran.cloud https://api.quran.com https://*.quran.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net";
+    ? "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://quranenc.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com ws://localhost:* http://localhost:*"
+    : "'self' https://api.aladhan.com https://api.alquran.cloud https://api.quran.com https://quranenc.com https://raw.githubusercontent.com https://cdn.jsdelivr.net https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com";
 
   return [
     "default-src 'self'",
@@ -19,14 +19,18 @@ export function buildCspPolicy(mode = "production") {
     "form-action 'self'",
     `script-src ${scriptSrc}`,
     `script-src-elem ${scriptSrc}`,
+    "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com",
     "style-src-attr 'unsafe-inline'",
-    "font-src 'self' https://fonts.gstatic.com https://verses.quran.foundation https://fonts.quranwbw.com https://quran.com https://*.quran.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.qurancdn.com https://static-cdn.tarteel.ai https://frontend-cdn.perplexity.ai data:",
-    "img-src 'self' data: blob: https:",
+    "font-src 'self' https://fonts.gstatic.com https://verses.quran.foundation https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://static.qurancdn.com https://static-cdn.tarteel.ai",
+    // Every image the app paints is its own: the reciter portraits were moved from
+    // hot-linked third-party files to public/images/reciters (see the build script).
+    "img-src 'self' data: blob:",
     `connect-src ${connectSrc}`,
-    "media-src 'self' blob: https://cdn.islamic.network https://everyayah.com https://audio.qurancdn.com https://verses.quran.com https://*.mp3quran.net",
+    "media-src 'self' blob: https://everyayah.com https://www.everyayah.com https://audio.qurancdn.com https://verses.quran.com https://files.quranpedia.net https://upload.wikimedia.org https://*.mp3quran.net https://download.quranicaudio.com https://mirrors.quranicaudio.com",
     "worker-src 'self' blob:",
     "manifest-src 'self'",
-  ].join("; ");
+    isDev ? "" : "upgrade-insecure-requests",
+  ].filter(Boolean).join("; ");
 }

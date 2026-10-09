@@ -9,7 +9,7 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   // Navigate to app
   await page.addInitScript(() => {
     try {
-      localStorage.setItem('mushaf-plus-settings', JSON.stringify({ splashDone: true }));
+      localStorage.setItem('mushaf-plus-settings', JSON.stringify({ skipSplashAnimation: true }));
     } catch {}
   });
   await page.goto('/surah/4');
@@ -20,7 +20,6 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
   
   // Look for and click WARSH button
   const warshButton = page.locator('text=WARSH').first();
-  const hafsButton = page.locator('text=HAFS').first();
   
   console.log('Looking for WARSH/HAFS buttons...');
   
@@ -31,28 +30,8 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
     await page.screenshot({ path: 'test-results/02-after-warsh-click.png' });
   }
   
-  // Try to navigate to Surah 4
-  console.log('Attempting to navigate to Surah 4...');
-  
-  // Method 1: Look for Surah 4 in the list
-  const surah4Links = [
-    'text=An-Nisa',
-    'text=Les Femmes',
-    'text=The Women',
-    'text=4',
-    '[data-surah="4"]',
-    'a:has-text("An-Nisa")',
-  ];
-  
-  for (const selector of surah4Links) {
-    const element = page.locator(selector).first();
-    if (await element.isVisible().catch(() => false)) {
-      console.log(`Found Surah 4 with selector: ${selector}`);
-      await element.click();
-      break;
-    }
-  }
-  
+  // The test already opened Surah 4 directly; verify that navigation settled.
+  await expect(page.locator('.quran-display--platform')).toBeVisible();
   await page.waitForTimeout(3000);
   
   // Screenshot 3: After navigation

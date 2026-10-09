@@ -1,44 +1,73 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 export default function useQuranDisplayNavigation({
   currentJuz,
   currentPage,
   currentSurah,
   dispatch,
-  set,
-  showWordByWord,
+  prepareTarget,
 }) {
+  const requestRef = useRef(0);
+  const navigate = useCallback(
+    (mode, value, action) => {
+      const requestId = requestRef.current + 1;
+      requestRef.current = requestId;
+      // Kick off the prefetch synchronously so DISPLAY_DATA_PREFETCHES is populated
+      // before useQuranDisplayData re-renders. The dispatch is immediate — no freeze.
+      prepareTarget(mode, value).catch(() => {});
+      if (requestRef.current !== requestId) return;
+      action();
+    },
+    [prepareTarget],
+  );
+
   const goNextPage = useCallback(() => {
-    if (currentPage < 604) set({ currentPage: currentPage + 1 });
-  }, [currentPage, set]);
+    if (currentPage < 604) {
+      navigate("page", currentPage + 1, () =>
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage + 1 } }),
+      );
+    }
+  }, [currentPage, dispatch, navigate]);
 
   const goPrevPage = useCallback(() => {
-    if (currentPage > 1) set({ currentPage: currentPage - 1 });
-  }, [currentPage, set]);
+    if (currentPage > 1) {
+      navigate("page", currentPage - 1, () =>
+        dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage - 1 } }),
+      );
+    }
+  }, [currentPage, dispatch, navigate]);
 
   const goNextSurah = useCallback(() => {
     if (currentSurah < 114) {
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah + 1 } });
+      navigate("surah", currentSurah + 1, () =>
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah + 1 } }),
+      );
     }
-  }, [currentSurah, dispatch]);
+  }, [currentSurah, dispatch, navigate]);
 
   const goPrevSurah = useCallback(() => {
     if (currentSurah > 1) {
-      dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah - 1 } });
+      navigate("surah", currentSurah - 1, () =>
+        dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah - 1 } }),
+      );
     }
-  }, [currentSurah, dispatch]);
+  }, [currentSurah, dispatch, navigate]);
 
   const goNextJuz = useCallback(() => {
-    if (currentJuz < 30) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } });
-  }, [currentJuz, dispatch]);
+    if (currentJuz < 30) {
+      navigate("juz", currentJuz + 1, () =>
+        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz + 1 } }),
+      );
+    }
+  }, [currentJuz, dispatch, navigate]);
 
   const goPrevJuz = useCallback(() => {
-    if (currentJuz > 1) dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } });
-  }, [currentJuz, dispatch]);
-
-  const toggleWordByWordMode = useCallback(() => {
-    set({ mushafLayout: "list", showWordByWord: !showWordByWord, memMode: false });
-  }, [set, showWordByWord]);
+    if (currentJuz > 1) {
+      navigate("juz", currentJuz - 1, () =>
+        dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz - 1 } }),
+      );
+    }
+  }, [currentJuz, dispatch, navigate]);
 
   return {
     goNextJuz,
@@ -47,6 +76,5 @@ export default function useQuranDisplayNavigation({
     goPrevJuz,
     goPrevPage,
     goPrevSurah,
-    toggleWordByWordMode,
   };
 }

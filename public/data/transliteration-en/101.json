@@ -1,0 +1,52 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 101,
+  "number_of_ayahs": 11,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "al-qāriʿatu"
+    },
+    {
+      "ayah_number": 2,
+      "text": "mā l-qāriʿatu"
+    },
+    {
+      "ayah_number": 3,
+      "text": "wamā adrāka mā l-qāriʿatu"
+    },
+    {
+      "ayah_number": 4,
+      "text": "yawma yakūnu l-nāsu kal-farāshi l-mabthūthi"
+    },
+    {
+      "ayah_number": 5,
+      "text": "watakūnu l-jibālu kal-ʿih'ni l-manfūshi"
+    },
+    {
+      "ayah_number": 6,
+      "text": "fa-ammā man thaqulat mawāzīnuhu"
+    },
+    {
+      "ayah_number": 7,
+      "text": "fahuwa fī ʿīshatin rāḍiyatin"
+    },
+    {
+      "ayah_number": 8,
+      "text": "wa-ammā man khaffat mawāzīnuhu"
+    },
+    {
+      "ayah_number": 9,
+      "text": "fa-ummuhu hāwiyatun"
+    },
+    {
+      "ayah_number": 10,
+      "text": "wamā adrāka mā hiyah"
+    },
+    {
+      "ayah_number": 11,
+      "text": "nārun ḥāmiyatun"
+    }
+  ]
+}

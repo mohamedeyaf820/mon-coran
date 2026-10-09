@@ -1,17 +1,21 @@
 # Roadmap Mushaf Plus
 
-Date: 2026-06-05
+Date: 2026-07-17
 
 ## Etat actuel
 
 - Phase 0: terminee et validee sur CI.
-- Phase 1: en cours. Les tailles de police, le skeleton sans blur, la largeur liste/mushaf et le prechargement de police ont ete renforces. Un test E2E cible couvre maintenant refresh lecture, stabilite de taille et navigation historique.
-- Phase 2: en cours. Le drag desktop du lecteur audio est stabilise; les libelles audio communs sont centralises dans `audioPlayerLabels`; le formatage du temps audio est extrait et teste; la liste des recitateurs dans les options audio est nettoyee; le modal options est portale hors du player pour eviter les conflits de z-index; le dock mobile/tablette garde des controles cliquables. Le decoupage complet du composant reste a faire.
-- Phase 3: en cours. Les premiers nettoyages de textes et surfaces communes sont faits. Un guide court de design system existe dans `docs/DESIGN_SYSTEM.md`; la consolidation CSS complete reste a faire.
-- Phase 4: en cours. Header, footer, barre audio de lecture et densite responsive du player ont ete nettoyes cote libelles, hierarchie et accessibilite. Un test E2E `test:e2e:responsive` couvre maintenant les tailles header/toolbar/player mobile et tablette.
-- Phase 5: planifiee. Les donnees de recitateurs et biographies restent a normaliser.
-- Phase 6: en cours. Les notes de securite et confidentialite sont documentees dans `docs/SECURITY_PRIVACY.md`; le mode protege par phrase secrete reste a implementer.
-- Phase 7: planifiee, non terminee.
+- Phase 1: terminee. Lecture, chargement, typographie et stabilite de navigation sont couverts par les tests E2E.
+- Phase 2: terminee pour le perimetre de reparation. Le player, ses panneaux, son drag, ses libelles et ses fallbacks sont stabilises et testes.
+- Phase 3: terminee. Le design system est documente, les surfaces sont harmonisees et l'architecture CSS est protegee par un budget CI.
+- Phase 4: terminee. Accueil, navbar, footer, densite responsive, accessibilite et budgets de performance sont valides.
+- Phase 5: terminee. Les 54 profils recitateurs sont normalises et valides; les sources audio, cartes, portraits, attributions et biographies progressives sont controles sur mobile et desktop.
+- Phase 6: terminee. Le mode protege, la rotation chiffree, le verrouillage avant initialisation, les sanitizers et les headers de deploiement sont documentes et testes.
+- Phase 7: terminee. La bibliotheque personnelle differee couvre offline,
+  exports, memorisation, index thematique et passerelle cloud manuelle consentie.
+- Phase 8: terminee. Les pages de recitation, le demarrage audio et les
+  changements rapides de versets sont acceleres et proteges contre les
+  chargements obsoletes.
 
 ## Phase 0 - Stabilisation immediate
 
@@ -86,6 +90,10 @@ Objectif: clarifier la protection reelle des donnees utilisateur.
 - Centraliser la generation CSP deployable.
 - Verifier les headers sur Netlify/Vercel apres chaque changement.
 
+Statut: terminee. Validation finale: 38 tests securite, 54 tests E2E,
+`npm audit --audit-level=moderate`, `npm run audit:headers` et
+`npm run build:ci` au vert.
+
 ## Phase 7 - Fonctionnalites futures
 
 Objectif: ajouter de la valeur sans fragiliser le coeur.
@@ -95,3 +103,33 @@ Objectif: ajouter de la valeur sans fragiliser le coeur.
 - Parcours de memorisation plus structures.
 - Index thematique.
 - Synchronisation cloud optionnelle avec consentement explicite.
+
+Statut: terminee. La passerelle cloud reste volontairement manuelle et sans
+compte impose: export/partage JSON avec consentement, puis restauration par
+selection explicite du fichier. Validation finale: 43 tests unitaires/securite,
+60 tests E2E, `npm audit --audit-level=moderate`, `npm run
+audit:screen-budget` et `npm run build:ci` au vert.
+
+## Phase 8 - Recitations et transitions rapides
+
+Objectif: reduire le temps d'attente percu avant une recitation et rendre les
+changements de versets immediats, meme lors de clics successifs rapides.
+
+- Precharger le panneau recitateur des l'intention utilisateur et afficher un
+  squelette utile pendant le chargement du module.
+- Construire les playlists audio Hafs et Warsh localement, sans attendre le
+  chargement du texte coranique.
+- Reduire les radios par sourate a une entree canonique par sourate au lieu de
+  preparer inutilement tous les versets.
+- Annuler les chargements audio devenus obsoletes et indexer les versets de la
+  playlist pour un acces direct.
+- Eviter la double ecriture de l'ayah courante et isoler les abonnements des
+  actions de verset afin de limiter les rerendus.
+- Prioriser le prechargement de la sourate, page ou juz adjacent et reporter
+  les donnees de riwaya secondaire.
+- Charger moins de lignes lors de la premiere ouverture de la bibliotheque de
+  recitations.
+
+Statut: terminee. Validation finale: 46 tests unitaires/securite, 14 scenarios
+E2E cibles recitation, audio, lecture et changements rapides, et `npm run
+build:ci` au vert.

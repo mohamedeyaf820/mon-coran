@@ -2,7 +2,7 @@ export const THEMATIC_STATIONS = [
   {
     id: "popular",
     icon: "fa-fire",
-    titleFr: "Recitations populaires",
+    titleFr: "Récitations populaires",
     titleEn: "Popular recitations",
     titleAr: "تلاوات شائعة",
     surahs: [1, 36, 55, 67, 18],
@@ -26,21 +26,9 @@ export const THEMATIC_STATIONS = [
   {
     id: "night-soft",
     icon: "fa-moon",
-    titleFr: "Recitation du soir",
+    titleFr: "Récitation du soir",
     titleEn: "Night recitation",
     titleAr: "ورد المساء",
     surahs: [67, 36, 55, 56],
   },
 ];
-
-export function buildReciterStations(reciters = []) {
-  return reciters.slice(0, 8).map((reciter) => ({
-    id: `r-${reciter.id}`,
-    icon: "fa-user-astronaut",
-    titleFr: reciter.nameFr,
-    titleEn: reciter.nameEn,
-    titleAr: reciter.name,
-    surahs: [1, 36, 55, 67],
-    reciterId: reciter.id,
-  }));
-}

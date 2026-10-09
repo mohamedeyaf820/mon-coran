@@ -1,0 +1,767 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import test from "node:test";
+
+function source(pathname) {
+  return fs.readFileSync(new URL(`../${pathname}`, import.meta.url), "utf8");
+}
+
+test("healthy reader sources stay out of the reading interface", () => {
+  const status = source(
+    "src/components/QuranDisplay/ReaderSourceStatus.jsx",
+  );
+
+  assert.match(
+    status,
+    /if \(!textIsDegraded && !translationHasError\) return null;/,
+  );
+  assert.doesNotMatch(status, /dataSource\?\.label/);
+  assert.doesNotMatch(status, /translationSource/);
+});
+
+test("reader typography controls remain explicit and mobile-accessible", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const controls = source("src/components/ArabicFontControls.jsx");
+  const styles = source("src/styles/surah-reader-header.css");
+
+  assert.match(header, /aria-expanded=\{typographyOpen\}/);
+  assert.match(header, /t\(["']reader\.textSize["'], lang\)/);
+  assert.match(controls, /step="1"/);
+  assert.match(styles, /\.srh-typography-disclosure\.open \.srh-typography-panel/);
+});
+
+test("the unified reader header remains available in mobile QCF4 Mushaf mode", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const surahMode = source("src/components/QuranDisplay/SurahMode.jsx");
+  const styles = source("src/styles/surah-reader-header.css");
+
+  assert.match(surahMode, /qc-surah-header-wrap--unified[\s\S]*?<TajweedLegend[\s\S]*?<SurahReaderHeader/);
+  assert.doesNotMatch(surahMode, /isQCF4\s*&&\s*mushafLayout\s*===\s*["']mushaf["']/);
+  assert.match(styles, /qc-surah-header-wrap--unified > \.srh-root[\s\S]*?border: 0 !important/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?\.srh-mobile-bar\s*\{[\s\S]*?display: grid/);
+  assert.match(styles, /\.srh-mobile-bar :is\(\.srh-play-btn, \.srh-info-btn\)[\s\S]*?min-height: 44px/);
+  assert.match(header, /aria-controls="srh-reader-tools"/);
+  assert.match(header, /READER_TOOLS_SESSION_KEY/);
+  assert.match(header, /onClick=\{toggleReaderTools\}/);
+  assert.match(header, /className="srh-identity__disclosure"/);
+  assert.match(styles, /\.srh-reader-tools\s*\{[\s\S]*?grid-template-rows: 0fr/);
+  assert.match(styles, /\.srh-reader-tools--open\s*\{[\s\S]*?grid-template-rows: 1fr/);
+});
+
+test("dua cards keep a single compact reader action", () => {
+  const page = source("src/components/duas/DuaCard.jsx");
+  const styles = source("src/styles/domains/duas-page.css");
+
+  assert.doesNotMatch(page, /dua-card-footer-copy/);
+  assert.doesNotMatch(page, /Source coranique accessible directement/);
+  assert.match(page, /className="dua-card-footer"[\s\S]*?className="dua-card-footer-link"/);
+  assert.match(styles, /\.dua-card-footer\s*\{[\s\S]*?justify-content: flex-end/);
+});
+
+test("surah information opens as an accessible responsive dossier", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const panel = source("src/components/QuranDisplay/SurahInfoPanel.jsx");
+  const modal = source("src/components/ui/modal.jsx");
+  const styles = source("src/styles/surah-info-panel.css");
+
+  assert.match(header, /aria-haspopup="dialog"/);
+  assert.match(header, /<Modal[\s\S]*?portal[\s\S]*?<SurahInfoPanel/);
+  assert.match(panel, /fetchQuranComSurahInfo/);
+  assert.doesNotMatch(panel, /Repères essentiels/);
+  assert.doesNotMatch(panel, /sip-grid/);
+  assert.match(panel, /Dossier complet/);
+  assert.match(panel, /aria-expanded=\{expanded\}/);
+  assert.doesNotMatch(panel, /sip-timeline/);
+  assert.match(panel, /dossierBlocks\.map/);
+  assert.match(panel, /<h4 key=\{`h\$\{index\}:\$\{block\}`\}>/);
+  assert.doesNotMatch(panel, /sip-header__ornament/);
+  assert.match(modal, /createPortal\(modalContent, document\.body\)/);
+  assert.match(modal, /aria-hidden="true"[\s\S]*?onClick=\{onClose\}/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?align-items: flex-end/);
+  assert.match(styles, /\.sip-dossier__copy h4/);
+  assert.match(styles, /\.surah-info-modal > div:last-child[\s\S]*?overflow-y: auto/);
+  assert.match(styles, /overscroll-behavior: contain/);
+});
+
+test("reciter cards and the detail view keep technical providers out (they live on the Sources page)", () => {
+  const cards = source("src/components/Home/ContentSection.jsx");
+  const details = source("src/components/recitation/ReciterDetailPage.jsx");
+
+  assert.doesNotMatch(cards, /getReciterSourceInfo/);
+  assert.doesNotMatch(details, /getReciterSourceInfo|reciter-detail__sources/);
+});
+
+test("verse action modal renders a reduced, responsive action grid", () => {
+  const modal = source("src/components/QuranDisplay/AyahActionsModal.jsx");
+  const actions = source("src/components/AyahActions.jsx");
+  const styles = source("src/styles/ayah-actions-modal.css");
+
+  assert.match(modal, /ayah-actions-modal__body/);
+  assert.match(modal, /ayah-actions-modal__ref/);
+  assert.match(actions, /ayah-action-card--play/);
+  // Localized label: the literal moved to `actions.moreActions`, and the i18n
+  // parity test is what guarantees it resolves in fr, en and ar.
+  assert.match(actions, /t\("actions\.moreActions", lang\)/);
+  assert.match(actions, /ayah-actions__surface--modal/);
+  assert.match(styles, /\.ayah-actions-modal__body \{[\s\S]*?overflow-y: auto/);
+  assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?repeat\(2, minmax\(0, 1fr\)\)/);
+});
+
+test("Tajweed guide uses a responsive dialog with readable labels and touch targets", () => {
+  const component = source("src/components/Quran/TajweedLegend.jsx");
+  const styles = source("src/styles/tajwid-guide.css");
+  assert.match(component, /<Sheet/);
+  assert.match(component, /<Popover/);
+  assert.match(styles, /min-height: 44px/);
+  assert.match(styles, /tajwid-guide__rules dt/);
+});
+
+test("page atmospheres remain contextual, theme-aware and asset-free", () => {
+  const app = source("src/App.jsx");
+  const styles = source("src/styles/domains/premium-plus.css");
+
+  assert.match(app, /data-home-section=\{showHome \? state\.homeSection \|\| "surah"/);
+  assert.match(styles, /data-view="home"\]\s+\.app-view-home::before/);
+  assert.match(styles, /data-home-section="audio"/);
+  assert.match(styles, /data-view="reading"\]\s+\.app-view-reading::before/);
+  assert.match(styles, /data-view="duas"\]\s+\.app-view-duas::before/);
+  assert.match(styles, /\[data-theme="sepia"\][\s\S]*?--context-glow/);
+  assert.match(styles, /\[data-theme="dark"\][\s\S]*?--context-glow/);
+  assert.match(styles, /-webkit-mask-image:/);
+
+  const contextualBlock = styles.slice(styles.indexOf("/* Contextual atmosphere"));
+  assert.doesNotMatch(contextualBlock, /url\s*\(/);
+});
+
+test("mobile reader shell follows the Tajweed card and keeps an explicit home logo", () => {
+  const header = source("src/components/Header.jsx");
+  const styles = source("src/styles/device-responsive.css");
+
+  assert.match(header, /data-testid="mobile-home-logo"/);
+  assert.match(header, /onClick=\{goHome\}/);
+  assert.match(header, /mp-header__home-badge/);
+  assert.match(styles, /quran-display\.quran-display--platform[\s\S]*?padding-top: 0(?:\s*!important)?/);
+  const tinyBlock =
+    styles
+      .split("@media (max-width: 380px)")
+      .find((chunk) => chunk.includes("--mp-header-control")) ?? "";
+  assert.match(tinyBlock, /--mp-header-control: max\(2\.75rem, 44px\)/);
+  assert.doesNotMatch(
+    tinyBlock,
+    /--mp-header-control: (?:[1-3][0-9]|4[0-3])px/,
+    "tiny-phone header controls must not fall below the 44px touch floor",
+  );
+  assert.doesNotMatch(styles, /@media \(max-width: 380px\)\s*\{\s*html body \.app-root > \.mp-header \.mp-header__brand\s*\{\s*display: none/);
+});
+
+test("verse reference and primary actions keep one production-safe row", () => {
+  const view = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
+  const styles = source("src/styles/device-responsive.css");
+
+  assert.match(view, /className="qc-list-card__start"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
+  assert.match(view, /className="qc-list-card__end"[\s\S]*?display: "flex"[\s\S]*?flexWrap: "nowrap"/);
+  // Quran.com opens a verse with its chrome: the bar of reference and actions
+  // comes first and the Quran keeps the whole measure below it.
+  assert.match(view, /className="qc-list-card__foot[\s\S]*?className="qc-ayah-text-ar/);
+  // The stream is a reading column, not a framed panel.
+  assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*width: min\(100%, 56rem\)/);
+  assert.match(styles, /\.qc-verse-by-verse-view \{[^}]*box-shadow: none/);
+  assert.match(styles, /\.qc-list-card__foot \{[^}]*justify-content: space-between !important/);
+  // The Arabic is RTL ink: it keeps its right edge in the French and English
+  // reader too, and no locale may pull it back to the left.
+  assert.match(styles, /\.qc-ayah-text-ar \{[^}]*text-align: right !important/);
+  assert.doesNotMatch(styles, /\[data-verse-dir="ltr"\][^{]*\{[^}]*text-align: left/);
+  assert.match(styles, /@media \(max-width: 320px\)[\s\S]*?\.srh-controls[\s\S]*?minmax\(0, 1\.12fr\)/);
+  assert.match(styles, /:is\(\.srh-pill, \.srh-toggle\) svg[\s\S]*?display: none !important/);
+});
+
+test("home mobile hierarchy progressively discloses secondary content", () => {
+  const hero = source("src/components/Home/HeroSection.jsx");
+  const styles = source("src/styles/app-system.css");
+  const constants = source("src/components/Home/homeConstants.js");
+
+  assert.match(hero, /className="home-overview"/);
+  assert.match(hero, /className="home-resume-panel"/);
+  assert.match(hero, /className="home-today-panel"/);
+  assert.match(hero, /suggestionSet\.surahs\.slice\(0, 5\)/);
+  assert.match(styles, /@media \(max-width: 700px\)[\s\S]*?home-today-suggestion:nth-child\(n \+ 4\)/);
+  assert.match(constants, /Sincérité pure/);
+  assert.match(constants, /Médinoise/);
+});
+
+test("Mushaf pages keep a compact, theme-aware reading hierarchy", () => {
+  const page = source("src/components/Quran/CleanPageView.jsx");
+  const decor = source("src/components/Quran/CleanPageDecor.jsx");
+  const readerStyles = source("src/styles/readerStyles.js");
+  const styles = source("src/styles/mushaf-page-polish.css");
+
+  assert.match(page, /mushaf-page-wrapper/);
+  assert.match(readerStyles, /mushaf-page-polish\.css/);
+  assert.match(styles, /--mushaf-paper/);
+  assert.match(styles, /font-size: var\(--cpv-font-size/);
+  assert.match(styles, /grid-template-columns: minmax\(1\.5rem, 1fr\) auto/);
+  assert.match(decor, /function TitleFlourish/);
+  assert.match(decor, /<TitleFlourish mirrored \/>/);
+  assert.match(styles, /background: linear-gradient\(145deg, #224a42, #153832 60%, #102e29\)/);
+  assert.match(styles, /font-family: "surahnames", serif !important/);
+  assert.match(styles, /@media \(max-width: 640px\)/);
+});
+
+test("reciter details expose a resumable complete Quran offline download", () => {
+  const details = source("src/components/recitation/ReciterDetailPage.jsx");
+  const card = source("src/components/recitation/FullQuranDownloadCard.jsx");
+  const downloads = source("src/services/downloadService.js");
+  const worker = source("public/sw.js");
+
+  assert.match(details, /<FullQuranDownloadCard/);
+  assert.match(card, /Télécharger le Coran complet/);
+  assert.match(card, /downloadFullQuranForReciter/);
+  assert.match(card, /cancelFullQuranDownload/);
+  assert.match(card, /removeFullQuranCacheForReciter/);
+  assert.match(card, /<progress max="100"/);
+  assert.match(downloads, /const workerCount = [\s\S]*?\? 1[\s\S]*?: 2/);
+  assert.match(downloads, /estimatedRemainingBytes/);
+  assert.match(downloads, /pendingSurahs = SURAHS\.filter/);
+  assert.match(downloads, /saveProgressEntry\(normalized\.key, completedEntry\)/);
+  assert.match(worker, /const AUDIO_CACHE_NAME = "mushafplus-audio-v2"/);
+  assert.match(worker, /audioCacheFirst\(event\.request\)/);
+});
+
+test("immersive Mushaf opens on the verse in view and leafs right to left like a printed book", () => {
+  const display = source("src/components/QuranDisplay.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const mushafPage = source("src/components/QuranDisplay/QuranMushafPage.jsx");
+  const composition = source("src/components/QuranDisplay/mushafPageComposition.js");
+  const pageLines = source("src/components/QuranDisplay/MushafPageLines.jsx");
+  const book = source("src/styles/mushaf-book.css");
+  const purgeConfig = source("scripts/cssPurgeConfig.mjs");
+
+  // The book opens on the verse at the top of the viewport, on page data.
+  assert.match(display, /openImmersiveMushaf/);
+  assert.match(display, /const ayahInView =/);
+  assert.match(display, /await prepareReadingTarget\("page", targetPage\)/);
+
+  // Neighbouring pages are cached ahead; a turn waits for its page payload
+  // while the current leaf stays visible.
+  assert.match(overlay, /preloadQuranDisplayData/);
+  assert.match(overlay, /currentPage, currentPage \+ 1, currentPage - 1, currentPage \+ 2, currentPage - 2/);
+  assert.match(overlay, /pageCacheRef\.current\.has\(targetPage\)/);
+  assert.match(overlay, /navigateToPage\(currentPage \+ 1, "next"\)/);
+  assert.match(overlay, /navigateToPage\(currentPage - 1, "prev"\)/);
+
+  // An Arabic book is leafed from left to right: the left arrow key and the
+  // left edge button go forward, the right ones go back, Escape closes.
+  assert.match(overlay, /event\.key === "ArrowLeft"[\s\S]*?handleNext\(\)/);
+  assert.match(overlay, /event\.key === "ArrowRight"[\s\S]*?handlePrev\(\)/);
+  assert.match(overlay, /event\.key === "Escape"[\s\S]*?onClose\(\)/);
+  assert.match(overlay, /className="mfp-side-nav mfp-side-nav--next"[\s\S]*?onClick=\{handleNext\}/);
+  assert.match(overlay, /className="mfp-side-nav mfp-side-nav--prev"[\s\S]*?onClick=\{handlePrev\}/);
+  assert.match(overlay, /onTouchEnd=\{handleTouchEnd\}/);
+  assert.match(overlay, /key=\{currentPage\}/);
+  assert.match(overlay, /data-turn=\{turnRef\.current/);
+  assert.match(book, /\[data-turn="next"\]/);
+  assert.match(book, /prefers-reduced-motion: no-preference/);
+
+  // Zoom scales the whole sheet (CSS zoom): frame, head, folio and markers
+  // grow with the words and the scroll bounds follow the layout box.
+  assert.match(overlay, /style=\{\{ "--mfp-zoom": zoom \}\}/);
+  assert.match(book, /zoom: var\(--mfp-zoom, 1\)/);
+  assert.doesNotMatch(book, /var\(--mfp-font\) \* var\(--mfp-zoom/);
+  assert.doesNotMatch(overlay, /transform: `scale/);
+  assert.match(overlay, /const MAX_ZOOM = 2\.2/);
+  assert.match(overlay, /ZOOM_STORAGE_KEY/);
+  assert.match(overlay, /onWheel=\{handleWheel\}/);
+
+  // The reader's own writing size is what 100 % means in the book: the leaf is
+  // scaled whole, exactly as the pane's page scale does. The ± controls are a
+  // delta on top of it, so their reset returns to the preference.
+  assert.match(overlay, /const zoom = view\.fit \? fitScale : clampZoom\(zoomDelta \* sizeScale\)/);
+  // The leaf opens fitted to the window (it only shrinks to the room it has) and the
+  // value button returns to that fit.
+  assert.match(overlay, /fitTo\("auto"\)/);
+  assert.match(
+    overlay,
+    /clampArabicFontSize\(state\.quranFontSize\) \/ DEFAULT_ARABIC_FONT_SIZE/,
+  );
+  assert.match(overlay, /sessionStorage\.setItem\(ZOOM_STORAGE_KEY,/);
+  assert.match(overlay, /Math\.min\(byWidth, byHeight\)/);
+  assert.match(overlay, /pageCache\.size/);
+
+  // The exact Madani page is set like print: measure and pitch from the type,
+  // an opening page starting under the running head, title band and basmala on
+  // the empty lines.
+  // One printed-page contract is shared by both riwayas through
+  // MushafPageShell + MushafPageLines; QuranMushafPage only dispatches.
+  const hafsRenderer = source("src/components/QuranDisplay/HafsPageRenderer.jsx");
+  const warshRenderer = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
+  const flowRenderer = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+  assert.match(overlay, /<QuranMushafPage/);
+  assert.match(overlay, /className="mfp-book mfp-book--exact"/);
+  assert.doesNotMatch(overlay, /<CleanPageView/);
+  assert.match(overlay, /data-page-kind=\{pageKind\}/);
+  assert.match(book, /--mfp-line-measure: 16\.7em/);
+  assert.match(book, /--mfp-line-pitch: 1\.75em/);
+  assert.match(book, /\[data-page-kind="opening"\] \.qcm-line/);
+  assert.match(mushafPage, /HafsPageRenderer/);
+  assert.match(mushafPage, /WarshPageRenderer/);
+  assert.match(hafsRenderer, /MushafPageShell/);
+  assert.match(hafsRenderer, /MushafPageLines/);
+  // Warsh prints as flow: the shared flow sheet, not the fifteen-row grid.
+  assert.match(warshRenderer, /MushafFlowPage/);
+  assert.match(flowRenderer, /MushafPageShell/);
+  assert.match(flowRenderer, /SurahHeaderLine/);
+  assert.match(composition, /placeSurahOpenings/);
+  assert.match(composition, /markSurahEndings/);
+  assert.match(pageLines, /qcm-line--surah-header/);
+  assert.match(pageLines, /qcm-line--basmala/);
+  assert.match(pageLines, /qcm-line--surah-end/);
+
+  // A short page keeps the printed shape: one body size for the whole mushaf,
+  // the unused height below the text. Growing the type to reach fifteen lines
+  // gave Al-Fatiha 40 px glyphs and still left the leaf empty.
+  assert.match(flowRenderer, /const MAX_LINE_FIT = 1;/);
+  // The floor still outranks the ceiling: a narrow phone measures its body
+  // below 15 px before the fit runs.
+  assert.match(flowRenderer, /Math\.max\(floor, Math\.min\(MAX_LINE_FIT/);
+  const sheetStyles = source("src/styles/mushaf-page-polish.css");
+  // The reading pane has no frame, so its leaf starts under the head and grows
+  // as tall as its text.
+  assert.match(
+    sheetStyles,
+    /\[data-flow="true"\] \{[^}]*justify-content: flex-start/,
+    "sheet: an opening page must start under the running head",
+  );
+  // The immersive leaf IS a framed sheet: a page that cannot reach fifteen
+  // lines settles in the middle of its own paper instead of hanging from the
+  // head with the lower half of the frame empty.
+  assert.match(
+    book,
+    /\[data-flow="true"\] \{[^}]*justify-content: center/,
+    "book: a short page centres its plate inside the frame",
+  );
+  // The reader's own face must reach the printed word: the Warsh display
+  // element re-declares --font-quran above the inline stamp, so reading it
+  // alone printed every Warsh choice as KFGQPC Warsh.
+  assert.match(
+    flowRenderer,
+    /fontFamily: "var\(--qd-font-family, var\(--font-quran\)\)"/,
+  );
+  const pageMode = source("src/components/QuranDisplay/PageMode.jsx");
+  assert.doesNotMatch(pageMode, /ensureQcfPageFontLoaded/);
+
+  // The Mushaf page flows like Quran.com sets one: the leaf takes the reading
+  // column and the body comes from that width (a 34em measure, the length a
+  // Madani line holds), so a wide screen prints full lines instead of four
+  // words stretched across the column. The explicit Madani-page preference
+  // also uses Unicode flow until QCF glyph placement is verified.
+  assert.match(
+    sheetStyles,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*font-size: calc\(clamp\(22px, \(100cqi - 3rem\) \/ 34, 72px\)/,
+  );
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*max-width: 34em/);
+  assert.match(sheetStyles, /\.qcm-lines\[data-flow="true"\] \{[^}]*--qcm-page-lines: 0/);
+  // One row pitch for every mushaf surface, and it has to clear the ink the
+  // face paints: the shipped QPC/QCF Hafs metrics are ascent 19 + descent 9 =
+  // 1.75em at a 16 px body, and the tallest ascender plus deepest descender
+  // measured in the corpus reach 1.679em. The 1.5em the flow sheet declared
+  // for itself and the 1.62em of the printed grid both let consecutive lines
+  // overlap by up to 2.4 px, which printed as cut letters with tajweed on and
+  // off alike.
+  assert.match(sheetStyles, /--mfp-line-pitch: 1\.75em/);
+  assert.doesNotMatch(
+    sheetStyles,
+    /\.qcm-lines\[data-flow="true"\] \{[^}]*--mfp-line-pitch\s*:/,
+    "the flow sheet must not re-declare a pitch below the shared ink envelope",
+  );
+  assert.match(flowRenderer, /getPropertyValue\("--qcm-page-lines"\)/);
+
+  // A proportional sheet prints the verse divider with the reader's own face:
+  // the marker is the font's khatam, sized in em, and the 44 px touch area is
+  // a non-layout pseudo-element so the medallion never tears the line apart.
+  const markerComponent = source("src/components/QuranDisplay/MushafAyahMarker.jsx");
+  assert.match(markerComponent, /getUiAyahMarker\(num, fontFamily, riwaya\)/);
+  assert.match(markerComponent, /getAyahMarkerFontFamily\(fontFamily, riwaya\)/);
+  assert.match(sheetStyles, /\.qcm-ayah-marker--glyph[^{]*\{\s*position: relative;\s*display: inline;/);
+  assert.match(sheetStyles, /\.qcm-ayah-marker--glyph::before[^{]*\{[^}]*width: 44px;[^}]*height: 44px;/);
+  assert.doesNotMatch(
+    hafsRenderer,
+    /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-hafs"/,
+  );
+  assert.match(
+    hafsRenderer,
+    /PAGE_GLYPH_FONT_IDS = new Set\(\[\s*"qpc-madani-page",/,
+  );
+
+  // QCF line classes need their explicit safelist; the book's mfp classes are
+  // present as literals in the overlay and can be retained by content scan.
+  assert.match(purgeConfig, /\/\^qcm-\//);
+});
+
+test("immersive Mushaf keeps a quiet chrome: dialog, close, zoom and page controls", () => {
+  const display = source("src/components/QuranDisplay.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+
+  assert.match(overlay, /role="dialog"/);
+  assert.match(overlay, /aria-modal="true"/);
+  assert.match(overlay, /document\.body\.style\.overflow = "hidden"/);
+  assert.match(overlay, /aria-label=\{t\("audio\.close", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.zoomOut", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.zoomIn", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.fitPage", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("quran\.fitWidth", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("nav\.nextPage", lang\)\}/);
+  assert.match(overlay, /aria-label=\{t\("nav\.prevPage", lang\)\}/);
+  assert.match(overlay, /className="mfp-mobile-footer"/);
+  assert.match(overlay, /className=\{`mfp-audio-controls/);
+  assert.match(overlay, /audioService\.toggle\(\)/);
+  assert.match(overlay, /onClick=\{onOpenPlayer\}/);
+  assert.match(overlay, /document\.body\.classList\.add\("mfp-open"\)/);
+  assert.match(overlay, /"--font-quran": quranFontFamily/);
+  assert.doesNotMatch(overlay, /event\.key === "Enter"[\s\S]*?onPlayAyah/);
+  assert.match(overlay, /const startPageAudio = \(\) =>/);
+  assert.match(display, /onOpenPlayer=\{openImmersiveAudioPlayer\}/);
+  assert.match(display, /isPlaying=\{isPlaying\}/);
+  assert.match(display, /audioAyah=\{currentPlayingAyah\}/);
+  assert.match(display, /onClose=\{\(\) => view\.setFullPage\(false\)\}/);
+});
+
+test("immersive Mushaf is edge-to-edge and theme-aware through its own portal sheet", () => {
+  const styles = source("src/styles/mushaf-book.css");
+
+  // The overlay is a fixed, full-viewport portal sheet rendered on <body>.
+  assert.match(styles, /\.mfp-portal-root\s*\{[\s\S]*?position: fixed;[\s\S]*?inset: 0;/);
+  // Its viewport scrolls the leaf while the measured sheet stays inside it.
+  assert.match(styles, /\.mfp-viewport\s*\{[\s\S]*?overflow: auto/);
+  // Edge-to-edge on small screens, respecting the device safe area.
+  assert.match(styles, /@media \(max-width: 640px\)[\s\S]*?env\(safe-area-inset-bottom\)/);
+  // The printed paper is theme-aware, not only the light sheet.
+  assert.match(styles, /\.mfp-portal-root\[data-theme="dark"\]/);
+  // Motion is honored for the leaf turn and the chrome fade.
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test("surah headings keep an accessible Arabic title while calligraphic selectors stay hidden from assistive tech", () => {
+  const header = source("src/components/Quran/SurahReaderHeader.jsx");
+  const headerStyles = source("src/styles/surah-reader-header.css");
+  const cleanHeader = source("src/components/Quran/CleanPageDecor.jsx");
+  const appHeader = source("src/components/Header.jsx");
+  const hero = source("src/components/Home/HeroSection.jsx");
+  const surahCards = source("src/components/Home/HomePrimitives.jsx");
+
+  assert.match(header, /const surahLigature = String\(surahNum\)\.padStart\(3, "0"\)/);
+  assert.match(header, /aria-label=\{s\.ar\}[\s\S]*?className="font-surah-names"[\s\S]*?dir="ltr" lang="en"/);
+  assert.doesNotMatch(headerStyles, /\.srh-arabic\s*\{[^}]*\b(?:border|background|box-shadow)\s*:/);
+  assert.doesNotMatch(headerStyles, /\.srh-mobile-bar__name\s*\{[^}]*\b(?:border|background|border-radius)\s*:/);
+  assert.match(cleanHeader, /const accessibleArabicTitle =/);
+  assert.match(cleanHeader, /getSurahLigature\(surahNum\)/);
+  assert.match(cleanHeader, /className="cpv-surah-name-ligature font-surah-names"[\s\S]*?dir="ltr"[\s\S]*?aria-hidden="true"/);
+  assert.doesNotMatch(cleanHeader, /document\.fonts/);
+  assert.doesNotMatch(cleanHeader, /cpv-surah-prefix/);
+  assert.match(appHeader, /getSurahLigature\(activeSurahNum\)/);
+  assert.match(appHeader, /className="font-surah-names"[\s\S]*?aria-hidden="true"/);
+  // The phone swap to the compact lockup must not drop the masthead face.
+  assert.match(
+    appHeader,
+    /mp-header__title-compact-ar[\s\S]*?className="font-surah-names"/,
+  );
+  assert.match(
+    source("src/components/Sidebar.jsx"),
+    /sb-summary-calli[\s\S]*?className="font-surah-names"/,
+  );
+  // The next-reading lockup keeps its rule on every width: the phone adapts the
+  // desktop block, it does not flatten it into a caption.
+  assert.doesNotMatch(
+    source("src/styles/app-system.css"),
+    /\.home-resume-panel__target\s*\{[^}]*border-inline-start:\s*0/,
+  );
+  assert.match(hero, /getSurahLigature\(surahLabel\?\.n\)/);
+  assert.match(hero, /home-resume-panel__target[\s\S]*?font-surah-names/);
+  assert.match(surahCards, /getSurahLigature\(surah\.n\)/);
+  assert.match(surahCards, /hp-card-ar font-surah-names/);
+  assert.match(hero, /getSurahLigature\(surah\.n\)/);
+  assert.match(hero, /home-today-suggestion__arabic font-surah-names/);
+});
+
+test("the active surah name keeps its meaning animated without harming accessibility", () => {
+  const header = source("src/components/Header.jsx");
+  const styles = source("src/styles/header-enhanced.css");
+
+  assert.match(header, /surahMeta\?\.en \|\| surahMeta\?\.fr/);
+  assert.match(header, /aria-label=\{centerTitleLabel\}/);
+  assert.match(header, /mp-header__title-sub-track/);
+  assert.match(header, /mp-header__title-meaning/);
+  assert.match(styles, /@keyframes mh-title-in/);
+  assert.match(styles, /@keyframes mh-meaning-cycle/);
+  assert.match(styles, /@media \(prefers-reduced-motion: reduce\)[\s\S]*?mp-header__title-sub-track/);
+});
+
+test("home quick suggestions stay compact and available responsively", () => {
+  const hero = source("src/components/Home/HeroSection.jsx");
+  const styles = source("src/styles/app-system.css");
+
+  assert.match(hero, /suggestionSet\.surahs\.slice\(0, 5\)/);
+  assert.match(hero, /className="home-today-suggestion"/);
+  assert.match(styles, /grid-template-columns: 2rem minmax\(0, 1fr\) 4\.25rem 1\.5rem/);
+  assert.match(styles, /home-today-suggestion:nth-child\(n \+ 4\)[\s\S]*?display: none/);
+});
+
+test("home surah play controls expose and toggle the real playback state", () => {
+  const home = source("src/components/HomePage.jsx");
+  const cards = source("src/components/Home/HomePrimitives.jsx");
+  const styles = source("src/styles/home-audio-ux-refonte.css");
+
+  assert.match(home, /audioService\.currentAyah\?\.surah === surahNum[\s\S]*?audioService\.pause\(\)/);
+  assert.match(home, /await audioService\.play\(\)[\s\S]*?isPlaying: true/);
+  assert.match(cards, /isPlaying && "playing/);
+  assert.match(cards, /aria-pressed=\{isPlaying\}/);
+  assert.match(styles, /\.hp-card--surah\.playing[\s\S]*?hp-audio-pulse/);
+  assert.match(styles, /prefers-reduced-motion: reduce[\s\S]*?animation: none/);
+});
+
+test("retired word analysis CSS is absent from the application shell", () => {
+  const styles = source("src/styles/tailwind.css");
+
+  assert.doesNotMatch(styles, /\.wbw-(?:analysis-overlay|current|read|upcoming)/);
+});
+
+test("continuous Mushaf text strips embedded markers before rendering its marker", () => {
+  const renderer = source("src/components/Quran/SmartAyahRenderer.jsx");
+
+  assert.match(renderer, /effectiveRiwaya,\s*appendNativeMarker/);
+  assert.match(renderer, /appendNativeAyahMarker\(\s*baseCleanText/);
+  // One source per riwaya: Hafs takes its verified annotation, Warsh the Dabt
+  // of the same printed text, and the renderer never picks between them.
+  assert.match(renderer, /getWarshTajwidAnnotatedSource/);
+  assert.match(renderer, /tajwidSource=\{tajwidSource\}/);
+  assert.match(renderer, /effectiveRiwaya === "warsh" \? warshSource : hafsSource/);
+  assert.doesNotMatch(renderer, /appendNativeAyahMarker\(\s*value/);
+});
+
+test("Warsh page data and fullscreen share one renderer with one marker owner", () => {
+  const service = source("src/services/warshService.js");
+  const page = source("src/components/QuranDisplay/WarshPageRenderer.jsx");
+  const flow = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+  const overlay = source("src/components/QuranDisplay/FullscreenMushafOverlay.jsx");
+  const fonts = source("src/data/fonts.js");
+
+  assert.match(service, /normalizeWarshAyahText/);
+  assert.match(service, /stripEmbeddedAyahMarkers\(normalizeWhitespace\(text\), \{ ayahNumber \}\)/);
+  assert.match(page, /getCleanWarshWords/);
+  // The continuous-flow sheet owns the single end-marker emission for every
+  // riwaya that prints as flow, so no renderer adds a second one.
+  assert.match(flow, /charType: "end"/);
+  assert.equal(
+    (flow.match(/charType: "end"/g) || []).length,
+    1,
+    "the flow renderer must emit exactly one end marker per ayah",
+  );
+  assert.match(overlay, /<QuranMushafPage/);
+  assert.doesNotMatch(overlay, /riwaya !== "warsh"/);
+  // Legacy Warsh number glyphs (U+FC00 + ayah - 1) are only stripped when the
+  // ayah number proves them; the raw presentation-form range is never matched.
+  assert.match(fonts, /LEGACY_WARSH_MARKER_BASE = 0xfc00/);
+  assert.match(fonts, /function legacyWarshMarkerGlyph/);
+  assert.equal(/\\uFC00-\\uFD1C/.test(fonts), false);
+});
+
+test("continuous Mushaf markers leave a readable gap before the next ayah", () => {
+  const fonts = source("src/data/fonts.js");
+  const cleanPage = source("src/components/Quran/CleanPageView.jsx");
+  const purgeConfig = source("scripts/cssPurgeConfig.mjs");
+  const purgeScript = source("scripts/purge-css.mjs");
+
+  // The marker is a native glyph attached to its verse with a narrow no-break
+  // space; the next verse starts after an ordinary space, as in print.
+  assert.match(fonts, /return `\$\{cleanedValue\}\\u202F\$\{marker\}`/);
+  assert.match(cleanPage, /appendNativeMarker=\{true\}/);
+  assert.match(cleanPage, /elements\.push\(" "\)/);
+  // The gap only reads as print does while the verse flow stays inline, so both
+  // the flow selectors and the native marker rule must survive the CSS purge.
+  assert.match(purgeConfig, /\/quran-verse-inline\//);
+  assert.match(purgeConfig, /\/mushaf-verse\//);
+  assert.match(purgeScript, /native ayah marker stays inline in the reader flow/);
+});
+
+test("ayah numbers keep one canonical glyph regardless of the reading font", () => {
+  const fonts = source("src/data/fonts.js");
+  const riwayaFonts = source("src/styles/riwaya-fonts.css");
+
+  // IndoPak, Scheherazade New, Amiri Quran and Noto Naskh carry no composing
+  // rosette, so their digits-only marker is shaped by the QPC Hafs face — in JS
+  // and in the stylesheet.
+  assert.match(
+    fonts,
+    /QPC_SHAPED_MARKER_FONT_IDS = new Set\(\[\s*"qpc-indopak",\s*"scheherazade-new",\s*"amiri-quran",\s*"noto-naskh-arabic",\s*\]\)/,
+  );
+  assert.match(fonts, /if \(riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS\.has\(normalizedId\)\)/);
+  assert.match(
+    riwayaFonts,
+    /\[data-quran-font="qpc-indopak"\],[\s\S]*?\[data-quran-font="scheherazade-new"\],[\s\S]*?\[data-quran-font="amiri-quran"\],[\s\S]*?\[data-quran-font="noto-naskh-arabic"\][\s\S]*?\.native-ayah-marker \{\s*font-family: "QPC Hafs", serif !important;/,
+  );
+});
+
+test("Tajweed keeps source categories separate from visual groups, and Warsh only its own rules", () => {
+  const legend = source("src/components/Quran/TajweedLegend.jsx");
+  const renderer = source("src/components/Quran/TajweedText.jsx");
+  const adapter = source("src/utils/tajwidAnnotation.js");
+  assert.match(legend, /TAJWID_VISUAL_GROUPS/);
+  assert.match(legend, /TAJWID_GUIDE_COPY/);
+  assert.match(legend, /getWarshTajwidSourceStatus/);
+  assert.match(legend, /WARSH_TAJWID_RULE_IDS/);
+  assert.match(renderer, /normalizeTajwidAnnotation/);
+  assert.doesNotMatch(renderer, /DOMParser|QURAN_COM_CLASS_MAP|applyFontSigns|normalizeQuranGlyphText/);
+  assert.match(adapter, /idgham_ghunnah: "idgham-ghunnah"/);
+  assert.match(adapter, /idgham_wo_ghunnah: "idgham-without-ghunnah"/);
+});
+
+test("Warsh shares the Hafs tajweed palette: the same rule keeps the same colour", () => {
+  const theme = source("src/styles/domains/themes4.css");
+
+  // The separate "printed Warsh mushaf" palette was retired: on our paper themes
+  // several of its swatches read as near-black or vanished, and it taught a
+  // different hue for the same rule depending on riwaya. Warsh now inherits the
+  // canonical Quran.com / Tarteel hues every theme defines.
+  assert.doesNotMatch(
+    theme,
+    /--tajwid-warsh-/,
+    "the retired per-theme Warsh palette swatches must be gone",
+  );
+  assert.doesNotMatch(
+    theme,
+    /\[data-riwaya=["']warsh["']\][^{]*\{[^}]*--tajwid-/,
+    "Warsh must not remap any tajweed colour away from the Hafs palette",
+  );
+});
+
+test("the visual system separates brand, gold, Warsh and transliteration roles", () => {
+  const theme = source("src/styles/domains/themes4.css");
+  const fonts = source("src/styles/riwaya-fonts.css");
+  const readingPolish = source("src/styles/reading-ux-refonte.css");
+  const mushafBook = source("src/styles/mushaf-book.css");
+  const mushafPage = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+  const verseView = source("src/components/QuranDisplay/QCVerseByVerseView.jsx");
+
+  assert.equal((theme.match(/--brand-gold:/g) || []).length, 3);
+  assert.match(theme, /--gold: var\(--brand-gold, var\(--theme-accent\)\)/);
+  assert.match(fonts, /--font-quran-warsh: "KFGQPC Warsh"/);
+  assert.match(fonts, /font-synthesis: none/);
+  // The portal rule keeps Warsh words at the flow's own size; the renderer
+  // repeats 1em/inherit inline so the continuous-flow fit scale is never
+  // defeated by per-word overrides. Gaps between words come from the flow's
+  // justification, not from hardcoded inline spacing.
+  assert.match(mushafBook, /:is\(\.qcm-word--warsh, \.qcm-word--flow\) \{[\s\S]*?font-size: 1em;[\s\S]*?line-height: inherit;/);
+  assert.match(mushafBook, /\.qcm-flow \{[\s\S]*?text-align: justify;[\s\S]*?text-align-last: center;/);
+  assert.match(mushafBook, /--qcm-flow-fit/);
+  // The printed frame sits behind the text: a positioned z-index:0 layer
+  // paints over static flow ink, and its paper inset-shadow would shear
+  // any glyph that overflows the line measure at a line end.
+  assert.match(mushafBook, /\.qcm-page::before \{[\s\S]*?z-index: -1;/);
+  assert.match(mushafPage, /fontSize: ["']1em["']/);
+  assert.match(mushafPage, /lineHeight: ["']inherit["']/);
+  assert.match(mushafPage, /unicodeBidi: ["']isolate["']/);
+  assert.doesNotMatch(mushafPage, /marginInlineEnd|wordSpacing/);
+  assert.match(readingPolish, /"Iowan Old Style", "Palatino Linotype", Georgia, serif/);
+  assert.match(verseView, /className="qc-ayah-transliteration"/);
+});
+
+test("the application-wide design system owns themes, surfaces and responsive fallbacks", () => {
+  const imports = source("src/main.jsx");
+  const system = source("src/styles/app-system.css");
+
+  assert.match(imports, /import "\.\/styles\/app-system\.css";/);
+  for (const theme of ["light", "sepia", "dark"]) {
+    assert.match(system, new RegExp(`\\[data-theme="${theme}"\\]`));
+  }
+  assert.match(system, /--mp-content-max: 90rem/);
+  assert.match(system, /\.app-root :is\(\.hp-wrapper, \.duas-page, \.legal-page, \.not-found-page, \.reciter-detail\)/);
+  assert.match(system, /@media \(max-width: 720px\)[\s\S]*?--mp-page-gutter/);
+  assert.match(system, /@media \(max-width: 480px\)[\s\S]*?\.library-overlay[\s\S]*?align-items: end/);
+  assert.match(system, /@media \(max-width: 340px\)[\s\S]*?\.library-tabs small[\s\S]*?display: none/);
+  assert.match(system, /@media \(prefers-reduced-motion: reduce\)/);
+});
+
+test("tajweed colours words through a text-clipped gradient, never a sub-word range", () => {
+  const flowSheet = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+  const listText = source("src/components/Quran/TajweedText.jsx");
+  const paint = source("src/utils/tajweedWordPaint.js");
+  const styles = source("src/styles/tailwind.css");
+
+  // A ::highlight() range or a per-rule <span> re-shapes its sub-run on the
+  // Mushaf faces and prints detached strokes: no surface may colour one.
+  assert.doesNotMatch(flowSheet + listText, /applyTajweedHighlights/);
+  assert.match(paint, /linear-gradient\(to right/);
+  assert.match(paint, /--tajweed-paint/);
+  assert.match(styles, /\.is-tajweed-painted\s*\{[^}]*background-clip: text/);
+  assert.doesNotMatch(styles, /::highlight\(tajwid-(?!hover|playing)/);
+  // The state ink has to survive the transparent fill of the paint, and the
+  // states are listed one selector per line: an `:is()` list loses its
+  // pseudo-class branches to the CSS purge.
+  assert.match(styles, /\.is-tajweed-painted:hover,\s*\.is-tajweed-painted:focus-visible/);
+  assert.match(styles, /\.is-tajweed-painted\.qcm-word--playing\s*\{[^}]*-webkit-text-fill-color: currentColor/);
+});
+
+test("tafsir sources are grouped by language with the reading-aware ones first", async () => {
+  const sidebar = source("src/components/TafsirSidebar.jsx");
+  const { default: locales, ensureLocale } = await import("../src/i18n/index.js");
+  await Promise.all([ensureLocale("en"), ensureLocale("ar")]);
+
+  assert.match(sidebar, /<optgroup/);
+  assert.match(sidebar, /TAFSIR_OPTIONS\.filter\(\(o\) => o\.lang === code\)/);
+  assert.match(
+    sidebar,
+    /Number\(Boolean\(b\.qiraat\)\) - Number\(Boolean\(a\.qiraat\)\)/,
+  );
+  // The marker, the Warsh note and the French-edition affordances must exist in
+  // every locale, not just French.
+  for (const key of [
+    "groupArabic",
+    "groupEnglish",
+    "groupFrench",
+    "qiraatBadge",
+    "warshHint",
+    "shownInFrench",
+    "frenchAttribution",
+    "reportError",
+  ]) {
+    for (const lang of ["fr", "en", "ar"]) {
+      assert.ok(locales[lang].tafsir[key], `${lang}.tafsir.${key}`);
+    }
+  }
+  assert.match(sidebar, /riwaya === ["']warsh["'][\s\S]*?tafsir\.warshHint/);
+});
+
+test("WebKit never extends a partial annotation to the entire word", () => {
+  const paint = source("src/utils/tajweedWordPaint.js");
+  const fallback = source("src/components/Quran/TajweedText.jsx");
+  const flow = source("src/components/QuranDisplay/MushafFlowPage.jsx");
+
+  // The engine gate lives with the paint so every consumer shares one verdict.
+  assert.match(paint, /export const CLIP_PAINT_SUPPORTED = !isWebkitEngine\(\);/);
+
+  // Partial annotations must not become whole-word colours.
+  assert.match(
+    fallback,
+    /getWholeWordTajwidRule\(word\.text, ranges\)/,
+  );
+  // ...and must not paint the gradient there (it renders near-invisible).
+  assert.match(fallback, /if \(!CLIP_PAINT_SUPPORTED\) return undefined;/);
+
+  // The flow page enforces the same exact coverage guard.
+  assert.match(flow, /if \(CLIP_PAINT_SUPPORTED\) paintTajweedWord\(word, ranges\);/);
+  assert.match(flow, /getWholeWordTajwidRule\(token\.text, token\.tajweedRanges\)/);
+  assert.match(flow, /word\.style\.color = `var\(--tajwid-\$\{ruleId\}\)`/);
+  assert.match(flow, /clearTajweedWordPaint\(word\);[\s\S]{0,40}word\.style\.removeProperty\("color"\);/);
+});
+
+test("the open sidebar shows a single close, the inert header keeps the hamburger", () => {
+  const header = source("src/components/Header.jsx");
+  const sidebar = source("src/components/Sidebar.jsx");
+
+  // The drawer owns the only working close (the header is inert while open).
+  assert.match(sidebar, /className="sidebar-close-button/);
+  // The header toggle must not swap to a second, dead cross when the drawer is
+  // open: it renders the Menu icon unconditionally.
+  assert.doesNotMatch(header, /sidebarOpen \?\s*\(\s*<X size=\{18\}/);
+  assert.match(header, /aria-controls="sidebar"[\s\S]{0,260}<Menu size=\{18\} strokeWidth=\{2\.2\} \/>/);
+});

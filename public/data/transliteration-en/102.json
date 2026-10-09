@@ -1,0 +1,40 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 102,
+  "number_of_ayahs": 8,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "alhākumu l-takāthuru"
+    },
+    {
+      "ayah_number": 2,
+      "text": "ḥattā zur'tumu l-maqābira"
+    },
+    {
+      "ayah_number": 3,
+      "text": "kallā sawfa taʿlamūna"
+    },
+    {
+      "ayah_number": 4,
+      "text": "thumma kallā sawfa taʿlamūna"
+    },
+    {
+      "ayah_number": 5,
+      "text": "kallā law taʿlamūna ʿil'ma l-yaqīni"
+    },
+    {
+      "ayah_number": 6,
+      "text": "latarawunna l-jaḥīma"
+    },
+    {
+      "ayah_number": 7,
+      "text": "thumma latarawunnahā ʿayna l-yaqīni"
+    },
+    {
+      "ayah_number": 8,
+      "text": "thumma latus'alunna yawma-idhin ʿani l-naʿīmi"
+    }
+  ]
+}

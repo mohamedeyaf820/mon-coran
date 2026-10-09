@@ -1,32 +1,47 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
-import "../styles/domains/reader-consolidation.css";
-import "../styles/domains/reading-platform.css";
+import React, {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import "../styles/readerStyles.js";
 import {
   shallowEqual,
   useAppActions,
   useAppSelector,
 } from "../context/AppContext";
 import { t } from "../i18n";
-import { clearCache } from "../services/quranAPI";
-import { clearWarshCache } from "../services/warshService";
-import { ensureReciterForRiwaya } from "../data/reciters";
+import { toast } from "../lib/utils";
+import { ensureReciterForRiwaya, isSurahOnlyReciter } from "../data/reciters";
 import { getKaraokeCalibration } from "../utils/karaokeUtils";
 import Footer from "./Footer";
-import FullscreenMushafOverlay from "./QuranDisplay/FullscreenMushafOverlay";
-import JuzMode from "./QuranDisplay/JuzMode";
-import PageMode from "./QuranDisplay/PageMode";
 import SurahMode from "./QuranDisplay/SurahMode";
-import VerseCompareTray from "./QuranDisplay/VerseCompareTray";
 import WarshNotice from "./QuranDisplay/WarshNotice";
+import ReaderSourceStatus from "./QuranDisplay/ReaderSourceStatus";
+import ReaderDataState from "./QuranDisplay/ReaderDataState";
 import { createDisplayClasses } from "./QuranDisplay/displayClasses";
 import useQuranDisplayAudio from "./QuranDisplay/useQuranDisplayAudio";
-import useQuranDisplayData from "./QuranDisplay/useQuranDisplayData";
+import useQuranDisplayData, {
+  preloadQuranDisplayData,
+} from "./QuranDisplay/useQuranDisplayData";
 import useQuranDisplayGroups from "./QuranDisplay/useQuranDisplayGroups";
 import useQuranDisplayNavigation from "./QuranDisplay/useQuranDisplayNavigation";
 import useQuranDisplayPrefetch from "./QuranDisplay/useQuranDisplayPrefetch";
 import useQuranDisplayScroll from "./QuranDisplay/useQuranDisplayScroll";
 import useQuranDisplayView from "./QuranDisplay/useQuranDisplayView";
 import useQuranTranslations from "./QuranDisplay/useQuranTranslations";
+import useTransliterationData from "./QuranDisplay/useTransliterationData";
+import AyahSkeleton from "./Quran/AyahSkeleton";
+import { Icon } from "./ui/icon";
+
+const FullscreenMushafOverlay = lazy(
+  () => import("./QuranDisplay/FullscreenMushafOverlay"),
+);
+const JuzMode = lazy(() => import("./QuranDisplay/JuzMode"));
+const PageMode = lazy(() => import("./QuranDisplay/PageMode"));
 
 export default function QuranDisplay() {
   const { dispatch, set } = useAppActions();
@@ -35,14 +50,16 @@ export default function QuranDisplay() {
       currentAyah: current.currentAyah,
       currentJuz: current.currentJuz,
       currentPage: current.currentPage,
+      pageNavigationSource: current.pageNavigationSource,
       currentPlayingAyah: current.currentPlayingAyah,
       currentSurah: current.currentSurah,
       displayMode: current.displayMode,
       focusReading: current.focusReading,
       fontFamily: current.fontFamily,
+      fontFamilyByRiwaya: current.fontFamilyByRiwaya,
+      isPlaying: current.isPlaying,
       lang: current.lang,
       loading: current.loading,
-      memMode: current.memMode,
       mushafLayout: current.mushafLayout,
       quranFontSize: current.quranFontSize,
       quranTranslationFontSize: current.quranTranslationFontSize,
@@ -52,15 +69,20 @@ export default function QuranDisplay() {
       showTajwid: current.showTajwid,
       showTranslation: current.showTranslation,
       showTransliteration: current.showTransliteration,
-      showWordByWord: current.showWordByWord,
-      showWordTranslation: current.showWordTranslation,
       syncOffsetsMs: current.syncOffsetsMs,
       translationLangs: current.translationLangs,
+      continuousPlay: current.continuousPlay,
       warshStrictMode: current.warshStrictMode,
     }),
     shallowEqual,
   );
   const [activeAyah, setActiveAyah] = useState(null);
+  const fullscreenTriggerRef = useRef(null);
+
+  // Preload fullscreen bundle in background so first open is instant
+  useEffect(() => {
+    import("./QuranDisplay/FullscreenMushafOverlay");
+  }, []);
   const {
     currentAyah,
     currentJuz,
@@ -70,9 +92,10 @@ export default function QuranDisplay() {
     displayMode,
     focusReading,
     fontFamily,
+    fontFamilyByRiwaya,
+    isPlaying,
     lang,
     loading,
-    memMode,
     mushafLayout,
     quranFontSize,
     quranTranslationFontSize,
@@ -81,15 +104,21 @@ export default function QuranDisplay() {
     showTajwid,
     showTranslation,
     showTransliteration,
-    showWordByWord,
-    showWordTranslation,
     syncOffsetsMs,
     translationLangs,
     warshStrictMode,
   } = state;
 
   const syncKey = `${riwaya}:${ensureReciterForRiwaya(reciter, riwaya)}`;
-  const { ayahs, error, fetchData, isWarshFallback, setError } =
+  const {
+    ayahs,
+    dataTransitioning,
+    dataSource,
+    error,
+    fetchData,
+    isWarshFallback,
+    loadState,
+  } =
     useQuranDisplayData({
       currentAyah,
       currentJuz,
@@ -100,9 +129,11 @@ export default function QuranDisplay() {
       lang,
       showHome: state.showHome,
       riwaya,
+      mushafLayout,
+      showTransliteration,
       warshStrictMode,
     });
-  const { getTranslationForAyah } = useQuranTranslations({
+  const { getTranslationForAyah, retryTranslations, translationState } = useQuranTranslations({
     arabicReady: ayahs.length > 0,
     currentJuz,
     currentPage,
@@ -111,17 +142,26 @@ export default function QuranDisplay() {
     showTranslation,
     translationLangs,
   });
+  const { getTransliterationForAyah } = useTransliterationData({
+    riwaya,
+    showTransliteration,
+  });
   const { pageTopSurah, surahGroups, pageGroups } = useQuranDisplayGroups({
     ayahs,
     currentSurah,
+    currentPage,
     displayMode,
   });
   const classes = useMemo(
     () => createDisplayClasses({ focusReading, riwaya }),
     [focusReading, riwaya],
   );
-  const isQCF4 = fontFamily === "qcf-v4-tajweed" || fontFamily === "mushaf-tajweed" || fontFamily === "qcf-v4";
+  const isQCF4 =
+    fontFamily === "qcf-v4-tajweed" ||
+    fontFamily === "mushaf-tajweed" ||
+    fontFamily === "qcf-v4";
   const view = useQuranDisplayView({
+    contentReady: ayahs.length > 0,
     dispatch,
     displayMode,
     fontFamily,
@@ -133,16 +173,24 @@ export default function QuranDisplay() {
     syncOffsetsMs,
     mushafLayout,
   });
+  const reciterId = ensureReciterForRiwaya(reciter, riwaya);
+  const isSurahStream = isSurahOnlyReciter(reciterId);
   const karaokeCalibration = useMemo(() => {
-    const reciterId = ensureReciterForRiwaya(reciter, riwaya);
     const base = getKaraokeCalibration(reciterId, riwaya);
     const offsetSec =
       (base.offsetSec ?? 0.15) +
       (view.userSyncOffsetMs ?? 0) / 1000 +
       (displayMode === "surah" ? 0 : -0.02);
     return { ...base, offsetSec: Math.max(-0.8, Math.min(0.95, offsetSec)) };
-  }, [displayMode, reciter, riwaya, view.userSyncOffsetMs]);
-  const { playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
+  }, [displayMode, reciterId, riwaya, view.userSyncOffsetMs]);
+  // Audio failures and Quran-text failures are different outages: the first
+  // must not hide the ayahs behind the data-error screen (whose retry reloads
+  // text that was never the problem).
+  const [audioError, setAudioError] = useState(null);
+  useEffect(() => {
+    if (audioError) toast(audioError, "error");
+  }, [audioError]);
+  const { playAyah, playSpecificSurah, playSurah, preparingSurah } = useQuranDisplayAudio(
     {
       ayahs,
       currentJuz,
@@ -151,11 +199,12 @@ export default function QuranDisplay() {
       continuousPlay: state.continuousPlay,
       displayMode,
       dispatch,
+      isPlaying,
       lang,
       reciter,
       riwaya,
       set,
-      setError,
+      setError: setAudioError,
       warshStrictMode,
     },
   );
@@ -170,14 +219,86 @@ export default function QuranDisplay() {
     displayMode,
     getScrollContainer: view.getScrollContainer,
     mushafLayout,
+    pageNavigationSource: state.pageNavigationSource,
+    riwaya,
   });
+  const prepareReadingTarget = useCallback(
+    (mode, value) =>
+      preloadQuranDisplayData({
+        currentJuz: mode === "juz" ? value : currentJuz,
+        currentPage: mode === "page" ? value : currentPage,
+        currentSurah: mode === "surah" ? value : currentSurah,
+        displayMode: mode,
+        lang,
+        riwaya,
+        warshStrictMode,
+      }).catch(() => null),
+    [
+      currentJuz,
+      currentPage,
+      currentSurah,
+      lang,
+      riwaya,
+      warshStrictMode,
+    ],
+  );
+
+  const openImmersiveMushaf = useCallback(async (event) => {
+    fullscreenTriggerRef.current =
+      event?.currentTarget || document.activeElement || null;
+    // The verse at the top of the viewport, so that the book opens where the
+    // reader is, not where the last navigation landed.
+    const ayahInView = (() => {
+      if (typeof document === "undefined") return null;
+      const nodes = document.querySelectorAll(
+        ".quran-display--platform [data-ayah-number]",
+      );
+      for (const node of nodes) {
+        const rect = node.getBoundingClientRect();
+        if (rect.height > 0 && rect.bottom > 96) return Number(node.dataset.ayahNumber);
+      }
+      return null;
+    })();
+    const currentAyahData = ayahs.find(
+      (ayah) => Number(ayah.numberInSurah) === Number(ayahInView ?? currentAyah),
+    );
+    const targetPage = Number(
+      displayMode === "page"
+        ? currentPage
+        : currentAyahData?.page || pageGroups[0]?.page || currentPage,
+    );
+
+    // Open overlay immediately — don't block on data fetch
+    view.setFullPage(true);
+
+    if (displayMode !== "page") {
+      await prepareReadingTarget("page", targetPage);
+      dispatch({ type: "NAVIGATE_PAGE", payload: { page: targetPage } });
+    }
+  }, [
+    ayahs,
+    currentAyah,
+    currentPage,
+    dispatch,
+    displayMode,
+    pageGroups,
+    prepareReadingTarget,
+    view,
+  ]);
+
+  const openImmersiveAudioPlayer = useCallback(() => {
+    // Keep the Mushaf open while the shared reciter/playback sheet appears
+    // above it. Closing the sheet returns directly to the immersive page.
+    set({ playerMinimized: false });
+    window.dispatchEvent(new Event("mushafplus-open-audio-options"));
+  }, [set]);
+
   const navigation = useQuranDisplayNavigation({
     currentJuz,
     currentPage,
     currentSurah,
     dispatch,
-    set,
-    showWordByWord,
+    prepareTarget: prepareReadingTarget,
   });
 
   useQuranDisplayPrefetch({
@@ -185,10 +306,11 @@ export default function QuranDisplay() {
     currentPage,
     currentSurah,
     displayMode,
+    isPlaying,
+    lang,
     loading,
     riwaya,
-    showTranslation,
-    translationLangs,
+    warshStrictMode,
   });
 
   useEffect(() => {
@@ -199,63 +321,20 @@ export default function QuranDisplay() {
     (id) => setActiveAyah((current) => (current === id ? null : id)),
     [],
   );
-  const handleNavigateToAyah = useCallback(
-    ({ surah, ayah }) => {
-      const match = ayahs.find(
-        (a) =>
-          Number(a.numberInSurah) === Number(ayah) &&
-          Number(a.surah?.number || a.surah) === Number(surah)
-      );
-      if (match) {
-        setActiveAyah(displayMode === "surah" ? ayah : match.number);
-        const elementId = displayMode === "surah" ? `ayah-${ayah}` : `ayah-${match.number}`;
-        document.getElementById(elementId)?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-      } else {
-        dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah } });
-        setActiveAyah(ayah);
-      }
-    },
-    [ayahs, displayMode, dispatch]
-  );
+  // Layout toggles must not mutate showTajwid: recoloring the mushaf without
+  // an explicit request surprised users (see reading-pages review, P1).
   const toggleMushaf = useCallback(() => {
     set({
       mushafLayout: mushafLayout === "mushaf" ? "list" : "mushaf",
-      showWordByWord: false,
-      memMode: false,
-      showTajwid: true,
     });
   }, [mushafLayout, set]);
-  const toggleMemorization = useCallback(() => {
-    set({ mushafLayout: "list", memMode: !memMode, showWordByWord: false });
-  }, [memMode, set]);
-
-  const exitMemorization = useCallback(() => {
-    set({ memMode: false, mushafLayout: "list", showWordByWord: false });
+  const openHome = useCallback(() => {
+    set({
+      focusReading: false,
+      showDuas: false,
+      showHome: true,
+    });
   }, [set]);
-  const repairPlatform = useCallback(async () => {
-    try {
-      await clearCache();
-      await clearWarshCache(); // Also clear Warsh-specific cache
-      if ("serviceWorker" in navigator) {
-        const registrations = await navigator.serviceWorker.getRegistrations();
-        await Promise.all(
-          registrations.map((registration) => registration.unregister()),
-        );
-      }
-      if ("caches" in window) {
-        const keys = await caches.keys();
-        await Promise.all(keys.map((key) => caches.delete(key)));
-      }
-      try {
-        localStorage.removeItem("mushaf-plus-settings");
-      } catch {}
-    } finally {
-      window.location.reload();
-    }
-  }, []);
 
   const [fontLoading, setFontLoading] = useState(false);
 
@@ -268,17 +347,38 @@ export default function QuranDisplay() {
           ensureQcfPageFontLoaded,
           isFontMarkedLoaded,
         } = await import("../services/fontLoader");
-        const isQcfPageFont = fontFamily === "qcf-v1" || fontFamily === "qcf-v2" || fontFamily === "qcf-v4-tajweed";
-        const shouldBlockReader =
-          !isFontMarkedLoaded(fontFamily) ||
-          (isQcfPageFont && displayMode === "page" && !isFontMarkedLoaded(fontFamily));
-        if (shouldBlockReader) setFontLoading(true);
+        const isQcfPageFont =
+          fontFamily === "qcf-v1" ||
+          fontFamily === "qcf-v2" ||
+          fontFamily === "qcf-v4-tajweed";
+        if (!isFontMarkedLoaded(fontFamily)) setFontLoading(true);
 
         if (isQcfPageFont && displayMode === "page") {
-          const qcfVersion = fontFamily === "qcf-v4-tajweed" ? "v4" : fontFamily === "qcf-v2" ? "v2" : "v1";
+          const qcfVersion =
+            fontFamily === "qcf-v4-tajweed"
+              ? "v4"
+              : fontFamily === "qcf-v2"
+                ? "v2"
+                : "v1";
           await ensureQcfPageFontLoaded(currentPage, qcfVersion);
         } else {
-          await ensureFontLoaded(fontFamily);
+          const result = await ensureFontLoaded(fontFamily);
+          // The IndoPak face is remote. Without it its text is unreadable (private-use
+          // glyph codes), so the Hafs text and face stand in; the stored choice stays.
+          if (
+            active &&
+            fontFamily === "qpc-indopak" &&
+            result?.loaded === false &&
+            !result.unknown &&
+            !result.unsupported
+          ) {
+            dispatch({ type: "SET_FONT_FALLBACK", payload: "qpc-hafs" });
+            window.dispatchEvent(
+              new CustomEvent("quran-toast", {
+                detail: { type: "warning", message: t("quran.fontFallback", lang) },
+              }),
+            );
+          }
         }
       } catch (err) {
         console.error("Font loading error:", err);
@@ -292,164 +392,96 @@ export default function QuranDisplay() {
     return () => {
       active = false;
     };
-  }, [fontFamily, currentPage, displayMode]);
+  }, [dispatch, fontFamily, currentPage, displayMode, lang]);
 
-  if ((loading && ayahs.length === 0) || (fontLoading && ayahs.length === 0))
+  // The IndoPak face stood in for by Hafs (see above) comes back as soon as the
+  // network does: the choice kept for this riwaya is still IndoPak.
+  const wantedFontFamily = fontFamilyByRiwaya?.[riwaya];
+  useEffect(() => {
+    if (wantedFontFamily !== "qpc-indopak" || fontFamily === wantedFontFamily) return undefined;
+    let cancelled = false;
+    const retry = async () => {
+      const { ensureFontLoaded } = await import("../services/fontLoader");
+      const result = await ensureFontLoaded(wantedFontFamily);
+      if (!cancelled && result?.loaded) dispatch({ type: "SET_FONT_FALLBACK", payload: wantedFontFamily });
+    };
+    window.addEventListener("online", retry);
+    return () => {
+      cancelled = true;
+      window.removeEventListener("online", retry);
+    };
+  }, [dispatch, fontFamily, wantedFontFamily]);
+
+  const readerBusy =
+    dataTransitioning ||
+    (loading && ayahs.length === 0) ||
+    (fontLoading && ayahs.length === 0);
+  // Settled on an empty result without a classified failure: the surah really
+  // has no text to show, which is its own state and not an outage.
+  const isReaderContentEmpty =
+    !loading && !dataTransitioning && ayahs.length === 0 && !error;
+
+  if (loadState?.boundary) {
+    // Nothing in the taxonomy matched: this is a defect, and the crash
+    // boundary is the right owner for it. Everything the reader can explain
+    // (offline, timeout, 5xx, empty payload, blocked Warsh fallback) is
+    // answered below instead of escaping as an unclassified throw.
+    throw new Error(`reader-load-unexpected:${loadState.code}`);
+  }
+  if (error || isReaderContentEmpty)
     return (
-      <div className="flex justify-center items-center min-h-[50vh] p-8">
-        <div className="w-full max-w-3xl flex flex-col gap-6 p-8 rounded-3xl bg-bg-card/95 shadow-xl border border-white/10 relative overflow-hidden">
-          <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-[rgba(var(--primary-rgb),0.06)] to-transparent pointer-events-none" aria-hidden="true" />
-          <div className="flex justify-between items-center mb-4">
-            <div className="h-8 w-24 bg-primary/15 rounded-full animate-pulse"></div>
-            <div className="h-8 w-32 bg-primary/15 rounded-full animate-pulse" style={{ animationDelay: "150ms" }}></div>
-          </div>
-          <div className="h-16 w-3/4 mx-auto bg-primary/8 rounded-2xl mb-6 animate-pulse" style={{ animationDelay: "300ms" }}></div>
-          <div className="h-10 w-1/2 mx-auto bg-primary/8 rounded-xl mb-8 animate-pulse" style={{ animationDelay: "450ms" }}></div>
-          <div className="space-y-3">
-            {[1, 0.92, 0.8, 1, 0.66, 0.92, 0.85, 1, 0.5, 0.8, 0.92].map((w, i) => (
-              <div key={i} className="h-4 bg-primary/8 rounded-full animate-pulse" style={{ width: `${w * 100}%`, animationDelay: `${i * 75}ms` }}></div>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  if (error)
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-bg-card/90 m-4 rounded-3xl shadow-xl border border-red-500/20 max-w-2xl mx-auto">
-        <i
-          className={`fas ${ayahs.length === 0 && /Failed to fetch|NetworkError|timeout|AbortError/i.test(error) ? "fa-wifi-slash" : "fa-circle-exclamation"} text-4xl text-red-500/80 mb-6`}
-        ></i>
-        {ayahs.length === 0 &&
-        /Failed to fetch|NetworkError|timeout|AbortError/i.test(error) ? (
-          <>
-            <p className="text-lg text-text-main font-medium mb-3">
-              {lang === "fr"
-                ? "Impossible de charger les données : vérifiez votre connexion internet et réessayez."
-                : "Unable to load data: please check your internet connection and try again."}
-            </p>
-            <p className="text-sm text-text-muted/70 bg-black/10 p-3 rounded-lg font-mono text-left w-full break-words mb-8">
-              {error}
-            </p>
-          </>
-        ) : (
-          <p className="text-lg text-text-main mb-8">{error}</p>
-        )}
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <button
-            className="px-6 py-3 rounded-xl bg-primary text-primary-fg font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
-            onClick={fetchData}
-          >
-            {t("errors.retry", lang)}
-          </button>
-          <button
-            className="px-6 py-3 rounded-xl border border-primary/30 text-primary font-medium hover:bg-primary/5 active:scale-95 transition-all"
-            onClick={repairPlatform}
-          >
-            {lang === "fr" ? "R\u00e9parer la plateforme" : "Repair Platform"}
-          </button>
-        </div>
-      </div>
-    );
-  if (!loading && ayahs.length === 0)
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[50vh] p-8 text-center backdrop-blur-xl bg-bg-card/90 m-4 rounded-3xl shadow-xl border border-white/10 max-w-2xl mx-auto">
-        <i className="fas fa-book-open text-4xl text-primary/60 mb-6"></i>
-        <p className="text-lg text-text-main font-medium mb-8">
-          {t("errors.emptyData", lang)}
-        </p>
-        <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-          <button
-            className="px-6 py-3 rounded-xl bg-primary text-primary-fg font-medium hover:brightness-110 active:scale-95 transition-all shadow-lg"
-            onClick={fetchData}
-          >
-            {t("errors.retry", lang)}
-          </button>
-          <button
-            className="px-6 py-3 rounded-xl border border-primary/30 text-primary font-medium hover:bg-primary/5 active:scale-95 transition-all"
-            onClick={repairPlatform}
-          >
-            {lang === "fr" ? "R\u00e9parer la plateforme" : "Repair Platform"}
-          </button>
-        </div>
-      </div>
+      <ReaderDataState
+        code={loadState?.code}
+        dataSource={dataSource}
+        lang={lang}
+        onRetry={fetchData}
+        onBackHome={openHome}
+      />
     );
 
   return (
     <>
       <div className="reading-progress-bar" aria-hidden="true" />
 
-      {/* Memorization exit action, only visible while memMode is active. */}
-      {memMode && (
-        <button
-          onClick={exitMemorization}
-          className="fixed bottom-[calc(var(--player-h,72px)+1.25rem)] left-1/2 -translate-x-1/2 z-[350] flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold text-white shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:brightness-110 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/60"
-          style={{
-            background:
-              "linear-gradient(135deg, var(--primary), color-mix(in srgb, var(--primary) 70%, #d4a820 30%))",
-            boxShadow:
-              "0 4px 18px rgba(var(--primary-rgb), 0.45), 0 1px 4px rgba(0,0,0,0.15)",
-          }}
-          aria-label={
-            lang === "fr"
-              ? "Quitter le mode mémorisation"
-              : lang === "ar"
-                ? "الخروج من وضع الحفظ"
-                : "Exit memorization mode"
-          }
-        >
-          <i className="fas fa-brain text-xs" />
-          <span>
-            {lang === "fr"
-              ? "Quitter mémorisation"
-              : lang === "ar"
-                ? "خروج من الحفظ"
-                : "Exit memorization"}
-          </span>
-          <i className="fas fa-xmark text-xs opacity-80" />
-        </button>
-      )}
+      {riwaya === "warsh" && isWarshFallback ? (
+        <WarshNotice
+          badgeLabel={t("settings.warshFallbackBadge", lang)}
+          body={t("settings.warshFallbackText", lang)}
+        />
+      ) : null}
+      <ReaderSourceStatus
+        dataSource={dataSource}
+        lang={lang}
+        onRetryTranslation={retryTranslations}
+        translationState={showTranslation ? translationState : "idle"}
+      />
       <div
         className={`quran-display quran-display--${riwaya} quran-display--platform`}
+        data-quran-font={fontFamily}
         ref={view.contentRef}
+        aria-busy={readerBusy}
         {...view.touchHandlers}
       >
-        {riwaya === "warsh" && !isWarshFallback ? (
-          <WarshNotice
-            kind="ok"
-            badgeLabel={t("settings.warshUnicodeBadge", lang)}
-            body={t("settings.warshUnicodeText", lang)}
-            frameClassName={classes.readingChromeFrameClass}
-          />
-        ) : null}
-        {riwaya === "warsh" && isWarshFallback ? (
-          <WarshNotice
-            kind="fallback"
-            badgeLabel={t("settings.warshFallbackBadge", lang)}
-            body={t("settings.warshFallbackText", lang)}
-            frameClassName={classes.readingChromeFrameClass}
-          />
-        ) : null}
         {displayMode === "surah" ? (
           <SurahMode
             activeAyah={activeAyah}
             ayahs={ayahs}
             calibration={karaokeCalibration}
             classes={classes}
-            currentPlayingAyah={currentPlayingAyah}
+            currentAyah={currentAyah}
+            currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
             currentSurah={currentSurah}
             getTranslationForAyah={getTranslationForAyah}
+            getTransliterationForAyah={getTransliterationForAyah}
             isQCF4={isQCF4}
             lang={lang}
-            memMode={memMode}
             mushafLayout={mushafLayout}
-            onNavigateToAyah={handleNavigateToAyah}
             onNextSurah={navigation.goNextSurah}
             onPlaySurah={playSurah}
             onPrevSurah={navigation.goPrevSurah}
+            onOpenFullscreen={openImmersiveMushaf}
             onToggleActive={toggleAyah}
-            onToggleMemorization={toggleMemorization}
             onToggleMushaf={toggleMushaf}
-            onToggleWordByWord={navigation.toggleWordByWordMode}
             pageGroups={pageGroups}
             preparingSurah={preparingSurah}
             readingFontSize={view.readingFontSize}
@@ -457,84 +489,104 @@ export default function QuranDisplay() {
             showTajwid={showTajwid}
             showTranslation={showTranslation}
             showTransliteration={showTransliteration}
-            showWordByWord={showWordByWord}
-            showWordTranslation={showWordTranslation}
-            theme={state.theme}
           />
         ) : null}
         {displayMode === "page" ? (
-          <PageMode
-            activeAyah={activeAyah}
-            ayahs={ayahs}
-            calibration={karaokeCalibration}
-            classes={classes}
-            currentPage={currentPage}
-            currentPlayingAyah={currentPlayingAyah}
-            currentSurah={currentSurah}
-            getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
-            getTranslationForAyah={getTranslationForAyah}
-            isQCF4={isQCF4}
-            lang={lang}
-            memMode={memMode}
-            mushafLayout={mushafLayout}
-            onNavigateToAyah={handleNavigateToAyah}
-            onNextPage={navigation.goNextPage}
-            onPlaySurah={playSurah}
-            onPrevPage={navigation.goPrevPage}
-            onToggleActive={toggleAyah}
-            onToggleMemorization={toggleMemorization}
-            onToggleMushaf={toggleMushaf}
-            onToggleWordByWord={navigation.toggleWordByWordMode}
-            pageGroups={pageGroups}
-            pageTopSurah={pageTopSurah}
-            preparingSurah={preparingSurah}
-            readingFontSize={view.readingFontSize}
-            riwaya={riwaya}
-            showRiwayaStar={riwaya === "warsh"}
-            showTajwid={showTajwid}
-            showTranslation={showTranslation}
-            showTransliteration={showTransliteration}
-            showWordByWord={showWordByWord}
-            showWordTranslation={showWordTranslation}
-            surahGroups={surahGroups}
-            theme={state.theme}
-          />
+          <div className="reader-page-slot" style={{ minHeight: "100dvh" }}>
+            <Suspense
+              fallback={
+                <div className="reader-loading-content" style={{ minHeight: "100dvh" }}>
+                  <AyahSkeleton
+                    count={3}
+                    lang={lang}
+                    showTranslation={showTranslation}
+                  />
+                </div>
+              }
+            >
+              <PageMode
+              activeAyah={activeAyah}
+              ayahs={ayahs}
+              calibration={karaokeCalibration}
+              classes={classes}
+              currentPage={currentPage}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
+              currentSurah={currentSurah}
+              fontFamily={fontFamily}
+              getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
+              getTranslationForAyah={getTranslationForAyah}
+              getTransliterationForAyah={getTransliterationForAyah}
+              isQCF4={isQCF4}
+              lang={lang}
+              mushafLayout={mushafLayout}
+              onNextPage={navigation.goNextPage}
+              onOpenFullscreen={openImmersiveMushaf}
+              onPlayAyah={playAyah}
+              onPlaySurah={playSurah}
+              onPrevPage={navigation.goPrevPage}
+              onToggleActive={toggleAyah}
+              onToggleMushaf={toggleMushaf}
+              pageGroups={pageGroups}
+              pageTopSurah={pageTopSurah}
+              preparingSurah={preparingSurah}
+              readingFontSize={view.readingFontSize}
+              riwaya={riwaya}
+              showTajwid={showTajwid}
+              showTranslation={showTranslation}
+              showTransliteration={showTransliteration}
+              surahGroups={surahGroups}
+              />
+            </Suspense>
+          </div>
         ) : null}
         {displayMode === "juz" ? (
-          <JuzMode
-            activeAyah={activeAyah}
-            calibration={karaokeCalibration}
-            classes={classes}
-            currentJuz={currentJuz}
-            currentPlayingAyah={currentPlayingAyah}
-            getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
-            getTranslationForAyah={getTranslationForAyah}
-            isQCF4={isQCF4}
-            lang={lang}
-            memMode={memMode}
-            mushafLayout={mushafLayout}
-            onNavigateToAyah={handleNavigateToAyah}
-            onNextJuz={navigation.goNextJuz}
-            onPlayJuz={playSurah}
-            onPlaySpecificSurah={playSpecificSurah}
-            onPrevJuz={navigation.goPrevJuz}
-            onToggleActive={toggleAyah}
-            onToggleMemorization={toggleMemorization}
-            onToggleMushaf={toggleMushaf}
-            onToggleWordByWord={navigation.toggleWordByWordMode}
-            pageGroups={pageGroups}
-            preparingSurah={preparingSurah}
-            readingFontSize={view.readingFontSize}
-            riwaya={riwaya}
-            showRiwayaStar={riwaya === "warsh"}
-            showTajwid={showTajwid}
-            showTranslation={showTranslation}
-            showTransliteration={showTransliteration}
-            showWordByWord={showWordByWord}
-            showWordTranslation={showWordTranslation}
-            surahGroups={surahGroups}
-            theme={state.theme}
-          />
+          <Suspense
+            fallback={
+              <AyahSkeleton
+                count={3}
+                lang={lang}
+                showTranslation={showTranslation}
+              />
+            }
+          >
+            <JuzMode
+              activeAyah={activeAyah}
+              calibration={karaokeCalibration}
+              classes={classes}
+              currentJuz={currentJuz}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
+              getMushafLayoutButtonClass={classes.getMushafLayoutButtonClass}
+              getTranslationForAyah={getTranslationForAyah}
+              getTransliterationForAyah={getTransliterationForAyah}
+              isQCF4={isQCF4}
+              lang={lang}
+              mushafLayout={mushafLayout}
+              onNextJuz={navigation.goNextJuz}
+              onPlayJuz={playSurah}
+              onOpenFullscreen={openImmersiveMushaf}
+              onPlaySpecificSurah={playSpecificSurah}
+              onPrevJuz={navigation.goPrevJuz}
+              onToggleActive={toggleAyah}
+              onToggleMushaf={toggleMushaf}
+              pageGroups={pageGroups}
+              preparingSurah={preparingSurah}
+              readingFontSize={view.readingFontSize}
+              riwaya={riwaya}
+              showTajwid={showTajwid}
+              showTranslation={showTranslation}
+              showTransliteration={showTransliteration}
+              surahGroups={surahGroups}
+            />
+          </Suspense>
+        ) : null}
+        {readerBusy ? (
+          <div className="reader-loading-content" style={{ minHeight: "100dvh" }}>
+            <AyahSkeleton
+              count={5}
+              lang={lang}
+              showTranslation={showTranslation}
+            />
+          </div>
         ) : null}
         {showScrollTop ? (
           <button
@@ -543,26 +595,37 @@ export default function QuranDisplay() {
             title={t("nav.scrollTop", lang)}
             aria-label={t("nav.scrollTop", lang)}
           >
-            <i className="fas fa-chevron-up"></i>
+            <Icon name="chevron-up" size={20} />
           </button>
         ) : null}
-        <VerseCompareTray lang={lang} />
         <Footer
           goSurah={(surah) => {
             set({ displayMode: "surah", showHome: false, showDuas: false });
             dispatch({ type: "NAVIGATE_SURAH", payload: { surah, ayah: 1 } });
           }}
         />
-        <FullscreenMushafOverlay
-          ayahs={ayahs}
-          currentPage={currentPage}
-          currentPlayingAyah={currentPlayingAyah}
-          currentSurah={currentSurah}
-          fullPage={view.fullPage}
-          lang={lang}
-          onClose={() => view.setFullPage(false)}
-          riwaya={riwaya}
-        />
+        {view.fullPage ? (
+          <Suspense fallback={null}>
+            <FullscreenMushafOverlay
+              ayahs={ayahs}
+              currentPage={currentPage}
+              currentPlayingAyah={isSurahStream ? null : currentPlayingAyah}
+              currentSurah={currentSurah}
+              fullPage
+              getTranslationForAyah={getTranslationForAyah}
+              lang={lang}
+              onClose={() => view.setFullPage(false)}
+              onOpenPlayer={openImmersiveAudioPlayer}
+              onNextPage={navigation.goNextPage}
+              onPlayAyah={playAyah}
+              onPrevPage={navigation.goPrevPage}
+              returnFocusRef={fullscreenTriggerRef}
+              riwaya={riwaya}
+              isPlaying={isPlaying}
+              audioAyah={currentPlayingAyah}
+            />
+          </Suspense>
+        ) : null}
       </div>
     </>
   );

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Product Design MushafPlus"
+  short_description: "Décisions produit et qualité UI de MushafPlus"
+  default_prompt: "Use $product-design to shape, implement, or review a user-facing MushafPlus change."

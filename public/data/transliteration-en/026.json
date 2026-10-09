@@ -1,0 +1,916 @@
+{
+  "schema": "mushafplus-transliteration-en-hafs-v1",
+  "edition": "en.qurancom-wordbyword",
+  "surah_number": 26,
+  "number_of_ayahs": 227,
+  "ayahs": [
+    {
+      "ayah_number": 1,
+      "text": "tta-seen-meem"
+    },
+    {
+      "ayah_number": 2,
+      "text": "til'ka āyātu l-kitābi l-mubīni"
+    },
+    {
+      "ayah_number": 3,
+      "text": "laʿallaka bākhiʿun nafsaka allā yakūnū mu'minīna"
+    },
+    {
+      "ayah_number": 4,
+      "text": "in nasha nunazzil ʿalayhim mina l-samāi āyatan faẓallat aʿnāquhum lahā khāḍiʿīna"
+    },
+    {
+      "ayah_number": 5,
+      "text": "wamā yatīhim min dhik'rin mina l-raḥmāni muḥ'dathin illā kānū ʿanhu muʿ'riḍīna"
+    },
+    {
+      "ayah_number": 6,
+      "text": "faqad kadhabū fasayatīhim anbāu mā kānū bihi yastahziūna"
+    },
+    {
+      "ayah_number": 7,
+      "text": "awalam yaraw ilā l-arḍi kam anbatnā fīhā min kulli zawjin karīmin"
+    },
+    {
+      "ayah_number": 8,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 9,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 10,
+      "text": "wa-idh nādā rabbuka mūsā ani i'ti l-qawma l-ẓālimīna"
+    },
+    {
+      "ayah_number": 11,
+      "text": "qawma fir'ʿawna alā yattaqūna"
+    },
+    {
+      "ayah_number": 12,
+      "text": "qāla rabbi innī akhāfu an yukadhibūni"
+    },
+    {
+      "ayah_number": 13,
+      "text": "wayaḍīqu ṣadrī walā yanṭaliqu lisānī fa-arsil ilā hārūna"
+    },
+    {
+      "ayah_number": 14,
+      "text": "walahum ʿalayya dhanbun fa-akhāfu an yaqtulūni"
+    },
+    {
+      "ayah_number": 15,
+      "text": "qāla kallā fa-idh'habā biāyātinā innā maʿakum mus'tamiʿūna"
+    },
+    {
+      "ayah_number": 16,
+      "text": "fatiyā fir'ʿawna faqūlā innā rasūlu rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 17,
+      "text": "an arsil maʿanā banī is'rāīla"
+    },
+    {
+      "ayah_number": 18,
+      "text": "qāla alam nurabbika fīnā walīdan walabith'ta fīnā min ʿumurika sinīna"
+    },
+    {
+      "ayah_number": 19,
+      "text": "wafaʿalta faʿlataka allatī faʿalta wa-anta mina l-kāfirīna"
+    },
+    {
+      "ayah_number": 20,
+      "text": "qāla faʿaltuhā idhan wa-anā mina l-ḍālīna"
+    },
+    {
+      "ayah_number": 21,
+      "text": "fafarartu minkum lammā khif'tukum fawahaba lī rabbī ḥuk'man wajaʿalanī mina l-mur'salīna"
+    },
+    {
+      "ayah_number": 22,
+      "text": "watil'ka niʿ'matun tamunnuhā ʿalayya an ʿabbadtta banī is'rāīla"
+    },
+    {
+      "ayah_number": 23,
+      "text": "qāla fir'ʿawnu wamā rabbu l-ʿālamīna"
+    },
+    {
+      "ayah_number": 24,
+      "text": "qāla rabbu l-samāwāti wal-arḍi wamā baynahumā in kuntum mūqinīna"
+    },
+    {
+      "ayah_number": 25,
+      "text": "qāla liman ḥawlahu alā tastamiʿūna"
+    },
+    {
+      "ayah_number": 26,
+      "text": "qāla rabbukum warabbu ābāikumu l-awalīna"
+    },
+    {
+      "ayah_number": 27,
+      "text": "qāla inna rasūlakumu alladhī ur'sila ilaykum lamajnūnun"
+    },
+    {
+      "ayah_number": 28,
+      "text": "qāla rabbu l-mashriqi wal-maghribi wamā baynahumā in kuntum taʿqilūna"
+    },
+    {
+      "ayah_number": 29,
+      "text": "qāla la-ini ittakhadhta ilāhan ghayrī la-ajʿalannaka mina l-masjūnīna"
+    },
+    {
+      "ayah_number": 30,
+      "text": "qāla awalaw ji'tuka bishayin mubīnin"
+    },
+    {
+      "ayah_number": 31,
+      "text": "qāla fati bihi in kunta mina l-ṣādiqīna"
+    },
+    {
+      "ayah_number": 32,
+      "text": "fa-alqā ʿaṣāhu fa-idhā hiya thuʿ'bānun mubīnun"
+    },
+    {
+      "ayah_number": 33,
+      "text": "wanazaʿa yadahu fa-idhā hiya bayḍāu lilnnāẓirīna"
+    },
+    {
+      "ayah_number": 34,
+      "text": "qāla lil'mala-i ḥawlahu inna hādhā lasāḥirun ʿalīmun"
+    },
+    {
+      "ayah_number": 35,
+      "text": "yurīdu an yukh'rijakum min arḍikum bisiḥ'rihi famādhā tamurūna"
+    },
+    {
+      "ayah_number": 36,
+      "text": "qālū arjih wa-akhāhu wa-ib'ʿath fī l-madāini ḥāshirīna"
+    },
+    {
+      "ayah_number": 37,
+      "text": "yatūka bikulli saḥḥārin ʿalīmin"
+    },
+    {
+      "ayah_number": 38,
+      "text": "fajumiʿa l-saḥaratu limīqāti yawmin maʿlūmin"
+    },
+    {
+      "ayah_number": 39,
+      "text": "waqīla lilnnāsi hal antum muj'tamiʿūna"
+    },
+    {
+      "ayah_number": 40,
+      "text": "laʿallanā nattabiʿu l-saḥarata in kānū humu l-ghālibīna"
+    },
+    {
+      "ayah_number": 41,
+      "text": "falammā jāa l-saḥaratu qālū lifir'ʿawna a-inna lanā la-ajran in kunnā naḥnu l-ghālibīna"
+    },
+    {
+      "ayah_number": 42,
+      "text": "qāla naʿam wa-innakum idhan lamina l-muqarabīna"
+    },
+    {
+      "ayah_number": 43,
+      "text": "qāla lahum mūsā alqū mā antum mul'qūna"
+    },
+    {
+      "ayah_number": 44,
+      "text": "fa-alqaw ḥibālahum waʿiṣiyyahum waqālū biʿizzati fir'ʿawna innā lanaḥnu l-ghālibūna"
+    },
+    {
+      "ayah_number": 45,
+      "text": "fa-alqā mūsā ʿaṣāhu fa-idhā hiya talqafu mā yafikūna"
+    },
+    {
+      "ayah_number": 46,
+      "text": "fa-ul'qiya l-saḥaratu sājidīna"
+    },
+    {
+      "ayah_number": 47,
+      "text": "qālū āmannā birabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 48,
+      "text": "rabbi mūsā wahārūna"
+    },
+    {
+      "ayah_number": 49,
+      "text": "qāla āmantum lahu qabla an ādhana lakum innahu lakabīrukumu alladhī ʿallamakumu l-siḥ'ra falasawfa taʿlamūna la-uqaṭṭiʿanna aydiyakum wa-arjulakum min khilāfin wala-uṣallibannakum ajmaʿīna"
+    },
+    {
+      "ayah_number": 50,
+      "text": "qālū lā ḍayra innā ilā rabbinā munqalibūna"
+    },
+    {
+      "ayah_number": 51,
+      "text": "innā naṭmaʿu an yaghfira lanā rabbunā khaṭāyānā an kunnā awwala l-mu'minīna"
+    },
+    {
+      "ayah_number": 52,
+      "text": "wa-awḥaynā ilā mūsā an asri biʿibādī innakum muttabaʿūna"
+    },
+    {
+      "ayah_number": 53,
+      "text": "fa-arsala fir'ʿawnu fī l-madāini ḥāshirīna"
+    },
+    {
+      "ayah_number": 54,
+      "text": "inna hāulāi lashir'dhimatun qalīlūna"
+    },
+    {
+      "ayah_number": 55,
+      "text": "wa-innahum lanā laghāiẓūna"
+    },
+    {
+      "ayah_number": 56,
+      "text": "wa-innā lajamīʿun ḥādhirūna"
+    },
+    {
+      "ayah_number": 57,
+      "text": "fa-akhrajnāhum min jannātin waʿuyūnin"
+    },
+    {
+      "ayah_number": 58,
+      "text": "wakunūzin wamaqāmin karīmin"
+    },
+    {
+      "ayah_number": 59,
+      "text": "kadhālika wa-awrathnāhā banī is'rāīla"
+    },
+    {
+      "ayah_number": 60,
+      "text": "fa-atbaʿūhum mush'riqīna"
+    },
+    {
+      "ayah_number": 61,
+      "text": "falammā tarāā l-jamʿāni qāla aṣḥābu mūsā innā lamud'rakūna"
+    },
+    {
+      "ayah_number": 62,
+      "text": "qāla kallā inna maʿiya rabbī sayahdīni"
+    },
+    {
+      "ayah_number": 63,
+      "text": "fa-awḥaynā ilā mūsā ani iḍ'rib biʿaṣāka l-baḥra fa-infalaqa fakāna kullu fir'qin kal-ṭawdi l-ʿaẓīmi"
+    },
+    {
+      "ayah_number": 64,
+      "text": "wa-azlafnā thamma l-ākharīna"
+    },
+    {
+      "ayah_number": 65,
+      "text": "wa-anjaynā mūsā waman maʿahu ajmaʿīna"
+    },
+    {
+      "ayah_number": 66,
+      "text": "thumma aghraqnā l-ākharīna"
+    },
+    {
+      "ayah_number": 67,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 68,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 69,
+      "text": "wa-ut'lu ʿalayhim naba-a ib'rāhīma"
+    },
+    {
+      "ayah_number": 70,
+      "text": "idh qāla li-abīhi waqawmihi mā taʿbudūna"
+    },
+    {
+      "ayah_number": 71,
+      "text": "qālū naʿbudu aṣnāman fanaẓallu lahā ʿākifīna"
+    },
+    {
+      "ayah_number": 72,
+      "text": "qāla hal yasmaʿūnakum idh tadʿūna"
+    },
+    {
+      "ayah_number": 73,
+      "text": "aw yanfaʿūnakum aw yaḍurrūna"
+    },
+    {
+      "ayah_number": 74,
+      "text": "qālū bal wajadnā ābāanā kadhālika yafʿalūna"
+    },
+    {
+      "ayah_number": 75,
+      "text": "qāla afara-aytum mā kuntum taʿbudūna"
+    },
+    {
+      "ayah_number": 76,
+      "text": "antum waābāukumu l-aqdamūna"
+    },
+    {
+      "ayah_number": 77,
+      "text": "fa-innahum ʿaduwwun lī illā rabba l-ʿālamīna"
+    },
+    {
+      "ayah_number": 78,
+      "text": "alladhī khalaqanī fahuwa yahdīni"
+    },
+    {
+      "ayah_number": 79,
+      "text": "wa-alladhī huwa yuṭ'ʿimunī wayasqīni"
+    },
+    {
+      "ayah_number": 80,
+      "text": "wa-idhā mariḍ'tu fahuwa yashfīni"
+    },
+    {
+      "ayah_number": 81,
+      "text": "wa-alladhī yumītunī thumma yuḥ'yīni"
+    },
+    {
+      "ayah_number": 82,
+      "text": "wa-alladhī aṭmaʿu an yaghfira lī khaṭīatī yawma l-dīni"
+    },
+    {
+      "ayah_number": 83,
+      "text": "rabbi hab lī ḥuk'man wa-alḥiq'nī bil-ṣāliḥīna"
+    },
+    {
+      "ayah_number": 84,
+      "text": "wa-ij'ʿal lī lisāna ṣid'qin fī l-ākhirīna"
+    },
+    {
+      "ayah_number": 85,
+      "text": "wa-ij'ʿalnī min warathati jannati l-naʿīmi"
+    },
+    {
+      "ayah_number": 86,
+      "text": "wa-igh'fir li-abī innahu kāna mina l-ḍālīna"
+    },
+    {
+      "ayah_number": 87,
+      "text": "walā tukh'zinī yawma yub'ʿathūna"
+    },
+    {
+      "ayah_number": 88,
+      "text": "yawma lā yanfaʿu mālun walā banūna"
+    },
+    {
+      "ayah_number": 89,
+      "text": "illā man atā l-laha biqalbin salīmin"
+    },
+    {
+      "ayah_number": 90,
+      "text": "wa-uz'lifati l-janatu lil'muttaqīna"
+    },
+    {
+      "ayah_number": 91,
+      "text": "waburrizati l-jaḥīmu lil'ghāwīna"
+    },
+    {
+      "ayah_number": 92,
+      "text": "waqīla lahum ayna mā kuntum taʿbudūna"
+    },
+    {
+      "ayah_number": 93,
+      "text": "min dūni l-lahi hal yanṣurūnakum aw yantaṣirūna"
+    },
+    {
+      "ayah_number": 94,
+      "text": "fakub'kibū fīhā hum wal-ghāwūna"
+    },
+    {
+      "ayah_number": 95,
+      "text": "wajunūdu ib'līsa ajmaʿūna"
+    },
+    {
+      "ayah_number": 96,
+      "text": "qālū wahum fīhā yakhtaṣimūna"
+    },
+    {
+      "ayah_number": 97,
+      "text": "tal-lahi in kunnā lafī ḍalālin mubīnin"
+    },
+    {
+      "ayah_number": 98,
+      "text": "idh nusawwīkum birabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 99,
+      "text": "wamā aḍallanā illā l-muj'rimūna"
+    },
+    {
+      "ayah_number": 100,
+      "text": "famā lanā min shāfiʿīna"
+    },
+    {
+      "ayah_number": 101,
+      "text": "walā ṣadīqin ḥamīmin"
+    },
+    {
+      "ayah_number": 102,
+      "text": "falaw anna lanā karratan fanakūna mina l-mu'minīna"
+    },
+    {
+      "ayah_number": 103,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 104,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 105,
+      "text": "kadhabat qawmu nūḥin l-mur'salīna"
+    },
+    {
+      "ayah_number": 106,
+      "text": "idh qāla lahum akhūhum nūḥun alā tattaqūna"
+    },
+    {
+      "ayah_number": 107,
+      "text": "innī lakum rasūlun amīnun"
+    },
+    {
+      "ayah_number": 108,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 109,
+      "text": "wamā asalukum ʿalayhi min ajrin in ajriya illā ʿalā rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 110,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 111,
+      "text": "qālū anu'minu laka wa-ittabaʿaka l-ardhalūna"
+    },
+    {
+      "ayah_number": 112,
+      "text": "qāla wamā ʿil'mī bimā kānū yaʿmalūna"
+    },
+    {
+      "ayah_number": 113,
+      "text": "in ḥisābuhum illā ʿalā rabbī law tashʿurūna"
+    },
+    {
+      "ayah_number": 114,
+      "text": "wamā anā biṭāridi l-mu'minīna"
+    },
+    {
+      "ayah_number": 115,
+      "text": "in anā illā nadhīrun mubīnun"
+    },
+    {
+      "ayah_number": 116,
+      "text": "qālū la-in lam tantahi yānūḥu latakūnanna mina l-marjūmīna"
+    },
+    {
+      "ayah_number": 117,
+      "text": "qāla rabbi inna qawmī kadhabūni"
+    },
+    {
+      "ayah_number": 118,
+      "text": "fa-if'taḥ baynī wabaynahum fatḥan wanajjinī waman maʿiya mina l-mu'minīna"
+    },
+    {
+      "ayah_number": 119,
+      "text": "fa-anjaynāhu waman maʿahu fī l-ful'ki l-mashḥūni"
+    },
+    {
+      "ayah_number": 120,
+      "text": "thumma aghraqnā baʿdu l-bāqīna"
+    },
+    {
+      "ayah_number": 121,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 122,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 123,
+      "text": "kadhabat ʿādun l-mur'salīna"
+    },
+    {
+      "ayah_number": 124,
+      "text": "idh qāla lahum akhūhum hūdun alā tattaqūna"
+    },
+    {
+      "ayah_number": 125,
+      "text": "innī lakum rasūlun amīnun"
+    },
+    {
+      "ayah_number": 126,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 127,
+      "text": "wamā asalukum ʿalayhi min ajrin in ajriya illā ʿalā rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 128,
+      "text": "atabnūna bikulli rīʿin āyatan taʿbathūna"
+    },
+    {
+      "ayah_number": 129,
+      "text": "watattakhidhūna maṣāniʿa laʿallakum takhludūna"
+    },
+    {
+      "ayah_number": 130,
+      "text": "wa-idhā baṭashtum baṭashtum jabbārīna"
+    },
+    {
+      "ayah_number": 131,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 132,
+      "text": "wa-ittaqū alladhī amaddakum bimā taʿlamūna"
+    },
+    {
+      "ayah_number": 133,
+      "text": "amaddakum bi-anʿāmin wabanīna"
+    },
+    {
+      "ayah_number": 134,
+      "text": "wajannātin waʿuyūnin"
+    },
+    {
+      "ayah_number": 135,
+      "text": "innī akhāfu ʿalaykum ʿadhāba yawmin ʿaẓīmin"
+    },
+    {
+      "ayah_number": 136,
+      "text": "qālū sawāon ʿalaynā awaʿaẓta am lam takun mina l-wāʿiẓīna"
+    },
+    {
+      "ayah_number": 137,
+      "text": "in hādhā illā khuluqu l-awalīna"
+    },
+    {
+      "ayah_number": 138,
+      "text": "wamā naḥnu bimuʿadhabīna"
+    },
+    {
+      "ayah_number": 139,
+      "text": "fakadhabūhu fa-ahlaknāhum inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 140,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 141,
+      "text": "kadhabat thamūdu l-mur'salīna"
+    },
+    {
+      "ayah_number": 142,
+      "text": "idh qāla lahum akhūhum ṣāliḥun alā tattaqūna"
+    },
+    {
+      "ayah_number": 143,
+      "text": "innī lakum rasūlun amīnun"
+    },
+    {
+      "ayah_number": 144,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 145,
+      "text": "wamā asalukum ʿalayhi min ajrin in ajriya illā ʿalā rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 146,
+      "text": "atut'rakūna fī mā hāhunā āminīna"
+    },
+    {
+      "ayah_number": 147,
+      "text": "fī jannātin waʿuyūnin"
+    },
+    {
+      "ayah_number": 148,
+      "text": "wazurūʿin wanakhlin ṭalʿuhā haḍīmun"
+    },
+    {
+      "ayah_number": 149,
+      "text": "watanḥitūna mina l-jibāli buyūtan fārihīna"
+    },
+    {
+      "ayah_number": 150,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 151,
+      "text": "walā tuṭīʿū amra l-mus'rifīna"
+    },
+    {
+      "ayah_number": 152,
+      "text": "alladhīna yuf'sidūna fī l-arḍi walā yuṣ'liḥūna"
+    },
+    {
+      "ayah_number": 153,
+      "text": "qālū innamā anta mina l-musaḥarīna"
+    },
+    {
+      "ayah_number": 154,
+      "text": "mā anta illā basharun mith'lunā fati biāyatin in kunta mina l-ṣādiqīna"
+    },
+    {
+      "ayah_number": 155,
+      "text": "qāla hādhihi nāqatun lahā shir'bun walakum shir'bu yawmin maʿlūmin"
+    },
+    {
+      "ayah_number": 156,
+      "text": "walā tamassūhā bisūin fayakhudhakum ʿadhābu yawmin ʿaẓīmin"
+    },
+    {
+      "ayah_number": 157,
+      "text": "faʿaqarūhā fa-aṣbaḥū nādimīna"
+    },
+    {
+      "ayah_number": 158,
+      "text": "fa-akhadhahumu l-ʿadhābu inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 159,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 160,
+      "text": "kadhabat qawmu lūṭin l-mur'salīna"
+    },
+    {
+      "ayah_number": 161,
+      "text": "idh qāla lahum akhūhum lūṭun alā tattaqūna"
+    },
+    {
+      "ayah_number": 162,
+      "text": "innī lakum rasūlun amīnun"
+    },
+    {
+      "ayah_number": 163,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 164,
+      "text": "wamā asalukum ʿalayhi min ajrin in ajriya illā ʿalā rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 165,
+      "text": "atatūna l-dhuk'rāna mina l-ʿālamīna"
+    },
+    {
+      "ayah_number": 166,
+      "text": "watadharūna mā khalaqa lakum rabbukum min azwājikum bal antum qawmun ʿādūna"
+    },
+    {
+      "ayah_number": 167,
+      "text": "qālū la-in lam tantahi yālūṭu latakūnanna mina l-mukh'rajīna"
+    },
+    {
+      "ayah_number": 168,
+      "text": "qāla innī liʿamalikum mina l-qālīna"
+    },
+    {
+      "ayah_number": 169,
+      "text": "rabbi najjinī wa-ahlī mimmā yaʿmalūna"
+    },
+    {
+      "ayah_number": 170,
+      "text": "fanajjaynāhu wa-ahlahu ajmaʿīna"
+    },
+    {
+      "ayah_number": 171,
+      "text": "illā ʿajūzan fī l-ghābirīna"
+    },
+    {
+      "ayah_number": 172,
+      "text": "thumma dammarnā l-ākharīna"
+    },
+    {
+      "ayah_number": 173,
+      "text": "wa-amṭarnā ʿalayhim maṭaran fasāa maṭaru l-mundharīna"
+    },
+    {
+      "ayah_number": 174,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 175,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 176,
+      "text": "kadhaba aṣḥābu al'aykati l-mur'salīna"
+    },
+    {
+      "ayah_number": 177,
+      "text": "idh qāla lahum shuʿaybun alā tattaqūna"
+    },
+    {
+      "ayah_number": 178,
+      "text": "innī lakum rasūlun amīnun"
+    },
+    {
+      "ayah_number": 179,
+      "text": "fa-ittaqū l-laha wa-aṭīʿūni"
+    },
+    {
+      "ayah_number": 180,
+      "text": "wamā asalukum ʿalayhi min ajrin in ajriya illā ʿalā rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 181,
+      "text": "awfū l-kayla walā takūnū mina l-mukh'sirīna"
+    },
+    {
+      "ayah_number": 182,
+      "text": "wazinū bil-qis'ṭāsi l-mus'taqīmi"
+    },
+    {
+      "ayah_number": 183,
+      "text": "walā tabkhasū l-nāsa ashyāahum walā taʿthaw fī l-arḍi muf'sidīna"
+    },
+    {
+      "ayah_number": 184,
+      "text": "wa-ittaqū alladhī khalaqakum wal-jibilata l-awalīna"
+    },
+    {
+      "ayah_number": 185,
+      "text": "qālū innamā anta mina l-musaḥarīna"
+    },
+    {
+      "ayah_number": 186,
+      "text": "wamā anta illā basharun mith'lunā wa-in naẓunnuka lamina l-kādhibīna"
+    },
+    {
+      "ayah_number": 187,
+      "text": "fa-asqiṭ ʿalaynā kisafan mina l-samāi in kunta mina l-ṣādiqīna"
+    },
+    {
+      "ayah_number": 188,
+      "text": "qāla rabbī aʿlamu bimā taʿmalūna"
+    },
+    {
+      "ayah_number": 189,
+      "text": "fakadhabūhu fa-akhadhahum ʿadhābu yawmi l-ẓulati innahu kāna ʿadhāba yawmin ʿaẓīmin"
+    },
+    {
+      "ayah_number": 190,
+      "text": "inna fī dhālika laāyatan wamā kāna aktharuhum mu'minīna"
+    },
+    {
+      "ayah_number": 191,
+      "text": "wa-inna rabbaka lahuwa l-ʿazīzu l-raḥīmu"
+    },
+    {
+      "ayah_number": 192,
+      "text": "wa-innahu latanzīlu rabbi l-ʿālamīna"
+    },
+    {
+      "ayah_number": 193,
+      "text": "nazala bihi l-rūḥu l-amīnu"
+    },
+    {
+      "ayah_number": 194,
+      "text": "ʿalā qalbika litakūna mina l-mundhirīna"
+    },
+    {
+      "ayah_number": 195,
+      "text": "bilisānin ʿarabiyyin mubīnin"
+    },
+    {
+      "ayah_number": 196,
+      "text": "wa-innahu lafī zuburi l-awalīna"
+    },
+    {
+      "ayah_number": 197,
+      "text": "awalam yakun lahum āyatan an yaʿlamahu ʿulamāu banī is'rāīla"
+    },
+    {
+      "ayah_number": 198,
+      "text": "walaw nazzalnāhu ʿalā baʿḍi l-aʿjamīna"
+    },
+    {
+      "ayah_number": 199,
+      "text": "faqara-ahu ʿalayhim mā kānū bihi mu'minīna"
+    },
+    {
+      "ayah_number": 200,
+      "text": "kadhālika salaknāhu fī qulūbi l-muj'rimīna"
+    },
+    {
+      "ayah_number": 201,
+      "text": "lā yu'minūna bihi ḥattā yarawū l-ʿadhāba l-alīma"
+    },
+    {
+      "ayah_number": 202,
+      "text": "fayatiyahum baghtatan wahum lā yashʿurūna"
+    },
+    {
+      "ayah_number": 203,
+      "text": "fayaqūlū hal naḥnu munẓarūna"
+    },
+    {
+      "ayah_number": 204,
+      "text": "afabiʿadhābinā yastaʿjilūna"
+    },
+    {
+      "ayah_number": 205,
+      "text": "afara-ayta in mattaʿnāhum sinīna"
+    },
+    {
+      "ayah_number": 206,
+      "text": "thumma jāahum mā kānū yūʿadūna"
+    },
+    {
+      "ayah_number": 207,
+      "text": "mā aghnā ʿanhum mā kānū yumattaʿūna"
+    },
+    {
+      "ayah_number": 208,
+      "text": "wamā ahlaknā min qaryatin illā lahā mundhirūna"
+    },
+    {
+      "ayah_number": 209,
+      "text": "dhik'rā wamā kunnā ẓālimīna"
+    },
+    {
+      "ayah_number": 210,
+      "text": "wamā tanazzalat bihi l-shayāṭīnu"
+    },
+    {
+      "ayah_number": 211,
+      "text": "wamā yanbaghī lahum wamā yastaṭīʿūna"
+    },
+    {
+      "ayah_number": 212,
+      "text": "innahum ʿani l-samʿi lamaʿzūlūna"
+    },
+    {
+      "ayah_number": 213,
+      "text": "falā tadʿu maʿa l-lahi ilāhan ākhara fatakūna mina l-muʿadhabīna"
+    },
+    {
+      "ayah_number": 214,
+      "text": "wa-andhir ʿashīrataka l-aqrabīna"
+    },
+    {
+      "ayah_number": 215,
+      "text": "wa-ikh'fiḍ janāḥaka limani ittabaʿaka mina l-mu'minīna"
+    },
+    {
+      "ayah_number": 216,
+      "text": "fa-in ʿaṣawka faqul innī barīon mimmā taʿmalūna"
+    },
+    {
+      "ayah_number": 217,
+      "text": "watawakkal ʿalā l-ʿazīzi l-raḥīmi"
+    },
+    {
+      "ayah_number": 218,
+      "text": "alladhī yarāka ḥīna taqūmu"
+    },
+    {
+      "ayah_number": 219,
+      "text": "wataqallubaka fī l-sājidīna"
+    },
+    {
+      "ayah_number": 220,
+      "text": "innahu huwa l-samīʿu l-ʿalīmu"
+    },
+    {
+      "ayah_number": 221,
+      "text": "hal unabbi-ukum ʿalā man tanazzalu l-shayāṭīnu"
+    },
+    {
+      "ayah_number": 222,
+      "text": "tanazzalu ʿalā kulli affākin athīmin"
+    },
+    {
+      "ayah_number": 223,
+      "text": "yul'qūna l-samʿa wa-aktharuhum kādhibūna"
+    },
+    {
+      "ayah_number": 224,
+      "text": "wal-shuʿarāu yattabiʿuhumu l-ghāwūna"
+    },
+    {
+      "ayah_number": 225,
+      "text": "alam tara annahum fī kulli wādin yahīmūna"
+    },
+    {
+      "ayah_number": 226,
+      "text": "wa-annahum yaqūlūna mā lā yafʿalūna"
+    },
+    {
+      "ayah_number": 227,
+      "text": "illā alladhīna āmanū waʿamilū l-ṣāliḥāti wadhakarū l-laha kathīran wa-intaṣarū min baʿdi mā ẓulimū wasayaʿlamu alladhīna ẓalamū ayya munqalabin yanqalibūna"
+    }
+  ]
+}

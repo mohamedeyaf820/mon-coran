@@ -1,9 +1,14 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { useApp } from "../context/AppContext";
+import {
+  shallowEqual,
+  useAppActions,
+  useAppSelector,
+} from "../context/AppContext";
 import { t } from "../i18n";
 import {
   addBookmark,
+  deleteNote,
   getNote,
   isBookmarked,
   removeBookmark,
@@ -17,16 +22,13 @@ import {
   isWarshVerifiedReciter,
 } from "../data/reciters";
 import { getSurah } from "../data/surahs";
+import { hafsNumbersForAyah } from "../constants/warshSource";
 import {
   addAyahToPlaylist,
   getAllPlaylists,
 } from "../services/playlistService";
-import {
-  getMemorizationLevel,
-  setMemorizationLevel,
-} from "../services/memorizationService";
-import { getVerseTafsir } from "../services/quranComStudyService";
-import { openExternalUrl } from "../lib/security";
+import { writeTextToClipboard } from "../services/verseShareService";
+import { NOTE_TEXT_MAX_LENGTH } from "../services/storageValidation";
 import { cn } from "../lib/utils";
 import {
   DropdownMenu,
@@ -36,7 +38,20 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
 } from "./ui/dropdown-menu";
+import {
+  Play, Pause, Bookmark, BookmarkCheck, Copy, Check, Share2,
+  PenSquare, Ellipsis, List, BookOpen,
+  X, Zap, TriangleAlert, Music,
+} from "lucide-react";
 
+const SHEET_FOCUSABLE_SELECTOR = [
+  "a[href]",
+  "button:not([disabled])",
+  "textarea:not([disabled])",
+  "input:not([disabled])",
+  "select:not([disabled])",
+  '[tabindex]:not([tabindex="-1"])',
+].join(",");
 
 function emitToast(type, message) {
   window.dispatchEvent(
@@ -46,8 +61,36 @@ function emitToast(type, message) {
   );
 }
 
-export default function AyahActions({ surah, ayah, ayahData, compact = false, layout = "horizontal" }) {
-  const { state, dispatch, set } = useApp();
+
+export default function AyahActions({ surah, ayah, ayahData, translations = [], compact = false, layout = "horizontal" }) {
+  const { dispatch, set } = useAppActions();
+  const preferences = useAppSelector(
+    (state) => ({
+      lang: state.lang,
+      reciter: state.reciter,
+      riwaya: state.riwaya,
+      warshStrictMode: state.warshStrictMode,
+      displayMode: state.displayMode,
+      showTranslation: state.showTranslation,
+    }),
+    shallowEqual,
+  );
+  const isCurrentAyah = useAppSelector(
+    (state) =>
+      state.currentPlayingAyah?.surah === Number(surah) &&
+      state.currentPlayingAyah?.ayah === Number(ayah),
+  );
+  const isPlayingThisAyah = useAppSelector(
+    (state) => state.isPlaying &&
+      state.currentPlayingAyah?.surah === Number(surah) &&
+      state.currentPlayingAyah?.ayah === Number(ayah),
+  );
+  const isTafsirActive = useAppSelector(
+    (state) =>
+      state.tafsirSidebarOpen &&
+      state.tafsirSidebarVerse?.surah === Number(surah) &&
+      state.tafsirSidebarVerse?.ayah === Number(ayah),
+  );
 
   const renderPortal = (content) => {
     if (typeof document === "undefined") return null;
@@ -60,63 +103,62 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     riwaya,
     warshStrictMode,
     displayMode,
-    memPause,
-    memRepeatCount,
-    showTranslation,
-  } = state;
+  } = preferences;
 
   const [bookmarked, setBookmarked] = useState(false);
-  const [memoLevel, setMemoLevel] = useState(0);
   const [showNote, setShowNote] = useState(false);
-  const [showShare, setShowShare] = useState(false);
   const [showPlaylistMenu, setShowPlaylistMenu] = useState(false);
-  const [showStudy, setShowStudy] = useState(false);
-  const [studyTab, setStudyTab] = useState("tafsir");
-  const [tafsirState, setTafsirState] = useState({
-    key: null,
-    status: "idle",
-    data: null,
-    error: null,
-  });
   const [playlists, setPlaylists] = useState([]);
-  const [playlistAdded, setPlaylistAdded] = useState(false);
+  const [, setPlaylistAdded] = useState(false);
   const [noteText, setNoteText] = useState("");
+  const [hasNote, setHasNote] = useState(false);
   const [copied, setCopied] = useState(false);
   const [audioError, setAudioError] = useState(false);
+  const mutationPendingRef = useRef(false);
+  const mutationVersionRef = useRef(0);
+  const noteVersionRef = useRef(0);
+  const audioErrTimerRef = useRef(null);
+  const copiedTimerRef = useRef(null);
+  const playlistTimerRef = useRef(null);
+  const sheetRef = useRef(null);
+  const sheetRestoreFocusRef = useRef(null);
+  const optionsTriggerRef = useRef(null);
+  const wasTafsirActiveRef = useRef(isTafsirActive);
+
+  useEffect(() => {
+    return () => {
+      clearTimeout(audioErrTimerRef.current);
+      clearTimeout(copiedTimerRef.current);
+      clearTimeout(playlistTimerRef.current);
+    };
+  }, []);
 
   const surahInfo = useMemo(() => getSurah(surah), [surah]);
-  const activeSheet = showStudy
-    ? "study"
-    : showShare
-      ? "share"
-      : showPlaylistMenu
+  // One number per verse everywhere a human reads it: the riwaya on screen.
+  // `ayah` stays the Hafs coordinate used by bookmarks, notes, playlists and
+  // audio file keys, and is never printed as a label (Warsh 16:120 is stored
+  // as 16:123, and showing both bare read as a data error).
+  const displayAyahNumber = Number(ayahData?.numberInSurah ?? ayah);
+  const activeSheet = showPlaylistMenu
         ? "playlist"
         : showNote
           ? "note"
           : null;
-  const pinnedAyahs = Array.isArray(state.pinnedAyahs)
-    ? state.pinnedAyahs
-    : [];
-  const isPinnedForCompare = pinnedAyahs.some(
-    (item) => Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah),
-  );
+  const sheetIdBase = `ayah-action-${surah}-${ayah}`;
+  const closeSheetLabel = t("actions.close", lang);
+  const noteFieldLabel = t("notes.fieldLabel", lang);
 
   useEffect(() => {
-    isBookmarked(surah, ayah).then(setBookmarked);
-    getNote(surah, ayah).then((note) => setNoteText(note?.text || ""));
-    setMemoLevel(getMemorizationLevel(surah, ayah));
-  }, [ayah, surah]);
-
-  useEffect(() => {
-    const handleMemoSync = (event) => {
-      if (event.detail?.surah === surah && event.detail?.ayah === ayah) {
-        setMemoLevel(Number(event.detail.level) || 0);
-      }
-    };
-
-    window.addEventListener("quran-memorization-updated", handleMemoSync);
-    return () =>
-      window.removeEventListener("quran-memorization-updated", handleMemoSync);
+    let mounted = true;
+    const version = mutationVersionRef.current;
+    const noteVersion = noteVersionRef.current;
+    isBookmarked(surah, ayah).then((v) => { if (mounted && version === mutationVersionRef.current) setBookmarked(v); });
+    getNote(surah, ayah).then((note) => {
+      if (!mounted || noteVersion !== noteVersionRef.current) return;
+      setNoteText(note?.text || "");
+      setHasNote(Boolean(note?.text));
+    });
+    return () => { mounted = false; };
   }, [ayah, surah]);
 
   useEffect(() => {
@@ -131,133 +173,137 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     };
   }, [activeSheet]);
 
-  useEffect(() => {
-    const handleEscape = (event) => {
-      if (event.key === "Escape") {
-        setShowStudy(false);
-        setShowNote(false);
-        setShowShare(false);
-        setShowPlaylistMenu(false);
-      }
-    };
-
-    window.addEventListener("keydown", handleEscape);
-    return () => window.removeEventListener("keydown", handleEscape);
-  }, []);
-
   const closePanels = useCallback(() => {
-    setShowStudy(false);
     setShowNote(false);
-    setShowShare(false);
     setShowPlaylistMenu(false);
   }, []);
 
   useEffect(() => {
-    if (!showStudy || studyTab !== "tafsir") return undefined;
+    if (!activeSheet || typeof document === "undefined") return undefined;
 
-    const key = `${lang}:${surah}:${ayah}`;
-    if (
-      tafsirState.key === key &&
-      ["loading", "ready", "error"].includes(tafsirState.status)
-    ) {
-      return undefined;
-    }
+    const sheet = sheetRef.current;
+    if (!sheet) return undefined;
 
-    const controller = new AbortController();
-    let mounted = true;
+    sheetRestoreFocusRef.current = document.activeElement;
+    const focusTimer = window.setTimeout(() => {
+      const firstFocusable = sheet.querySelector(SHEET_FOCUSABLE_SELECTOR);
+      (firstFocusable || sheet).focus();
+    }, 80);
 
-    setTafsirState({
-      key,
-      status: "loading",
-      data: null,
-      error: null,
-    });
+    const handleSheetKeyDown = (event) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        closePanels();
+        return;
+      }
+      if (event.key !== "Tab") return;
 
-    getVerseTafsir({ surah, ayah, lang, signal: controller.signal })
-      .then((data) => {
-        if (!mounted) return;
-        setTafsirState({
-          key,
-          status: "ready",
-          data,
-          error: null,
-        });
-      })
-      .catch((error) => {
-        if (!mounted || error?.name === "AbortError") return;
-        setTafsirState({
-          key,
-          status: "error",
-          data: null,
-          error: error?.message || "Unable to load tafsir",
-        });
-      });
+      const focusable = Array.from(
+        sheet.querySelectorAll(SHEET_FOCUSABLE_SELECTOR),
+      ).filter(
+        (element) =>
+          !element.hasAttribute("hidden") &&
+          element.getAttribute("aria-hidden") !== "true",
+      );
+      if (!focusable.length) {
+        event.preventDefault();
+        sheet.focus();
+        return;
+      }
 
-    return () => {
-      mounted = false;
-      controller.abort();
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
-  }, [ayah, lang, showStudy, studyTab, surah, tafsirState.key, tafsirState.status]);
 
-  const toastText = useCallback(
-    (fr, ar, en) =>
-      lang === "ar" ? ar : lang === "fr" ? fr : en,
-    [lang],
-  );
+    document.addEventListener("keydown", handleSheetKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.removeEventListener("keydown", handleSheetKeyDown);
+      const restoreTarget = sheetRestoreFocusRef.current;
+      if (restoreTarget?.isConnected) restoreTarget.focus();
+      sheetRestoreFocusRef.current = null;
+    };
+  }, [activeSheet, closePanels]);
+
+  useEffect(() => {
+    if (wasTafsirActiveRef.current && !isTafsirActive) {
+      const focusFrame = window.requestAnimationFrame(() => {
+        if (optionsTriggerRef.current?.isConnected) {
+          optionsTriggerRef.current.focus();
+        }
+      });
+      wasTafsirActiveRef.current = isTafsirActive;
+      return () => window.cancelAnimationFrame(focusFrame);
+    }
+    wasTafsirActiveRef.current = isTafsirActive;
+    return undefined;
+  }, [isTafsirActive]);
+
+  const reportStorageError = () => emitToast("error", t("actions.storageError", lang));
 
   const toggleBookmark = async () => {
-    if (bookmarked) {
-      await removeBookmark(surah, ayah);
-      setBookmarked(false);
-      emitToast(
-        "info",
-        t("toast.bookmarkRemoved", lang),
-      );
-      return;
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    mutationVersionRef.current += 1;
+    try {
+      const saved = bookmarked
+        ? await removeBookmark(surah, ayah)
+        : await addBookmark(surah, ayah);
+      if (!saved) { reportStorageError(); return; }
+      setBookmarked(!bookmarked);
+      emitToast(bookmarked ? "info" : "success", t(bookmarked ? "toast.bookmarkRemoved" : "toast.bookmarkAdded", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
     }
-
-    await addBookmark(surah, ayah);
-    setBookmarked(true);
-    emitToast(
-      "success",
-      t("toast.bookmarkAdded", lang),
-    );
-  };
-
-  const updateMemorization = (nextLevel) => {
-    setMemorizationLevel(surah, ayah, nextLevel);
-    setMemoLevel(nextLevel);
-    window.dispatchEvent(
-      new CustomEvent("quran-memorization-updated", {
-        detail: { surah, ayah, level: nextLevel },
-      }),
-    );
-  };
-
-  const handleMemorizationBoost = () => {
-    const nextLevel = memoLevel >= 5 ? 0 : memoLevel + 1;
-    updateMemorization(nextLevel);
-    emitToast(
-      nextLevel > 0 ? "success" : "info",
-      nextLevel > 0
-        ? t("toast.memorizationLevel", lang).replace("{level}", nextLevel)
-        : t("toast.memorizationReset", lang),
-    );
   };
 
   const handleSaveNote = async () => {
     const cleanText = noteText.trim();
+    // An emptied note is a deletion request, not a no-op: the alternative is a
+    // panel that closes and leaves the old text behind.
     if (!cleanText) {
-      closePanels();
-      return;
+      if (!hasNote) { closePanels(); return; }
+      return handleDeleteNote();
     }
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    noteVersionRef.current += 1;
+    try {
+      if (!(await saveNote(surah, ayah, cleanText))) { reportStorageError(); return; }
+      setHasNote(true);
+      closePanels();
+      emitToast("success", t("toast.noteSaved", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
+    }
+  };
 
-    await saveNote(surah, ayah, cleanText);
-    closePanels();
-    emitToast(
-      "success",
-      t("toast.noteSaved", lang),
-    );
+  const handleDeleteNote = async () => {
+    if (mutationPendingRef.current) return;
+    mutationPendingRef.current = true;
+    noteVersionRef.current += 1;
+    try {
+      if (!(await deleteNote(surah, ayah))) { reportStorageError(); return; }
+      setHasNote(false);
+      setNoteText("");
+      closePanels();
+      emitToast("info", t("toast.noteDeleted", lang));
+    } catch {
+      reportStorageError();
+    } finally {
+      mutationPendingRef.current = false;
+    }
   };
 
   const playAyah = () => {
@@ -274,7 +320,8 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       !isWarshVerifiedReciter(rec)
     ) {
       setAudioError(true);
-      window.setTimeout(() => setAudioError(false), 2500);
+      clearTimeout(audioErrTimerRef.current);
+      audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
         t("toast.reciterIncompatible", lang),
@@ -282,20 +329,30 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       return;
     }
 
+    // `ayah` is the Hafs-keyed storage coordinate and `numberInSurah` the verse
+    // as the reader shows it. buildUrl picks the file key per CDN: EveryAyah and
+    // the Quran.com CDN cut their mp3s at the Hafs verse stops, so a Warsh verse
+    // must ask for the Hafs verse it recites; QuranPedia follows the riwaya.
+    const audioAyah = riwaya === "warsh" ? (ayahData?.numberInSurah ?? ayah) : ayah;
+    const hafsFileKey = hafsNumbersForAyah({ surah, numberInSurah: audioAyah }, riwaya)?.[0] ?? null;
+
     // Try to play from active playlist to ensure continuous play
     let idx = -1;
     if (Array.isArray(audioService.playlist)) {
       idx = audioService.playlist.findIndex(
         (p) =>
           Number(p.surah) === Number(surah) &&
-          (p.ayah === null || Number(p.ayah) === Number(ayah))
+          (p.ayah === null ||
+            Number(p.ayah) === Number(ayah) ||
+            Number(p.ayah) === Number(audioAyah))
       );
     }
 
     if (idx >= 0) {
-      audioService._loadAndPlay(idx).catch(() => {
+      audioService.loadAndPlay(idx, { ayah }).catch(() => {
         setAudioError(true);
-        window.setTimeout(() => setAudioError(false), 2500);
+        clearTimeout(audioErrTimerRef.current);
+        audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
         emitToast(
           "error",
           t("toast.unableToPlay", lang),
@@ -306,25 +363,28 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
 
     const ayahInfo = {
       surah,
-      numberInSurah: ayah,
+      numberInSurah: audioAyah,
+      hafsNumber: hafsFileKey,
+      riwaya,
       number: ayahData.number,
     };
     const url = AudioService.buildUrl(
       rec.cdn || rec.id,
       ayahInfo,
-      rec.cdnType || "islamic",
+      rec.cdnType || "everyayah",
     );
 
     if (isSurahOnlyReciter(rec)) {
       emitToast(
         "info",
-        t("toast.warshFullSurah", lang),
+        t("toast.fullSurahStream", lang),
       );
     }
 
-    audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : ayah }).catch(() => {
+    audioService.playSingle(url, { surah, ayah: isSurahOnlyReciter(rec) ? null : audioAyah }).catch(() => {
       setAudioError(true);
-      window.setTimeout(() => setAudioError(false), 2500);
+      clearTimeout(audioErrTimerRef.current);
+      audioErrTimerRef.current = window.setTimeout(() => setAudioError(false), 2500);
       emitToast(
         "error",
         t("toast.unableToPlay", lang),
@@ -332,37 +392,23 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     });
   };
 
-  const repeatAyah = () => {
-    const repeatCount = Math.max(2, Number(memRepeatCount) || 3);
-    const pauseMs = Math.max(500, Number(memPause || 2) * 1000);
-    set({ memMode: true, memRepeatCount: repeatCount, memPause: memPause || 2 });
-    audioService.enableMemorization(repeatCount, pauseMs);
-    playAyah();
-    emitToast(
-      "success",
-      t("toast.repeatEnabled", lang).replace("{count}", repeatCount),
-    );
-  };
-
-  const showTranslationForAyah = () => {
-    set({ showTranslation: true, showWordByWord: false });
-    emitToast(
-      "info",
-      t("toast.translationShown", lang),
-    );
-  };
-
   const copyVerseText = async (value, successMessage) => {
-    if (!value) return;
+    if (!value) return false;
 
-    try {
-      await navigator.clipboard.writeText(value);
+    const didCopy = await writeTextToClipboard(value);
+    if (didCopy) {
       setCopied(true);
-      window.setTimeout(() => setCopied(false), 1500);
+      clearTimeout(copiedTimerRef.current);
+      copiedTimerRef.current = window.setTimeout(() => setCopied(false), 1500);
       emitToast("success", successMessage);
-    } catch (error) {
-      console.warn("Copy failed:", error);
+      return true;
     }
+
+    emitToast(
+      "error",
+      t("actions.copyFailed", lang),
+    );
+    return false;
   };
 
   const copyText = async () => {
@@ -372,703 +418,60 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     );
   };
 
-  const getShareText = () => {
-    const surahName = surahInfo
-      ? lang === "fr"
-        ? surahInfo.fr
-        : surahInfo.en
-      : `Surah ${surah}`;
-    return `${ayahData?.text || ""}\n\n- ${surahName} (${surah}:${ayah})\nMushafPlus`;
-  };
-
-  const shareTo = (url) => {
-    openExternalUrl(url);
+  const openShareStudio = useCallback(() => {
+    const translationText = Array.isArray(translations)
+      ? translations.find((item) => item?.text)?.text || ""
+      : "";
     closePanels();
-  };
-
-  const shareWhatsApp = () => {
-    shareTo(`https://wa.me/?text=${encodeURIComponent(getShareText())}`);
-  };
-
-  const shareTelegram = () => {
-    shareTo(
-      `https://t.me/share/url?text=${encodeURIComponent(getShareText())}`,
-    );
-  };
-
-  const shareTwitter = () => {
-    shareTo(
-      `https://x.com/intent/tweet?text=${encodeURIComponent(
-        getShareText().slice(0, 280),
-      )}`,
-    );
-  };
-
-  const shareEmail = () => {
-    const surahName = surahInfo
-      ? lang === "fr"
-        ? surahInfo.fr
-        : surahInfo.en
-      : `Surah ${surah}`;
-    const subject = encodeURIComponent(`${surahName} (${surah}:${ayah})`);
-    const body = encodeURIComponent(getShareText());
-    shareTo(`mailto:?subject=${subject}&body=${body}`);
-  };
-
-  const shareNative = async () => {
-    if (!navigator.share) return;
-    try {
-      await navigator.share({ title: "MushafPlus", text: getShareText() });
-    } catch {
-      // user cancelled
-    }
-    closePanels();
-  };
-
-  const shareCopyText = async () => {
-    await copyVerseText(
-      getShareText(),
-      t("toast.shareTextCopied", lang),
-    );
-    closePanels();
-  };
-
-  const shareAsImage = async () => {
-    if (!ayahData?.text) return;
-
-    const width = 1080;
-    const height = 1080;
-    const canvas = document.createElement("canvas");
-    canvas.width = width;
-    canvas.height = height;
-    const context = canvas.getContext("2d");
-    if (!context) return;
-
-    const gradient = context.createLinearGradient(0, 0, 0, height);
-    gradient.addColorStop(0, "#184a38");
-    gradient.addColorStop(1, "#0b1d19");
-    context.fillStyle = gradient;
-    context.fillRect(0, 0, width, height);
-
-    context.strokeStyle = "#d3b46a";
-    context.lineWidth = 8;
-    context.strokeRect(30, 30, width - 60, height - 60);
-    context.lineWidth = 2;
-    context.strokeRect(48, 48, width - 96, height - 96);
-
-    await document.fonts.ready;
-
-    context.textAlign = "center";
-    context.textBaseline = "middle";
-    context.direction = "rtl";
-    context.fillStyle = "#ffffff";
-
-    const text = ayahData.text;
-    const fontSize = Math.max(38, Math.min(54, Math.floor(width / (text.length / 4))));
-    context.font = `${fontSize}px "Scheherazade New", "Amiri Quran", serif`;
-
-    const maxWidth = width - 180;
-    const words = text.split(" ");
-    const lines = [];
-    let line = "";
-
-    for (const word of words) {
-      const candidate = line ? `${line} ${word}` : word;
-      if (context.measureText(candidate).width > maxWidth && line) {
-        lines.push(line);
-        line = word;
-      } else {
-        line = candidate;
-      }
-    }
-    if (line) lines.push(line);
-
-    const lineHeight = fontSize * 1.88;
-    const totalTextHeight = lines.length * lineHeight;
-    const startY = height / 2 - totalTextHeight / 2 + lineHeight / 2 - 64;
-    lines.forEach((currentLine, index) =>
-      context.fillText(currentLine, width / 2, startY + index * lineHeight),
-    );
-
-    const surahName = surahInfo
-      ? lang === "fr"
-        ? surahInfo.fr
-        : surahInfo.en
-      : `Surah ${surah}`;
-    context.direction = "ltr";
-    context.font = '30px "Cairo", "Noto Naskh Arabic", sans-serif';
-    context.fillStyle = "#d3b46a";
-    context.fillText(`- ${surahName} (${surah}:${ayah})`, width / 2, height - 180);
-
-    context.font = '22px "Cairo", sans-serif';
-    context.fillStyle = "rgba(255,255,255,0.3)";
-    context.fillText("MushafPlus", width / 2, height - 108);
-
-    const blob = await new Promise((resolve) =>
-      canvas.toBlob(resolve, "image/png"),
-    );
-    if (!blob) return;
-
-    const file = new File([blob], `mushafplus_${surah}_${ayah}.png`, {
-      type: "image/png",
+    dispatch({
+      type: "SET",
+      payload: {
+        currentSurah: Number(surah),
+        currentAyah: Number(ayah),
+        shareVerseDraft: {
+          surah: Number(surah),
+          // `ayah` is the Hafs storage coordinate the deep link and the
+          // bookmarks use; `displayAyah` is what the reader prints, which in
+          // Warsh is the verse's own mushaf number.
+          ayah: Number(ayah),
+          displayAyah: Number(ayahData?.numberInSurah ?? ayah),
+          // The card quotes this text and nothing else: it is never scraped
+          // from the DOM, which the immersive sheet does not expose per verse.
+          arabicText: ayahData?.text || "",
+          translationText,
+          riwaya,
+        },
+        shareImageOpen: true,
+      },
     });
+  }, [ayah, ayahData?.numberInSurah, ayahData?.text, closePanels, dispatch, riwaya, surah, translations]);
 
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({
-          files: [file],
-          title: "MushafPlus",
-          text: getShareText(),
-        });
-      } catch {
-        // user cancelled
-      }
-    } else {
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement("a");
-      link.href = url;
-      link.download = `mushafplus_${surah}_${ayah}.png`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      window.setTimeout(() => URL.revokeObjectURL(url), 1000);
-    }
-
-    closePanels();
-  };
+  // An open card studio can ask this row to re-publish the verse it still has
+  // in hand when its draft came up empty.
+  useEffect(() => {
+    const onShareRefresh = (event) => {
+      const detail = event?.detail;
+      if (Number(detail?.surah) !== Number(surah) || Number(detail?.ayah) !== Number(ayah)) return;
+      if (!ayahData?.text) return;
+      openShareStudio();
+    };
+    window.addEventListener("ayah-share-refresh", onShareRefresh);
+    return () => window.removeEventListener("ayah-share-refresh", onShareRefresh);
+  }, [ayah, ayahData?.text, openShareStudio, surah]);
 
   const openPlaylistMenu = async () => {
     if (!showPlaylistMenu) {
       const nextPlaylists = await getAllPlaylists();
       setPlaylists(nextPlaylists);
     }
-    setShowStudy(false);
-    setShowShare(false);
     setShowNote(false);
     setShowPlaylistMenu((value) => !value);
   };
 
-  const toggleStudyPanel = (tab = "tafsir") => {
-    setShowPlaylistMenu(false);
-    setShowShare(false);
-    setShowNote(false);
-    setStudyTab(tab);
-    setShowStudy((value) => (value && studyTab === tab ? false : true));
-  };
-
-  const retryTafsir = () => {
-    setTafsirState({
-      key: null,
-      status: "idle",
-      data: null,
-      error: null,
-    });
-  };
-
-  const handleStudyMode = () => {
-    set({
-      memMode: false,
-      showTranslation: true,
-      showWordByWord: true,
-      showWordTranslation: true,
-      showTransliteration: false,
-      focusReading: true,
-    });
-    emitToast(
-      "info",
-      t("toast.studyModeEnabled", lang),
-    );
-  };
-
-  const toggleComparePin = () => {
-    if (isPinnedForCompare) {
-      set({
-        pinnedAyahs: pinnedAyahs.filter(
-          (item) =>
-            !(Number(item.surah) === Number(surah) && Number(item.ayah) === Number(ayah)),
-        ),
-      });
-      emitToast(
-        "info",
-        t("toast.pinRemoved", lang),
-      );
-      return;
-    }
-
-    if (pinnedAyahs.length >= 4) {
-      emitToast(
-        "info",
-        t("toast.pinLimit", lang),
-      );
-      return;
-    }
-
-    set({
-      pinnedAyahs: [
-        ...pinnedAyahs,
-        {
-          surah,
-          ayah,
-          number: ayahData?.number || null,
-          text: ayahData?.text || "",
-          surahName:
-            lang === "fr"
-              ? surahInfo?.fr || surahInfo?.en || ""
-              : surahInfo?.en || "",
-        },
-      ],
-    });
-    emitToast(
-      "success",
-      t("toast.pinAdded", lang),
-    );
-  };
-
-  const quickActions = [
-    {
-      key: "play",
-      className: "ayah-action-card ayah-action-card--play",
-      icon: audioError ? "fa-triangle-exclamation" : "fa-play",
-      label: lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen",
-      description:
-        lang === "fr"
-          ? "Lancer cette ayah"
-          : lang === "ar"
-            ? "تشغيل هذه الآية"
-            : "Play this ayah",
-      state: audioError
-        ? lang === "fr"
-          ? "Erreur audio"
-          : lang === "ar"
-            ? "خطأ صوتي"
-            : "Audio error"
-        : null,
-      active: Boolean(audioError),
-      onClick: playAyah,
-    },
-    {
-      key: "memorize",
-      className: `ayah-action-card ayah-action-card--memorize${memoLevel > 0 ? " is-active" : ""}`,
-      icon: "fa-star",
-      label:
-        lang === "fr"
-          ? "Memoriser"
-          : lang === "ar"
-            ? "حفظ"
-            : "Memorize",
-      description:
-        lang === "fr"
-          ? "Augmenter la progression"
-          : lang === "ar"
-            ? "ارفع مستوى الحفظ"
-            : "Boost progress",
-      state: memoLevel > 0 ? `${memoLevel}/5` : lang === "fr" ? "Demarrer" : lang === "ar" ? "ابدأ" : "Start",
-      active: memoLevel > 0,
-      onClick: handleMemorizationBoost,
-    },
-    {
-      key: "repeat",
-      className: "ayah-action-card ayah-action-card--repeat",
-      icon: "fa-repeat",
-      label:
-        lang === "fr"
-          ? "Repeter"
-          : lang === "ar"
-            ? "تكرار"
-            : "Repeat",
-      description:
-        lang === "fr"
-          ? "Relire cette ayah"
-          : lang === "ar"
-            ? "إعادة هذه الآية"
-            : "Replay this ayah",
-      state: `x${Math.max(2, Number(memRepeatCount) || 3)}`,
-      active: false,
-      onClick: repeatAyah,
-    },
-    {
-      key: "note",
-      className: `ayah-action-card${showNote ? " is-active" : ""}`,
-      icon: "fa-pen-line",
-      label: lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note",
-      description:
-        lang === "fr"
-          ? "Ecrire une reflexion"
-          : lang === "ar"
-            ? "اكتب ملاحظة"
-            : "Write a reflection",
-      state: noteText.trim()
-        ? lang === "fr"
-          ? "Note prete"
-          : lang === "ar"
-            ? "ملاحظة محفوظة"
-            : "Saved note"
-        : null,
-      active: showNote || Boolean(noteText.trim()),
-      onClick: () => {
-        setShowStudy(false);
-        setShowPlaylistMenu(false);
-        setShowShare(false);
-        setShowNote((value) => !value);
-      },
-    },
-    {
-      key: "share",
-      className: `ayah-action-card${showShare ? " is-active" : ""}`,
-      icon: "fa-share-nodes",
-      label: lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share",
-      description:
-        lang === "fr"
-          ? "Texte, image ou lien"
-          : lang === "ar"
-            ? "نص أو صورة أو رابط"
-            : "Text, image, or link",
-      state: null,
-      active: showShare,
-      onClick: () => {
-        setShowStudy(false);
-        setShowPlaylistMenu(false);
-        setShowNote(false);
-        setShowShare((value) => !value);
-      },
-    },
-    {
-      key: "compare",
-      className: `ayah-action-card${isPinnedForCompare ? " is-active" : ""}`,
-      icon: "fa-thumbtack",
-      label:
-        lang === "fr"
-          ? "Comparer"
-          : lang === "ar"
-            ? "Pin"
-            : "Compare",
-      description:
-        lang === "fr"
-          ? "Epingler ce verset"
-          : lang === "ar"
-            ? "Pin this verse"
-            : "Pin this verse",
-      state: isPinnedForCompare
-        ? lang === "fr"
-          ? "Epingle"
-          : "Pinned"
-        : `${pinnedAyahs.length}/4`,
-      active: isPinnedForCompare,
-      onClick: toggleComparePin,
-    },
-    {
-      key: "playlist",
-      className: `ayah-action-card${playlistAdded || showPlaylistMenu ? " is-complete" : ""}`,
-      icon: playlistAdded ? "fa-check" : "fa-list",
-      label:
-        lang === "fr"
-          ? "Playlist"
-          : lang === "ar"
-            ? "قائمة"
-            : "Playlist",
-      description:
-        lang === "fr"
-          ? "Ajouter a une serie"
-          : lang === "ar"
-            ? "أضف إلى قائمة"
-            : "Add to a list",
-      state: playlistAdded
-        ? lang === "fr"
-          ? "Ajoute"
-          : lang === "ar"
-            ? "تمت الإضافة"
-            : "Added"
-        : null,
-      active: playlistAdded || showPlaylistMenu,
-      onClick: openPlaylistMenu,
-    },
-    {
-      key: "translation",
-      className: `ayah-action-card${showTranslation ? " is-active" : ""}`,
-      icon: "fa-language",
-      label:
-        lang === "fr"
-          ? "Traduction"
-          : lang === "ar"
-            ? "ترجمة"
-            : "Translation",
-      description:
-        lang === "fr"
-          ? "Afficher le sens"
-          : lang === "ar"
-            ? "إظهار المعنى"
-            : "Show meaning",
-      state: showTranslation
-        ? lang === "fr"
-          ? "Visible"
-          : lang === "ar"
-            ? "ظاهرة"
-            : "Visible"
-        : null,
-      active: showTranslation,
-      onClick: showTranslationForAyah,
-    },
-    {
-      key: "study",
-      className: `ayah-action-card ayah-action-card--study${showStudy ? " is-active" : ""}`,
-      icon: "fa-book-open",
-      label: lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study",
-      description:
-        lang === "fr"
-          ? "Tafsir, lecons, notes"
-          : lang === "ar"
-            ? "ترجمة وكلمة بكلمة"
-            : "Tafsir, lessons, notes",
-      state: null,
-      active: showStudy,
-      onClick: () => toggleStudyPanel("tafsir"),
-    },
-  ];
-
   const inlineIconButtonClass =
-    "ayah-actions-inline__icon-btn inline-flex h-[2.06rem] w-[2.06rem] cursor-pointer items-center justify-center rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--text-secondary)] transition-[background,color,border-color] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.4)] hover:bg-[rgba(var(--primary-rgb),0.16)] hover:text-[var(--text-primary)] max-[640px]:h-[2.14rem] max-[640px]:w-[2.14rem]";
+    "ayah-actions-inline__icon-btn inline-flex min-h-11 min-w-11 cursor-pointer items-center justify-center rounded-full border border-[rgba(var(--primary-rgb),0.22)] bg-[rgba(var(--primary-rgb),0.06)] text-[var(--text-secondary)] transition-[background,color,border-color] duration-150 ease-out hover:border-[rgba(var(--primary-rgb),0.4)] hover:bg-[rgba(var(--primary-rgb),0.16)] hover:text-[var(--text-primary)]";
   const inlineIconButtonActiveClass =
     "is-active border-[rgba(var(--primary-rgb),0.4)] bg-[rgba(var(--primary-rgb),0.16)] text-[var(--text-primary)]";
-
-  const studyTabs = useMemo(
-    () => [
-      {
-        key: "tafsir",
-        icon: "fa-book-open",
-        label: lang === "fr" ? "Tafsir" : lang === "ar" ? "تفسير" : "Tafsir",
-      },
-      {
-        key: "lessons",
-        icon: "fa-lightbulb",
-        label: lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons",
-      },
-      {
-        key: "reflections",
-        icon: "fa-feather",
-        label:
-          lang === "fr"
-            ? "Reflexions"
-            : lang === "ar"
-              ? "تدبر"
-              : "Reflections",
-      },
-      {
-        key: "notes",
-        icon: "fa-pen-line",
-        label: lang === "fr" ? "Notes" : lang === "ar" ? "ملاحظات" : "Notes",
-      },
-    ],
-    [lang],
-  );
-
-  const studyLessons = useMemo(
-    () => [
-      {
-        icon: "fa-language",
-        title:
-          lang === "fr"
-            ? "Lire avec le mot a mot"
-            : lang === "ar"
-              ? "اقرأ كلمة بكلمة"
-              : "Read word by word",
-        text:
-          lang === "fr"
-            ? "Active l'analyse pour suivre le sens de chaque mot sans quitter le verset."
-            : lang === "ar"
-              ? "فعل التحليل لمتابعة معنى كل كلمة داخل الآية."
-              : "Turn on analysis to follow each word while staying in the verse.",
-      },
-      {
-        icon: "fa-headphones",
-        title:
-          lang === "fr"
-            ? "Ecouter puis relire"
-            : lang === "ar"
-              ? "استمع ثم أعد القراءة"
-              : "Listen then reread",
-        text:
-          lang === "fr"
-            ? "Lance l'audio du verset, puis reviens au texte arabe pour fixer le rythme."
-            : lang === "ar"
-              ? "شغل صوت الآية ثم عد إلى النص لتثبيت الإيقاع."
-              : "Play the verse, then return to the Arabic text to anchor the rhythm.",
-      },
-      {
-        icon: "fa-quote-right",
-        title:
-          lang === "fr"
-            ? "Comparer avec la traduction"
-            : lang === "ar"
-              ? "قارن مع الترجمة"
-              : "Compare translation",
-        text:
-          lang === "fr"
-            ? "Garde la traduction ouverte pour verifier le sens avant de prendre une note."
-            : lang === "ar"
-              ? "اترك الترجمة مفتوحة لفهم المعنى قبل تدوين ملاحظة."
-              : "Keep translation open to check the meaning before writing a note.",
-      },
-    ],
-    [lang],
-  );
-
-  const reflectionPrompts = useMemo(
-    () => [
-      lang === "fr"
-        ? "Quel sens revient directement dans ma vie aujourd'hui ?"
-        : lang === "ar"
-          ? "ما المعنى الذي يلامس حياتي اليوم؟"
-          : "What meaning touches my life today?",
-      lang === "fr"
-        ? "Quel nom, ordre ou rappel d'Allah apparait ici ?"
-        : lang === "ar"
-          ? "أي اسم أو أمر أو تذكير يظهر هنا؟"
-          : "Which name, command, or reminder appears here?",
-      lang === "fr"
-        ? "Quelle action simple puis-je garder apres cette lecture ?"
-        : lang === "ar"
-          ? "ما العمل البسيط الذي أحفظه بعد القراءة؟"
-          : "What simple action can I keep after this reading?",
-    ],
-    [lang],
-  );
-
-  const renderStudyContent = () => {
-    if (studyTab === "tafsir") {
-      if (tafsirState.status === "loading") {
-        return (
-          <div className="ayah-study-loading" aria-live="polite">
-            <span />
-            <span />
-            <span />
-          </div>
-        );
-      }
-
-      if (tafsirState.status === "error") {
-        return (
-          <div className="ayah-study-empty">
-            <i className="fas fa-circle-exclamation" />
-            <p>
-              {lang === "fr"
-                ? "Tafsir indisponible pour le moment."
-                : lang === "ar"
-                  ? "التفسير غير متاح حاليا."
-                  : "Tafsir is unavailable for now."}
-            </p>
-            <button type="button" onClick={retryTafsir}>
-              {lang === "fr" ? "Reessayer" : lang === "ar" ? "أعد المحاولة" : "Retry"}
-            </button>
-          </div>
-        );
-      }
-
-      return (
-        <div className="ayah-study-tafsir">
-          <div className="ayah-study-source">
-            <i className="fas fa-book-open" />
-            <span>{tafsirState.data?.source || "Tafsir Ibn Kathir"}</span>
-          </div>
-          <p>
-            {tafsirState.data?.text ||
-              (lang === "fr"
-                ? "Ouvre cet onglet pour charger le tafsir du verset."
-                : lang === "ar"
-                  ? "افتح هذا التبويب لتحميل تفسير الآية."
-                  : "Open this tab to load the verse tafsir.")}
-          </p>
-          {tafsirState.data?.note ? (
-            <div className="mt-3 rounded-lg border border-[rgba(var(--primary-rgb),0.18)] bg-[rgba(var(--primary-rgb),0.06)] px-3 py-2 text-sm text-[var(--text-secondary)]">
-              {tafsirState.data.note}
-            </div>
-          ) : null}
-        </div>
-      );
-    }
-
-    if (studyTab === "lessons") {
-      return (
-        <div className="ayah-study-lessons">
-          {studyLessons.map((lesson) => (
-            <div className="ayah-study-card" key={lesson.title}>
-              <i className={`fas ${lesson.icon}`} />
-              <div>
-                <strong>{lesson.title}</strong>
-                <p>{lesson.text}</p>
-              </div>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="ayah-study-primary"
-            onClick={handleStudyMode}
-          >
-            <i className="fas fa-language" />
-            {lang === "fr"
-              ? "Activer le mode etude"
-              : lang === "ar"
-                ? "تفعيل وضع الدراسة"
-                : "Enable study mode"}
-          </button>
-        </div>
-      );
-    }
-
-    if (studyTab === "reflections") {
-      return (
-        <div className="ayah-study-reflections">
-          {reflectionPrompts.map((prompt) => (
-            <button
-              type="button"
-              className="ayah-study-prompt"
-              key={prompt}
-              onClick={() => {
-                setNoteText((value) =>
-                  value.trim() ? value : `${prompt}\n`,
-                );
-                setStudyTab("notes");
-              }}
-            >
-              <i className="fas fa-feather" />
-              <span>{prompt}</span>
-            </button>
-          ))}
-        </div>
-      );
-    }
-
-    return (
-      <div className="ayah-study-notes">
-        <textarea
-          value={noteText}
-          onChange={(event) => setNoteText(event.target.value)}
-          placeholder={t("notes.placeholder", lang)}
-          className="ayah-actions__textarea"
-          rows={4}
-        />
-        <div className="ayah-action-sheet__actions">
-          <button
-            type="button"
-            className="ayah-action-sheet__btn"
-            onClick={closePanels}
-          >
-            {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
-          </button>
-          <button
-            type="button"
-            className="ayah-action-sheet__btn ayah-action-sheet__btn--primary"
-            onClick={handleSaveNote}
-          >
-            {t("notes.save", lang)}
-          </button>
-        </div>
-      </div>
-    );
-  };
-
-  const isPlayingThisAyah = state.isPlaying && state.currentPlayingAyah?.surah === Number(surah) && state.currentPlayingAyah?.ayah === Number(ayah);
-  const isCurrentAyah = state.currentPlayingAyah?.surah === Number(surah) && state.currentPlayingAyah?.ayah === Number(ayah);
-  const isTafsirActive = state.tafsirSidebarOpen && state.tafsirSidebarVerse?.surah === Number(surah) && state.tafsirSidebarVerse?.ayah === Number(ayah);
 
   const toggleTafsir = () => {
     if (isTafsirActive) {
@@ -1076,7 +479,13 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
     } else {
       set({
         tafsirSidebarOpen: true,
-        tafsirSidebarVerse: { surah: Number(surah), ayah: Number(ayah) }
+        // `ayah` is the Hafs coordinate the tafsir resources are keyed on; the
+        // title has to quote the verse the reader is actually looking at.
+        tafsirSidebarVerse: {
+          surah: Number(surah),
+          ayah: Number(ayah),
+          displayAyah: Number(ayahData?.numberInSurah ?? ayah),
+        }
       });
     }
   };
@@ -1089,7 +498,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--play h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1101,156 +510,82 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            title={lang === "fr" ? "Écouter" : "Listen"}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
+            title={t("actions.listen", lang)}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
+            {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--bookmark h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
+            title={t("actions.bookmark", lang)}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
+            {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
         </div>
       ) : layout === "qcom-header-right" ? (
         <div className="flex items-center gap-1.5 select-none">
-          {/* Copy */}
-          <button
-            type="button"
-            className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
-              copied
-                ? "text-green-500"
-                : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
-            )}
-            onClick={copyText}
-            title={lang === "fr" ? "Copier" : "Copy"}
-          >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
-          </button>
-
-          {/* Share */}
-          <button
-            type="button"
-            className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
-              showShare
-                ? "bg-[var(--primary)] text-white"
-                : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
-            )}
-            onClick={() => {
-              setShowStudy(false);
-              setShowPlaylistMenu(false);
-              setShowNote(false);
-              setShowShare((value) => !value);
-            }}
-            title={lang === "fr" ? "Partager" : "Share"}
-          >
-            <i className="fas fa-share-nodes text-[0.8rem]" />
-          </button>
-
-          {/* Note */}
-          <button
-            type="button"
-            className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
-              (showNote || noteText.trim())
-                ? "bg-[var(--primary)] text-white"
-                : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
-            )}
-            onClick={() => {
-              setShowStudy(false);
-              setShowPlaylistMenu(false);
-              setShowShare(false);
-              setShowNote((value) => !value);
-            }}
-            title={lang === "fr" ? "Note" : "Note"}
-          >
-            <i className="fas fa-pen-to-square text-[0.8rem]" />
-          </button>
-
-          {/* Playlist / Options */}
+          {/* Secondary actions live in one stable menu. */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
           <button
+            ref={optionsTriggerRef}
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "ayah-action ayah-action--options h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               showPlaylistMenu
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
-
-            title="Options"
+            aria-label={t("actions.verseOptions", lang)}
+            title={t("actions.verseOptions", lang)}
           >
-            <i className="fas fa-ellipsis text-[0.8rem]" />
+            <Ellipsis size={13} />
           </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>
-                {lang === "fr" ? "Options du verset" : lang === "ar" ? "خيارات الآية" : "Verse options"}
+                {t("actions.verseOptions", lang)}
               </DropdownMenuLabel>
-              <DropdownMenuItem onClick={openPlaylistMenu}>
-                <i className="fas fa-list text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Playlists / Listes" : lang === "ar" ? "قوائم التشغيل" : "Playlists"}</span>
+              <DropdownMenuItem onClick={copyText}>
+                <Copy size={13} className="text-[var(--primary)]" />
+                <span>{t("actions.copyVerse", lang)}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={repeatAyah}>
-                <i className="fas fa-repeat text-[var(--primary)]" />
-                <span>{lang === "fr" ? "Répéter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}</span>
+              <DropdownMenuItem
+                onClick={openShareStudio}
+              >
+                <Share2 size={13} className="text-[var(--primary)]" />
+                <span>{t("actions.share", lang)}</span>
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={toggleComparePin}>
-                <i className="fas fa-thumbtack text-[var(--primary)]" />
-                <span>
-                  {isPinnedForCompare
-                    ? (lang === "fr" ? "Retirer de la comparaison" : lang === "ar" ? "إزالة من المقارنة" : "Remove compare")
-                    : (lang === "fr" ? "Épingler pour comparer" : lang === "ar" ? "Épingler pour comparer" : "Compare verse")}
-                </span>
+              <DropdownMenuItem
+                onClick={() => {
+                  setShowPlaylistMenu(false);
+                  setShowNote(true);
+                }}
+              >
+                <PenSquare size={13} className="text-[var(--primary)]" />
+                <span>{t("notes.add", lang)}</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={() => toggleStudyPanel("tafsir")}>
-                <i className="fas fa-book-open text-[var(--primary)]" />
-                <span>Tafsir &amp; {lang === "fr" ? "Étude" : lang === "ar" ? "دراسة" : "Study"}</span>
+              <DropdownMenuItem onClick={openPlaylistMenu}>
+                <List size={13} className="text-[var(--primary)]" />
+                <span>{t("actions.playlists", lang)}</span>
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={toggleTafsir}>
+                <BookOpen size={13} className="text-[var(--primary)]" />
+                <span>{t("tafsir.title", lang)}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>
-      ) : layout === "qcom-list-study" ? (
-        <div className="qcom-list-study-links select-none">
-          <button
-            type="button"
-            className={cn("qcom-list-study-link", showStudy && studyTab === "tafsir" && "is-active")}
-            onClick={() => toggleStudyPanel("tafsir")}
-          >
-            <i className="fas fa-book-open" />
-            <span>{lang === "fr" ? "Tafsirs" : lang === "ar" ? "تفسير" : "Tafsirs"}</span>
-          </button>
-          <span className="qcom-list-study-separator" aria-hidden="true" />
-          <button
-            type="button"
-            className={cn("qcom-list-study-link", showStudy && studyTab === "lessons" && "is-active")}
-            onClick={() => toggleStudyPanel("lessons")}
-          >
-            <i className="fas fa-layer-group" />
-            <span>{lang === "fr" ? "Lecons" : lang === "ar" ? "فوائد" : "Lessons"}</span>
-          </button>
-          <span className="qcom-list-study-separator" aria-hidden="true" />
-          <button
-            type="button"
-            className={cn("qcom-list-study-link", showStudy && studyTab === "reflections" && "is-active")}
-            onClick={() => toggleStudyPanel("reflections")}
-          >
-            <i className="far fa-comment" />
-            <span>{lang === "fr" ? "Reflexions" : lang === "ar" ? "تدبر" : "Reflections"}</span>
-          </button>
         </div>
       ) : layout === "qcom-footer" ? (
         <div className="qcom-verse-card-footer flex flex-wrap items-center gap-2 text-xs select-none">
@@ -1258,7 +593,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               isPlayingThisAyah && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={() => {
@@ -1268,112 +603,90 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
-            <span>{isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Écouter" : "Play")}</span>
+            {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
+            <span>{isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}</span>
           </button>
 
           {/* Tafsir */}
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               isTafsirActive && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={toggleTafsir}
           >
-            <i className="fas fa-book-open text-[0.72rem]" />
-            <span>Tafsir</span>
+            <BookOpen size={12} />
+            <span>{t("tafsir.title", lang)}</span>
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               bookmarked && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={toggleBookmark}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
-            <span>{bookmarked ? (lang === "fr" ? "Favori" : "Bookmarked") : (lang === "fr" ? "Favori" : "Bookmark")}</span>
+            {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
+            <span>{bookmarked ? t("actions.bookmarked", lang) : t("actions.bookmark", lang)}</span>
           </button>
 
           {/* Copy */}
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               copied && "text-green-500 bg-green-500/10 font-semibold"
             )}
             onClick={copyText}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
-            <span>{copied ? (lang === "fr" ? "Copié" : "Copied") : (lang === "fr" ? "Copier" : "Copy")}</span>
+            {copied ? <Check size={12} /> : <Copy size={12} />}
+            <span>{copied ? t("actions.copied", lang) : t("actions.copy", lang)}</span>
           </button>
 
           {/* Share */}
           <button
             type="button"
-            className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
-              showShare && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
-            )}
-            onClick={() => {
-              setShowStudy(false);
-              setShowPlaylistMenu(false);
-              setShowNote(false);
-              setShowShare((value) => !value);
-            }}
+            className="qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer"
+            onClick={openShareStudio}
           >
-            <i className="fas fa-share-nodes text-[0.72rem]" />
-            <span>{lang === "fr" ? "Partager" : "Share"}</span>
+            <Share2 size={12} />
+            <span>{t("actions.share", lang)}</span>
           </button>
 
           {/* Note */}
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               (showNote || noteText.trim()) && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={() => {
-              setShowStudy(false);
               setShowPlaylistMenu(false);
-              setShowShare(false);
               setShowNote((value) => !value);
             }}
           >
-            <i className="fas fa-pen-to-square text-[0.72rem]" />
-            <span>{noteText.trim() ? (lang === "fr" ? "Voir la note" : "View note") : "Note"}</span>
+            <PenSquare size={12} />
+            <span>{noteText.trim() ? t("notes.view", lang) : t("actions.note", lang)}</span>
           </button>
 
           {/* Playlists */}
           <button
             type="button"
             className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
+              "qcom-verse-card-footer-btn flex min-h-11 items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-[background-color,color] cursor-pointer",
               showPlaylistMenu && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
             )}
             onClick={openPlaylistMenu}
           >
-            <i className="fas fa-list text-[0.72rem]" />
-            <span>Playlists</span>
+            <List size={12} />
+            <span>{t("actions.playlists", lang)}</span>
           </button>
 
-          {/* Compare */}
-          <button
-            type="button"
-            className={cn(
-              "qcom-verse-card-footer-btn flex items-center gap-1.5 py-1 px-3 rounded-full hover:bg-[rgba(var(--primary-rgb),0.08)] hover:text-[var(--primary)] text-muted-foreground transition-all cursor-pointer",
-              isPinnedForCompare && "text-[var(--primary)] bg-[rgba(var(--primary-rgb),0.12)] font-semibold"
-            )}
-            onClick={toggleComparePin}
-          >
-            <i className="fas fa-thumbtack text-[0.72rem]" />
-            <span>{isPinnedForCompare ? (lang === "fr" ? "Épinglé" : "Pinned") : (lang === "fr" ? "Comparer" : "Compare")}</span>
-          </button>
         </div>
       ) : layout === "side-mobile-row" ? (
         <div className="flex items-center gap-1.5 select-none">
@@ -1381,7 +694,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "min-h-11 min-w-11 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1393,69 +706,69 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.72rem]`} />
+            {audioError ? <TriangleAlert size={12} /> : isPlayingThisAyah ? <Pause size={12} /> : <Play size={12} />}
           </button>
 
           {/* Tafsir */}
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "min-h-11 min-w-11 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
-            title="Tafsir"
+            aria-label={t("tafsir.title", lang)}
+            title={t("tafsir.title", lang)}
           >
-            <i className="fas fa-book-open text-[0.72rem]" />
+            <BookOpen size={12} />
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "min-h-11 min-w-11 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
+            title={t("actions.bookmark", lang)}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.72rem]`} />
+            {bookmarked ? <BookmarkCheck size={12} /> : <Bookmark size={12} />}
           </button>
 
           {/* Copy */}
           <button
             type="button"
             className={cn(
-              "w-7.5 h-7.5 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "min-h-11 min-w-11 rounded-full flex items-center justify-center transition-[background-color,color] cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
-            title={lang === "fr" ? "Copier" : "Copy"}
+            aria-label={copied ? t("actions.copiedShort", lang) : t("actions.copyVerse", lang)}
+            title={t("actions.copy", lang)}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.72rem]`} />
+            {copied ? <Check size={12} /> : <Copy size={12} />}
           </button>
 
           {/* Share */}
           <button
             type="button"
-            className="w-7.5 h-7.5 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-all cursor-pointer"
-            onClick={() => {
-              setShowStudy(false);
-              setShowPlaylistMenu(false);
-              setShowNote(false);
-              setShowShare(true);
-            }}
-            title={lang === "fr" ? "Partager" : "Share"}
+            className="min-h-11 min-w-11 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
+            onClick={openShareStudio}
+            aria-label={t("actions.shareTitle", lang)}
+            title={t("actions.share", lang)}
           >
-            <i className="fas fa-share-nodes text-[0.72rem]" />
+            <Share2 size={12} />
           </button>
         </div>
       ) : layout === "side" ? (
@@ -1464,7 +777,7 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isPlayingThisAyah
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
@@ -1476,76 +789,76 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 playAyah();
               }
             }}
-            title={isPlayingThisAyah ? "Pause" : (lang === "fr" ? "Écouter" : "Listen")}
+            aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
+            title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
           >
-            <i className={`fas ${audioError ? "fa-triangle-exclamation" : isPlayingThisAyah ? "fa-pause" : "fa-play"} text-[0.8rem]`} />
+            {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
           </button>
 
           {/* Tafsir */}
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               isTafsirActive
                 ? "bg-[var(--primary)] text-white"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleTafsir}
-            title="Tafsir"
+            aria-label={t("tafsir.title", lang)}
+            title={t("tafsir.title", lang)}
           >
-            <i className="fas fa-book-open text-[0.8rem]" />
+            <BookOpen size={13} />
           </button>
 
           {/* Bookmark */}
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               bookmarked
                 ? "text-[var(--primary)]"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={toggleBookmark}
-            title={lang === "fr" ? "Favori" : "Bookmark"}
+            aria-label={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
+            title={t("actions.bookmark", lang)}
           >
-            <i className={`${bookmarked ? "fas" : "far"} fa-bookmark text-[0.8rem]`} />
+            {bookmarked ? <BookmarkCheck size={13} /> : <Bookmark size={13} />}
           </button>
 
           {/* Copy */}
           <button
             type="button"
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center transition-all cursor-pointer",
+              "h-11 w-11 shrink-0 rounded-full flex items-center justify-center transition-[background-color,color,box-shadow] cursor-pointer",
               copied
                 ? "text-green-500"
                 : "text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)]"
             )}
             onClick={copyText}
-            title={lang === "fr" ? "Copier" : "Copy"}
+            aria-label={copied ? t("actions.copiedShort", lang) : t("actions.copyVerse", lang)}
+            title={t("actions.copy", lang)}
           >
-            <i className={`fas ${copied ? "fa-check" : "fa-copy"} text-[0.8rem]`} />
+            {copied ? <Check size={13} /> : <Copy size={13} />}
           </button>
 
           {/* Share */}
           <button
             type="button"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-all cursor-pointer"
-            onClick={() => {
-              setShowStudy(false);
-              setShowPlaylistMenu(false);
-              setShowNote(false);
-              setShowShare(true);
-            }}
-            title={lang === "fr" ? "Partager" : "Share"}
+            className="h-11 w-11 shrink-0 rounded-full flex items-center justify-center text-[var(--text-muted)] hover:bg-[rgba(var(--primary-rgb),0.1)] hover:text-[var(--primary)] transition-[background-color,color] cursor-pointer"
+            onClick={openShareStudio}
+            aria-label={t("actions.shareTitle", lang)}
+            title={t("actions.share", lang)}
           >
-            <i className="fas fa-share-nodes text-[0.8rem]" />
+            <Share2 size={13} />
           </button>
         </div>
       ) : compact ? (
         <div className="ayah-actions-inline flex flex-col gap-[0.48rem] rounded-[0.82rem] border border-[rgba(var(--primary-rgb),0.12)] bg-[rgba(var(--primary-rgb),0.04)] px-[0.68rem] py-[0.62rem] max-[640px]:px-[0.54rem] max-[640px]:py-[0.54rem]">
           <div className="ayah-actions-inline__meta flex items-center justify-between gap-[0.6rem] font-[var(--font-ui)] leading-[1.15] max-[640px]:gap-[0.4rem]">
-            <span className="ayah-actions-inline__ref text-[0.74rem] font-bold tracking-[0.04em] text-[var(--text-muted)]">
-              {surah}:{ayah}
+            <span className="ayah-actions-inline__ref text-[0.74rem] font-bold tracking-[0.04em] text-[var(--text-muted)]" dir="ltr">
+              {surah}:{displayAyahNumber}
             </span>
             {displayMode !== "page" && (
               <span className="ayah-actions-inline__name text-[0.76rem] text-[var(--text-secondary)] opacity-[0.84] max-[640px]:text-[0.7rem]">
@@ -1572,19 +885,10 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                   playAyah();
                 }
               }}
-              title={isPlayingThisAyah ? (lang === "fr" ? "Pause" : "Pause") : (lang === "fr" ? "Ecouter" : lang === "ar" ? "استماع" : "Listen")}
-              aria-label={isPlayingThisAyah ? "Pause" : "Play"}
+              title={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
+              aria-label={isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}
             >
-              <i className={`fas fa-${audioError ? "triangle-exclamation" : isPlayingThisAyah ? "pause" : "play"}`} />
-            </button>
-            <button
-              type="button"
-              className={inlineIconButtonClass}
-              onClick={repeatAyah}
-              title={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
-              aria-label={lang === "fr" ? "Repeter le verset" : lang === "ar" ? "تكرار الآية" : "Repeat verse"}
-            >
-              <i className="fas fa-repeat" />
+              {audioError ? <TriangleAlert size={13} /> : isPlayingThisAyah ? <Pause size={13} /> : <Play size={13} />}
             </button>
             <button
               type="button"
@@ -1593,398 +897,136 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                 bookmarked && inlineIconButtonActiveClass,
               )}
               onClick={toggleBookmark}
-              title={bookmarked ? (lang === "fr" ? "Retirer le favori" : lang === "ar" ? "إزالة المفضلة" : "Remove bookmark") : (lang === "fr" ? "Ajouter aux favoris" : lang === "ar" ? "أضف إلى المفضلة" : "Add bookmark")}
-              aria-label={lang === "fr" ? "Favori" : lang === "ar" ? "مفضلة" : "Bookmark"}
+              title={bookmarked ? t("actions.removeBookmark", lang) : t("actions.addBookmark", lang)}
+              aria-label={t("actions.bookmark", lang)}
             >
-              <i className="fas fa-bookmark" />
+              <Bookmark size={13} />
             </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                isPinnedForCompare && inlineIconButtonActiveClass,
-              )}
-              onClick={toggleComparePin}
-              title={
-                isPinnedForCompare
-                  ? lang === "fr"
-                    ? "Retirer de la comparaison"
-                    : "Remove from compare"
-                  : lang === "fr"
-                    ? "Epingler pour comparer"
-                    : "Pin to compare"
-              }
-              aria-label={lang === "fr" ? "Comparer le verset" : "Compare verse"}
-            >
-              <i className="fas fa-thumbtack" />
-            </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                copied && inlineIconButtonActiveClass,
-              )}
-              onClick={copyText}
-              title={lang === "fr" ? "Copier" : lang === "ar" ? "نسخ" : "Copy"}
-              aria-label={lang === "fr" ? "Copier le verset" : lang === "ar" ? "نسخ الآية" : "Copy verse"}
-            >
-              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
-            </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                showShare && inlineIconButtonActiveClass,
-              )}
-              onClick={() => {
-                setShowStudy(false);
-                setShowPlaylistMenu(false);
-                setShowNote(false);
-                setShowShare((value) => !value);
-              }}
-              title={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
-              aria-label={lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Share"}
-            >
-              <i className="fas fa-share-nodes" />
-            </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                showStudy && inlineIconButtonActiveClass,
-              )}
-              onClick={() => toggleStudyPanel("tafsir")}
-              title={lang === "fr" ? "Etude" : lang === "ar" ? "دراسة" : "Study"}
-              aria-label={lang === "fr" ? "Ouvrir l'etude" : lang === "ar" ? "فتح الدراسة" : "Open study"}
-            >
-              <i className="fas fa-book-open" />
-            </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                showNote && inlineIconButtonActiveClass,
-              )}
-              onClick={() => {
-                setShowStudy(false);
-                setShowPlaylistMenu(false);
-                setShowShare(false);
-                setShowNote((value) => !value);
-              }}
-              title={lang === "fr" ? "Noter" : lang === "ar" ? "ملاحظة" : "Note"}
-              aria-label={lang === "fr" ? "Ajouter une note" : lang === "ar" ? "إضافة ملاحظة" : "Add note"}
-            >
-              <i className="fas fa-pen-to-square" />
-            </button>
-            <button
-              type="button"
-              className={cn(
-                inlineIconButtonClass,
-                showPlaylistMenu && inlineIconButtonActiveClass,
-              )}
-              onClick={openPlaylistMenu}
-              title={lang === "fr" ? "Playlist" : lang === "ar" ? "قائمة" : "Playlist"}
-              aria-label={lang === "fr" ? "Ajouter a la playlist" : lang === "ar" ? "إضافة إلى القائمة" : "Add to playlist"}
-            >
-              <i className="fas fa-list" />
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  ref={optionsTriggerRef}
+                  type="button"
+                  className={inlineIconButtonClass}
+                  title={t("actions.more", lang)}
+                  aria-label={t("actions.moreActions", lang)}
+                >
+                  <Ellipsis size={13} />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{t("actions.copy", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{t("actions.shareAsImage", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{t("actions.note", lang)}</span></DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{t("actions.listeningList", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{t("tafsir.title", lang)}</span></DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
 
         </div>
       ) : (
-        <div className="ayah-actions__surface ayah-actions__surface--compact">
-          <div className="ayah-actions__meta">
-            <div>
-              <span className="ayah-actions__kicker">
-                <i className="fas fa-bolt" />
-                {lang === "fr"
-                  ? "Actions rapides"
-                  : lang === "ar"
-                    ? "إجراءات سريعة"
-                    : "Quick actions"}
-              </span>
-              <div className="ayah-actions__verse">
-                <span>
-                  {lang === "fr"
-                    ? surahInfo?.fr || surahInfo?.en
-                    : lang === "ar"
-                      ? surahInfo?.ar
-                      : surahInfo?.en}
-                </span>
-                <span className="ayah-actions__verse-ar" dir="rtl">
-                  {surahInfo?.ar}
-                </span>
-                <span>({surah}:{ayah})</span>
-              </div>
-            </div>
+        <div className="ayah-actions__surface ayah-actions__surface--modal">
+          <div className="ayah-actions__summary">
+            <span className="ayah-actions__kicker">
+              <Zap size={13} aria-hidden="true" />
+              {t("actions.chooseAction", lang)}
+            </span>
 
             <div className="ayah-actions__badges">
-              <span className={`ayah-actions__badge${bookmarked ? " is-on" : ""}`}>
-                <i className="fas fa-bookmark" />
+              <span className={cn("ayah-actions__badge", bookmarked && "is-on")}>
+                <Bookmark size={12} aria-hidden="true" />
                 {bookmarked
-                  ? lang === "fr"
-                    ? "favori"
-                    : lang === "ar"
-                      ? "مفضلة"
-                      : "saved"
-                  : lang === "fr"
-                    ? "non epingle"
-                    : lang === "ar"
-                      ? "غير محفوظة"
-                      : "not saved"}
-              </span>
-              <span className={`ayah-actions__badge${memoLevel > 0 ? " is-on" : ""}`}>
-                <i className="fas fa-star" />
-                {memoLevel > 0 ? `${memoLevel}/5` : "0/5"}
-              </span>
-              <span className={`ayah-actions__badge${isPinnedForCompare ? " is-on" : ""}`}>
-                <i className="fas fa-thumbtack" />
-                {isPinnedForCompare ? "pin" : `${pinnedAyahs.length}/4`}
+                  ? t("actions.favorite", lang)
+                  : t("actions.notSaved", lang)}
               </span>
             </div>
           </div>
 
-          <div className="ayah-actions__utility">
+          <div className="ayah-actions__grid">
             <button
               type="button"
-              className={`ayah-actions__utility-btn${bookmarked ? " is-active" : ""}`}
+              className={cn("ayah-action-card ayah-action-card--play", isPlayingThisAyah && "is-active")}
+              onClick={() => isCurrentAyah ? audioService.toggle() : playAyah()}
+              aria-pressed={isPlayingThisAyah || undefined}
+            >
+              <span className="ayah-action-card__icon">
+                {audioError ? <TriangleAlert size={14} /> : isPlayingThisAyah ? <Pause size={14} /> : <Play size={14} />}
+              </span>
+              <span className="ayah-action-card__content"><span className="ayah-action-card__label">{isPlayingThisAyah ? t("audio.pause", lang) : t("actions.listen", lang)}</span></span>
+            </button>
+            <button
+              type="button"
+              className={cn("ayah-action-card", bookmarked && "is-active")}
               onClick={toggleBookmark}
-              title={t("bookmarks.add", lang)}
+              aria-pressed={bookmarked}
             >
-              <i className="fas fa-bookmark" />
-              {bookmarked
-                ? lang === "fr"
-                  ? "Retirer le favori"
-                  : lang === "ar"
-                    ? "إزالة المفضلة"
-                    : "Remove bookmark"
-                : lang === "fr"
-                  ? "Ajouter aux favoris"
-                  : lang === "ar"
-                    ? "أضف إلى préférés"
-                    : "Add bookmark"}
+              <span className="ayah-action-card__icon">{bookmarked ? <BookmarkCheck size={14} /> : <Bookmark size={14} />}</span>
+              <span className="ayah-action-card__content"><span className="ayah-action-card__label">{t("actions.favorite", lang)}</span></span>
             </button>
-
-            <button
-              type="button"
-              className={`ayah-actions__utility-btn${copied ? " is-active" : ""}`}
-              onClick={copyText}
-              title={t("actions.copy", lang)}
-            >
-              <i className={`fas ${copied ? "fa-check" : "fa-copy"}`} />
-              {copied
-                ? lang === "fr"
-                  ? "Copie"
-                  : lang === "ar"
-                    ? "تم النسخ"
-                    : "Copied"
-                : lang === "fr"
-                  ? "Copier le texte"
-                  : lang === "ar"
-                    ? "نسخ النص"
-                    : "Copy text"}
-            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button ref={optionsTriggerRef} type="button" className="ayah-action-card" aria-label={t("actions.moreActions", lang)}>
+                  <span className="ayah-action-card__icon"><Ellipsis size={14} /></span>
+                  <span className="ayah-action-card__content"><span className="ayah-action-card__label">{t("actions.more", lang)}</span></span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={copyText}><Copy size={13} /><span>{t("actions.copy", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={openShareStudio}><Share2 size={13} /><span>{t("actions.shareAsImage", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={() => setShowNote(true)}><PenSquare size={13} /><span>{t("actions.note", lang)}</span></DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={openPlaylistMenu}><List size={13} /><span>{t("actions.listeningList", lang)}</span></DropdownMenuItem>
+                <DropdownMenuItem onClick={toggleTafsir}><BookOpen size={13} /><span>{t("tafsir.title", lang)}</span></DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       )}
 
       {activeSheet && renderPortal(
-        <button
-          type="button"
+        <div
           className="ayah-action-sheet-backdrop"
-          aria-label={lang === "fr" ? "Fermer le panneau" : "Close panel"}
+          aria-hidden="true"
           onClick={closePanels}
         />
       )}
 
-      {showStudy && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--study">
-          <div className="ayah-action-sheet__header">
-            <div>
-              <div className="ayah-action-sheet__eyebrow">
-                {lang === "fr"
-                  ? "Etude du verset"
-                  : lang === "ar"
-                    ? "دراسة الآية"
-                    : "Verse study"}
-              </div>
-              <div className="ayah-action-sheet__title">
-                {lang === "fr"
-                  ? "Comprendre cette ayah"
-                  : lang === "ar"
-                    ? "فهم هذه الآية"
-                    : "Understand this ayah"}
-              </div>
-            </div>
-            <button
-              type="button"
-              className="ayah-action-sheet__close"
-              onClick={closePanels}
-            >
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          {ayahData?.text ? (
-            <div className="ayah-action-sheet__verse-preview" dir="rtl" lang="ar">
-              <span className="ayah-action-sheet__verse-preview-ref">
-                {surah}:{ayah}
-              </span>
-              <p className="ayah-action-sheet__verse-preview-text">
-                {ayahData.text}
-              </p>
-            </div>
-          ) : null}
-
-          <div className="ayah-study-tabs" role="tablist">
-            {studyTabs.map((tab) => (
-              <button
-                key={tab.key}
-                type="button"
-                role="tab"
-                aria-selected={studyTab === tab.key}
-                className={`ayah-study-tab${studyTab === tab.key ? " is-active" : ""}`}
-                onClick={() => setStudyTab(tab.key)}
-              >
-                <i className={`fas ${tab.icon}`} />
-                <span>{tab.label}</span>
-              </button>
-            ))}
-          </div>
-
-          <div className="ayah-study-content">{renderStudyContent()}</div>
-        </div>
-      )}
-
-      {showShare && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--share">
-          <div className="ayah-action-sheet__header">
-            <div>
-              <div className="ayah-action-sheet__eyebrow">
-                {lang === "fr"
-                  ? "Partage premium"
-                  : lang === "ar"
-                    ? "مشاركة مميزة"
-                    : "Premium sharing"}
-              </div>
-              <div className="ayah-action-sheet__title">
-                {lang === "fr"
-                  ? "Exporter cette ayah"
-                  : lang === "ar"
-                    ? "شارك هذه الآية"
-                    : "Export this ayah"}
-              </div>
-            </div>
-            <button
-              type="button"
-              className="ayah-action-sheet__close"
-              onClick={closePanels}
-            >
-              <i className="fas fa-times" />
-            </button>
-          </div>
-
-          <p className="ayah-action-sheet__copy">
-            {lang === "fr"
-              ? "Choisissez une sortie rapide: texte, reseau social, image classique ou carte calligraphique."
-              : lang === "ar"
-                ? "اختر مخرجاً سريعاً: نص، شبكة اجتماعية، صورة كلاسيكية أو بطاقة خطية."
-                : "Choose a quick output: text, social app, classic image, or calligraphic card."}
-          </p>
-
-          <div className="ayah-actions__sheet-grid">
-            <button type="button" className="share-btn share-btn--whatsapp" onClick={shareWhatsApp}>
-              <i className="fab fa-whatsapp" />
-              <span className="share-btn__label">WhatsApp</span>
-            </button>
-            <button type="button" className="share-btn share-btn--telegram" onClick={shareTelegram}>
-              <i className="fab fa-telegram-plane" />
-              <span className="share-btn__label">Telegram</span>
-            </button>
-            <button type="button" className="share-btn share-btn--x" onClick={shareTwitter}>
-              <i className="fab fa-x-twitter" />
-              <span className="share-btn__label">X / Twitter</span>
-            </button>
-            <button type="button" className="share-btn share-btn--email" onClick={shareEmail}>
-              <i className="fas fa-envelope" />
-              <span className="share-btn__label">Email</span>
-            </button>
-            <button type="button" className="share-btn share-btn--copy" onClick={shareCopyText}>
-              <i className="fas fa-copy" />
-              <span className="share-btn__label">
-                {lang === "fr" ? "Texte de partage" : lang === "ar" ? "نسخ النص" : "Copy share text"}
-              </span>
-            </button>
-            <button type="button" className="share-btn share-btn--image" onClick={shareAsImage}>
-              <i className="fas fa-image" />
-              <span className="share-btn__label">
-                {lang === "fr" ? "Image sobre" : lang === "ar" ? "صورة" : "Simple image"}
-              </span>
-            </button>
-            <button
-              type="button"
-              className="share-btn share-btn--card"
-              onClick={() => {
-                dispatch({ type: "SET", payload: { shareImageOpen: true } });
-                closePanels();
-              }}
-            >
-              <i className="fas fa-wand-magic-sparkles" />
-              <span className="share-btn__label">
-                {lang === "fr"
-                  ? "Carte calligraphique"
-                  : lang === "ar"
-                    ? "بطاقة خطية"
-                    : "Calligraphic card"}
-              </span>
-            </button>
-            {navigator.share && (
-              <button type="button" className="share-btn share-btn--native" onClick={shareNative}>
-                <i className="fas fa-share-nodes" />
-                <span className="share-btn__label">
-                  {lang === "fr" ? "Partager" : lang === "ar" ? "مشاركة" : "Native share"}
-                </span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
       {showPlaylistMenu && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--playlist">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--playlist"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-playlist-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
-                {lang === "fr"
-                  ? "Hub audio"
-                  : lang === "ar"
-                    ? "مركز الصوت"
-                    : "Audio hub"}
+                {t("actions.audioHub", lang)}
               </div>
-              <div className="ayah-action-sheet__title">
-                {lang === "fr"
-                  ? "Ajouter a une playlist"
-                  : lang === "ar"
-                    ? "أضف إلى قائمة"
-                    : "Add to a playlist"}
-              </div>
+              <h2
+                id={`${sheetIdBase}-playlist-title`}
+                className="ayah-action-sheet__title"
+              >
+                {t("actions.addToPlaylist", lang)}
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <i className="fas fa-times" />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
           {playlists.length === 0 ? (
             <div className="ayah-action-sheet__empty">
-              {lang === "fr"
-                ? "Aucune playlist encore. Creez-en une depuis le panneau Playlists."
-                : lang === "ar"
-                  ? "لا توجد قوائم بعد. أنشئ قائمة من لوحة القوائم."
-                  : "No playlist yet. Create one from the Playlists panel."}
+              {t("actions.playlistEmpty", lang)}
             </div>
           ) : (
             <div className="ayah-actions__sheet-grid">
@@ -1994,22 +1036,26 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
                   type="button"
                   className="ayah-actions__playlist-btn"
                   onClick={async () => {
-                    await addAyahToPlaylist(
-                      playlist.id,
-                      surah,
-                      ayah,
-                      ayahData?.text || "",
-                    );
-                    setPlaylistAdded(true);
-                    closePanels();
-                    emitToast(
-                      "success",
-                      t("toast.ayahAddedToPlaylist", lang),
-                    );
-                    window.setTimeout(() => setPlaylistAdded(false), 1800);
+                    if (mutationPendingRef.current) return;
+                    mutationPendingRef.current = true;
+                    try {
+                      const saved = await addAyahToPlaylist(
+                        playlist.id, surah, ayah, ayahData?.text || "",
+                      );
+                      if (!saved) { reportStorageError(); return; }
+                      setPlaylistAdded(true);
+                      closePanels();
+                      emitToast("success", t("toast.ayahAddedToPlaylist", lang));
+                      clearTimeout(playlistTimerRef.current);
+                      playlistTimerRef.current = window.setTimeout(() => setPlaylistAdded(false), 1800);
+                    } catch {
+                      reportStorageError();
+                    } finally {
+                      mutationPendingRef.current = false;
+                    }
                   }}
                 >
-                  <i className="fas fa-music" />
+                  <Music size={13} />
                   <span>
                     {playlist.name} ({playlist.ayahs.length})
                   </span>
@@ -2021,37 +1067,40 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
       )}
 
       {showNote && renderPortal(
-        <div className="ayah-action-sheet ayah-action-sheet--note">
+        <div
+          ref={sheetRef}
+          className="ayah-action-sheet ayah-action-sheet--note"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`${sheetIdBase}-note-title`}
+          tabIndex={-1}
+        >
           <div className="ayah-action-sheet__header">
             <div>
               <div className="ayah-action-sheet__eyebrow">
-                {lang === "fr"
-                  ? "Note de meditation"
-                  : lang === "ar"
-                    ? "ملاحظة تدبر"
-                    : "Reflection note"}
+                {t("notes.reflectionEyebrow", lang)}
               </div>
-              <div className="ayah-action-sheet__title">
-                {lang === "fr"
-                  ? "Ecrire sur cette ayah"
-                  : lang === "ar"
-                    ? "اكتب حول cette الآية"
-                    : "Write on this ayah"}
-              </div>
+              <h2
+                id={`${sheetIdBase}-note-title`}
+                className="ayah-action-sheet__title"
+              >
+                {t("notes.composerTitle", lang)}
+              </h2>
             </div>
             <button
               type="button"
               className="ayah-action-sheet__close"
               onClick={closePanels}
+              aria-label={closeSheetLabel}
             >
-              <i className="fas fa-times" />
+              <X size={16} aria-hidden="true" />
             </button>
           </div>
 
           {ayahData?.text ? (
             <div className="ayah-action-sheet__verse-preview" dir="rtl" lang="ar">
-              <span className="ayah-action-sheet__verse-preview-ref">
-                {surah}:{ayah}
+              <span className="ayah-action-sheet__verse-preview-ref" dir="ltr">
+                {surah}:{displayAyahNumber}
               </span>
               <p className="ayah-action-sheet__verse-preview-text">
                 {ayahData.text}
@@ -2059,11 +1108,16 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
             </div>
           ) : null}
 
+          <label className="sr-only" htmlFor={`${sheetIdBase}-note`}>
+            {noteFieldLabel}
+          </label>
           <textarea
+            id={`${sheetIdBase}-note`}
             value={noteText}
-            onChange={(event) => setNoteText(event.target.value)}
+            onChange={(event) => { noteVersionRef.current += 1; setNoteText(event.target.value); }}
             placeholder={t("notes.placeholder", lang)}
             className="ayah-actions__textarea"
+            maxLength={NOTE_TEXT_MAX_LENGTH}
             rows={4}
           />
 
@@ -2073,14 +1127,16 @@ export default function AyahActions({ surah, ayah, ayahData, compact = false, la
               className="ayah-action-sheet__btn"
               onClick={closePanels}
             >
-              {lang === "fr" ? "Fermer" : lang === "ar" ? "إغلاق" : "Close"}
+              {t("actions.close", lang)}
             </button>
             <button
               type="button"
               className="ayah-action-sheet__btn ayah-action-sheet__btn--primary"
               onClick={handleSaveNote}
             >
-              {t("notes.save", lang)}
+              {!noteText.trim() && hasNote
+                ? t("notes.delete", lang)
+                : t("notes.save", lang)}
             </button>
           </div>
         </div>
