@@ -9,7 +9,7 @@ import React, {
   useRef,
   useSyncExternalStore,
 } from "react";
-import { getSettings, mergeSettings } from "../services/storageService";
+import { firstVisitTranslationDefaults, getSettings, mergeSettings } from "../services/storageService";
 import { ensureLocale, getLocaleVersion } from "../i18n";
 import { ensureReciterForRiwaya } from "../data/reciters";
 import {
@@ -151,6 +151,7 @@ const getInitialState = () => {
   translationLangs: stored.translationLangs || [stored.translationLang || "fr"],
   wordTranslationLang:
     stored.wordTranslationLang || stored.translationLang || "fr",
+  ...firstVisitTranslationDefaults(initialLang),
   continuousPlay: stored.continuousPlay ?? true, // auto-play next surah
   focusReading: stored.focusReading ?? false,
 
