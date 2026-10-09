@@ -125,6 +125,12 @@ export function surahSeo(surah, lang = "fr") {
   };
 }
 
+// A long chapter name plus the suffix and the brand overflows the ~65 characters
+// a results page shows; the name alone is then the clearer title.
+const TITLE_NAME_BUDGET = 52;
+const chapterTitle = (name, suffix) =>
+  name.length + suffix.length > TITLE_NAME_BUDGET ? name : `${name}${suffix}`;
+
 const DUAS_SEO = {
   fr: {
     hisn: {
@@ -148,7 +154,7 @@ const DUAS_SEO = {
         "Ce que l’on rapporte sur l’invocation à la fin de la lecture du Coran, et des invocations proposées avec ce que l’on sait de leur source.",
     },
     chapter: (name, count) => ({
-      title: `${name} : invocations`,
+      title: chapterTitle(name, " : invocations"),
       description: `${name} : ${count} ${count > 1 ? "invocations" : "invocation"} en arabe avec traduction française et sources, tirées de la Citadelle du musulman (Hisn al-Muslim).`,
     }),
   },
@@ -174,7 +180,7 @@ const DUAS_SEO = {
         "What is reported about supplicating at the end of the Quran, and supplications offered with what is known of their source.",
     },
     chapter: (name, count) => ({
-      title: `${name}: supplications`,
+      title: chapterTitle(name, ": supplications"),
       description: `${name}: ${count} ${count > 1 ? "supplications" : "supplication"} in Arabic with English translation and sources, from the Fortress of the Muslim (Hisn al-Muslim).`,
     }),
   },
@@ -197,7 +203,7 @@ const DUAS_SEO = {
       description: "ما يُروى في الدعاء عند ختم القرآن، وأدعية مقترحة مع ما يُعرف عن مصدرها.",
     },
     chapter: (name, count) => ({
-      title: `${name}: أدعية`,
+      title: chapterTitle(name, ": أدعية"),
       description: `${name}: ${count} من الأدعية والأذكار بالنص العربي مع المصادر من حصن المسلم.`,
     }),
   },
