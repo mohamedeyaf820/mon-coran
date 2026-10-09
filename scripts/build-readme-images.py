@@ -17,7 +17,7 @@ from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
 RAW = Path("docs/images/raw")
 OUT = Path("docs/images")
-SITE = "mon-coran.vercel.app"
+SITE = "mon-coran-kappa.vercel.app"
 GREEN_DARK = (9, 54, 33)
 GREEN = (15, 106, 67)
 GOLD = (233, 200, 120)

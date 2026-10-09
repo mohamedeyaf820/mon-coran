@@ -61,7 +61,7 @@
       "trust": ["Independent project", "Personal use"],
       "sections": [
         ["Publisher and contact", "MushafPlus is an independent project led by Mohamed Eyaf. Requests and corrections are handled through GitHub Issues."],
-        ["Hosting and availability", "The configured canonical address is mon-coran.vercel.app. The app is deployed on Vercel; development preview builds are also published on Netlify. The hosts process the technical logs required for security and service availability."],
+        ["Hosting and availability", "The configured canonical address is mon-coran-kappa.vercel.app. The app is deployed on Vercel; development preview builds are also published on Netlify. The hosts process the technical logs required for security and service availability."],
         ["Terms of use", "The app is provided free of charge for personal reading and study. You agree to respect content providers' rights and not to reuse any text, translation or recitation in violation of its license."],
         ["Responsibility", "The app does not replace a certified Mushaf edition, a qualified teacher, or religious, medical or legal advice."],
         ["Intellectual property", "Third-party texts, translations, fonts, photographs and recitations remain subject to their owners' rights. The source code is viewable on GitHub; the repository declares no licence, so check it before any reuse."],
@@ -157,7 +157,7 @@
       "trust": ["مشروع مستقل", "استخدام شخصي"],
       "sections": [
         ["النشر والتواصل", "MushafPlus مشروع مستقل يديره Mohamed Eyaf، وتُستقبل البلاغات عبر GitHub Issues."],
-        ["الاستضافة والتوفر", "العنوان الأساسي المضبوط هو mon-coran.vercel.app. يُنشر التطبيق على Vercel، وتُنشر كذلك نسخ معاينة للتطوير على Netlify. وتعالج الجهتان المستضيفتان السجلات التقنية اللازمة للأمان وتوفر الخدمة."],
+        ["الاستضافة والتوفر", "العنوان الأساسي المضبوط هو mon-coran-kappa.vercel.app. يُنشر التطبيق على Vercel، وتُنشر كذلك نسخ معاينة للتطوير على Netlify. وتعالج الجهتان المستضيفتان السجلات التقنية اللازمة للأمان وتوفر الخدمة."],
         ["شروط الاستخدام", "يُقدَّم التطبيق مجاناً للاستخدام الشخصي في القراءة والدراسة. تلتزم باحترام حقوق مزودي المحتوى وعدم إعادة استخدام أي نص أو ترجمة أو تلاوة بما يخالف ترخيصها."],
         ["المسؤولية", "لا يحل التطبيق محل مصحف معتمد أو معلّم مؤهل أو فتوى أو استشارة طبية أو قانونية."],
         ["الحقوق", "تبقى النصوص والترجمات والخطوط والصور والتلاوات الخارجية خاضعة لحقوق أصحابها. والشفرة المصدرية متاحة للاطلاع على GitHub، ولا يعلن المستودع عن ترخيص، فراجعه قبل أي إعادة استخدام."],

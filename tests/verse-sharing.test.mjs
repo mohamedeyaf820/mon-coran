@@ -12,7 +12,7 @@ import {
 test("verse sharing: builds a stable MushafPlus deep link", () => {
   assert.equal(
     getVerseShareUrl(2, 16, "http://127.0.0.1:3002"),
-    "https://mon-coran.vercel.app/surah/2/16",
+    "https://mon-coran-kappa.vercel.app/surah/2/16",
   );
   assert.equal(
     getVerseShareUrl(8, 74, "https://preview.example.com"),
@@ -36,7 +36,7 @@ test("verse sharing: creates clean localized content", () => {
   assert.match(payload.text, /Voici le verset/);
   assert.match(payload.text, /La Vache · verset 16/);
   assert.equal(payload.text.includes("<strong>"), false);
-  assert.match(payload.fullText, /https:\/\/mon-coran.vercel.app\/surah\/2\/16$/);
+  assert.match(payload.fullText, /https:\/\/mon-coran-kappa.vercel.app\/surah\/2\/16$/);
 });
 
 test("verse sharing: provides valid destinations for every supported network", () => {
@@ -46,7 +46,7 @@ test("verse sharing: provides valid destinations for every supported network", (
     arabicText: "وَالَّذِينَ آمَنُوا",
     surahName: "Le Butin",
     lang: "fr",
-    origin: "https://mon-coran.vercel.app",
+    origin: "https://mon-coran-kappa.vercel.app",
   });
   const targets = createVerseShareTargets(payload);
 

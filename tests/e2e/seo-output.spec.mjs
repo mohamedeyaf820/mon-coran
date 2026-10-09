@@ -1,6 +1,6 @@
 import { test, expect } from "@playwright/test";
 
-const SITE_URL = "https://mon-coran.vercel.app";
+const SITE_URL = "https://mon-coran-kappa.vercel.app";
 
 test.use({ serviceWorkers: "block" });
 

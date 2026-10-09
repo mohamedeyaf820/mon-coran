@@ -51,7 +51,7 @@ test("privacy lays out what is stored and opens the data settings", async ({ pag
 test("legal notice names the publisher and sources are grouped with a link each", async ({ page }) => {
   await open(page, "/legal", { width: 1280, height: 900 });
   await expect(page.locator(".legal-page__facts")).toContainText("Mohamed Eyaf");
-  await expect(page.locator(".legal-page__facts")).toContainText("mon-coran.vercel.app");
+  await expect(page.locator(".legal-page__facts")).toContainText("mon-coran-kappa.vercel.app");
   await page.locator(".legal-page__tabs").getByRole("button", { name: "Sources", exact: true }).click();
   const groups = page.locator(".legal-page__source-group");
   expect(await groups.count()).toBeGreaterThan(3);
