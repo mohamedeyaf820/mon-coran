@@ -63,6 +63,36 @@ test("legal notice names the publisher and sources are grouped with a link each"
   }
 });
 
+test("the sources register is readable in English and Arabic, not only in French", async ({ page }) => {
+  await open(page, "/sources", { width: 1280, height: 900, lang: "en" });
+  const register = page.locator(".legal-page__attributions");
+  await expect(register).toContainText("Reference Quran text and integrity check.", { timeout: 15_000 });
+  await expect(register).toContainText("MushafPlus grants no right to rehost");
+  await expect(register).not.toContainText("Texte coranique de référence");
+  await expect(register).not.toContainText("Aucun droit de réhébergement");
+});
+
+test("the Arabic sources register is in Arabic", async ({ page }) => {
+  await open(page, "/sources", { width: 1280, height: 900, lang: "ar" });
+  const register = page.locator(".legal-page__attributions");
+  await expect(register).toContainText("نص القرآن المرجعي والتحقق من سلامته.", { timeout: 15_000 });
+  await expect(register).not.toContainText("Texte coranique de référence");
+});
+
+test("the English reader header gives the English meaning of the surah", async ({ page }) => {
+  await installQuranNetworkFixtures(page);
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.addInitScript(() => {
+    localStorage.setItem(
+      "mushaf-plus-settings",
+      JSON.stringify({ skipSplashAnimation: true, lang: "en", theme: "light", riwaya: "hafs", showHome: false }),
+    );
+  });
+  await page.goto("/surah/2");
+  const meaning = page.locator(".mp-header__title-meaning").first();
+  await expect(meaning).toHaveText("The Cow", { timeout: 20_000 });
+});
+
 test("the contents list jumps to a section on a wide screen and is absent on a phone", async ({ page }) => {
   await open(page, "/privacy", { width: 1280, height: 900 });
   const toc = page.locator(".legal-page__toc");

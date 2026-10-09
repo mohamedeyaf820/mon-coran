@@ -88,7 +88,11 @@ const LIMITS = {
   // 2026-10-08 (verse card studio): 2587.1 kB measured (+7 kB: the JS above and the
   // studio's group and tile rules), ceiling 2595 kB.
   // 2026-10-08 (fullscreen Mushaf): 2599.1 kB measured, ceiling 2605 kB.
-  total: Number(process.env.BUDGET_TOTAL_KB || 2605),
+  // 2026-10-09 (audit fixes): 2605.5 kB measured, ceiling 2610 kB: share-sheet
+  // handling that keeps the PNG ready (lazy share chunk), the English sources
+  // register (served from editorial-copy.json, not bundled), English surah meanings
+  // read by the header, first-visit translation default.
+  total: Number(process.env.BUDGET_TOTAL_KB || 2610),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

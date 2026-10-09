@@ -10,7 +10,7 @@ import {
   Sparkles,
   StickyNote,
 } from "lucide-react";
-import SURAHS, { getSurahLigature } from "../../data/surahs";
+import SURAHS, { getSurahLigature, toAr } from "../../data/surahs";
 import { t } from "../../i18n";
 import PlatformLogo from "../PlatformLogo";
 import PrayerTimesCard from "./PrayerTimesCard";
@@ -220,7 +220,10 @@ export default function HeroSection({
             <span className="home-today-verse__translation">{dailyVerse.trans_en}</span>
           ) : null}
           <span className="home-today-verse__reference">
-            {dailyVerse.ref}
+            {/* The reference is stored in Latin; Arabic readers get the surah name and digits in Arabic. */}
+            {lang === "ar" && vodSurahNum && SURAHS[vodSurahNum - 1]
+              ? `${SURAHS[vodSurahNum - 1].ar} ${toAr(vodSurahNum)}${vodAyahNum ? `:${toAr(vodAyahNum)}` : ""}`
+              : dailyVerse.ref}
             {isRtl ? <ArrowLeft size={12} aria-hidden="true" /> : <ArrowRight size={12} aria-hidden="true" />}
           </span>
         </button>
