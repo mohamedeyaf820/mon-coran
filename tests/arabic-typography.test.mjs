@@ -8,6 +8,7 @@ import {
 } from "../src/utils/arabicTypography.js";
 import {
   appendNativeAyahMarker,
+  getNativeAyahMarker,
   getAyahTextForFont,
   getQuranWordTextForFont,
   getUiAyahMarker,
@@ -298,7 +299,7 @@ test("waqf signs remain Quran content while the standalone medallion stays canon
   assert.equal(getUiAyahMarker(1).includes("۝"), false);
 });
 
-test("every Quran font file is declared once and every exposed stack names a declared face", async () => {
+test("Quran font declarations are unique except the restricted Warsh face", async () => {
   const { readFileSync } = await import("node:fs");
   const { QURAN_FONT_OPTIONS, FONT_MAP } = await import("../src/data/fonts.js");
   const sources = [
@@ -312,17 +313,22 @@ test("every Quran font file is declared once and every exposed stack names a dec
     for (const [, body] of css.matchAll(/@font-face\s*\{([^}]*)\}/g)) {
       const family = /font-family:\s*["']([^"']+)["']/.exec(body)?.[1];
       const url = /url\(["']?([^"')]+)["']?\)/.exec(body)?.[1];
-      if (family && url) faces.push({ family, url });
+      const range = /unicode-range:\s*([^;]+);/.exec(body)?.[1];
+      if (family && url) faces.push({ family, url, range });
     }
   }
 
-  // A second family name for the same woff2 registers a second FontFace, so a
-  // stack listing both fetches the identical file twice.
+  // Plain aliases must not duplicate a face. The Warsh QPC variant is the
+  // deliberate exception: its restricted range blocks placeholder glyphs.
   const byUrl = new Map();
   for (const face of faces) {
     const seen = byUrl.get(face.url);
-    if (seen) assert.fail(`${face.url} is declared as "${seen}" and "${face.family}"`);
-    byUrl.set(face.url, face.family);
+    if (seen) {
+      assert.equal(face.url, "/fonts/uthmanic-hafs-v18.woff2");
+      assert.deepEqual([seen.family, face.family], ["QPC Hafs", "QPC Hafs Unicode"]);
+      assert.equal(face.range, "U+0000-06D1, U+06D3-06DE, U+06E0-06EA, U+06EC-10FFFF");
+    }
+    byUrl.set(face.url, face);
   }
 
   const declared = new Set(faces.map((face) => face.family));
@@ -330,5 +336,16 @@ test("every Quran font file is declared once and every exposed stack names a dec
     const first = String(FONT_MAP[option.id] || "").split(",")[0].replace(/["']/g, "").trim();
     assert.ok(first, `${option.id} has no font stack`);
     assert.ok(declared.has(first), `${option.id} starts with the undeclared family "${first}"`);
+  }
+});
+
+test("shared Unicode styles retain Warsh wording and signs instead of Hafs payloads", () => {
+  const canonical = "اَ۫لذِے غِشَٰوَةٞ";
+  const ayah = { text: canonical, textQpcHafs: "different Hafs payload", textIndopak: "private glyph payload" };
+  const word = { ...ayah, textUthmani: "different Hafs payload" };
+  for (const id of ["qpc-uthmani-warsh", "amiri-quran-warsh", "noto-naskh-arabic-warsh"]) {
+    assert.equal(getAyahTextForFont(ayah, id, "warsh"), canonical, id);
+    assert.equal(getQuranWordTextForFont(word, id, "warsh"), canonical, id);
+    assert.equal(getNativeAyahMarker(10, id, "warsh"), "١٠", id);
   }
 });

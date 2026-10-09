@@ -174,35 +174,40 @@ const FONT_MATRIX = {
     ["qpc-warsh", "KFGQPC Warsh"],
     ["scheherazade-new-warsh", "Scheherazade New"],
     ["alkalami-warsh", "Alkalami"],
+    ["qpc-uthmani-warsh", "QPC Hafs Unicode"],
+    ["amiri-quran-warsh", "Amiri Quran"],
+    ["noto-naskh-arabic-warsh", "Noto Naskh Arabic"],
   ],
 };
 
-test("Alkalami preserves real Warsh text and the per-riwaya preference after reload", async ({ page }) => {
-  await installQuranNetworkFixtures(page, { withWarshDabt: true });
-  await page.addInitScript(() => {
-    if (!localStorage.getItem("mushaf-plus-settings")) {
-      localStorage.setItem("mushaf-plus-settings", JSON.stringify({
-        skipSplashAnimation: true, showHome: false, lang: "fr", riwaya: "warsh",
-        fontFamily: "scheherazade-new-warsh", mushafLayout: "list", showTajwid: true,
-      }));
-    }
+for (const [fontId, family] of FONT_MATRIX.warsh.slice(2)) {
+  test(`${fontId} preserves real Warsh text and the per-riwaya preference after reload`, async ({ page }) => {
+    await installQuranNetworkFixtures(page, { withWarshDabt: true });
+    await page.addInitScript(() => {
+      if (!localStorage.getItem("mushaf-plus-settings")) {
+        localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+          skipSplashAnimation: true, showHome: false, lang: "fr", riwaya: "warsh",
+          fontFamily: "scheherazade-new-warsh", mushafLayout: "list", showTajwid: true,
+        }));
+      }
+    });
+    await page.goto("/surah/2/1");
+    const verse = page.locator(".qc-ayah-text-ar").first();
+    await expect(verse).toBeVisible({ timeout: 30_000 });
+    const original = await verse.textContent();
+    const select = await openTypographyPanel(page);
+    await select.selectOption(fontId);
+    await expectFontFamily(verse, family);
+    expect(await verse.textContent()).toBe(original);
+    expect(await page.evaluate(family => [...document.fonts].some(face =>
+      face.family.replaceAll('"', '') === family && face.status === "loaded"), family)).toBe(true);
+    await page.reload({ waitUntil: "domcontentloaded" });
+    await expect(verse).toBeVisible({ timeout: 30_000 });
+    await expectFontFamily(verse, family);
+    expect(await verse.textContent()).toBe(original);
+    await expect(await openTypographyPanel(page)).toHaveValue(fontId);
   });
-  await page.goto("/surah/2/1");
-  const verse = page.locator(".qc-ayah-text-ar").first();
-  await expect(verse).toBeVisible({ timeout: 30_000 });
-  const original = await verse.textContent();
-  const select = await openTypographyPanel(page);
-  await select.selectOption("alkalami-warsh");
-  await expectFontFamily(verse, "Alkalami");
-  expect(await verse.textContent()).toBe(original);
-  expect(await page.evaluate(() => [...document.fonts].some(face =>
-    face.family.replaceAll('"', '') === "Alkalami" && face.status === "loaded"))).toBe(true);
-  await page.reload({ waitUntil: "domcontentloaded" });
-  await expect(verse).toBeVisible({ timeout: 30_000 });
-  await expectFontFamily(verse, "Alkalami");
-  expect(await verse.textContent()).toBe(original);
-  await expect(await openTypographyPanel(page)).toHaveValue("alkalami-warsh");
-});
+}
 
 for (const [riwaya, fonts] of Object.entries(FONT_MATRIX)) {
   test(`${riwaya}: every exposed Quran font keeps a compact continuous flow`, async ({

@@ -3,8 +3,8 @@ const failedFontIds = new Set();
 const inFlightLoads = new Map();
 
 // The runtime FontFace names must match the @font-face blocks in tailwind.css:
-// one name per woff2. A second name for the same file made the browser register
-// two FontFaces, and a stack listing both loaded the file twice.
+// no plain duplicate aliases in a stack. The restricted QPC Hafs Unicode face
+// is a distinct Warsh rendering policy over the same cached binary.
 const WARSH_FACE = {
   family: "KFGQPC Warsh",
   url: "/fonts/kfgqpc-warsh-21.woff2",
@@ -43,6 +43,18 @@ const FONT_SOURCES = {
     selfHosted: true,
   },
   "noto-naskh-arabic": {
+    family: "Noto Naskh Arabic",
+    selfHosted: true,
+  },
+  "qpc-uthmani-warsh": {
+    family: "QPC Hafs Unicode",
+    selfHosted: true,
+  },
+  "amiri-quran-warsh": {
+    family: "Amiri Quran",
+    selfHosted: true,
+  },
+  "noto-naskh-arabic-warsh": {
     family: "Noto Naskh Arabic",
     selfHosted: true,
   },
@@ -246,4 +258,3 @@ export async function ensureQcfPageFontLoaded(page, version = "v2") {
 export function isFontMarkedLoaded(fontId) {
   return loadedFontIds.has(fontId) || [...loadedFontIds].some((id) => id.startsWith(`${fontId}:`));
 }
-

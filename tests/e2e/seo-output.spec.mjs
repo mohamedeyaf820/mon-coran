@@ -69,7 +69,17 @@ test("sitemap and social image stay within the SEO contract", async ({
   const sitemapResponse = await request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBe(true);
   const sitemap = await sitemapResponse.text();
-  expect((sitemap.match(/<url>/g) || []).length).toBe(120);
+  expect((sitemap.match(/<url>/g) || []).length).toBe(768);
+  const locations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  for (const locale of ["fr", "en", "ar"]) {
+    const prefix = locale === "fr" ? "/" : `/${locale}/`;
+    const localized = locations.filter((location) => {
+      const pathname = new URL(location).pathname;
+      return locale === "fr" ? !/^\/(en|ar)(\/|$)/.test(pathname) : pathname.startsWith(prefix);
+    });
+    expect(localized).toHaveLength(256);
+    expect(sitemap).toContain(`hreflang="${locale}"`);
+  }
   expect(sitemap).not.toContain("/page/");
   expect(sitemap).not.toContain("/juz/");
   expect(sitemap).not.toMatch(/\/surah\/\d+\/\d+/);

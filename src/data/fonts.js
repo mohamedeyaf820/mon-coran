@@ -33,6 +33,9 @@ export const WARSH_FONT_IDS = [
   "qpc-warsh",
   "scheherazade-new-warsh",
   "alkalami-warsh",
+  "qpc-uthmani-warsh",
+  "amiri-quran-warsh",
+  "noto-naskh-arabic-warsh",
 ];
 
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
@@ -94,10 +97,29 @@ export const QURAN_FONT_OPTIONS = [
     hintKey: "settings.alkalamiWarshHint",
     riwaya: "warsh",
   },
+  {
+    id: "qpc-uthmani-warsh",
+    label: "QPC Uthmani (style Hafs)",
+    hintKey: "settings.qpcUthmaniWarshHint",
+    riwaya: "warsh",
+  },
+  {
+    id: "amiri-quran-warsh",
+    label: "Amiri Quran (Warsh)",
+    hintKey: "settings.amiriWarshHint",
+    riwaya: "warsh",
+  },
+  {
+    id: "noto-naskh-arabic-warsh",
+    label: "Noto Naskh (Warsh)",
+    hintKey: "settings.notoNaskhWarshHint",
+    riwaya: "warsh",
+  },
 ];
 
-// One family name per woff2: the long KFGQPC names were aliases of the same
-// file, so a stack listing both registered two FontFaces for it.
+// Plain family aliases must not duplicate the same file in a stack. The QPC
+// Warsh-style face deliberately reuses the Hafs binary with a restricted
+// Unicode range; it never shares a stack with the unrestricted Hafs face.
 // Scheherazade New + Noto Naskh Arabic (self-hosted, full Warsh coverage) keep
 // the page readable if the Warsh woff2 fails on WebKit. Geeza Pro used to sit
 // here: an Apple-only system font, so the same failure rendered a different
@@ -126,6 +148,11 @@ export const FONT_MAP = {
   // Alkalami uses the Kano style; Scheherazade supplies its missing Quranic
   // signs without changing the canonical Warsh text. This is a mixed face.
   "alkalami-warsh": "'Alkalami','Scheherazade New','KFGQPC Warsh',serif",
+  // The restricted face excludes three QPC Hafs placeholder glyphs. Use the
+  // canonical Warsh Unicode text, with Scheherazade supplying those signs.
+  "qpc-uthmani-warsh": "'QPC Hafs Unicode','Scheherazade New','KFGQPC Warsh',serif",
+  "amiri-quran-warsh": "'Amiri Quran','Scheherazade New','KFGQPC Warsh',serif",
+  "noto-naskh-arabic-warsh": "'Noto Naskh Arabic','Scheherazade New','KFGQPC Warsh',serif",
   "scheherazade-new-warsh":
     "'Scheherazade New','Scheherazade','KFGQPC Warsh',serif",
 };
@@ -171,6 +198,9 @@ const AYAH_MARKER_BY_FONT = {
   // rule in riwaya-fonts.css).
   "scheherazade-new-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "alkalami-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "qpc-uthmani-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "amiri-quran-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "noto-naskh-arabic-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // QCF page fonts: QCF v4 Tajweed uses U+06DD as the base character for verse-end markers.
   "qcf-v2": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "qcf-v4-tajweed": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
@@ -262,8 +292,11 @@ export const ACCEPTED_FONT_IDS = [
 export function normalizeFontId(id, riwaya = "hafs") {
   const aliasedId = LEGACY_FONT_ALIASES[id] || id;
   if (riwaya === "warsh") {
-    // scheherazade-new used for Hafs maps to its Warsh variant when switching
+    // Unicode styles resolve to a separate Warsh id, so a Hafs font-locked
+    // payload or sign conversion can never enter the Warsh text path.
     if (aliasedId === "scheherazade-new") return "scheherazade-new-warsh";
+    if (aliasedId === "amiri-quran") return "amiri-quran-warsh";
+    if (aliasedId === "noto-naskh-arabic") return "noto-naskh-arabic-warsh";
     return WARSH_FONT_IDS.includes(aliasedId) ? aliasedId : DEFAULT_WARSH_FONT_ID;
   }
   if (HAFS_FONT_IDS.includes(aliasedId)) return aliasedId;
@@ -289,9 +322,8 @@ const QPC_SHAPED_MARKER_FONT_IDS = new Set([
 
 export function getAyahMarkerFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
-  if (normalizedId === "scheherazade-new-warsh" || normalizedId === "alkalami-warsh") {
-    // Scheherazade has no composing rosette, so its digits-only Warsh marker is
-    // shaped by KFGQPC Warsh — the same medallion the default Warsh face prints.
+  if (riwaya === "warsh") {
+    // Keep the Warsh medallion for every style, including the Hafs-style face.
     return FONT_MAP["qpc-warsh"];
   }
   if (riwaya !== "warsh" && QPC_SHAPED_MARKER_FONT_IDS.has(normalizedId)) {

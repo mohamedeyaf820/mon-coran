@@ -218,7 +218,7 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   );
   assert.deepEqual(
     getFontOptionsForRiwaya("warsh").map((font) => font.id),
-    ["qpc-warsh", "scheherazade-new-warsh", "alkalami-warsh"],
+    ["qpc-warsh", "scheherazade-new-warsh", "alkalami-warsh", "qpc-uthmani-warsh", "amiri-quran-warsh", "noto-naskh-arabic-warsh"],
   );
 
   assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
@@ -231,7 +231,12 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   assert.equal(getNativeAyahMarker(1, "scheherazade-new", "hafs"), "\u0661");
   assert.equal(getNativeAyahMarker(1, "scheherazade-new-warsh", "warsh"), "\u0661");
   assert.equal(normalizeFontId("scheherazade-new", "warsh"), "scheherazade-new-warsh");
-  assert.equal(normalizeFontId("amiri-quran", "warsh"), "qpc-warsh");
+  assert.equal(normalizeFontId("amiri-quran", "warsh"), "amiri-quran-warsh");
+  // The generic Hafs default in old settings must still resolve to the Warsh
+  // default. Its alternate style is selected explicitly by its Warsh id.
+  assert.equal(normalizeFontId("qpc-hafs", "warsh"), "qpc-warsh");
+  assert.equal(normalizeFontId("noto-naskh-arabic", "warsh"), "noto-naskh-arabic-warsh");
+  assert.equal(normalizeFontId("qpc-indopak", "warsh"), "qpc-warsh");
   // The merged Warsh entry keeps answering to the id older preferences stored.
   assert.equal(normalizeFontId("kfgqpc-warsh", "warsh"), "qpc-warsh");
   assert.equal(getNativeAyahMarker(100, "kfgqpc-warsh", "warsh"), "\u0661\u0660\u0660");
