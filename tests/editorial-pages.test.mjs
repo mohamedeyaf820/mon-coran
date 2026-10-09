@@ -37,3 +37,21 @@ test("English and Arabic editorial copy remains complete and cacheable", async (
   const sw = await read("public/sw.js");
   assert.match(sw, /\/data\/editorial-copy\.json/);
 });
+
+test("every entry of the sources register has an English and an Arabic text", async () => {
+  const { CONTENT_ATTRIBUTIONS } = await import("../src/data/contentAttributions.js");
+  const translated = JSON.parse(await read("public/data/editorial-copy.json"));
+  for (const lang of ["en", "ar"]) {
+    const register = translated[lang].attributions;
+    assert.ok(register, `${lang}.attributions`);
+    for (const item of CONTENT_ATTRIBUTIONS) {
+      assert.ok(register[item.id]?.usage, `${lang}.${item.id}.usage`);
+      assert.ok(register[item.id]?.rights, `${lang}.${item.id}.rights`);
+    }
+    assert.deepEqual(
+      Object.keys(register).filter((id) => !CONTENT_ATTRIBUTIONS.some((item) => item.id === id)),
+      [],
+      `${lang}.attributions has an entry the register no longer has`,
+    );
+  }
+});
