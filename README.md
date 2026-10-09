@@ -10,13 +10,13 @@ Hafs & Warsh · Tajwid aux couleurs de Quran.com · 54 récitateurs · hors-lign
 
 [![Tests](https://github.com/mohamedeyaf820/mon-coran/actions/workflows/tests.yml/badge.svg)](https://github.com/mohamedeyaf820/mon-coran/actions/workflows/tests.yml)
 [![Vercel](https://img.shields.io/badge/Vercel-en%20ligne-000000?logo=vercel&logoColor=white)](https://mon-coran-kappa.vercel.app)
-[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)](https://mon-coran-main.vercel.app)
+[![PWA](https://img.shields.io/badge/PWA-installable-5A0FC8?logo=pwa&logoColor=white)](https://mon-coran-kappa.vercel.app)
 [![React](https://img.shields.io/badge/React-18-149ECA?logo=react&logoColor=white)](https://react.dev)
 [![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)](https://vite.dev)
 [![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![Version](https://img.shields.io/badge/version-1.2.0-0f6a43)](https://github.com/mohamedeyaf820/mon-coran/releases)
 
-**Ouvrir l'application : [mon-coran-kappa.vercel.app](https://mon-coran-kappa.vercel.app)** · **[mon-coran-main.vercel.app](https://mon-coran-main.vercel.app)** (les deux déploiements servent la même version) ·
+**Ouvrir l'application : [mon-coran-kappa.vercel.app](https://mon-coran-kappa.vercel.app)** ·
 **[Fonctionnalités](#-fonctionnalités)** ·
 **[Démarrer](#-démarrer-en-2-minutes)** ·
 **[Architecture](#-architecture)** ·
