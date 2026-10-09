@@ -2,7 +2,7 @@
 
 ## Versions prises en charge
 
-Seule la dernière version publiée (branche principale, déployée sur <https://mon-coran.vercel.app>) reçoit des correctifs.
+Seule la dernière version publiée (branche principale, déployée sur <https://mon-coran-kappa.vercel.app>) reçoit des correctifs.
 
 ## Signaler une vulnérabilité
 

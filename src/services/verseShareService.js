@@ -1,4 +1,4 @@
-const DEFAULT_SHARE_ORIGIN = "https://mon-coran.vercel.app";
+const DEFAULT_SHARE_ORIGIN = "https://mon-coran-kappa.vercel.app";
 
 function normalizeVerseNumber(value, fallback = 1) {
   const parsed = Number.parseInt(value, 10);
