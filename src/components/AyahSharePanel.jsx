@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import {
   Check,
@@ -280,6 +280,7 @@ function localizedCopy(lang) {
       copied: "تم نسخ الصورة",
       downloaded: "تم تنزيل الصورة",
       fallback: "التطبيق لا يدعم مشاركة الملفات؛ تم تنزيل الصورة.",
+      again: "الصورة جاهزة. اضغط «مشاركة الصورة» مرة أخرى لإرسالها.",
       error: "تعذّر إنشاء الصورة",
       preview: "معاينة بطاقة الآية",
     };
@@ -330,6 +331,7 @@ function localizedCopy(lang) {
       copied: "Image copied",
       downloaded: "Image downloaded",
       fallback: "File sharing is unavailable here, so the image was downloaded.",
+      again: "Image ready. Tap “Share image” once more to send it.",
       error: "The image could not be created",
       preview: "Verse card preview",
     };
@@ -379,6 +381,7 @@ function localizedCopy(lang) {
     copied: "Image copiée",
     downloaded: "Image téléchargée",
     fallback: "Le partage de fichier n’est pas disponible ici : l’image a été téléchargée.",
+    again: "Image prête. Touchez « Partager l’image » une seconde fois pour l’envoyer.",
     error: "Impossible de créer l’image",
     preview: "Aperçu de la carte du verset",
   };
@@ -684,16 +687,41 @@ export default function AyahSharePanel() {
     ? `mushafplus-doua-${formatId}.png`
     : `mushafplus-${surahNumber}-${displayAyahNumber}-${formatId}.png`;
 
-  const createPng = useCallback(
-    () => svgToPngBlob(safeSvgContent, format.width, format.height),
-    [format.height, format.width, safeSvgContent],
-  );
-
   /*
-   * The studio states the real weight of what will be shared. The card is
-   * rasterised once the reader stops changing options, which also warms the
-   * canvas path the share, download and copy buttons then reuse.
+   * Sharing a file only works inside the tap that asked for it (Safari gives
+   * the page about a second, Chrome a few). Encoding the PNG takes longer than
+   * that on a phone, so the card is rasterised ahead of time, once the reader
+   * stops changing options, and the tap only hands the finished file over.
    */
+  const pngCache = useRef(null);
+  const ensurePng = useCallback(() => {
+    const hit = pngCache.current;
+    if (hit && hit.svg === safeSvgContent && hit.width === format.width && hit.height === format.height) {
+      return hit.promise;
+    }
+    const entry = { svg: safeSvgContent, width: format.width, height: format.height, blob: null, promise: null };
+    entry.promise = svgToPngBlob(safeSvgContent, format.width, format.height).then(
+      (blob) => {
+        entry.blob = blob;
+        return blob;
+      },
+      (error) => {
+        if (pngCache.current === entry) pngCache.current = null;
+        throw error;
+      },
+    );
+    pngCache.current = entry;
+    return entry.promise;
+  }, [format.height, format.width, safeSvgContent]);
+  const readyPng = useCallback(() => {
+    const hit = pngCache.current;
+    return hit?.blob && hit.svg === safeSvgContent && hit.width === format.width && hit.height === format.height
+      ? hit.blob
+      : null;
+  }, [format.height, format.width, safeSvgContent]);
+
+  // The studio states the real weight of what will be shared while it warms
+  // the file the share, download and copy buttons reuse.
   useEffect(() => {
     if (!safeSvgContent) {
       setPngSize(0);
@@ -701,7 +729,7 @@ export default function AyahSharePanel() {
     }
     let active = true;
     const timer = window.setTimeout(() => {
-      svgToPngBlob(safeSvgContent, format.width, format.height)
+      ensurePng()
         .then((blob) => {
           if (active) setPngSize(blob.size);
         })
@@ -711,7 +739,7 @@ export default function AyahSharePanel() {
       active = false;
       window.clearTimeout(timer);
     };
-  }, [format.height, format.width, safeSvgContent]);
+  }, [ensurePng, safeSvgContent]);
   const cardWeightLabel = pngSize ? `≈ ${Math.round(pngSize / 1024)} kB` : "PNG";
 
   const runAction = useCallback(async (action, callback) => {
@@ -727,38 +755,61 @@ export default function AyahSharePanel() {
     }
   }, [labels.error, verseUnavailable]);
 
+  // No await before navigator.share when the file is ready: the call must stay
+  // inside the user's tap. When the tap had to wait for the PNG, the gesture is
+  // gone on some browsers; the file is then kept and the next tap sends it.
   const handleShare = () => runAction("share", async () => {
-    const blob = await createPng();
+    const wasReady = Boolean(readyPng());
+    const blob = readyPng() || (await ensurePng());
     setPngSize(blob.size);
     const file = new File([blob], filename, { type: "image/png" });
     const canShareFile = Boolean(
       navigator.share && navigator.canShare?.({ files: [file] }),
     );
-    if (canShareFile) {
-      await navigator.share({ files: [file], title: sharePayload.title });
+    if (!canShareFile) {
+      downloadBlob(blob, filename);
+      setFeedback(labels.fallback);
       return;
     }
-    downloadBlob(blob, filename);
-    setFeedback(labels.fallback);
+    try {
+      await navigator.share({ files: [file], title: sharePayload.title });
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      if (error?.name === "NotAllowedError" && !wasReady) {
+        setFeedback(labels.again);
+        return;
+      }
+      downloadBlob(blob, filename);
+      setFeedback(labels.fallback);
+    }
   });
 
   const handleDownload = () => runAction("download", async () => {
-    const blob = await createPng();
+    const blob = await ensurePng();
     setPngSize(blob.size);
     downloadBlob(blob, filename);
     setFeedback(labels.downloaded);
   });
 
+  // ClipboardItem takes a promise, which keeps Safari's write inside the tap
+  // even when the PNG is still being encoded.
   const handleCopyImage = () => runAction("copy", async () => {
-    const blob = await createPng();
-    setPngSize(blob.size);
-    if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined") {
-      downloadBlob(blob, filename);
-      setFeedback(labels.fallback);
-      return;
+    if (navigator.clipboard?.write && typeof ClipboardItem !== "undefined") {
+      const pending = readyPng() || ensurePng();
+      try {
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": pending })]);
+        const blob = await pending;
+        setPngSize(blob.size);
+        setFeedback(labels.copied);
+        return;
+      } catch (error) {
+        if (error?.name === "AbortError") return;
+      }
     }
-    await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-    setFeedback(labels.copied);
+    const blob = await ensurePng();
+    setPngSize(blob.size);
+    downloadBlob(blob, filename);
+    setFeedback(labels.fallback);
   });
 
   // Roving tabindex: arrows move between tabs, mirrored in right-to-left.
