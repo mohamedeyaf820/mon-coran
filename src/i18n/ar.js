@@ -396,6 +396,7 @@ export default {
     notoNaskhHint: 'Noto Naskh Arabic، واضح على جميع الشاشات',
     qpcWarshHint: 'خط ورش KFGQPC متاح دون اتصال',
     scheherazadeWarshHint: 'شهرزاد الجديد، متوافق مع رواية ورش',
+    alkalamiWarshHint: 'أسلوب كانو؛ تُعرض بعض العلامات بخط شهرزاد الجديد',
     closeAria: 'إغلاق الإعدادات',
     tabsAria: 'تبويبات الإعدادات',
     riwayaDefault: 'الرواية الافتراضية',

@@ -164,3 +164,14 @@ Amiri Quran n'est **pas** proposé pour Warsh dans le projet (`WARSH_FONT_IDS` :
 - Tanzil : `https://tanzil.net/docs/Text_License`
 - Police AALMAGHRIBI : `https://www.fontspace.com/aalmaghribi-font-f112332`
 - Édition Warsh Rachid Maach (non lue, 403) : `https://albayyinah.fr/coran-warch/4249-…`
+
+
+## 9. Intégration des options demandées (2026-10-09)
+
+- **QPC Warsh de QUL** : la [documentation QUL](https://qul.tarteel.ai/resources/font/qpc-warsh-font) référence `uthmanic-warsh-v21.ttf`, soit la famille KFGQPC v2.1 déjà utilisée. Le choix existant est nommé « QPC Uthmani Warsh (Madinah) »; aucun doublon ajouté.
+- **Alkalami 3.000** : WOFF2 original du [paquet officiel SIL](https://software.sil.org/downloads/r/alkalami/Alkalami-3.000.zip), accompagné de sa licence OFL. Option `alkalami-warsh`, réservée à Warsh. Style Kano, pas un fac-similé du mushaf marocain. Le texte reste intact : Scheherazade New fournit les caractères absents, KFGQPC les numéros de verset. Le fichier est inclus dans le cache du shell PWA.
+- Couverture mesurée avec fontTools sur les 6 214 entrées de `public/data/warsh-page-source.json` : Alkalami contient U+08BB–U+08BD mais manque de U+065E, U+06D6, U+06DE, U+06DF, U+06E2, U+06E6, U+06E8, U+06E9, U+06EA, U+06EC. Les marqueurs de numéros de verset sont traités séparément. Le repli est donc indispensable; Alkalami ne doit pas être présentée comme une police Warsh complète et autonome.
+- **Mushaf v4 Warsh** : le [dépôt de polices](https://github.com/nuqayah/qpc-fonts/tree/master/mushaf-v4-warsh) contient 51 TTF. Premier fichier testé : `QCF4_Warsh_01_W.ttf`, 2 073 entrées cmap, aucune lettre U+0620–U+0650. L’intégration nécessite le texte encodé et la correspondance exacte mot/glyphe/fichier de cette édition, ainsi qu’un rendu dédié. Ne pas appliquer ces fichiers au texte Unicode existant.
+- **Wiam** : la [discussion de l’auteur](https://mtafsir.net/threads/خط-وئام-لكتابة-المصحف-برواية-ورش-بالخط-العثماني.57969/) annonce des essais et un partage privé. Aucun fichier redistribuable avec licence confirmé dans cette recherche.
+- **Mushaf Mohammed VI** : le [site de la Fondation](https://al-mushaf.com/) propose un lecteur et des applications. Un accès au lecteur ne constitue pas une licence de redistribution de sa police; les requêtes directes du lecteur ont retourné HTTP 403. Aucun fichier accompagné d’une autorisation de redistribution confirmé. Pas d’entrée factice dans le sélecteur.
+- Vérification : rendu inspecté en français à 1 280 px et en arabe/RTL à 390 px sur des versets réels; les dix signes absents ont été rendus dans des mots du corpus et contrôlés avec le protocole Chrome (Alkalami/Scheherazade, aucune police système). Cache PWA installé, puis fichier Alkalami récupéré hors ligne : HTTP 200, 56 543 octets, signature WOFF2 valide. Ce contrôle ne remplace pas une relecture spécialisée de l’ensemble du Coran.

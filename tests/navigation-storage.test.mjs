@@ -218,7 +218,7 @@ test("fonts: exposes riwaya-safe native ayah markers", () => {
   );
   assert.deepEqual(
     getFontOptionsForRiwaya("warsh").map((font) => font.id),
-    ["qpc-warsh", "scheherazade-new-warsh"],
+    ["qpc-warsh", "scheherazade-new-warsh", "alkalami-warsh"],
   );
 
   assert.equal(getNativeAyahMarker(1, "qpc-hafs", "hafs"), "\u0661");
