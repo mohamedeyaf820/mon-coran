@@ -396,6 +396,7 @@ export default {
     notoNaskhHint: 'Noto Naskh Arabic, très lisible sur tous écrans',
     qpcWarshHint: 'Warsh Unicode KFGQPC, disponible hors ligne',
     scheherazadeWarshHint: 'Scheherazade New, compatible riwaya Warsh',
+    alkalamiWarshHint: 'Style Kano ; certains signes utilisent Scheherazade New',
     closeAria: 'Fermer les paramètres',
     tabsAria: 'Onglets des paramètres',
     riwayaDefault: 'Riwaya par défaut',

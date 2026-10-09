@@ -32,6 +32,7 @@ export const HAFS_FONT_IDS = [
 export const WARSH_FONT_IDS = [
   "qpc-warsh",
   "scheherazade-new-warsh",
+  "alkalami-warsh",
 ];
 
 export const QURAN_COM_FONT_IDS = [...HAFS_FONT_IDS, ...WARSH_FONT_IDS];
@@ -77,7 +78,7 @@ export const QURAN_FONT_OPTIONS = [
   },
   {
     id: "qpc-warsh",
-    label: "Uthmani Warsh (Madinah)",
+    label: "QPC Uthmani Warsh (Madinah)",
     hintKey: "settings.qpcWarshHint",
     riwaya: "warsh",
   },
@@ -85,6 +86,12 @@ export const QURAN_FONT_OPTIONS = [
     id: "scheherazade-new-warsh",
     label: "Scheherazade New (Warsh)",
     hintKey: "settings.scheherazadeWarshHint",
+    riwaya: "warsh",
+  },
+  {
+    id: "alkalami-warsh",
+    label: "Alkalami (Kano)",
+    hintKey: "settings.alkalamiWarshHint",
     riwaya: "warsh",
   },
 ];
@@ -116,6 +123,9 @@ export const FONT_MAP = {
   "qcf-v4-tajweed":
     "'QCF V4 Tajweed','QCF_V4_Tajweed','QCF V2','QPC Hafs',serif",
   "qpc-warsh": WARSH_UTHMANIC_STACK,
+  // Alkalami uses the Kano style; Scheherazade supplies its missing Quranic
+  // signs without changing the canonical Warsh text. This is a mixed face.
+  "alkalami-warsh": "'Alkalami','Scheherazade New','KFGQPC Warsh',serif",
   "scheherazade-new-warsh":
     "'Scheherazade New','Scheherazade','KFGQPC Warsh',serif",
 };
@@ -160,6 +170,7 @@ const AYAH_MARKER_BY_FONT = {
   // KFGQPC Warsh rosette (see getAyahMarkerFontFamily and the [data-quran-font]
   // rule in riwaya-fonts.css).
   "scheherazade-new-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
+  "alkalami-warsh": { marker: "", digits: ARABIC_INDIC_DIGITS },
   // QCF page fonts: QCF v4 Tajweed uses U+06DD as the base character for verse-end markers.
   "qcf-v2": { marker: "", digits: ARABIC_INDIC_DIGITS },
   "qcf-v4-tajweed": { marker: "۝", digits: ARABIC_INDIC_DIGITS },
@@ -278,7 +289,7 @@ const QPC_SHAPED_MARKER_FONT_IDS = new Set([
 
 export function getAyahMarkerFontFamily(id, riwaya = "hafs") {
   const normalizedId = normalizeFontId(id, riwaya);
-  if (normalizedId === "scheherazade-new-warsh") {
+  if (normalizedId === "scheherazade-new-warsh" || normalizedId === "alkalami-warsh") {
     // Scheherazade has no composing rosette, so its digits-only Warsh marker is
     // shaped by KFGQPC Warsh — the same medallion the default Warsh face prints.
     return FONT_MAP["qpc-warsh"];
@@ -451,4 +462,3 @@ export function appendNativeAyahMarker(
   const marker = getNativeAyahMarker(ayahNumber, fontId, riwaya);
   return `${cleanedValue}\u202F${marker}`;
 }
-

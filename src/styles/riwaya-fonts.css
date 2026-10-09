@@ -1,4 +1,12 @@
 @font-face {
+  font-family: "Alkalami";
+  src: url("/fonts/alkalami-3000.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
   font-family: "Scheherazade New";
   src: url("/fonts/scheherazade-new-400.woff2") format("woff2");
   font-style: normal;
@@ -121,6 +129,6 @@ html body #root .app-root :is(
 
 /* Scheherazade Warsh has no composing rosette either; its digit-only marker is
    shaped by KFGQPC Warsh so the Warsh medallion matches the default Warsh face. */
-html body #root .app-root [data-quran-font="scheherazade-new-warsh"] .native-ayah-marker {
+html body #root .app-root :is([data-quran-font="scheherazade-new-warsh"], [data-quran-font="alkalami-warsh"]) .native-ayah-marker {
   font-family: "KFGQPC Warsh", serif !important;
 }
