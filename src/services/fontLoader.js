@@ -46,6 +46,11 @@ const FONT_SOURCES = {
     family: "Noto Naskh Arabic",
     selfHosted: true,
   },
+  "alkalami-warsh": {
+    family: "Alkalami",
+    url: "/fonts/alkalami-3000.woff2",
+    format: "woff2",
+  },
   "qpc-warsh": WARSH_FACE,
   // Callers pass the stored preference straight in, and "kfgqpc-warsh" is a
   // merged id that older settings still carry: same woff2, so it maps here.

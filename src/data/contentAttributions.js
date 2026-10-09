@@ -128,6 +128,14 @@ export const CONTENT_ATTRIBUTIONS = Object.freeze([
     url: "https://verses.quran.foundation/",
   },
   {
+    id: "alkalami-font",
+    category: "font",
+    name: "Alkalami 3.000 — SIL",
+    usage: "Option de lecture Warsh au style Kano, avec Scheherazade New pour les signes absents et KFGQPC pour les numéros de verset.",
+    rights: "SIL Open Font License 1.1. WOFF2 officiel distribué sans modification; licence jointe dans /fonts/Alkalami-OFL.txt.",
+    url: "https://software.sil.org/alkalami/",
+  },
+  {
     id: "aladhan-prayer-times",
     category: "api",
     name: "Aladhan — horaires de prière",
