@@ -2,7 +2,7 @@ name: Tests
 
 on:
   push:
-    branches: [main, master, perf/load-times-and-bug-fixes]
+    branches: [main, master]
   pull_request:
     branches: [main, master]
   workflow_dispatch:
