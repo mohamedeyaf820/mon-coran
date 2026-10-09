@@ -93,7 +93,112 @@
         ["Terms shown", "Known rights and conditions are listed for each source."]
       ]
     },
-    "actions": { "project": "View project on GitHub", "correction": "Report a correction", "home": "Back to home" }
+    "actions": { "project": "View project on GitHub", "correction": "Report a correction", "home": "Back to home" },
+    "attributions": {
+      "tanzil": {
+        "usage": "Reference Quran text and integrity check.",
+        "rights": "Creative Commons Attribution 3.0 — attribution and copyright notice required; the text must not be modified."
+      },
+      "quran-foundation": {
+        "usage": "Hafs verses, words, metadata and some translations.",
+        "rights": "API access is subject to the developer terms; each translation keeps the rights stated by its resource."
+      },
+      "alquran-cloud": {
+        "usage": "Fallback API for text, structure, search and translations.",
+        "rights": "No global redistribution licence is declared in this repository; attribution to the provider and to the editions returned by the API."
+      },
+      "french-tafsir-mukhtasar": {
+        "name": "“Al-Mukhtasar fi at-Tafsir” — Tafsir Center for Quranic Studies, via QuranEnc.com",
+        "usage": "French tafsir shown in the commentary panel, loaded surah by surah from the QuranEnc.com API and then kept on the device for offline re-reading.",
+        "rights": "QuranEnc.com allows republication with attribution to QuranEnc.com, the version stated and no change to the text; the original publisher has not given this project a separate permission."
+      },
+      "quran-com-tajwid-palette": {
+        "name": "Quran.com — tajwid colours and rules",
+        "usage": "Palette of the eight tajwid colour groups (Hafs and Warsh) and annotation of the Hafs rules (text_uthmani_tajweed field of API v4).",
+        "rights": "Palette published in Quran.com's open-source code; the Hafs annotation remains subject to the Quran Foundation API terms."
+      },
+      "warsh-tajweed-archive": {
+        "name": "Warsh tajwid annotations — archive provided to the project",
+        "usage": "Warsh rules identified on the pinned text: madd, ghunna, ikhfāʾ, iqlāb, qalqala, tafkhīm and assimilations. Imāla, taqlīl and naql are not included.",
+        "rights": "Archive provided by the project owner, produced with the ahkam_tajweed engine (MIT/Apache). Not reviewed by a Warsh specialist: to be used as a reading aid."
+      },
+      "warsh-text": {
+        "name": "Warsh Unicode text — Yousr-Allah-Allouani/warsh-quran-audio and aziz011133/quran_warsh",
+        "usage": "Warsh Unicode text by surah (first dataset) and source of the page and juz reading, with the Hafs numbering correspondence (second dataset). Versions pinned and checked before use.",
+        "rights": "Sources attributed to the original repositories; no separate redistribution licence is declared in this MushafPlus repository."
+      },
+      "quran-com-translations": {
+        "name": "Quran.com — Hafs reading translations: Montada Islamic Foundation (French) and Saheeh International (English)",
+        "usage": "Translations shown under the verses in Hafs reading, served by the Quran Foundation API (resources 136 and 20).",
+        "rights": "Each translation keeps its publisher's rights; API access remains subject to the Quran Foundation developer terms."
+      },
+      "alquran-cloud-translations": {
+        "name": "AlQuran Cloud — Spanish (Cortes), German (Abu Rida), Turkish (Diyanet) and Urdu (Junagarhi)",
+        "usage": "Translations offered in the settings and loaded on demand.",
+        "rights": "Editions returned by the AlQuran Cloud API, whose rights remain with their authors; no redistribution licence is declared in this repository."
+      },
+      "montada-warsh-fr": {
+        "usage": "French translation of the meanings, remapped to Warsh numbering (6,214 verses) and served offline.",
+        "rights": "Live use in the application is declared free by the provider (quranpedia.net, book 1949); attribution to the translator and the publisher is required."
+      },
+      "pickthall-warsh-en": {
+        "usage": "English translation of the meanings, remapped to Warsh numbering (6,214 verses) and served offline.",
+        "rights": "Public domain (published 1930); dataset taken from the quranpedia.net catalogue, book 13604; attribution to the translator is required."
+      },
+      "transliteration-en": {
+        "name": "Word-by-word Latin transliteration — Quran.com",
+        "usage": "Latin phonetics of the 6,236 Hafs verses, generated offline from the word-by-word data of the quran.com API v4. Not applied to Warsh, whose pronunciation differs (imala, naql).",
+        "rights": "Word-by-word dataset published by Quran.com; the API developer terms and attribution to the provider are required."
+      },
+      "recitations": {
+        "name": "EveryAyah, Quran.com Audio and QuranicAudio",
+        "usage": "Verse-by-verse Hafs recitations, served by EveryAyah or the Quran.com CDN; QuranicAudio serves as a fallback mirror.",
+        "rights": "Streamed from the providers' servers. MushafPlus grants no right to rehost or redistribute the recordings."
+      },
+      "mp3quran-audio": {
+        "name": "MP3Quran — whole-surah recitations",
+        "usage": "A few Hafs recitations served as a single track per surah (for example Abdul Bara Al-Thubaiti and Saad Al-Meqren).",
+        "rights": "Streamed from the provider's servers. MushafPlus grants no right to rehost or redistribute the recordings."
+      },
+      "quranpedia-audio": {
+        "name": "QuranPedia — Warsh recitations",
+        "usage": "Verse-by-verse Warsh recitations (datasets 261 to 267) numbered according to the riwaya.",
+        "rights": "Streamed from files.quranpedia.net. MushafPlus grants no right to rehost or redistribute the recordings."
+      },
+      "fonts": {
+        "name": "Quran Foundation, KFGQPC, QuranWBW (IndoPak) and Scheherazade New",
+        "usage": "Typographic rendering of Hafs, Warsh and IndoPak. The IndoPak font (AlQuran IndoPak, by Ayman Siddiqui, based on Al Qalam and KFGQPC) is loaded on demand from the Quran Foundation CDN; without a network, the reader shows the Hafs text instead.",
+        "rights": "Remote fonts remain subject to their provider; the IndoPak font is not redistributed by MushafPlus, as its licence forbids it without written agreement from QuranWBW. Local files without an attached licence notice are flagged as rights to be checked before redistribution."
+      },
+      "alkalami-font": {
+        "usage": "Kano-style Warsh reading option, with Scheherazade New for missing signs and KFGQPC for verse numbers.",
+        "rights": "SIL Open Font License 1.1. Official WOFF2 distributed unmodified; licence attached in /fonts/Alkalami-OFL.txt."
+      },
+      "aladhan-prayer-times": {
+        "name": "Aladhan — prayer times",
+        "usage": "Prayer times calculated from the chosen coordinates (rounded to about 10 m) and the calculation method set in the application.",
+        "rights": "Third-party public service; terms of use to be checked with the provider, not reproduced in this repository."
+      },
+      "hisn-almuslim-duas": {
+        "name": "Hisn al-Muslim (Fortress of the Muslim), Said ibn Ali al-Qahtani",
+        "usage": "Arabic text, chapter titles and repetition counts of the 267 supplications of the Fortress of the Muslim (132 chapters), served by local files. Quoted verses are linked to their surah and verse.",
+        "rights": "Arabic text taken from the public API of hisnmuslim.com, which states no reuse terms: permission remains to be confirmed with its operator. The French and English translations are MushafPlus's own, made from the Arabic and not reviewed by a specialist; please report any error."
+      },
+      "hadith-references": {
+        "name": "Hadith references — fawazahmed0/hadith-api and sunnah.com",
+        "usage": "Hadith number found by comparing the Arabic text of each supplication with Sahih al-Bukhari, Sahih Muslim, Abu Dawud, Tirmidhi, Nasa’i and Ibn Majah; the grades shown (Al-Albani, etc.) are those of the dataset. The link opens the hadith on sunnah.com.",
+        "rights": "Dataset under the Unlicense; sunnah.com remains subject to its own terms. A reference means the wording appears in that hadith, not that the book cites that hadith: a supplication may appear in several, and some have no reference found."
+      },
+      "adhan-ejaz215": {
+        "usage": "Optional adhan, with local download for offline listening.",
+        "rights": "Creative Commons Attribution 3.0 Unported."
+      },
+      "portraits": {
+        "name": "Reciter portraits",
+        "usage": "Profile photographs, with an initials avatar if loading fails.",
+        "rights": "Attribution to the provider named in the reciter's page; no general reuse licence is claimed."
+      }
+    }
   },
   "ar": {
     "eyebrow": "المكتبة والشفافية",
@@ -189,6 +294,111 @@
         ["الشروط معروضة", "تُذكر الحقوق والشروط المعروفة لكل مصدر."]
       ]
     },
-    "actions": { "project": "المشروع على GitHub", "correction": "الإبلاغ عن تصحيح", "home": "العودة إلى الرئيسية" }
+    "actions": { "project": "المشروع على GitHub", "correction": "الإبلاغ عن تصحيح", "home": "العودة إلى الرئيسية" },
+    "attributions": {
+      "tanzil": {
+        "usage": "نص القرآن المرجعي والتحقق من سلامته.",
+        "rights": "رخصة المشاع الإبداعي «نسب المصنف 3.0» — يلزم ذكر المصدر وإشعار حقوق النشر، ولا يجوز تعديل النص."
+      },
+      "quran-foundation": {
+        "usage": "آيات رواية حفص والكلمات والبيانات الوصفية وبعض الترجمات.",
+        "rights": "الوصول إلى الواجهة البرمجية خاضع لشروط المطوّرين؛ وتحتفظ كل ترجمة بالحقوق المعلنة في مصدرها."
+      },
+      "alquran-cloud": {
+        "usage": "واجهة برمجية احتياطية للنص والبنية والبحث والترجمات.",
+        "rights": "لا يوجد في هذا المستودع ترخيص عام لإعادة التوزيع؛ يُنسب المحتوى إلى مزوّد الخدمة وإلى الإصدارات التي تعيدها الواجهة."
+      },
+      "french-tafsir-mukhtasar": {
+        "name": "«المختصر في التفسير» — مركز تفسير للدراسات القرآنية، عبر QuranEnc.com",
+        "usage": "التفسير الفرنسي المعروض في لوحة الشرح، يُحمَّل سورةً سورةً من واجهة QuranEnc.com ثم يُحفظ على الجهاز لإعادة القراءة دون اتصال.",
+        "rights": "يسمح موقع QuranEnc.com بإعادة النشر مع نسبة المحتوى إليه وذكر الإصدار ودون تعديل النص؛ ولم يمنح الناشر الأصلي هذا المشروع إذنًا مستقلًا."
+      },
+      "quran-com-tajwid-palette": {
+        "name": "Quran.com — ألوان أحكام التجويد وقواعده",
+        "usage": "لوحة مجموعات ألوان التجويد الثماني (حفص وورش) وترميز أحكام حفص (الحقل text_uthmani_tajweed في الإصدار الرابع من الواجهة).",
+        "rights": "اللوحة منشورة في الشيفرة المفتوحة لموقع Quran.com؛ ويبقى ترميز حفص خاضعًا لشروط واجهة Quran Foundation."
+      },
+      "warsh-tajweed-archive": {
+        "name": "ترميز أحكام التجويد لورش — أرشيف قُدِّم إلى المشروع",
+        "usage": "أحكام ورش المرصودة في النص المثبَّت: المد والغنة والإخفاء والإقلاب والقلقلة والتفخيم والإدغام. ولا ترد فيه الإمالة ولا التقليل ولا النقل.",
+        "rights": "أرشيف قدّمه مالك المشروع، أُنتج بمحرّك ahkam_tajweed (رخصة MIT/Apache). لم يراجعه مختص في رواية ورش، فيُستعمل عونًا على القراءة."
+      },
+      "warsh-text": {
+        "name": "نص ورش بترميز يونيكود — Yousr-Allah-Allouani/warsh-quran-audio وaziz011133/quran_warsh",
+        "usage": "نص ورش بترميز يونيكود لكل سورة (المجموعة الأولى) ومصدر القراءة بحسب الصفحة والجزء مع مطابقة الترقيم بحفص (المجموعة الثانية). الإصدارات مثبّتة ويُتحقق منها قبل الاستعمال.",
+        "rights": "تُنسب المصادر إلى مستودعاتها الأصلية؛ ولا يُعلَن في مستودع MushafPlus ترخيص إعادة توزيع مستقل."
+      },
+      "quran-com-translations": {
+        "name": "Quran.com — ترجمات قراءة حفص: Montada Islamic Foundation (الفرنسية) وSaheeh International (الإنجليزية)",
+        "usage": "ترجمات معروضة تحت الآيات في قراءة حفص، تقدّمها واجهة Quran Foundation (المصدران 136 و20).",
+        "rights": "تحتفظ كل ترجمة بحقوق ناشرها؛ ويبقى الوصول إلى الواجهة خاضعًا لشروط المطوّرين لدى Quran Foundation."
+      },
+      "alquran-cloud-translations": {
+        "name": "AlQuran Cloud — الإسبانية (Cortes) والألمانية (Abu Rida) والتركية (Diyanet) والأردية (Junagarhi)",
+        "usage": "ترجمات تُعرض في الإعدادات وتُحمَّل عند الطلب.",
+        "rights": "إصدارات تعيدها واجهة AlQuran Cloud وتبقى حقوقها لأصحابها؛ ولا يُعلَن في هذا المستودع ترخيص لإعادة التوزيع."
+      },
+      "montada-warsh-fr": {
+        "usage": "ترجمة فرنسية للمعاني أُعيدت مطابقتها مع ترقيم ورش (6214 آية) وتُقدَّم دون اتصال.",
+        "rights": "استعمالها المباشر في التطبيق معلن حرًّا من المزوّد (quranpedia.net، الكتاب 1949)؛ ويلزم نسبتها إلى المترجم والناشر."
+      },
+      "pickthall-warsh-en": {
+        "usage": "ترجمة إنجليزية للمعاني أُعيدت مطابقتها مع ترقيم ورش (6214 آية) وتُقدَّم دون اتصال.",
+        "rights": "ملك عام (نُشرت عام 1930)؛ مأخوذة من فهرس quranpedia.net، الكتاب 13604؛ ويلزم نسبتها إلى المترجم."
+      },
+      "transliteration-en": {
+        "name": "النقل الحرفي اللاتيني كلمةً كلمة — Quran.com",
+        "usage": "نطق لاتيني لآيات حفص البالغ عددها 6236، مولَّد دون اتصال من بيانات «كلمة بكلمة» في الإصدار الرابع من واجهة quran.com. لا يُطبَّق على ورش لاختلاف نطقه (الإمالة والنقل).",
+        "rights": "مجموعة بيانات «كلمة بكلمة» منشورة من Quran.com؛ يلزم الالتزام بشروط المطوّرين ونسبتها إلى المزوّد."
+      },
+      "recitations": {
+        "name": "EveryAyah وQuran.com Audio وQuranicAudio",
+        "usage": "تلاوات حفص آيةً آية، تقدّمها EveryAyah أو شبكة توزيع Quran.com؛ وتعمل QuranicAudio مرآةً احتياطية.",
+        "rights": "تُبثّ من خوادم المزوّدين. لا يمنح MushafPlus أي حق في إعادة استضافة التسجيلات أو توزيعها."
+      },
+      "mp3quran-audio": {
+        "name": "MP3Quran — تلاوات السور كاملة",
+        "usage": "بعض تلاوات حفص تُقدَّم في مقطع واحد لكل سورة (مثل عبد الباري الثبيتي وسعد المقرن).",
+        "rights": "تُبثّ من خوادم المزوّد. لا يمنح MushafPlus أي حق في إعادة استضافة التسجيلات أو توزيعها."
+      },
+      "quranpedia-audio": {
+        "name": "QuranPedia — تلاوات ورش",
+        "usage": "تلاوات ورش آيةً آية (مجموعات البيانات من 261 إلى 267) مرقّمة بحسب الرواية.",
+        "rights": "تُبثّ من files.quranpedia.net. لا يمنح MushafPlus أي حق في إعادة استضافة التسجيلات أو توزيعها."
+      },
+      "fonts": {
+        "name": "Quran Foundation وKFGQPC وQuranWBW (IndoPak) وScheherazade New",
+        "usage": "عرض خطوط حفص وورش وخط IndoPak. يُحمَّل خط IndoPak (AlQuran IndoPak لأيمن صدّيقي، عن «القلم» وKFGQPC) عند الطلب من شبكة توزيع Quran Foundation؛ وبلا اتصال يعرض القارئ نص حفص بدلًا منه.",
+        "rights": "تبقى الخطوط البعيدة خاضعة لمزوّدها؛ ولا يعيد MushafPlus توزيع خط IndoPak لأن ترخيصه يمنع ذلك دون إذن كتابي من QuranWBW. وتُعلَّم الملفات المحلية التي لا يرافقها إشعار ترخيص على أنها حقوق ينبغي التحقق منها قبل إعادة التوزيع."
+      },
+      "alkalami-font": {
+        "usage": "خيار قراءة لورش بأسلوب كانو، مع Scheherazade New للعلامات الناقصة وKFGQPC لأرقام الآيات.",
+        "rights": "رخصة SIL Open Font License 1.1. ملف WOFF2 الرسمي موزَّع دون تعديل؛ والرخصة مرفقة في /fonts/Alkalami-OFL.txt."
+      },
+      "aladhan-prayer-times": {
+        "name": "Aladhan — أوقات الصلاة",
+        "usage": "حساب أوقات الصلاة من الإحداثيات المختارة (مقرَّبة إلى نحو 10 أمتار) ومن طريقة الحساب المضبوطة في التطبيق.",
+        "rights": "خدمة عامة من طرف ثالث؛ يُرجع إلى المزوّد لمعرفة شروط الاستعمال، وهي غير منقولة في هذا المستودع."
+      },
+      "hisn-almuslim-duas": {
+        "name": "حصن المسلم، سعيد بن علي القحطاني",
+        "usage": "النص العربي وعناوين الأبواب وعدد مرات التكرار لأدعية حصن المسلم البالغ عددها 267 دعاءً (132 بابًا)، تُقدَّم من ملفات محلية. وتُربط الآيات المقتبسة بسورتها ورقمها.",
+        "rights": "النص العربي مأخوذ من الواجهة العامة لموقع hisnmuslim.com التي لا تنص على شروط إعادة الاستعمال؛ ويبقى الإذن في حاجة إلى تأكيد من القائمين عليه. أما الترجمتان الفرنسية والإنجليزية فمن إعداد MushafPlus عن العربية ولم يراجعهما مختص؛ فنرجو الإبلاغ عن أي خطأ."
+      },
+      "hadith-references": {
+        "name": "مراجع الأحاديث — fawazahmed0/hadith-api وsunnah.com",
+        "usage": "رقم الحديث مستخرج بمقارنة النص العربي لكل دعاء مع صحيح البخاري وصحيح مسلم وسنن أبي داود والترمذي والنسائي وابن ماجه؛ والدرجات المعروضة (الألباني وغيره) هي درجات مجموعة البيانات. ويفتح الرابط الحديث على sunnah.com.",
+        "rights": "مجموعة البيانات بترخيص Unlicense؛ ويبقى موقع sunnah.com خاضعًا لشروطه. والمرجع يدل على أن الصيغة واردة في هذا الحديث، لا على أن الكتاب يورد هذا الحديث: فقد يرد الدعاء في أكثر من حديث، وبعض الأدعية لم يُعثر لها على مرجع."
+      },
+      "adhan-ejaz215": {
+        "usage": "أذان اختياري مع تنزيل محلي للاستماع دون اتصال.",
+        "rights": "رخصة المشاع الإبداعي «نسب المصنف 3.0» غير المحلية (Unported)."
+      },
+      "portraits": {
+        "name": "صور القرّاء",
+        "usage": "صور شخصية للقرّاء، مع صورة رمزية بالأحرف الأولى عند تعذّر التحميل.",
+        "rights": "تُنسب الصور إلى المزوّد المذكور في بطاقة القارئ؛ ولا يُدّعى ترخيص عام لإعادة الاستعمال."
+      }
+    }
   }
 }
