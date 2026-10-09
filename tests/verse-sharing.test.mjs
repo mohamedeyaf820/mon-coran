@@ -91,7 +91,11 @@ test("verse sharing: the product flow is image-first", () => {
   assert.match(panel, /VERSE_CARD_FORMATS[\s\S]*?square[\s\S]*?portrait[\s\S]*?story/);
   assert.match(panel, /VERSE_CARD_PRESETS[\s\S]*?fajr[\s\S]*?mushaf[\s\S]*?madinah/);
   assert.match(panel, /navigator\.share\(\{ files: \[file\], title:/);
-  assert.match(panel, /ClipboardItem\(\{ "image\/png": blob \}\)/);
+  assert.match(panel, /ClipboardItem\(\{ "image\/png": pending \}\)/);
+  // The share sheet must be reached inside the tap: the PNG is prepared ahead
+  // and handed over without an await in front of navigator.share.
+  assert.match(panel, /const blob = readyPng\(\) \|\| \(await ensurePng\(\)\);/);
+  assert.match(panel, /error\?\.name === "NotAllowedError" && !wasReady/);
   assert.match(panel, /share-studio__quick-setting/);
   assert.doesNotMatch(panel, /share-editor|share-textarea/);
   assert.match(card, /LE CORAN · SIMPLEMENT/);

@@ -512,6 +512,23 @@ function mirrorWarshFacePreload(safe) {
   }
 }
 
+/**
+ * Translation shown under the verses on a very first visit. The reading
+ * language of the address (/en/...) decides it, so an English visitor does not
+ * land on French verse translations. Once settings are saved they are the
+ * reader's own choice and this returns nothing.
+ */
+export function firstVisitTranslationDefaults(uiLang) {
+  if (uiLang !== "en") return {};
+  try {
+    return localStorage.getItem(SETTINGS_KEY) === null
+      ? { translationLangs: ["en"], wordTranslationLang: "en" }
+      : {};
+  } catch {
+    return {};
+  }
+}
+
 export function getSettings() {
   try {
     const raw = localStorage.getItem(SETTINGS_KEY);

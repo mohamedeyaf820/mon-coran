@@ -404,7 +404,7 @@ function Facts({ labels, lang }) {
 
 // The third-party register, grouped by what the content is for. The data lives
 // in contentAttributions.js; only the grouping and labels are presentation.
-function SourceRegister({ content, shell }) {
+function SourceRegister({ content, shell, localized }) {
   const groups = CATEGORY_ORDER
     .map((category) => ({ category, items: CONTENT_ATTRIBUTIONS.filter((item) => item.category === category) }))
     .filter((group) => group.items.length);
@@ -418,18 +418,24 @@ function SourceRegister({ content, shell }) {
         <div key={category} className="legal-page__source-group">
           <h3>{shell.categories[category] || category} <span>{items.length}</span></h3>
           <ul>
-            {items.map((item) => (
-              <li key={item.id} className="legal-page__attribution-item">
-                <div>
-                  <h4>{item.name}</h4>
-                  <p>{item.usage}</p>
-                  <small>{item.rights}</small>
-                </div>
-                <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`${shell.openSource} — ${item.name}`}>
-                  <ExternalLink size={16} aria-hidden="true" />
-                </a>
-              </li>
-            ))}
+            {items.map((item) => {
+              // The register is written in French; English and Arabic text
+              // comes from editorial-copy.json and falls back entry by entry.
+              const text = localized?.[item.id];
+              const name = text?.name || item.name;
+              return (
+                <li key={item.id} className="legal-page__attribution-item">
+                  <div>
+                    <h4>{name}</h4>
+                    <p>{text?.usage || item.usage}</p>
+                    <small>{text?.rights || item.rights}</small>
+                  </div>
+                  <a href={item.url} target="_blank" rel="noopener noreferrer" aria-label={`${shell.openSource} — ${name}`}>
+                    <ExternalLink size={16} aria-hidden="true" />
+                  </a>
+                </li>
+              );
+            })}
           </ul>
         </div>
       ))}
@@ -719,7 +725,7 @@ export default function LegalPage({ page = "privacy" }) {
             </section>
           ))}
 
-          {activePage === "sources" ? <SourceRegister content={content} shell={shell} /> : null}
+          {activePage === "sources" ? <SourceRegister content={content} shell={shell} localized={locale?.attributions} /> : null}
         </div>
       </div>
 

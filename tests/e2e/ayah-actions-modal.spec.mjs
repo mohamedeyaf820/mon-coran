@@ -169,3 +169,80 @@ test("verse sharing creates and shares a real PNG card", async ({ page }) => {
   expect(shared.signature).toEqual([137, 80, 78, 71]);
   expect(shared.includesText).toBe(false);
 });
+
+/*
+ * Browsers only let a page open the share sheet inside the tap that asked for
+ * it (about a second on Safari). The stub below enforces that window; the PNG
+ * encode is slowed to what a phone needs, so only a card prepared ahead of the
+ * tap, or a second tap on the finished file, can pass.
+ */
+async function openShareStudioWithStrictGesture(page, { encodeDelayMs }) {
+  await installQuranNetworkFixtures(page);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.addInitScript(({ settingsKey, delay }) => {
+    window.localStorage.setItem(
+      settingsKey,
+      JSON.stringify({ lang: "fr", theme: "dark", riwaya: "hafs", reciter: "ar.alafasy", showHome: false, displayMode: "surah", mushafLayout: "mushaf" }),
+    );
+    window.__sharedImage = null;
+    window.__shareAttempts = [];
+    window.__lastClickAt = 0;
+    document.addEventListener("click", () => { window.__lastClickAt = performance.now(); }, true);
+    const toBlob = HTMLCanvasElement.prototype.toBlob;
+    HTMLCanvasElement.prototype.toBlob = function slowToBlob(callback, ...rest) {
+      window.setTimeout(() => toBlob.call(this, callback, ...rest), delay);
+    };
+    Object.defineProperty(navigator, "canShare", { configurable: true, value: (payload) => payload.files?.[0]?.type === "image/png" });
+    Object.defineProperty(navigator, "share", {
+      configurable: true,
+      value: async (payload) => {
+        const elapsed = performance.now() - window.__lastClickAt;
+        window.__shareAttempts.push(Math.round(elapsed));
+        if (elapsed > 800) {
+          const error = new Error("Must be handling a user gesture to perform a share request.");
+          error.name = "NotAllowedError";
+          throw error;
+        }
+        const file = payload.files?.[0];
+        window.__sharedImage = { type: file?.type, size: file?.size };
+      },
+    });
+  }, { settingsKey: SETTINGS_KEY, delay: encodeDelayMs });
+
+  await page.goto("/surah/8");
+  const firstMarker = page.locator(".cpv-verse .native-ayah-marker").first();
+  await expect(firstMarker).toBeVisible({ timeout: 20_000 });
+  await firstMarker.click();
+  await page.locator(".ayah-actions-modal[role='dialog']").getByRole("button", { name: /Plus d.actions/ }).click();
+  await page.getByRole("menuitem", { name: "Partager en image" }).click();
+  const studio = page.getByRole("dialog", { name: "Partager le verset en image" });
+  await expect(studio.locator(".share-studio__preview-frame img")).toBeVisible();
+  return studio;
+}
+
+test("sharing the card right away asks for one more tap instead of failing", async ({ page }) => {
+  const studio = await openShareStudioWithStrictGesture(page, { encodeDelayMs: 1500 });
+  const shareButton = studio.getByRole("button", { name: "Partager l’image" });
+
+  await shareButton.click();
+  await expect(studio.locator(".share-studio__feedback")).toContainText("seconde fois", { timeout: 30_000 });
+  expect(await page.evaluate(() => window.__sharedImage)).toBeNull();
+
+  await shareButton.click();
+  await expect.poll(() => page.evaluate(() => window.__sharedImage), { timeout: 10_000 }).not.toBeNull();
+  const attempts = await page.evaluate(() => window.__shareAttempts);
+  expect(attempts.at(-1)).toBeLessThan(800);
+  expect((await page.evaluate(() => window.__sharedImage)).size).toBeGreaterThan(10_000);
+});
+
+test("a card prepared ahead is handed to the share sheet inside the tap", async ({ page }) => {
+  const studio = await openShareStudioWithStrictGesture(page, { encodeDelayMs: 1500 });
+  // The weight label turns into "≈ N kB" once the PNG has been prepared.
+  await expect(studio.locator(".share-studio__meta > span").nth(1)).toHaveText(/kB/, { timeout: 30_000 });
+
+  await studio.getByRole("button", { name: "Partager l’image" }).click();
+  await expect.poll(() => page.evaluate(() => window.__sharedImage), { timeout: 10_000 }).not.toBeNull();
+  const attempts = await page.evaluate(() => window.__shareAttempts);
+  expect(attempts).toHaveLength(1);
+  expect(attempts[0]).toBeLessThan(300);
+});

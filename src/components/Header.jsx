@@ -12,6 +12,7 @@ import {
   toAr,
 } from "../data/surahs";
 import { normalizeFontId } from "../data/fonts";
+import { getSurahEnglishMeaning } from "../data/surahEnglishMeanings";
 import { cn } from "../lib/utils";
 import {
   ARABIC_FONT_SIZE_MAX,
@@ -368,7 +369,9 @@ export default function Header({ immersiveHidden = false }) {
       : centerTitle;
   const centerMeaning =
     !showDuas && displayMode !== "juz"
-      ? surahMeta?.fr || centerSubtitle || centerTransliteration
+      ? (lang === "en" ? getSurahEnglishMeaning(activeSurahNum) : surahMeta?.fr) ||
+        centerSubtitle ||
+        centerTransliteration
       : "";
   const centerTitleVariants = [
     centerArabicTitle,
