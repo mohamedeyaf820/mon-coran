@@ -59,10 +59,13 @@ const getInitialState = () => {
     stored.reciter || "ar.alafasy",
     initialRiwaya,
   );
-  const initialLang = ["fr", "en", "ar"].includes(stored.lang)
-    ? stored.lang
-    : "fr";
   const routeOverrides = parseInitialRoute();
+  // A language in the address (/en/..., /ar/...) wins over the saved one.
+  const initialLang = ["fr", "en", "ar"].includes(routeOverrides.lang)
+    ? routeOverrides.lang
+    : ["fr", "en", "ar"].includes(stored.lang)
+      ? stored.lang
+      : "fr";
   const initialFontFamilyByRiwaya = {
     hafs: normalizeFontId(
       stored.fontFamilyByRiwaya?.hafs ||

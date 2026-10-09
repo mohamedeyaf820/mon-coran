@@ -63,6 +63,9 @@ const ASSETS_TO_CACHE = [
   "/fonts/kfgqpc-warsh-21.woff2",
   "/fonts/scheherazade-new-400.woff2",
   "/fonts/alkalami-3000.woff2",
+  "/fonts/amiri-quran-v19-arabic.woff2",
+  "/fonts/noto-naskh-arabic-v44-ui.woff2",
+  "/fonts/noto-naskh-arabic-v44-arabic.woff2",
   "/fonts/sura_names.woff2",
 ];
 

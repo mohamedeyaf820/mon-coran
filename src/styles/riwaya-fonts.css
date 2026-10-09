@@ -1,3 +1,15 @@
+/* QPC Hafs maps these three Warsh characters to placeholders. A restricted
+   face lets the browser shape them with Scheherazade without editing text
+   or changing the existing Hafs face. The binary is shared via HTTP cache. */
+@font-face {
+  font-family: "QPC Hafs Unicode";
+  src: url("/fonts/uthmanic-hafs-v18.woff2") format("woff2");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  unicode-range: U+0000-06D1, U+06D3-06DE, U+06E0-06EA, U+06EC-10FFFF;
+}
+
 @font-face {
   font-family: "Alkalami";
   src: url("/fonts/alkalami-3000.woff2") format("woff2");
@@ -129,6 +141,12 @@ html body #root .app-root :is(
 
 /* Scheherazade Warsh has no composing rosette either; its digit-only marker is
    shaped by KFGQPC Warsh so the Warsh medallion matches the default Warsh face. */
-html body #root .app-root :is([data-quran-font="scheherazade-new-warsh"], [data-quran-font="alkalami-warsh"]) .native-ayah-marker {
+html body #root .app-root :is(
+  [data-quran-font="scheherazade-new-warsh"],
+  [data-quran-font="alkalami-warsh"],
+  [data-quran-font="qpc-uthmani-warsh"],
+  [data-quran-font="amiri-quran-warsh"],
+  [data-quran-font="noto-naskh-arabic-warsh"]
+) .native-ayah-marker {
   font-family: "KFGQPC Warsh", serif !important;
 }

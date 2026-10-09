@@ -175,3 +175,17 @@ Amiri Quran n'est **pas** proposé pour Warsh dans le projet (`WARSH_FONT_IDS` :
 - **Wiam** : la [discussion de l’auteur](https://mtafsir.net/threads/خط-وئام-لكتابة-المصحف-برواية-ورش-بالخط-العثماني.57969/) annonce des essais et un partage privé. Aucun fichier redistribuable avec licence confirmé dans cette recherche.
 - **Mushaf Mohammed VI** : le [site de la Fondation](https://al-mushaf.com/) propose un lecteur et des applications. Un accès au lecteur ne constitue pas une licence de redistribution de sa police; les requêtes directes du lecteur ont retourné HTTP 403. Aucun fichier accompagné d’une autorisation de redistribution confirmé. Pas d’entrée factice dans le sélecteur.
 - Vérification : rendu inspecté en français à 1 280 px et en arabe/RTL à 390 px sur des versets réels; les dix signes absents ont été rendus dans des mots du corpus et contrôlés avec le protocole Chrome (Alkalami/Scheherazade, aucune police système). Cache PWA installé, puis fichier Alkalami récupéré hors ligne : HTTP 200, 56 543 octets, signature WOFF2 valide. Ce contrôle ne remplace pas une relecture spécialisée de l’ensemble du Coran.
+
+### 9.1 Styles partagés avec Hafs
+
+Les options `qpc-uthmani-warsh`, `amiri-quran-warsh` et `noto-naskh-arabic-warsh` réutilisent les fichiers déjà embarqués pour proposer ces styles sur le **texte Warsh**. Elles ne sélectionnent jamais un texte Hafs, les codes IndoPak ou une variante de signes propre à Hafs. Les numéros de verset restent rendus avec KFGQPC Warsh. Le choix par défaut reste `qpc-warsh`.
+
+- **QPC Uthmani, style Hafs** : une face CSS distincte, `QPC Hafs Unicode`, exclut U+06D2, U+06DF et U+06EB de son `unicode-range`. Les glyphes du fichier Hafs pour ces caractères sont des substituts incorrects (U+06D2 et U+06DF sont des composites de `uni0600`). Scheherazade les rend sur le texte canonique. Le binaire reste intact et partagé par le cache HTTP; la face Hafs existante est préservée.
+- **Amiri Quran** : Scheherazade complète U+065E et U+06D2, absents de son cmap.
+- **Noto Naskh Arabic** : les deux sous-ensembles arabes utilisés par l’app couvrent ensemble le corpus Warsh. Ses fichiers et celui d’Amiri sont inclus dans le cache du shell pour cette lecture hors ligne.
+- **Scheherazade New** : déjà disponible dans les deux riwayat.
+- **IndoPak Nastaleeq** : reste limité à Hafs, car son rendu dans l’app consomme un texte encodé spécifique; aucun texte IndoPak Warsh correspondant n’est embarqué.
+
+Ces options sont des styles alternatifs de lecture et ne reproduisent pas toutes les conventions graphiques du mushaf maghrébin.
+
+Vérification : les trois styles ont été inspectés sur des versets Warsh réels en français à 1 280 px et en arabe/RTL à 390 px. Les caractères exclus du QPC et absents d’Amiri ont été contrôlés dans des mots du corpus avec le protocole Chrome : le repli utilise Scheherazade, sans police système. Les six fichiers nécessaires ont été récupérés hors ligne depuis le cache PWA avec une signature WOFF2 valide. Les tests du lecteur vérifient le texte Warsh intact et le choix de police conservé après rechargement.
