@@ -115,11 +115,23 @@ test("a chapter shows its sources: the verse opens in the reader, the hadith ope
   await open(page, "/duas/hisn/27");
   const kursi = page.locator(".dua-card-v5").first();
   await expect(kursi).toBeVisible({ timeout: 30_000 });
-  await expect(kursi.locator(".dua-sources")).toContainText("La Vache 2:255");
+  const sources = kursi.locator("details.dua-sources");
+  await expect(sources).not.toHaveAttribute("open");
+  await expect(kursi.locator("button.dua-source-link")).toBeHidden();
+  const toggle = sources.locator("summary");
+  await toggle.focus();
+  await page.keyboard.press("Enter");
+  await expect(sources).toHaveAttribute("open", "");
+  await expect(kursi.locator("button.dua-source-link")).toBeVisible();
+  await page.keyboard.press("Space");
+  await expect(sources).not.toHaveAttribute("open");
+  await toggle.click();
+  await expect(sources).toContainText("La Vache 2:255");
   await expect(page.locator(".dua-card-v5").nth(1).locator(".dua-repeat-pill")).toContainText("3 fois");
 
   // A supplication with a hadith reference carries a safe external link.
   const link = page.locator(".dua-source-link[href^='https://sunnah.com/']").first();
+  await link.locator("xpath=ancestor::details").locator("summary").click();
   await expect(link).toBeVisible();
   await expect(link).toHaveAttribute("target", "_blank");
   await expect(link).toHaveAttribute("rel", /noopener/);
@@ -128,6 +140,24 @@ test("a chapter shows its sources: the verse opens in the reader, the hadith ope
 
   await kursi.locator("button.dua-source-link").first().click();
   await expect(page).toHaveURL(/\/surah\/2\/255/);
+});
+
+test("sources disclose independently in French, English and Arabic", async ({ page }) => {
+  for (const [lang, width, theme] of [["fr", 390, "light"], ["en", 1440, "light"], ["ar", 390, "dark"], ["ar", 1440, "dark"]]) {
+    await page.setViewportSize({ width, height: 900 });
+    await open(page, "/duas/hisn/27", lang, theme);
+    const panels = page.locator("details.dua-sources");
+    await expect(panels.first()).toBeVisible({ timeout: 30_000 });
+    await expect(panels.first().locator(".dua-sources__content")).toBeHidden();
+    await panels.first().locator("summary").scrollIntoViewIfNeeded();
+    await page.screenshot({ path: `.codex-artifacts/dua-sources/closed-${lang}-${width}.png` });
+    await panels.first().locator("summary").click();
+    await expect(panels.first().locator(".dua-sources__content")).toBeVisible();
+    await expect(panels.nth(1).locator(".dua-sources__content")).toBeHidden();
+    await page.screenshot({ path: `.codex-artifacts/dua-sources/open-${lang}-${width}.png` });
+    await panels.first().locator("summary").click();
+    await expect(panels.first().locator(".dua-sources__content")).toBeHidden();
+  }
 });
 
 test("search: a French word finds chapters and invocations, nonsense finds nothing", async ({ page }) => {
@@ -189,10 +219,12 @@ test("touch targets: quick links, tiles, rows and source links are at least 44px
     ["/duas", ".duas-quick a"],
     ["/duas", ".duas-tile"],
     ["/duas/hisn", ".hisn-row"],
+    ["/duas/hisn/27", ".dua-sources__title"],
     ["/duas/hisn/27", ".dua-source-link"],
   ]) {
     await open(page, path);
     const target = page.locator(selector).first();
+    if (selector === ".dua-source-link") await page.locator(".dua-sources__title").first().click();
     await expect(target).toBeVisible({ timeout: 30_000 });
     const box = await target.boundingBox();
     expect(box?.height ?? 0, `${selector} on ${path}`).toBeGreaterThanOrEqual(43.5);

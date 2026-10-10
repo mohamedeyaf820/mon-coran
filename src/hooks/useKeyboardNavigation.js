@@ -32,7 +32,7 @@ function shouldIgnoreKeyboardEvent(event) {
   if (
     isElementTarget &&
     target.closest(
-      'input, textarea, select, button, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
+      'input, textarea, select, button, summary, [contenteditable="true"], [role="textbox"], [role="combobox"], [role="slider"]',
     )
   ) {
     return true;
