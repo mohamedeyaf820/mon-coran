@@ -55,18 +55,13 @@
         <meta name="twitter:description" content="Lisez et comprenez gratuitement le Coran avec Tajwid, traductions et récitations Hafs et Warsh." />
         <meta name="twitter:image" content="https://mon-coran-kappa.vercel.app/og-image.jpg" />
         <meta name="twitter:image:alt" content="MushafPlus — lecture du Saint Coran en ligne" />
-        <!-- Connexion anticipée uniquement vers l'API de texte primaire. -->
+        <!-- Connexion anticipée uniquement vers les deux origines que la lecture appelle dès le
+             premier affichage : le texte arabe (api.quran.com, connexion complète) et la
+             traduction par défaut (api.alquran.cloud, DNS seul). Les autres hôtes (audio, polices
+             QCF, texte Warsh) ne sont sollicités qu'à la demande : aucun indice, donc aucune
+             ligne « Content blocker prevented… » dans Safari avant tout vrai appel. -->
         <link rel="preconnect" href="https://api.quran.com" crossorigin />
-        <!-- DNS prefetch : domaines secondaires (chargés à la demande) -->
         <link rel="dns-prefetch" href="https://api.alquran.cloud" />
-        <link rel="dns-prefetch" href="https://files.quranpedia.net" />
-        <link rel="dns-prefetch" href="https://audio.qurancdn.com" />
-        <link rel="dns-prefetch" href="https://verses.quran.foundation" />
-        <link rel="dns-prefetch" href="https://everyayah.com" />
-        <link rel="dns-prefetch" href="https://raw.githubusercontent.com" />
-        <link rel="dns-prefetch" href="https://static.qurancdn.com" />
-        <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com" />
-        <link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
         <!-- The logo is drawn by the header and the splash screen, but it is a
              38px mark: at high priority it raced the two preloaded fonts below,
              which are what actually gate the first Quran glyph. -->
