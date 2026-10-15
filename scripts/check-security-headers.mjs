@@ -21,6 +21,18 @@ function readVercelRootHeaders(source) {
   );
 }
 
+function readCloudflareRootHeaders(source) {
+  const lines = source.split(/\r?\n/);
+  const start = lines.findIndex((line) => line.trim() === "/*");
+  const headers = {};
+  for (let i = start + 1; start >= 0 && i < lines.length; i += 1) {
+    if (lines[i] && !/^\s/.test(lines[i])) break;
+    const match = lines[i].match(/^\s+([A-Za-z0-9-]+):\s*(.*)$/);
+    if (match) headers[match[1]] = match[2].trim();
+  }
+  return headers;
+}
+
 function compareHeaders(provider, actual, expected) {
   const errors = [];
   for (const [name, value] of Object.entries(expected)) {
@@ -40,7 +52,11 @@ export function auditDeploymentSecurityHeaders() {
   const expected = buildRootSecurityHeaders("production");
   const netlify = readNetlifyRootHeaders(readFileSync("netlify.toml", "utf8"));
   const vercel = readVercelRootHeaders(readFileSync("vercel.json", "utf8"));
+  const cloudflare = readCloudflareRootHeaders(
+    readFileSync("public/_headers", "utf8"),
+  );
   return [
+    ...compareHeaders("Cloudflare", cloudflare, expected),
     ...compareHeaders("Netlify", netlify, expected),
     ...compareHeaders("Vercel", vercel, expected),
   ];
@@ -52,6 +68,6 @@ if (pathToFileURL(process.argv[1]).href === import.meta.url) {
     console.error(errors.join("\n"));
     process.exitCode = 1;
   } else {
-    console.log("Security headers: Netlify and Vercel match the centralized policy.");
+    console.log("Security headers: Cloudflare, Netlify and Vercel match the centralized policy.");
   }
 }

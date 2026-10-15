@@ -64,6 +64,7 @@
     "qa:smoke": "npm run test:e2e:smoke && npm run test:e2e:reading && npm run test:security",
     "csp:dev": "node scripts/print-csp.mjs development",
     "csp:prod": "node scripts/print-csp.mjs production",
+    "deploy:cloudflare": "npm run build && node scripts/prepare-cloudflare.mjs && npx wrangler@4 deploy",
     "audit:headers": "node scripts/check-security-headers.mjs",
     "audit:warsh:audio": "node scripts/audit-warsh-audio.mjs",
     "audit:warsh:tajweed": "node scripts/verify-warsh-tajweed.mjs",
