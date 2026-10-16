@@ -48,7 +48,7 @@ test("placeholders are filled, unknown ones are left visible, unknown keys fall 
     "132 chapitres · 267 invocations",
   );
   assert.equal(hubText("repeat", "en", 3), "Repeat 3 times");
-  assert.equal(hubText("openHadith", "fr", undefined, { name: "Sahih Muslim" }), "Ouvrir Sahih Muslim, hadith {number}, sur sunnah.com");
+  assert.equal(hubText("openHadith", "fr", undefined, { name: "Sahih Muslim" }), "Ouvrir Sahih Muslim {number} (hadith), sur sunnah.com");
   assert.equal(hubText("doesNotExist", "fr"), "doesNotExist");
   assert.equal(hubText("title", "xx"), duasHub.fr.title, "an unknown language falls back to French");
 });

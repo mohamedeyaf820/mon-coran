@@ -48,7 +48,7 @@ test("Rabbana: forty numbered supplications, each with its verse, opening in the
   // The three parts of 2:286 are told apart.
   await expect(page.locator(".dua-card-v5", { hasText: "2:286 (2/3)" })).toHaveCount(1);
   await expect(page.locator(".duas-results-copy")).toContainText("Sens écrit par MushafPlus");
-  await first.getByRole("button", { name: "Lire le verset dans le Coran" }).click();
+  await first.getByRole("button", { name: "Lire dans le Coran" }).click();
   await expect(page).toHaveURL(/\/surah\/2\/127/);
 });
 

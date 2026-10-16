@@ -87,7 +87,6 @@ export default {
     copyTitle: 'Copy',
     copyAria: 'Copy supplication',
     openInQuran: 'Open in Quran',
-    readVerseAria: 'Read verse in Quran',
     readInQuran: 'Read in Quran',
     shareTitle: 'Share as image',
     shareAria: 'Share the supplication as an image',

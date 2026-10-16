@@ -66,11 +66,6 @@ export default function PrayerTimesCard({ lang, isRtl, status, next, timings, no
         type="button"
         className={`home-prayer-strip ${stateClass}`}
         onClick={onOpen}
-        aria-label={
-          status === "ready" && next
-            ? `${t("prayer.next", lang)}: ${t(`prayer.names.${next.key}`, lang)} ${next.hhmm} — ${formatCountdown(next.minutesUntil, lang)}`
-            : `${title} — ${detail}`
-        }
       >
         <span className="home-prayer-strip__icon" aria-hidden="true">{icon}</span>
         <span className="home-prayer-strip__copy">

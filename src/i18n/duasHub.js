@@ -31,7 +31,7 @@ const duasHub = {
     foundIn: "Texte retrouvé dans",
     closeMatch: "formulation proche",
     excerptMatch: "extrait",
-    openHadith: "Ouvrir {name}, hadith {number}, sur sunnah.com",
+    openHadith: "Ouvrir {name} {number} (hadith), sur sunnah.com",
     gradeLine: "{grade} ({by})",
     noHadithRef:
       "Référence du hadith non retrouvée dans les six recueils consultés (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasa’i, Ibn Majah).",
@@ -89,7 +89,7 @@ const duasHub = {
     foundIn: "Wording found in",
     closeMatch: "close wording",
     excerptMatch: "excerpt",
-    openHadith: "Open {name}, hadith {number}, on sunnah.com",
+    openHadith: "Open {name} {number} (hadith), on sunnah.com",
     gradeLine: "{grade} ({by})",
     noHadithRef:
       "Hadith reference not found in the six collections searched (Bukhari, Muslim, Abu Dawud, Tirmidhi, Nasa’i, Ibn Majah).",
@@ -159,7 +159,7 @@ const duasHub = {
     foundIn: "النص موجود في",
     closeMatch: "صياغة قريبة",
     excerptMatch: "جزء من النص",
-    openHadith: "فتح {name} رقم {number} على موقع sunnah.com",
+    openHadith: "فتح {name} {number} (حديث) على موقع sunnah.com",
     gradeLine: "{grade} ({by})",
     noHadithRef: "لم يُعثر على رقم الحديث في الكتب الستة التي جرى البحث فيها.",
     bookSource: "حصن المسلم، سعيد بن علي القحطاني",

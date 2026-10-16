@@ -122,7 +122,6 @@ export default function DuaCard({
               className="dua-card-footer-link"
               onClick={onOpenVerse}
               type="button"
-              aria-label={t("duas.readVerseAria", lang)}
             >
               <ArrowRight size={15} aria-hidden="true" />
               <span>{t("duas.readInQuran", lang)}</span>

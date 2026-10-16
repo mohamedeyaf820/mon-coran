@@ -203,11 +203,11 @@ export default function PrayersPage() {
         <button
           type="button"
           className="prayers-back-btn"
-          aria-label={t("ux.prayerSettings", lang)}
           onClick={() => set({ settingsActiveTab: "prayer", settingsOpen: true })}
         >
           <Settings2 size={15} aria-hidden="true" />
           <span>{t("nav.settings", lang)}</span>
+          <span className="sr-only"> — {t("ux.prayerSettings", lang)}</span>
         </button>
       </section>
 

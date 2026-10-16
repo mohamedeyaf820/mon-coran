@@ -87,7 +87,6 @@ export default {
     copyTitle: 'نسخ الدعاء',
     copyAria: 'نسخ الدعاء',
     openInQuran: 'فتح في المصحف',
-    readVerseAria: 'فتح الآية في المصحف',
     readInQuran: 'فتح في المصحف',
     shareTitle: 'مشاركة كصورة',
     shareAria: 'مشاركة الدعاء كصورة',

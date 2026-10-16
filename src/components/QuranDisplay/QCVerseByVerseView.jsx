@@ -157,7 +157,7 @@ const QCVerseCard = memo(function QCVerseCard({
           <button
             type="button"
             onClick={handleClick}
-            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${ayah.numberInSurah}`}
+            aria-label={`${lang === "fr" ? "Verset" : lang === "ar" ? "آية" : "Verse"} ${referenceLabel ?? `${surahNum}:${ayah.numberInSurah}`}`}
             aria-expanded={isActive}
             className={cn(
               "qc-list-card__reference",

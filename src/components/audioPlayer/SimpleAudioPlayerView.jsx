@@ -213,7 +213,6 @@ function CompactPlayer(props) {
           type="button"
           className="mp-player-minimized-open simple-player__compact-meta"
           onClick={onExpand}
-          aria-label={expandLabel}
         >
           <span className="simple-player__compact-meta-text">
             <span className="simple-player__compact-title-row">
@@ -246,6 +245,7 @@ function CompactPlayer(props) {
               <span className="simple-player__compact-reciter">{reciterLabel || "—"}</span>
             )}
           </span>
+          <span className="sr-only"> — {expandLabel}</span>
         </button>
         <div className="simple-player__compact-actions">
           <IconButton

@@ -189,10 +189,6 @@ export default function SurahReaderHeader({
           }}
           aria-expanded={readerToolsOpen}
           aria-controls="srh-reader-tools"
-          aria-label={t(
-            readerToolsOpen ? "reader.hideControls" : "reader.showControls",
-            lang,
-          )}
         >
         {/* Arabic name */}
         <div className="srh-arabic" dir="rtl" lang="ar" aria-label={s.ar} role="img">
@@ -223,6 +219,10 @@ export default function SurahReaderHeader({
           </p>
         </div>
           <ChevronDown className="srh-identity__chevron" size={15} aria-hidden="true" />
+          <span className="sr-only">
+            {" — "}
+            {t(readerToolsOpen ? "reader.hideControls" : "reader.showControls", lang)}
+          </span>
         </div>
 
         {/* Action buttons */}
@@ -269,10 +269,10 @@ export default function SurahReaderHeader({
             onClick={openInfo}
             aria-expanded={showInfo}
             aria-haspopup="dialog"
-            aria-label={t("reader.infoAria", lang)}
           >
-            <Info size={15} />
+            <Info size={15} aria-hidden="true" />
             <span className="srh-info-btn__label">{t("reader.infoShort", lang)}</span>
+            <span className="sr-only"> — {t("reader.infoAria", lang)}</span>
           </button>
         </div>
       </div>
@@ -294,10 +294,6 @@ export default function SurahReaderHeader({
           }}
           aria-expanded={readerToolsOpen}
           aria-controls="srh-reader-tools"
-          aria-label={t(
-            readerToolsOpen ? "reader.hideControls" : "reader.showControls",
-            lang,
-          )}
         >
           <span className="srh-mobile-bar__name" dir="rtl" lang="ar" aria-label={s.ar} role="img">
             <span className="font-surah-names" dir="ltr" lang="en" aria-hidden="true">
@@ -309,6 +305,10 @@ export default function SurahReaderHeader({
             <small>{surahNum} · {verseCount} {t("reader.verses", lang)}</small>
           </span>
           <ChevronDown className="srh-mobile-bar__chevron" size={13} aria-hidden="true" />
+          <span className="sr-only">
+            {" — "}
+            {t(readerToolsOpen ? "reader.hideControls" : "reader.showControls", lang)}
+          </span>
         </button>
         <div className="srh-mobile-bar__actions">
           {mushafIsOn && onOpenFullscreen ? (

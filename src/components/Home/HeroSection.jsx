@@ -28,7 +28,6 @@ function TodaySuggestion({ isRtl, lang, onClick, onIntent, surah }) {
       onPointerEnter={onIntent}
       onFocus={onIntent}
       onTouchStart={onIntent}
-      aria-label={`${label}, ${surah.n}`}
     >
       <span className="home-today-suggestion__number">{surah.n}</span>
       <span className="home-today-suggestion__copy">
