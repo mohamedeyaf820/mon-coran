@@ -77,7 +77,6 @@ export default function GeneralTab() {
                 data-active={isActive}
                 onClick={() => set({ theme: item.id })}
                 aria-pressed={isActive}
-                aria-label={`${label}. ${description}`}
               >
                 <span
                   className="settings-theme-tile__visual"

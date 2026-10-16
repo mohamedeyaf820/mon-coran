@@ -58,7 +58,9 @@ const LIMITS = {
   // (cardOrnaments.js) in the lazy share chunk; none of it is in the boot graph.
   // 2026-10-08 (fullscreen Mushaf): 1548.7 kB measured, ceiling 1555 kB: the fitted view,
   // the tap-to-hide chrome and the header's narrow-window rules (lazy reader chunk).
-  js: Number(process.env.BUDGET_JS_KB || 1555),
+  // 2026-10-16 (dependency update): 1557.6 kB measured, ceiling 1565 kB: Radix dialog,
+  // dropdown-menu, popover and slot moved to 1.3 / 2.2 / 1.3 / 1.5 (+3.0 kB, no source change).
+  js: Number(process.env.BUDGET_JS_KB || 1565),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
