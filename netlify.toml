@@ -71,6 +71,37 @@
     Cache-Control = "public, max-age=31536000, immutable"
     X-Content-Type-Options = "nosniff"
 
+# ── Pages /page et /juz : servies avec le shell de l'accueil, donc hors index ──
+[[headers]]
+  for = "/page/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/juz/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/en/page/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/en/juz/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/ar/page/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/ar/juz/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
 # ── HTML : pas de cache + headers de sécurité ──
 [[headers]]
   for = "/*"

@@ -24,3 +24,21 @@
 /data/*
   ! Cache-Control
   Cache-Control: public, max-age=86400
+
+/page/*
+  X-Robots-Tag: noindex, follow
+
+/juz/*
+  X-Robots-Tag: noindex, follow
+
+/en/page/*
+  X-Robots-Tag: noindex, follow
+
+/en/juz/*
+  X-Robots-Tag: noindex, follow
+
+/ar/page/*
+  X-Robots-Tag: noindex, follow
+
+/ar/juz/*
+  X-Robots-Tag: noindex, follow
