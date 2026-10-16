@@ -18,6 +18,12 @@ const FETCH_TIMEOUT = 4000;
 // constrained (2G/3G, data saver) keeps the short cap on purpose, so those
 // readers still get the small fallback text quickly.
 const BODY_TIMEOUT = 30000;
+// Budget to receive the headers of a page requested after the first one of the
+// same surah. The first page already proved the server alive; on a slow link the
+// other pages queue behind it and their headers arrive late without the server
+// being down, so cutting them at the first-page budget sent the reader to a
+// degraded fallback text. A constrained link keeps the short cap.
+const FOLLOW_UP_PAGE_TIMEOUT = 12000;
 
 /**
  * Called once the headers arrived. Returns the deadline now in force: the body
@@ -225,8 +231,10 @@ export function canonicalCacheUrl(url) {
 /**
  * @param {string} [legacyUrl] The URL an earlier release requested for the same
  *   data: a page cached under it is served and re-filed under the current key.
+ * @param {{ followUpPage?: boolean }} [options] `followUpPage` grants the longer
+ *   header budget to a page requested after the first one of a surah.
  */
-export async function fetchJson(url, signal, legacyUrl) {
+export async function fetchJson(url, signal, legacyUrl, { followUpPage = false } = {}) {
   if (signal?.aborted) {
     throw new DOMException("Request aborted", "AbortError");
   }
@@ -275,8 +283,10 @@ export async function fetchJson(url, signal, legacyUrl) {
   };
 
   entry.promise = (async () => {
-    const timed = createTimedSignal(null);
-    let timeoutMs = FETCH_TIMEOUT;
+    const headerBudget =
+      followUpPage && !shouldAvoidBackgroundWork() ? FOLLOW_UP_PAGE_TIMEOUT : FETCH_TIMEOUT;
+    const timed = createTimedSignal(null, headerBudget);
+    let timeoutMs = headerBudget;
     try {
       const response = await fetch(url, {
         signal: timed.signal,

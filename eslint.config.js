@@ -8,6 +8,7 @@ export default [
     name: "mushaf-plus/ignores",
     ignores: [
       "dist/**",
+      "dist-*/**",
       ".vercel/**",
       ".vercel-cli-data/**",
       "node_modules/**",

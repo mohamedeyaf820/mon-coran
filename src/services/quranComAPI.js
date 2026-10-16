@@ -286,6 +286,7 @@ async function fetchPaginated(path, meta, signal, expectedPages = 1, onFirstPage
       buildUrl(path, { page: String(page), words: true }),
       signal,
       buildUrl(path, { page: String(page), words: true }, true),
+      { followUpPage: page > 1 },
     );
   const speculative = Math.max(1, Math.min(expectedPages, MAX_PARALLEL_PAGES));
 
