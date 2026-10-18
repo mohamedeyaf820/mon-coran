@@ -43,11 +43,11 @@
 /ar/juz/*
   X-Robots-Tag: noindex, follow
 
-/surah/*/*
+/surah/:number/:verse
   X-Robots-Tag: noindex, follow
 
-/en/surah/*/*
+/en/surah/:number/:verse
   X-Robots-Tag: noindex, follow
 
-/ar/surah/*/*
+/ar/surah/:number/:verse
   X-Robots-Tag: noindex, follow

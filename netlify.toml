@@ -103,17 +103,17 @@
     X-Robots-Tag = "noindex, follow"
 
 [[headers]]
-  for = "/surah/*/*"
+  for = "/surah/:number/:verse"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
 [[headers]]
-  for = "/en/surah/*/*"
+  for = "/en/surah/:number/:verse"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
 [[headers]]
-  for = "/ar/surah/*/*"
+  for = "/ar/surah/:number/:verse"
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
