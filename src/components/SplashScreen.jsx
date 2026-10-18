@@ -58,6 +58,20 @@ export default function SplashScreen({
     window.setTimeout(onDone, SPLASH_FADE_MS);
   }, [onDone]);
 
+  // index.html paints a static copy of this screen before React exists; let it
+  // fade out once this one is mounted underneath.
+  useEffect(() => {
+    const boot = document.getElementById("boot-splash");
+    if (!boot) return undefined;
+    const fade = window.setTimeout(() => boot.classList.add("is-out"), 120);
+    const drop = window.setTimeout(() => boot.remove(), 120 + 220);
+    return () => {
+      window.clearTimeout(fade);
+      window.clearTimeout(drop);
+      boot.remove();
+    };
+  }, []);
+
   useEffect(() => {
     let active = true;
     const { min, max, skip } = TIMING[mode];
