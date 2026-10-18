@@ -23,6 +23,12 @@
       ]
     },
     {
+      "source": "/:lang(en|ar)?/surah/:number/:verse",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, follow" }
+      ]
+    },
+    {
       "source": "/:lang(en|ar)?/:kind(page|juz)/:rest*",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, follow" }

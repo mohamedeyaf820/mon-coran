@@ -42,3 +42,12 @@
 
 /ar/juz/*
   X-Robots-Tag: noindex, follow
+
+/surah/*/*
+  X-Robots-Tag: noindex, follow
+
+/en/surah/*/*
+  X-Robots-Tag: noindex, follow
+
+/ar/surah/*/*
+  X-Robots-Tag: noindex, follow

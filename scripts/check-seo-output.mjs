@@ -85,13 +85,13 @@ check(surah.includes('href="/surah/3"'), "next-surah link missing");
 const sitemapLocations = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/g)].map(
   (match) => match[1],
 );
-// Per language: 6 site pages + 114 surahs + the invocation sub-pages (hisn list, quran, rabbana,
+// Per language: 7 site pages + 114 surahs + the invocation sub-pages (hisn list, quran, rabbana,
 // khatm and one page per Hisn chapter).
 const hisnLibrary = JSON.parse(
   await readFile(path.join(rootDir, "public", "data", "hisn", "hisn.json"), "utf8"),
 );
 // Each page exists in French, English and Arabic.
-const expectedUrls = 3 * (120 + 4 + hisnLibrary.chapters.length);
+const expectedUrls = 3 * (121 + 4 + hisnLibrary.chapters.length);
 check(
   sitemapLocations.length === expectedUrls,
   `sitemap must contain exactly ${expectedUrls} useful URLs, found ${sitemapLocations.length}`,

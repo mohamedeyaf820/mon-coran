@@ -102,6 +102,21 @@
   [headers.values]
     X-Robots-Tag = "noindex, follow"
 
+[[headers]]
+  for = "/surah/*/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/en/surah/*/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
+[[headers]]
+  for = "/ar/surah/*/*"
+  [headers.values]
+    X-Robots-Tag = "noindex, follow"
+
 # ── HTML : pas de cache + headers de sécurité ──
 [[headers]]
   for = "/*"

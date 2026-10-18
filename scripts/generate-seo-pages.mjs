@@ -130,6 +130,7 @@ function siteLinks(lang) {
   const labels = COPY[lang];
   const links = [
     ["/duas", SHELL[lang].duasLink],
+    ["/prieres", labels.prayersTitle],
     ["/about", labels.legal.about],
     ["/sources", labels.legal.sources],
     ["/privacy", labels.legal.privacy],
@@ -174,6 +175,16 @@ addPage("/duas", "duas", (lang) => {
     extra: `<nav aria-label="${escapeHtml(hub.title)}"><h2>${escapeHtml(hub.browseTitle)}</h2>${linkList(sections, lang)}</nav>`,
   };
 });
+
+// Prayer times: a real route of the app, prerendered so its title, description and
+// canonical are its own in the raw HTML instead of the home page's.
+addPage("/prieres", "prayers", (lang) => ({
+  title: `${COPY[lang].prayersTitle} | ${brand}`,
+  heading: COPY[lang].prayersTitle,
+  description: COPY[lang].prayersDescription,
+  crumbs: [homeCrumb(lang), [COPY[lang].prayersTitle, "/prieres"]],
+  extra: "",
+}));
 
 for (const key of ["about", "privacy", "legal", "sources"]) {
   addPage(`/${key}`, "legal", (lang) => ({
