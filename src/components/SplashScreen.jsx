@@ -202,7 +202,9 @@ export default function SplashScreen({
           animation: spLogoIn .9s var(--sp-ease) 90ms both;
         }
         .sp-logo-wrap, .sp-logo { display: block; width: 100%; height: 100%; }
-        .sp-logo { object-fit: contain; filter: drop-shadow(0 10px 28px rgba(0,0,0,.45)); }
+        /* No filter on the <img>: a drop-shadow widens its painted area, which made this
+           logo (not the static one from index.html) the page's LCP candidate. */
+        .sp-logo { object-fit: contain; }
 
         .sp-rays {
           position: absolute;
@@ -339,7 +341,6 @@ export default function SplashScreen({
         /* Low-power phones: opacity and transform only, no blur or blend. */
         .sp-root--perf-low .sp-shine, .sp-root--perf-low .sp-rays, .sp-root--perf-low .sp-spark { display: none; }
         .sp-root--perf-low .sp-lantern { mix-blend-mode: normal; animation: none; opacity: .6; }
-        .sp-root--perf-low .sp-logo { filter: none; }
 
         @keyframes spBloom { to { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
         @keyframes spLogoIn {
