@@ -259,6 +259,13 @@ export default function App() {
   } = state;
   const [auxiliaryPromptsReady, setAuxiliaryPromptsReady] = useState(false);
 
+  // index.html paints a static splash before React exists. SplashScreen fades it
+  // out when it mounts; when the splash is skipped (automation, reduced setups)
+  // that component never mounts, so the shell must drop it itself.
+  useEffect(() => {
+    if (splashDone) document.getElementById("boot-splash")?.remove();
+  }, [splashDone]);
+
   useEffect(() => {
     if (!splashDone || auxiliaryPromptsReady) return undefined;
     // Install and update prompts are useful after the first screen settles;
