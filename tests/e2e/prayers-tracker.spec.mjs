@@ -60,6 +60,9 @@ function seed(state) {
 test("prayer tracker records a mark, keeps it after reload, and summarizes the month", async ({
   page,
 }) => {
+  // The seed places Asr 45 minutes ago and Maghrib 150 minutes ahead of "now": a fixed
+  // clock keeps both on the same day, whatever the hour the suite runs.
+  await page.clock.setFixedTime(new Date(2026, 9, 28, 12, 0));
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(seed, { prayerTrackingEnabled: true });

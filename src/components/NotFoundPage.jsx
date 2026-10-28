@@ -9,7 +9,7 @@ export default function NotFoundPage() {
   const { set } = useAppActions();
 
   const goHome = () => {
-    window.history.pushState(null, "", "/");
+    window.history.pushState(null, "", "/accueil");
     set({
       legalPage: null,
       routeNotFound: false,

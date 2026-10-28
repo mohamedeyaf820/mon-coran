@@ -76,3 +76,28 @@ test("the welcome page is Arabic and right-to-left at /ar/, and fits small scree
     }
   }
 });
+
+test("the app home reached from the welcome page keeps the bottom bar behaviour", async ({ page }) => {
+  await open(page, "/", { height: 700 });
+  await page.getByRole("button", { name: "Ouvrir MushafPlus" }).click({ timeout: 30_000 });
+  await expect(page.locator(".mobile-navigation")).toBeVisible();
+  const main = page.locator("#main-content");
+  for (let attempt = 0; attempt < 6; attempt++) {
+    for (const top of [0, 120, 320]) {
+      await main.evaluate((node, value) => { node.scrollTop = value; }, top);
+      await page.waitForTimeout(150);
+    }
+    if (await page.locator(".app-root.nav-away").count()) break;
+  }
+  await expect(page.locator(".app-root.nav-away")).toHaveCount(1);
+});
+
+test("the Home tab of the reader leads to /accueil, not back to the welcome page", async ({ page }) => {
+  await open(page, "/");
+  await page.getByRole("button", { name: "Commencer la lecture" }).click({ timeout: 30_000 });
+  await expect(page).toHaveURL(/\/surah\/1$/);
+  await page.locator(".mobile-navigation__item[data-destination='home']").click();
+  await expect(page).toHaveURL(/\/accueil$/);
+  await expect(page.locator(".app-view-home")).toBeVisible();
+  await expect(page.locator(".landing")).toHaveCount(0);
+});

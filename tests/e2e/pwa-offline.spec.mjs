@@ -268,3 +268,30 @@ test("PWA: a visited Hisn al-Muslim chapter stays readable offline, with its tra
   await expect(page.locator(".dua-translation").first()).toHaveText(onlineTranslation);
   await expect(page.locator(".dua-sources").first()).toBeVisible();
 });
+
+test("PWA: the welcome page opens offline for someone who only used /accueil", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/accueil");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.waitForTimeout(1500);
+
+  await context.setOffline(true);
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Lire, écouter et comprendre le Coran/, {
+    timeout: 30_000,
+  });
+  await expect(page.locator(".landing")).toBeVisible();
+});

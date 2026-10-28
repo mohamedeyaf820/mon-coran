@@ -36,7 +36,7 @@ async function scrollDownUntilAway(page) {
   }
 }
 
-for (const path of ["/privacy", "/duas", "/prieres", "/"]) {
+for (const path of ["/privacy", "/duas", "/prieres", "/accueil"]) {
   test(`the bottom bar steps away on scroll and returns on tap (${path})`, async ({ page }) => {
     // The prayers page without a city is a short card: a shorter phone keeps it scrollable.
     await open(page, path, { height: path === "/prieres" ? 520 : 700 });

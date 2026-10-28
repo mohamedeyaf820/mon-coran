@@ -41,14 +41,14 @@
   border-radius: 12px;
   border: 1px solid var(--theme-border);
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-weight: 600;
   cursor: pointer;
 }
 
 .landing__lang[aria-pressed="true"] {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: #0f4a31;
+  border-color: #0f4a31;
   color: #fff;
 }
 
@@ -102,7 +102,7 @@
 
 .landing__btn--primary { background: #f3dc9b; color: #20301f; }
 .landing__btn--ghost { background: transparent; border-color: rgba(255, 255, 255, 0.55); color: #fff; }
-.landing__btn--card { margin-top: auto; background: var(--primary); color: #fff; }
+.landing__btn--card { margin-top: auto; background: #0f4a31; color: #fff; }
 
 .landing__btn:focus-visible,
 .landing__lang:focus-visible,
@@ -172,7 +172,7 @@
   margin-top: 40px;
   padding-top: 16px;
   border-top: 1px solid var(--theme-border);
-  color: var(--text-secondary);
+  color: var(--text-primary);
 }
 
 .landing__footer p { margin: 0; }
@@ -182,7 +182,7 @@
   padding: 0 12px;
   border: 0;
   background: transparent;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   text-decoration: underline;
   cursor: pointer;
 }

@@ -685,7 +685,7 @@ export default function App() {
   // page is scrolled down, and a tap on the page (or the keyboard) brings it
   // back. Only phones and tablets have the bar; at the top of a page it stays.
   const [navAway, setNavAway] = useState(false);
-  const navViewKey = `${showHome}|${showDuas}|${showPrayers}|${legalPage}|${routeNotFound}|${state.homeSection}`;
+  const navViewKey = `${showHome}|${landing}|${showDuas}|${showPrayers}|${legalPage}|${routeNotFound}|${state.homeSection}`;
   useEffect(() => {
     setNavAway(false);
     if (immersiveActive || !compactReadingChrome || blockingModalOpen) return undefined;

@@ -38,15 +38,16 @@ export default function LandingPage() {
   }
 
   const openReading = useCallback(() => {
+    set({ landing: false });
     if (hasHistory && displayMode === "juz") dispatch({ type: "NAVIGATE_JUZ", payload: { juz: currentJuz } });
     else if (hasHistory && displayMode === "page") dispatch({ type: "NAVIGATE_PAGE", payload: { page: currentPage } });
     else dispatch({ type: "NAVIGATE_SURAH", payload: { surah: currentSurah, ayah: currentAyah } });
-  }, [dispatch, hasHistory, displayMode, currentJuz, currentPage, currentSurah, currentAyah]);
+  }, [dispatch, set, hasHistory, displayMode, currentJuz, currentPage, currentSurah, currentAyah]);
 
   const openApp = useCallback(() => set({ showHome: true }), [set]);
-  const openDuas = useCallback(() => set({ showDuas: true }), [set]);
+  const openDuas = useCallback(() => set({ showDuas: true, landing: false }), [set]);
   const openAudio = useCallback(() => set({ showHome: true, homeSection: "audio" }), [set]);
-  const openLegal = useCallback((page) => set({ legalPage: page }), [set]);
+  const openLegal = useCallback((page) => set({ legalPage: page, landing: false }), [set]);
 
   const android = storeUrl(siteConfig.mobileApp?.androidUrl);
   const ios = storeUrl(siteConfig.mobileApp?.iosUrl);
@@ -65,7 +66,7 @@ export default function LandingPage() {
               type="button"
               className="landing__lang"
               aria-pressed={lang === code}
-              aria-label={full}
+              aria-label={`${short} ${full}`}
               lang={code}
               onClick={() => set({ lang: code })}
             >

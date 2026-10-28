@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-for (const path of ["/", "/duas", "/prieres", "/about", "/privacy"]) {
+for (const path of ["/accueil", "/duas", "/prieres", "/about", "/privacy"]) {
   test(`phone ${path} has no floating menu button over its content`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator(".app-root")).toBeVisible();

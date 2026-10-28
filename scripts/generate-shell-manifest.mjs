@@ -8,6 +8,7 @@ const SHELL_ENTRIES = [
   "index.html",
   "src/components/Header.jsx",
   "src/components/HomePage.jsx",
+  "src/components/landing/LandingPage.jsx",
   "src/components/QuranDisplay.jsx",
   "src/styles/deferredStyles.js",
 ];

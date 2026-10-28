@@ -14,7 +14,8 @@ const COMBOS = [
 ];
 
 const SCREENS = [
-  { name: "home", path: "/", ready: ".app-view-home" },
+  { name: "welcome page", path: "/", ready: ".landing" },
+  { name: "home", path: "/accueil", ready: ".app-view-home" },
   { name: "reader", path: "/surah/1", ready: ".qc-ayah-text-ar" },
   { name: "page reader", path: "/page/1", ready: ".reader-context-card" },
   { name: "prayers", path: "/prieres", ready: ".prayers-page, [data-view='prayers']" },

@@ -378,7 +378,7 @@ function staticBody(page, built, lang) {
     <h1>${escapeHtml(built.heading)}</h1>
     <p>${escapeHtml(built.description)}</p>
     ${built.extra}
-    ${page.kind === "home" ? "" : `<p style="margin-top:2rem"><a href="${href("/", lang)}">${escapeHtml(text.openApp)}</a></p>`}
+    ${page.kind === "home" ? "" : `<p style="margin-top:2rem"><a href="${href("/accueil", lang)}">${escapeHtml(text.openApp)}</a></p>`}
     ${siteLinks(lang)}
   </main>`;
 }
