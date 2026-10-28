@@ -28,7 +28,7 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
     }));
   });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
@@ -183,7 +183,7 @@ test("PWA: an explicitly downloaded recitation is served while offline", async (
       JSON.stringify({ skipSplashAnimation: true, showHome: true, lang: "fr" }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {

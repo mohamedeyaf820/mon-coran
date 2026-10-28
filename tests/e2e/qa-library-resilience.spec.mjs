@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 async function openLibrary(page, tab = 'Notes') {
-  await page.goto('/');
+  await page.goto("/accueil");
   await page.getByRole('button', { name: new RegExp(`^(\\d+ )?${tab}$`) }).click();
   const dialog = page.getByRole('dialog', { name: 'Bibliothèque', exact: true });
   await expect(dialog).toBeVisible();
@@ -150,7 +150,7 @@ test('QA: library tabs expose accessible relationships and keyboard navigation',
 
 test('QA: footer accessible reference follows the rotating verse', async ({ page }) => {
   await page.clock.install();
-  await page.goto('/');
+  await page.goto("/accueil");
   const verse = page.locator('.mp-footer-v2__verse');
   await expect(verse).toHaveAttribute('aria-label', await page.locator('.mp-footer-v2__verse-ref').innerText());
   await page.clock.fastForward(30_000);

@@ -50,7 +50,7 @@ test("the search asks for no language and understands a transliterated phrase", 
     });
   });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.locator(".mp-header__search").first().click();
   await expect(page.locator(".search-pro")).toBeVisible({ timeout: 30_000 });

@@ -127,7 +127,7 @@ test("home prayer shortcut opens the full prayer schedule", async ({ page }) => 
     );
   }, { settingsKey: SETTINGS_KEY, cacheKey: PRAYER_CACHE_KEY });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
 
   const strip = page.locator(".home-prayer-strip");

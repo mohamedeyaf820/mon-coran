@@ -5,7 +5,7 @@ import { revealReadingChrome } from "./helpers/quick-menu.mjs";
 const WARSH_RECITER_COUNT = getRecitersByRiwaya("warsh").length;
 
 async function openReader(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   const start = page.getByRole("button", {
     name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
   });
@@ -179,7 +179,7 @@ test.describe("mobile", () => {
       } catch {}
     });
 
-    await page.goto("/");
+    await page.goto("/accueil");
     await ensureWarsh(page);
 
     // Phones switch to the audio library from the bottom navigation.

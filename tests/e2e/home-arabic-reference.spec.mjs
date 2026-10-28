@@ -10,7 +10,7 @@ test("the verse of the day names its surah in Arabic in the Arabic interface", a
       JSON.stringify({ lang: "ar", theme: "light", riwaya: "hafs", showHome: true, skipSplashAnimation: true }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   const reference = page.locator(".home-today-verse__reference");
   await expect(reference).toBeVisible({ timeout: 20_000 });
   const text = (await reference.innerText()).trim();
@@ -28,6 +28,6 @@ test("the verse of the day keeps its Latin reference in French and English", asy
       JSON.stringify({ lang: "fr", theme: "light", riwaya: "hafs", showHome: true, skipSplashAnimation: true }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".home-today-verse__reference")).toContainText(/\d+:\d+/, { timeout: 20_000 });
 });

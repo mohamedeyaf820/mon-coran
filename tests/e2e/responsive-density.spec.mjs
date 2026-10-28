@@ -184,7 +184,7 @@ async function openHome(page, viewport) {
     }
   }, SETTINGS_KEY);
   await page.setViewportSize(viewport);
-  await page.goto("/");
+  await page.goto("/accueil");
   await expectShell(page);
   await expect(page.locator(".app-view-home").first()).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".hp-card").first()).toBeAttached({ timeout: 30_000 });

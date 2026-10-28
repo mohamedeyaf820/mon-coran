@@ -47,6 +47,7 @@ const loadLegalPage = () => import("./components/LegalPage");
 const loadDuasPage = () => import("./components/DuasPage");
 const loadPrayersPage = () => import("./components/PrayersPage");
 const HomePage = lazy(loadHomePage);
+const LandingPage = lazy(() => import("./components/landing/LandingPage"));
 const Header = lazy(loadHeader);
 const LazyQuranDisplay = lazy(loadQuranDisplay);
 function QuranDisplay() {
@@ -209,6 +210,7 @@ export default function App() {
       currentJuz: current.currentJuz,
       homeSection: current.homeSection,
       showHome: current.showHome,
+      landing: current.landing,
       showDuas: current.showDuas,
       duasRoute: current.duasRoute,
       showPrayers: current.showPrayers,
@@ -250,6 +252,7 @@ export default function App() {
     currentPage,
     currentJuz,
     showHome,
+    landing,
     showDuas,
     duasRoute,
     showPrayers,
@@ -285,6 +288,7 @@ export default function App() {
   useUrlSync({
     lang,
     showHome,
+    landing,
     showDuas,
     duasRoute,
     showPrayers,
@@ -1021,6 +1025,13 @@ export default function App() {
           lang={lang}
         />
       ) : null}
+      {showHome && landing ? (
+        <ErrorBoundary>
+          <Suspense fallback={suspenseFallback}>
+            <LandingPage />
+          </Suspense>
+        </ErrorBoundary>
+      ) : (
       <div
         className={`app-root premium-plus flex h-dvh min-h-screen w-full flex-col overflow-x-hidden ${focusReading ? "focus-reading" : ""} ${immersiveHidden ? "immersive-mode" : ""} ${immersiveHidden && (state.isPlaying || audioPending) ? "immersive-keep-player" : ""} ${navAway ? "nav-away" : ""} ${sidebarOpen ? "is-sidebar-open" : ""} ${!showHome && !showDuas && !showPrayers && !legalPage && !routeNotFound ? "view-reading" : ""}`}
         style={{ height: "100dvh", minHeight: "100dvh" }}
@@ -1231,7 +1242,9 @@ export default function App() {
           </Suspense>
         </ErrorBoundary>
       </div>
+      )}
       {auxiliaryPromptsReady ? (
+
         <Suspense fallback={null}>
           <PWAUpdateBanner />
           <InstallPrompt />

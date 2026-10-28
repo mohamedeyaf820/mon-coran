@@ -126,7 +126,7 @@ test("prayer settings tab configures location, adhan and manual adjustment", asy
   await installQuranNetworkFixtures(page);
   await page.addInitScript(seed, { prayerTrackingEnabled: true });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.getByRole("button", { name: /Plus d.options/ }).click();
   await page.getByRole("button", { name: "Paramètres" }).click();
 

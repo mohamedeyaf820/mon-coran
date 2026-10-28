@@ -20,7 +20,7 @@ test.describe('Warsh Debug Tests', () => {
     });
     
     // Navigate to app
-    await page.goto('/');
+    await page.goto("/accueil");
     
     // Wait for splash screen to finish
     await page.waitForTimeout(3000);
@@ -131,7 +131,7 @@ test.describe('Warsh Debug Tests', () => {
       }
     });
     
-    await page.goto('/');
+    await page.goto("/accueil");
     await page.waitForTimeout(3000);
     
     // Switch to Warsh
@@ -160,7 +160,7 @@ test.describe('Warsh Debug Tests', () => {
   
   test('should clear cache and retry loading Warsh', async ({ page }) => {
     // First, clear the cache
-    await page.goto('/');
+    await page.goto("/accueil");
     await page.waitForTimeout(2000);
     
     // Clear IndexedDB cache via console

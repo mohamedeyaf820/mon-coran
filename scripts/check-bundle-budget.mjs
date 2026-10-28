@@ -60,7 +60,9 @@ const LIMITS = {
   // the tap-to-hide chrome and the header's narrow-window rules (lazy reader chunk).
   // 2026-10-16 (dependency update): 1557.6 kB measured, ceiling 1565 kB: Radix dialog,
   // dropdown-menu, popover and slot moved to 1.3 / 2.2 / 1.3 / 1.5 (+3.0 kB, no source change).
-  js: Number(process.env.BUDGET_JS_KB || 1565),
+  // 2026-10-28 (welcome page at /): 1567.5 kB measured, ceiling 1572 kB: the landing
+  // component and its FR/EN/AR copy, one lazy chunk read only at "/".
+  js: Number(process.env.BUDGET_JS_KB || 1572),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -94,7 +96,9 @@ const LIMITS = {
   // handling that keeps the PNG ready (lazy share chunk), the English sources
   // register (served from editorial-copy.json, not bundled), English surah meanings
   // read by the header, first-visit translation default.
-  total: Number(process.env.BUDGET_TOTAL_KB || 2610),
+  // 2026-10-28 (welcome page at /): 2622.5 kB measured, ceiling 2628 kB (the JS above
+  // and landing.css, loaded with the landing chunk only).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2628),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

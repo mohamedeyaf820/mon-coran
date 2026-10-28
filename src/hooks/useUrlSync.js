@@ -7,6 +7,7 @@ function buildBaseRoute({
   routeNotFound,
   legalPage,
   showHome,
+  landing,
   showDuas,
   duasRoute,
   showPrayers,
@@ -23,7 +24,12 @@ function buildBaseRoute({
   if (["surahs", "about", "privacy", "legal", "sources"].includes(legalPage)) {
     return { targetPath: `/${legalPage}`, routeKey: `legal:${legalPage}` };
   }
-  if (showHome) return { targetPath: "/", routeKey: "home" };
+  // "/" is the welcome page; the app home has its own address.
+  if (showHome) {
+    return landing
+      ? { targetPath: "/", routeKey: "landing" }
+      : { targetPath: "/accueil", routeKey: "home" };
+  }
   if (showDuas) return { targetPath: `/duas${duasRoute || ""}`, routeKey: `duas:${duasRoute || ""}` };
   if (showPrayers) return { targetPath: "/prieres", routeKey: "prieres" };
 
@@ -51,7 +57,7 @@ function buildBaseRoute({
     };
   }
 
-  return { targetPath: "/", routeKey: "home" };
+  return { targetPath: "/accueil", routeKey: "home" };
 }
 
 /** The route of the state, with the reading language in the address (/en/..., /ar/...; French stays at the root). */
@@ -74,6 +80,7 @@ const withoutTrailingSlash = (path) => splitLocale(path).path.replace(/(.)\/$/, 
 export function useUrlSync({
   lang = "fr",
   showHome,
+  landing = false,
   showDuas,
   duasRoute = "",
   showPrayers,
@@ -96,6 +103,7 @@ export function useUrlSync({
       routeNotFound,
       legalPage,
       showHome,
+      landing,
       showDuas,
       duasRoute,
       showPrayers,
@@ -141,6 +149,7 @@ export function useUrlSync({
   }, [
     lang,
     showHome,
+    landing,
     showDuas,
     duasRoute,
     showPrayers,
@@ -263,7 +272,12 @@ function parseLocalRoutePath(path) {
     };
   }
 
-  if (path === "/") return { showHome: true, showDuas: false, showPrayers: false, routeNotFound: false };
+  if (path === "/") {
+    return { showHome: true, landing: true, showDuas: false, showPrayers: false, routeNotFound: false };
+  }
+  if (/^\/accueil\/?$/.test(path)) {
+    return { showHome: true, landing: false, showDuas: false, showPrayers: false, routeNotFound: false };
+  }
   return { routeNotFound: true, showHome: false, showDuas: false, showPrayers: false };
 }
 

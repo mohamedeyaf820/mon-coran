@@ -33,7 +33,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 test("Axe: accueil", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await expectNoSeriousViolations(page, "Accueil");
 });

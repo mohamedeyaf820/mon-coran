@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
 
 test("compatibilité: accueil, route légale et lecteur", async ({ page, context }) => {
   await installQuranNetworkFixtures(page);
-  await page.goto("/", { waitUntil: "load" });
+  await page.goto("/accueil", { waitUntil: "load" });
   await expect(page.getByRole("heading", { level: 1 })).toContainText(/lire|lecture|reading|قراءة/i);
   await expect(page.locator(".hp-card--surah").first()).toBeVisible();
   await expect(page.locator("html")).toHaveAttribute("data-deferred-styles", "ready");
