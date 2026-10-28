@@ -27,7 +27,7 @@ function seed(state) {
         Fajr: at(-180),
         Sunrise: at(-150),
         Dhuhr: at(-60),
-        Asr: at(45),
+        Asr: at(-45),
         Maghrib: at(150),
         Isha: at(210),
       },
@@ -70,6 +70,10 @@ test("prayer tracker records a mark, keeps it after reload, and summarizes the m
 
   // Timings come from the same-day cache: the first row shows a real HH:MM.
   await expect(rows.first().locator(".prayers-day-time")).not.toHaveText("—");
+
+  // A prayer whose time has not come cannot be noted as performed.
+  const maghrib = page.locator(".prayers-day-row").filter({ hasText: "Maghrib" });
+  await expect(maghrib.locator(".prayers-mark-btn")).toBeDisabled();
 
   const asr = page.locator(".prayers-day-row").filter({ hasText: "Asr" });
   await asr.locator(".prayers-mark-btn").click();

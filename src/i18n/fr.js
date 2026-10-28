@@ -300,6 +300,7 @@ export default {
     markPrayed: 'Marquer',
     markedAria: 'Prière accomplie',
     unmarkedAria: 'Pas encore notée',
+    notDueAria: 'Son heure n’est pas encore venue',
     notYet: 'Pas encore notée',
     upcoming: 'À venir',
     privateNote: 'Vos réponses restent sur cet appareil, chiffrées avec la clé locale de ce navigateur.',
