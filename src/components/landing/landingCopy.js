@@ -13,6 +13,7 @@ const COPY = {
     resumePage: "Continuer · page {page}",
     resumeJuz: "Continuer · juz {juz}",
     openApp: "Ouvrir MushafPlus",
+    ticker: ["Hafs","Warsh","Tajwid en couleurs","Mot à mot","Hors ligne","Sans compte","Sans publicité","FR · EN · AR","Trois thèmes"],
     facts: [
       ["2", "lectures : Hafs et Warsh"],
       ["54", "récitateurs"],
@@ -64,6 +65,7 @@ const COPY = {
     resumePage: "Continue · page {page}",
     resumeJuz: "Continue · juz {juz}",
     openApp: "Open MushafPlus",
+    ticker: ["Hafs","Warsh","Colour-coded tajweed","Word by word","Offline","No account","No ads","FR · EN · AR","Three themes"],
     facts: [
       ["2", "readings: Hafs and Warsh"],
       ["54", "reciters"],
@@ -115,6 +117,7 @@ const COPY = {
     resumePage: "متابعة · الصفحة {page}",
     resumeJuz: "متابعة · الجزء {juz}",
     openApp: "افتح مصحف بلس",
+    ticker: ["حفص","ورش","تجويد ملوّن","كلمة كلمة","دون اتصال","بلا حساب","بلا إعلانات","عربي · فرنسي · إنجليزي","ثلاثة مظاهر"],
     facts: [
       ["2", "روايتان: حفص وورش"],
       ["54", "قارئًا"],

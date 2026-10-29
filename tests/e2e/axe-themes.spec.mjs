@@ -31,6 +31,8 @@ for (const combo of COMBOS) {
 
     test.beforeEach(async ({ page }) => {
       await installQuranNetworkFixtures(page);
+      // Scroll reveals hide what is below the fold until it is seen: audit the settled page.
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.addInitScript(({ theme, lang }) => {
         localStorage.setItem(
           "mushaf-plus-settings",
