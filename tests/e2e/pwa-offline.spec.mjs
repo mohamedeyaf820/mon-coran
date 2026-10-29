@@ -290,7 +290,7 @@ test("PWA: the welcome page opens offline for someone who only used /accueil", a
 
   await context.setOffline(true);
   await page.goto("/", { waitUntil: "domcontentloaded" });
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Lire, écouter et comprendre le Coran/, {
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran dans la lecture que vous suivez/, {
     timeout: 30_000,
   });
   await expect(page.locator(".landing")).toBeVisible();

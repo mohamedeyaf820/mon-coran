@@ -23,7 +23,7 @@ const horizontalOverflow = (page) =>
 
 test("/ is the welcome page and /accueil is the app home", async ({ page }) => {
   await open(page, "/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Lire, écouter et comprendre le Coran/, {
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran dans la lecture que vous suivez/, {
     timeout: 30_000,
   });
   await expect(page.getByRole("button", { name: "Commencer la lecture" })).toBeVisible();
@@ -31,7 +31,7 @@ test("/ is the welcome page and /accueil is the app home", async ({ page }) => {
   await expect(page.locator(".landing__soon")).toHaveText(/Bientôt sur Android et iOS/);
   await expect(page.locator(".landing a[href^='http']")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Ouvrir MushafPlus" }).click();
+  await page.locator(".landing__actions").getByRole("button", { name: "Ouvrir MushafPlus" }).click();
   await expect(page).toHaveURL(/\/accueil$/);
   await expect(page.locator(".landing")).toHaveCount(0);
   await expect(page.locator(".app-root")).toHaveAttribute("data-view", "home");
@@ -49,7 +49,7 @@ test("the app home answers at /accueil directly, in every language", async ({ pa
 
 test("the main action continues the saved reading", async ({ page }) => {
   await open(page, "/", { extra: { lastPosition: { surah: 18, ayah: 10 } } });
-  const cta = page.locator(".landing__actions .landing__btn--primary");
+  const cta = page.locator(".landing__actions .landing__btn--gold");
   await expect(cta).toHaveText(/Continuer · .+ v\.10/, { timeout: 30_000 });
   await cta.click();
   await expect(page).toHaveURL(/\/surah\/18\/10$/);
@@ -69,9 +69,9 @@ test("the welcome page is Arabic and right-to-left at /ar/, and fits small scree
   for (const width of [320, 390, 1280]) {
     await open(page, "/ar/", { width, lang: "ar" });
     await expect(page.locator(".landing")).toHaveAttribute("dir", "rtl", { timeout: 30_000 });
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("اقرأ القرآن واستمع إليه وافهمه");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText("القرآن بالقراءة التي تتبعها");
     expect(await horizontalOverflow(page), `${width}px`).toBeLessThanOrEqual(1);
-    for (const button of await page.locator(".landing button").all()) {
+    for (const button of await page.locator(".landing button:visible").all()) {
       expect((await button.boundingBox()).height, "touch target").toBeGreaterThanOrEqual(44);
     }
   }
@@ -79,7 +79,7 @@ test("the welcome page is Arabic and right-to-left at /ar/, and fits small scree
 
 test("the app home reached from the welcome page keeps the bottom bar behaviour", async ({ page }) => {
   await open(page, "/", { height: 700 });
-  await page.getByRole("button", { name: "Ouvrir MushafPlus" }).click({ timeout: 30_000 });
+  await page.locator(".landing__actions").getByRole("button", { name: "Ouvrir MushafPlus" }).click({ timeout: 30_000 });
   await expect(page.locator(".mobile-navigation")).toBeVisible();
   const main = page.locator("#main-content");
   for (let attempt = 0; attempt < 6; attempt++) {
