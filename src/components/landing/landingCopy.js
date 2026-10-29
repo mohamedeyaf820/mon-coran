@@ -44,6 +44,21 @@ const COPY = {
       cta: "Écouter",
       reciters: ["Mishary Alafasy", "As-Sudais", "Al-Husary", "Al-Minshawi", "Abdul Basit", "Hani Ar-Rifai"],
     },
+    how: {
+          "kicker": "Comment ça marche",
+          "title": "Voyez l’application en action",
+          "play": "Lancer la démonstration",
+          "steps": [
+                {
+                      "title": "Écoutez en un geste",
+                      "text": "Choisissez une voix, touchez écouter : le lecteur s’ouvre, suit chaque verset, et règle la vitesse ou passe au verset suivant."
+                },
+                {
+                      "title": "Lisez et faites défiler",
+                      "text": "Une page de mushaf, puis le verset par verset avec traduction et translittération, en défilant simplement."
+                }
+          ]
+    },
     mobileKicker: "Sur mobile",
     mobileTitle: "MushafPlus dans votre poche",
     mobileText: "La même lecture sur Android et iOS : le Coran, les invocations et les récitations, avec les téléchargements pour écouter hors connexion.",
@@ -96,6 +111,21 @@ const COPY = {
       cta: "Listen",
       reciters: ["Mishary Alafasy", "As-Sudais", "Al-Husary", "Al-Minshawi", "Abdul Basit", "Hani Ar-Rifai"],
     },
+    how: {
+          "kicker": "How it works",
+          "title": "See the app in action",
+          "play": "Play the demo",
+          "steps": [
+                {
+                      "title": "Listen in one tap",
+                      "text": "Pick a voice and tap listen: the player opens, follows each verse, and lets you change speed or skip to the next verse."
+                },
+                {
+                      "title": "Read and scroll",
+                      "text": "A mushaf page, then verse by verse with translation and transliteration, just by scrolling."
+                }
+          ]
+    },
     mobileKicker: "On mobile",
     mobileTitle: "MushafPlus in your pocket",
     mobileText: "The same reading on Android and iOS: the Quran, supplications and recitations, with downloads to listen offline.",
@@ -147,6 +177,21 @@ const COPY = {
       points: ["أكثر من 50 قارئًا بحفص وورش", "السورة كاملة أو آية آية أو راديو", "تكرار وسرعة وقائمة انتظار"],
       cta: "استمع",
       reciters: ["مشاري العفاسي", "السديس", "الحصري", "المنشاوي", "عبد الباسط", "هاني الرفاعي"],
+    },
+    how: {
+          "kicker": "كيف يعمل",
+          "title": "شاهد التطبيق أثناء العمل",
+          "play": "شغّل العرض",
+          "steps": [
+                {
+                      "title": "استمع بلمسة واحدة",
+                      "text": "اختر صوتًا واضغط استمع: يفتح المشغّل ويتابع كل آية، ويتيح تغيير السرعة أو الانتقال إلى الآية التالية."
+                },
+                {
+                      "title": "اقرأ وتصفّح",
+                      "text": "صفحة من المصحف، ثم آية آية مع الترجمة والنقل الصوتي، بالتمرير فقط."
+                }
+          ]
     },
     mobileKicker: "على الجوال",
     mobileTitle: "مصحف بلس في جيبك",

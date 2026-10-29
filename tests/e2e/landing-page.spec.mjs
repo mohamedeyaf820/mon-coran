@@ -101,3 +101,22 @@ test("the Home tab of the reader leads to /accueil, not back to the welcome page
   await expect(page.locator(".app-view-home")).toBeVisible();
   await expect(page.locator(".landing")).toHaveCount(0);
 });
+
+test("the demo section plays the recording of the chosen step and keeps the controls when motion is reduced", async ({ page }) => {
+  await open(page, "/");
+  const section = page.locator(".landing-how");
+  await section.scrollIntoViewIfNeeded({ timeout: 30_000 });
+  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-audio\.mp4$/);
+  await section.getByRole("button", { name: /Lisez et faites défiler/ }).click();
+  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-scroll\.mp4$/);
+  await expect(section.getByRole("button", { name: /Lisez et faites défiler/ })).toHaveAttribute("aria-current", "step");
+});
+
+test("with reduced motion the demo does not autoplay and shows its controls", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await open(page, "/");
+  const video = page.locator(".landing-how video.is-active");
+  await video.scrollIntoViewIfNeeded({ timeout: 30_000 });
+  await expect(video).toHaveAttribute("controls", "");
+  expect(await video.evaluate((node) => node.paused)).toBe(true);
+});

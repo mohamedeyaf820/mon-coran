@@ -65,7 +65,9 @@ const LIMITS = {
   // 2026-10-28 (welcome page at /): 1573.1 kB measured, ceiling 1577 kB: the landing
   // component and its FR/EN/AR copy (three feature rows, facts, mobile block), one lazy
   // chunk read only at "/".
-  js: Number(process.env.BUDGET_JS_KB || 1577),
+  // 2026-10-29 (welcome page, demo section): 1578.6 kB measured, ceiling 1582 kB: the "how it
+  // works" player for two recordings of the mobile app (lazy landing chunk; the clips are static files).
+  js: Number(process.env.BUDGET_JS_KB || 1582),
   // 2026-09-20: raised after the purge-config fix restored the [dir=]/[lang=]
   // RTL rules that v8 silently dropped, plus consolidated i18n dictionaries.
   // 2026-09-21: +10 kB for the in-app print-engine sheet (Arabic page
@@ -101,7 +103,8 @@ const LIMITS = {
   // read by the header, first-visit translation default.
   // 2026-10-28 (welcome page at /): 2638.7 kB measured, ceiling 2644 kB (the JS above
   // and landing.css, loaded with the landing chunk only).
-  total: Number(process.env.BUDGET_TOTAL_KB || 2644),
+  // 2026-10-29: 2644.3 kB measured, ceiling 2650 kB (the demo section above).
+  total: Number(process.env.BUDGET_TOTAL_KB || 2650),
   singleCss: Number(process.env.BUDGET_SINGLE_CSS_KB || 395),
   // 2026-09-26: +10 kB; this chunk carries the boot graph, which now also holds
   // the reader load-error taxonomy (the boundary needs it synchronously), the

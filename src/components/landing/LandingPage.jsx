@@ -1,5 +1,5 @@
-import React, { useCallback, useLayoutEffect, useRef } from "react";
-import { ArrowRight, ArrowLeft, BookOpen, Check, Headphones, HandHeart, Smartphone } from "lucide-react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { ArrowRight, ArrowLeft, BookOpen, Check, Headphones, HandHeart, Play, Smartphone } from "lucide-react";
 import siteConfig from "../../../site.config.json";
 import SURAHS from "../../data/surahs";
 import { useApp } from "../../context/AppContext";
@@ -121,6 +121,120 @@ function Feature({ id, Icon, copy, onClick, reverse, children, Arrow }) {
         </button>
       </div>
       <div className="landing-feature__media" data-reveal data-reveal-delay="1">{children}</div>
+    </section>
+  );
+}
+
+const CLIPS = ["app-audio", "app-scroll"];
+
+/**
+ * Two real screen recordings of the mobile app. The one for the chosen step plays
+ * (muted) while the section is on screen and hands over to the next when it ends.
+ * With reduced motion nothing autoplays: the poster shows, with the native controls.
+ */
+function HowItWorks({ copy }) {
+  const [active, setActive] = useState(0);
+  const sectionRef = useRef(null);
+  const videos = useRef([]);
+  const bars = useRef([]);
+  const visible = useRef(false);
+  const reduce = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
+  const sync = useCallback(
+    (index) => {
+      videos.current.forEach((video, i) => {
+        if (!video) return;
+        if (i !== index || !visible.current || reduce) {
+          video.pause();
+          return;
+        }
+        video.currentTime = 0;
+        video.play().catch(() => {});
+      });
+    },
+    [reduce],
+  );
+
+  useEffect(() => {
+    const node = sectionRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") return undefined;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        const wasVisible = visible.current;
+        visible.current = entry.isIntersecting;
+        if (entry.isIntersecting && !wasVisible) sync(active);
+        if (!entry.isIntersecting) videos.current.forEach((video) => video?.pause());
+      },
+      { root: node.closest(".landing"), threshold: 0.4 },
+    );
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [active, sync]);
+
+  const choose = (index) => {
+    setActive(index);
+    sync(index);
+  };
+
+  return (
+    <section ref={sectionRef} className="landing-how" aria-labelledby="landing-how-title" data-reveal>
+      <div className="landing-how__text">
+        <p className="landing__kicker">
+          <Play size={16} aria-hidden="true" />
+          <span>{copy.kicker}</span>
+        </p>
+        <h2 id="landing-how-title">{copy.title}</h2>
+        <ol className="landing-how__steps">
+          {copy.steps.map((step, index) => (
+            <li key={step.title}>
+              <button
+                type="button"
+                className="landing-how__step"
+                aria-current={active === index ? "step" : undefined}
+                onClick={() => choose(index)}
+              >
+                <span className="landing-how__num" aria-hidden="true">{index + 1}</span>
+                <span className="landing-how__copy">
+                  <strong>{step.title}</strong>
+                  <span>{step.text}</span>
+                </span>
+                <span className="landing-how__bar" aria-hidden="true">
+                  <i ref={(node) => { bars.current[index] = node; }} />
+                </span>
+              </button>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="landing-how__media">
+        <figure className="landing-phone landing-phone--video">
+          {CLIPS.map((clip, index) => (
+            <video
+              key={clip}
+              ref={(node) => { videos.current[index] = node; }}
+              className={active === index ? "is-active" : undefined}
+              src={`/videos/landing/${clip}.mp4`}
+              poster={`/videos/landing/${clip}.jpg`}
+              aria-label={copy.steps[index].title}
+              aria-hidden={active === index ? undefined : true}
+              muted
+              playsInline
+              preload="none"
+              controls={reduce}
+              onTimeUpdate={(event) => {
+                const { currentTime, duration } = event.currentTarget;
+                const bar = bars.current[index];
+                if (bar && duration) bar.style.transform = `scaleX(${currentTime / duration})`;
+              }}
+              onEnded={() => {
+                const next = (index + 1) % CLIPS.length;
+                setActive(next);
+                sync(next);
+              }}
+            />
+          ))}
+        </figure>
+      </div>
     </section>
   );
 }
@@ -258,6 +372,8 @@ export default function LandingPage() {
             ))}
           </ul>
         </Feature>
+
+        <HowItWorks copy={copy.how} />
 
         <section className="landing__mobile" aria-labelledby="landing-mobile-title" data-reveal>
           <div className="landing__hero-pattern" aria-hidden="true" />
