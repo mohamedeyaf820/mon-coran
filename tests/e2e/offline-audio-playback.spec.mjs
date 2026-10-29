@@ -56,7 +56,7 @@ async function seedPlayer(page) {
 }
 
 async function openControlledShell(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {

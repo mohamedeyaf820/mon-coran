@@ -41,7 +41,8 @@ const LIMITS = {
   // 2026-10-07: 2,600 rules naming classes that no source mentions anywhere were
   // removed (scripts/prune-dead-css.mjs; the shipped sheets did not change):
   // 1,373 kB measured, ceiling 1,400 kB.
-  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1400),
+  // 2026-10-28 (welcome page at /): 1401.6 kB measured, ceiling 1410 kB (landing.css).
+  sourceKb: Number(process.env.CSS_SOURCE_BUDGET_KB || 1410),
   // 2026-09-20: retained raised after the purge safelist fix brought back the
   // [dir=]/[lang=] RTL rules that PurgeCSS v8 had been silently dropping.
   // 2026-09-21: +1 kB for the retained portal rules of the same cartouche,
@@ -58,7 +59,8 @@ const LIMITS = {
   // block of a card and the pager (duas-hub.css), measured 1280.4 kB.
   // 2026-10-08 (readable native lists, contrast): 1295 kB for the option colours of
   // every <select> in the three themes and three contrast fixes, measured 1290.9 kB.
-  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1295),
+  // 2026-10-28 (welcome page at /): 1314 kB for landing.css (hero, phone frames, ticker, reveals, mobile band), measured 1310.6 kB.
+  retainedKb: Number(process.env.CSS_RETAINED_BUDGET_KB || 1314),
   important: Number(process.env.CSS_IMPORTANT_BUDGET || 7240),
   duplicateRules: Number(process.env.CSS_DUPLICATE_RULE_BUDGET || 0),
   crossFileDuplicateRules: Number(

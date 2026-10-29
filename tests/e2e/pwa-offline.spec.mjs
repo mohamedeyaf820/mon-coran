@@ -28,7 +28,7 @@ test("PWA: the visited app shell reloads while offline", async ({ page, context 
     }));
   });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await expect(page.locator(".mp-header")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
@@ -183,7 +183,7 @@ test("PWA: an explicitly downloaded recitation is served while offline", async (
       JSON.stringify({ skipSplashAnimation: true, showHome: true, lang: "fr" }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.evaluate(() => navigator.serviceWorker.ready);
   if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
@@ -267,4 +267,31 @@ test("PWA: a visited Hisn al-Muslim chapter stays readable offline, with its tra
   await expect(page.locator(".duas-title")).toHaveText(onlineTitle);
   await expect(page.locator(".dua-translation").first()).toHaveText(onlineTranslation);
   await expect(page.locator(".dua-sources").first()).toBeVisible();
+});
+
+test("PWA: the welcome page opens offline for someone who only used /accueil", async ({ page, context }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/accueil");
+  await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  await page.waitForTimeout(1500);
+
+  await context.setOffline(true);
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran dans la lecture que vous suivez/, {
+    timeout: 30_000,
+  });
+  await expect(page.locator(".landing")).toBeVisible();
 });

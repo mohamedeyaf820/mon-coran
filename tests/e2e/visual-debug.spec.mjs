@@ -64,7 +64,7 @@ test('visual debug - capture screenshots of Warsh mode', async ({ page }) => {
 });
 
 test('debug IndexedDB state', async ({ page }) => {
-  await page.goto('/');
+  await page.goto("/accueil");
   await page.waitForTimeout(3000);
   
   // Get IndexedDB state

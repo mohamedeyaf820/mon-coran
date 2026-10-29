@@ -12,7 +12,7 @@ const moduleCode = buildSync({
 
 test.beforeEach(async ({ page }) => {
   await page.route('**/qa-storage-module.js', route => route.fulfill({ body: moduleCode, contentType: 'text/javascript' }));
-  await page.goto('/');
+  await page.goto("/accueil");
   await expect(page.locator('.app-view-home')).toBeVisible();
 });
 

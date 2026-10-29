@@ -16,10 +16,10 @@ export const KHATM_IRHAMNI = {
 };
 
 /** Supplications of the Quran already in the app (src/data/duas.js ids), fitting the end of a recitation. */
-export const KHATM_QURAN_IDS = ["baqara-127", "imran-8"];
+export const KHATM_QURAN_IDS = ["baqara-127", "imran-8", "taha-114", "baqara-286", "baqara-201", "imran-193", "furqan-74", "ibrahim-40"];
 
 /** Invocations of the Hisn al-Muslim library (item ids): the ones said when a sitting ends. */
-export const KHATM_HISN_ITEM_IDS = [196, 195];
+export const KHATM_HISN_ITEM_IDS = [196, 195, 120, 95, 59];
 
 export const KHATM_LINKS = {
   dorar: "https://dorar.net/h/3EP3wDgl",

@@ -14,7 +14,8 @@ const COMBOS = [
 ];
 
 const SCREENS = [
-  { name: "home", path: "/", ready: ".app-view-home" },
+  { name: "welcome page", path: "/", ready: ".landing" },
+  { name: "home", path: "/accueil", ready: ".app-view-home" },
   { name: "reader", path: "/surah/1", ready: ".qc-ayah-text-ar" },
   { name: "page reader", path: "/page/1", ready: ".reader-context-card" },
   { name: "prayers", path: "/prieres", ready: ".prayers-page, [data-view='prayers']" },
@@ -30,6 +31,8 @@ for (const combo of COMBOS) {
 
     test.beforeEach(async ({ page }) => {
       await installQuranNetworkFixtures(page);
+      // Scroll reveals hide what is below the fold until it is seen: audit the settled page.
+      await page.emulateMedia({ reducedMotion: "reduce" });
       await page.addInitScript(({ theme, lang }) => {
         localStorage.setItem(
           "mushaf-plus-settings",

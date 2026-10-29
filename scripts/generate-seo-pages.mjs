@@ -378,7 +378,7 @@ function staticBody(page, built, lang) {
     <h1>${escapeHtml(built.heading)}</h1>
     <p>${escapeHtml(built.description)}</p>
     ${built.extra}
-    ${page.kind === "home" ? "" : `<p style="margin-top:2rem"><a href="${href("/", lang)}">${escapeHtml(text.openApp)}</a></p>`}
+    ${page.kind === "home" ? "" : `<p style="margin-top:2rem"><a href="${href("/accueil", lang)}">${escapeHtml(text.openApp)}</a></p>`}
     ${siteLinks(lang)}
   </main>`;
 }
@@ -464,6 +464,19 @@ for (const page of pages) {
   }
 }
 await writePage(homePage, "fr");
+
+// The app home lives at /accueil ("/" is the welcome page). It is the same shell,
+// written so that static hosts serve it, but never indexed: its canonical is the
+// language's home, and it stays out of the sitemap.
+for (const lang of LOCALES) {
+  const canonical = canonicalFor("/", lang);
+  const html = renderPage(homePage, lang)
+    .replace(/<link rel="canonical"[^>]*>/i, `<link rel="canonical" href="${canonical}" />`)
+    .replace(/<meta name="robots"[^>]*>/i, '<meta name="robots" content="noindex,follow" />');
+  const outputDir = path.join(distDir, localizePath("/accueil", lang).replace(/^\/+|\/+$/g, ""));
+  await mkdir(outputDir, { recursive: true });
+  await writeFile(path.join(outputDir, "index.html"), html, "utf8");
+}
 
 // 404: one page for every language, never indexed.
 const notFoundCanonical = canonicalFor("/404", "fr");

@@ -96,7 +96,7 @@ test("privacy: protected mode migrates records and locks after reload", async ({
       }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await seedLegacyPrivateRecords(page);
 

@@ -44,7 +44,7 @@ test("opening animation preloads the reciter library before the first click", as
   await installQuranNetworkFixtures(page);
   await seed(page, { showHome: true, skipSplashAnimation: false });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   // The splash may already be fading on low-performance runners; check for DOM presence
   await expect(page.locator(".splash-screen")).toBeAttached({ timeout: 3_000 });
@@ -134,7 +134,7 @@ test("mobile recitation collection and reciter library stay clear and valid", as
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   await seed(page, { showHome: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
@@ -214,7 +214,7 @@ test("desktop reciter library keeps biography and surahs in a balanced layout", 
   fs.mkdirSync(OUTPUT_DIR, { recursive: true });
   await seed(page, { showHome: true });
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
@@ -265,7 +265,7 @@ test("reciter library downloads a surah into the persistent offline cache", asyn
   });
   await seed(page, { showHome: true });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.getByRole("tab", { name: "Audio", exact: true }).click();
   const firstCard = page.locator('[data-reciter-card="true"]').first();
   await expect(firstCard).toBeVisible();
@@ -309,7 +309,7 @@ test("reciter cards and detail remain usable on a narrow phone and tablet", asyn
     { width: 768, height: 900 },
   ]) {
     await page.setViewportSize(viewport);
-    await page.goto("/");
+    await page.goto("/accueil");
     await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
     await page.getByRole("tab", { name: "Audio", exact: true }).click();
 

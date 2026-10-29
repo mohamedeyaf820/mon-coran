@@ -301,6 +301,7 @@ export default {
     markPrayed: 'تسجيل',
     markedAria: 'صلاة مسجلة',
     unmarkedAria: 'لم تسجل بعد',
+    notDueAria: 'لم يحن وقتها بعد',
     notYet: 'لم تسجل بعد',
     upcoming: 'قادمة',
     privateNote: 'إجاباتك تبقى محفوظة على هذا الجهاز.',

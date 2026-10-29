@@ -8,12 +8,12 @@ import { installQuranNetworkFixtures } from "../tests/e2e/helpers/quran-network-
 const BASE = process.env.BASE_URL || "http://127.0.0.1:4173";
 const out = process.argv[2];
 const SCREENS = [
-  ["home", "/", { showHome: true }],
+  ["home", "/accueil", { showHome: true }],
   ["list", "/surah/2", { showHome: false, displayMode: "surah", mushafLayout: "list" }],
   ["mushaf", "/surah/2", { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }],
   ["page", "/page/50", { showHome: false, displayMode: "page" }],
   ["warsh", "/surah/3", { showHome: false, riwaya: "warsh", displayMode: "surah" }],
-  ["prayers", "/", { showHome: false, showPrayers: true }],
+  ["prayers", "/accueil", { showHome: false, showPrayers: true }],
 ];
 const VARIANTS = [
   { viewport: { width: 390, height: 844 }, theme: "light", lang: "fr" },

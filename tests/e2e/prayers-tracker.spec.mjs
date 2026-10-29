@@ -27,7 +27,7 @@ function seed(state) {
         Fajr: at(-180),
         Sunrise: at(-150),
         Dhuhr: at(-60),
-        Asr: at(45),
+        Asr: at(-45),
         Maghrib: at(150),
         Isha: at(210),
       },
@@ -60,6 +60,9 @@ function seed(state) {
 test("prayer tracker records a mark, keeps it after reload, and summarizes the month", async ({
   page,
 }) => {
+  // The seed places Asr 45 minutes ago and Maghrib 150 minutes ahead of "now": a fixed
+  // clock keeps both on the same day, whatever the hour the suite runs.
+  await page.clock.setFixedTime(new Date(2026, 9, 28, 12, 0));
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 390, height: 844 });
   await page.addInitScript(seed, { prayerTrackingEnabled: true });
@@ -70,6 +73,10 @@ test("prayer tracker records a mark, keeps it after reload, and summarizes the m
 
   // Timings come from the same-day cache: the first row shows a real HH:MM.
   await expect(rows.first().locator(".prayers-day-time")).not.toHaveText("—");
+
+  // A prayer whose time has not come cannot be noted as performed.
+  const maghrib = page.locator(".prayers-day-row").filter({ hasText: "Maghrib" });
+  await expect(maghrib.locator(".prayers-mark-btn")).toBeDisabled();
 
   const asr = page.locator(".prayers-day-row").filter({ hasText: "Asr" });
   await asr.locator(".prayers-mark-btn").click();
@@ -122,7 +129,7 @@ test("prayer settings tab configures location, adhan and manual adjustment", asy
   await installQuranNetworkFixtures(page);
   await page.addInitScript(seed, { prayerTrackingEnabled: true });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.getByRole("button", { name: /Plus d.options/ }).click();
   await page.getByRole("button", { name: "Paramètres" }).click();
 

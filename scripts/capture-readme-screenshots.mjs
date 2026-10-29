@@ -16,35 +16,35 @@ const TABLET_WIDE = { width: 1180, height: 820 }; // landscape: desktop header
 const base = { skipSplashAnimation: true, lang: "fr", riwaya: "hafs", theme: "light", showTajwid: true, fontFamily: "qpc-hafs" };
 
 const SHOTS = [
-  { name: "home-desktop", url: "/", viewport: DESKTOP, settings: { showHome: true } },
+  { name: "home-desktop", url: "/accueil", viewport: DESKTOP, settings: { showHome: true } },
   { name: "reader-list-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, scrollTo: "#ayah-2" },
   { name: "reader-mushaf-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf" } },
   { name: "reader-mushaf-dark", url: "/page/50", viewport: DESKTOP, settings: { showHome: false, displayMode: "page", mushafLayout: "mushaf", theme: "dark" } },
   { name: "reader-warsh", url: "/surah/3", viewport: DESKTOP, settings: { showHome: false, riwaya: "warsh", fontFamily: "qpc-warsh", displayMode: "surah", mushafLayout: "mushaf" } },
-  { name: "home-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true },
+  { name: "home-mobile", url: "/accueil", viewport: PHONE, settings: { showHome: true }, mobile: true },
   { name: "reader-mobile", url: "/surah/1", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true, reveal: true },
   { name: "reader-arabic-mobile", url: "/surah/112", viewport: PHONE, settings: { showHome: false, lang: "ar", displayMode: "surah", mushafLayout: "list", theme: "sepia" }, mobile: true, reveal: true },
-  { name: "audio-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true, openAudio: true },
+  { name: "audio-mobile", url: "/accueil", viewport: PHONE, settings: { showHome: true }, mobile: true, openAudio: true },
   { name: "menu-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "dark" }, mobile: true, reveal: true, openMore: true },
   { name: "reader-mushaf-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }, mobile: true, reveal: true },
   { name: "search-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true, reveal: true, mobileTool: "search" },
   { name: "settings-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true, reveal: true, mobileTool: "settings" },
-  { name: "home-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true },
+  { name: "home-tablet", url: "/accueil", viewport: TABLET, settings: { showHome: true }, mobile: true },
   { name: "reader-mushaf-tablet", url: "/surah/2", viewport: TABLET, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }, mobile: true, reveal: true },
   { name: "reader-list-tablet", url: "/surah/2", viewport: TABLET, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "sepia" }, mobile: true, reveal: true },
-  { name: "audio-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true, openAudio: true },
+  { name: "audio-tablet", url: "/accueil", viewport: TABLET, settings: { showHome: true }, mobile: true, openAudio: true },
   { name: "reader-tablet-wide-dark", url: "/surah/3", viewport: TABLET_WIDE, settings: { showHome: false, displayMode: "surah", mushafLayout: "mushaf", theme: "dark" }, mobile: true },
   { name: "reader-tablet-wide", url: "/surah/2", viewport: TABLET_WIDE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, mobile: true },
-  { name: "audio-desktop", url: "/", viewport: DESKTOP, settings: { showHome: true }, openAudioTab: true },
+  { name: "audio-desktop", url: "/accueil", viewport: DESKTOP, settings: { showHome: true }, openAudioTab: true },
   { name: "search-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSearch: true },
   { name: "search-auto-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSearch: true, query: "le tout miséricordieux" },
   { name: "search-auto-mobile", url: "/surah/2", viewport: PHONE, settings: { showHome: false, displayMode: "surah", mushafLayout: "list", theme: "dark" }, mobile: true, reveal: true, mobileTool: "search", query: "Bismillahirrahmanirrahim" },
   { name: "about-desktop", url: "/about", viewport: DESKTOP, settings: { showHome: false } },
   { name: "about-mobile", url: "/privacy", viewport: PHONE, settings: { showHome: false }, mobile: true },
-  { name: "splash-mobile", url: "/", viewport: PHONE, settings: { showHome: true, theme: "dark" }, mobile: true, splashFrame: 1100, freshStorage: true },
+  { name: "splash-mobile", url: "/accueil", viewport: PHONE, settings: { showHome: true, theme: "dark" }, mobile: true, splashFrame: 1100, freshStorage: true },
   { name: "prayers-mobile", url: "/prieres", viewport: PHONE, settings: { showHome: false, prayerTimesEnabled: true, prayerMethod: 12, prayerLocation: { latitude: 48.8566, longitude: 2.3522, label: "Paris" } }, mobile: true },
-  { name: "reciter-mobile", url: "/", viewport: PHONE, settings: { showHome: true }, mobile: true, openReciter: true },
-  { name: "reciter-tablet", url: "/", viewport: TABLET, settings: { showHome: true }, mobile: true, openReciter: true },
+  { name: "reciter-mobile", url: "/accueil", viewport: PHONE, settings: { showHome: true }, mobile: true, openReciter: true },
+  { name: "reciter-tablet", url: "/accueil", viewport: TABLET, settings: { showHome: true }, mobile: true, openReciter: true },
   { name: "duas-mobile", url: "/duas", viewport: PHONE, settings: { showHome: false }, mobile: true },
   { name: "settings-desktop", url: "/surah/2", viewport: DESKTOP, settings: { showHome: false, displayMode: "surah", mushafLayout: "list" }, openSettings: true },
 ];
@@ -73,7 +73,7 @@ for (const shot of SHOTS) {
     continue;
   }
   await page.waitForSelector("#main-content", { timeout: 40000 });
-  await page.waitForTimeout(shot.url === "/" ? 3500 : 7000);
+  await page.waitForTimeout(shot.url === "/accueil" ? 3500 : 7000);
   if (shot.scrollTo) await page.locator(shot.scrollTo).scrollIntoViewIfNeeded().catch(() => {});
   if (shot.reveal) await page.locator("#main-content").click({ position: { x: 4, y: 180 } }).catch(() => {});
   try {

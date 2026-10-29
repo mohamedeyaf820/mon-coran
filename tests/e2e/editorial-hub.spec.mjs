@@ -16,7 +16,7 @@ async function openHome(page, viewport) {
     }));
   }, SETTINGS_KEY);
   await page.setViewportSize(viewport);
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
 }
 
@@ -98,6 +98,6 @@ test("about page is compact on mobile and prepares a complete correction report"
   expect(issueUrl.searchParams.get("body")).toContain("Le marqueur de fin du verset apparaît deux fois");
 
   await page.getByRole("button", { name: "Revenir à l’accueil" }).click();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/accueil$/);
   await expect(page.locator(".app-view-home")).toBeVisible();
 });

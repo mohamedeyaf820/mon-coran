@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 
 async function openReader(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   const start = page.getByRole("button", {
     name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
   });
@@ -12,7 +12,7 @@ async function openReader(page) {
 
 test("A11y: le lien d'évitement ne décale pas l'accueil mobile", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   await expect(page.locator(".mp-header")).toBeHidden();
   const mainBox = await page.locator("#main-content").boundingBox();
@@ -45,7 +45,7 @@ test("A11y: les notifications utilisent la langue de l'interface", async ({ page
       }),
     );
   });
-  await page.goto("/");
+  await page.goto("/accueil");
   // The app mounts once the reading language chunk has loaded.
   await page.locator("#main-content").waitFor();
   await page.evaluate(() => {
