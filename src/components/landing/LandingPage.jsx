@@ -125,10 +125,10 @@ function Feature({ id, Icon, copy, onClick, reverse, children, Arrow }) {
   );
 }
 
-const CLIPS = ["app-audio", "app-scroll"];
+const CLIPS = ["app-onboarding", "app-audio", "app-scroll"];
 
 /**
- * Two real screen recordings of the mobile app. The one for the chosen step plays
+ * Three real screen recordings of the mobile app. The one for the chosen step plays
  * (muted) while the section is on screen and hands over to the next when it ends.
  * With reduced motion nothing autoplays: the poster shows, with the native controls.
  */

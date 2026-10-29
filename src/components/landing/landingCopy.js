@@ -50,6 +50,10 @@ const COPY = {
           "play": "Lancer la démonstration",
           "steps": [
                 {
+                  "title": "Un démarrage en quatre étapes",
+                  "text": "Langue, thème, lecture en Hafs ou en Warsh : l’essentiel se règle en quelques secondes. Position et rappels restent facultatifs."
+                },
+                {
                       "title": "Écoutez en un geste",
                       "text": "Choisissez une voix, touchez écouter : le lecteur s’ouvre, suit chaque verset, et règle la vitesse ou passe au verset suivant."
                 },
@@ -117,6 +121,10 @@ const COPY = {
           "play": "Play the demo",
           "steps": [
                 {
+                  "title": "Getting started in four steps",
+                  "text": "Language, theme, Hafs or Warsh reading: the essentials are set in seconds. Location and reminders stay optional."
+                },
+                {
                       "title": "Listen in one tap",
                       "text": "Pick a voice and tap listen: the player opens, follows each verse, and lets you change speed or skip to the next verse."
                 },
@@ -183,6 +191,10 @@ const COPY = {
           "title": "شاهد التطبيق أثناء العمل",
           "play": "شغّل العرض",
           "steps": [
+                {
+                  "title": "بداية في أربع خطوات",
+                  "text": "اللغة والمظهر والرواية، حفص أو ورش: تُضبط الأساسيات في ثوانٍ. الموقع والتذكيرات اختيارية."
+                },
                 {
                       "title": "استمع بلمسة واحدة",
                       "text": "اختر صوتًا واضغط استمع: يفتح المشغّل ويتابع كل آية، ويتيح تغيير السرعة أو الانتقال إلى الآية التالية."

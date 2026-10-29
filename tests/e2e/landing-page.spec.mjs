@@ -106,7 +106,7 @@ test("the demo section plays the recording of the chosen step and keeps the cont
   await open(page, "/");
   const section = page.locator(".landing-how");
   await section.scrollIntoViewIfNeeded({ timeout: 30_000 });
-  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-audio\.mp4$/);
+  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-onboarding\.mp4$/);
   await section.getByRole("button", { name: /Lisez et faites défiler/ }).click();
   await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-scroll\.mp4$/);
   await expect(section.getByRole("button", { name: /Lisez et faites défiler/ })).toHaveAttribute("aria-current", "step");
