@@ -59,3 +59,7 @@ Status: living internal guide.
 - Prefer tests and documentation for roadmap progress when JS budget is tight.
 - Reuse existing classes and tokens before adding new CSS.
 - Any new production dependency must justify its bundle cost.
+
+## Welcome page exceptions
+
+- 2026-11-02 (decision of the product owner): the welcome page (`src/components/landing/`) draws its own seven icons (`landingIcons.jsx`) and does not use Lucide; the rest of the app is unchanged. Its palette is that of the mobile app themes (`docs/design/landing-direction.md`, section 5) and its tint follows the theme on show; the device frame is a fixed dark bezel. Nothing else may copy these exceptions.
