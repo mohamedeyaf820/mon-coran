@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import AxeBuilder from "@axe-core/playwright";
 import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mjs";
 
 async function open(page, path, { width = 390, height = 844, lang = "fr", extra = {} } = {}) {
@@ -18,12 +19,29 @@ async function open(page, path, { width = 390, height = 844, lang = "fr", extra 
   await page.goto(path);
 }
 
+// Headless Chromium has no H.264 decoder: record what the page asks the media
+// elements to do instead of depending on codecs.
+async function spyOnMedia(page) {
+  await page.addInitScript(() => {
+    window.__media = [];
+    HTMLMediaElement.prototype.play = function play() {
+      window.__media.push(["play", this.getAttribute("src")]);
+      return Promise.resolve();
+    };
+    HTMLMediaElement.prototype.pause = function pause() {
+      window.__media.push(["pause", this.getAttribute("src")]);
+    };
+  });
+}
+const mediaCalls = (page, kind) =>
+  page.evaluate((wanted) => window.__media.filter(([name]) => name === wanted).map(([, src]) => src), kind);
+
 const horizontalOverflow = (page) =>
   page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
 
 test("/ is the welcome page and /accueil is the app home", async ({ page }) => {
   await open(page, "/");
-  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran dans la lecture que vous suivez/, {
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran, tel que vous le lisez\./, {
     timeout: 30_000,
   });
   await expect(page.getByRole("button", { name: "Commencer la lecture" })).toBeVisible();
@@ -41,6 +59,21 @@ test("/ is the welcome page and /accueil is the app home", async ({ page }) => {
   await expect(page.locator(".landing")).toBeVisible();
 });
 
+test("the page is five folios in order, and says nothing it cannot back", async ({ page }) => {
+  await open(page, "/");
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator("[data-folio]")).toHaveCount(5);
+  expect(await page.locator("[data-folio]").evaluateAll((nodes) => nodes.map((node) => node.dataset.folio))).toEqual([
+    "1", "2", "3", "4", "5",
+  ]);
+  const text = await page.locator(".landing").innerText();
+  expect(text).not.toMatch(/Android Auto|CarPlay|TestFlight/i);
+  expect(text).toMatch(/54/);
+  expect(text).toMatch(/267/);
+  // The onboarding recording was not refilmed for the current version.
+  await expect(page.locator(".landing [src*='onboarding']")).toHaveCount(0);
+});
+
 test("the app home answers at /accueil directly, in every language", async ({ page }) => {
   await open(page, "/accueil");
   await expect(page.locator(".app-root")).toHaveAttribute("data-view", "home", { timeout: 30_000 });
@@ -49,13 +82,21 @@ test("the app home answers at /accueil directly, in every language", async ({ pa
 
 test("the main action continues the saved reading", async ({ page }) => {
   await open(page, "/", { extra: { lastPosition: { surah: 18, ayah: 10 } } });
-  const cta = page.locator(".landing__actions .landing__btn--gold");
+  const cta = page.locator(".landing__actions .landing__btn--primary");
   await expect(cta).toHaveText(/Continuer · .+ v\.10/, { timeout: 30_000 });
   await cta.click();
   await expect(page).toHaveURL(/\/surah\/18\/10$/);
 });
 
-test("invocations and listening open from the welcome page", async ({ page }) => {
+test("the main action is visible without scrolling on a small phone", async ({ page }) => {
+  await open(page, "/", { width: 375, height: 667 });
+  const cta = page.locator(".landing__actions .landing__btn--primary");
+  await expect(cta).toBeVisible({ timeout: 30_000 });
+  const box = await cta.boundingBox();
+  expect(box.y + box.height).toBeLessThanOrEqual(667);
+});
+
+test("invocations and listening open from the entries", async ({ page }) => {
   await open(page, "/");
   await page.getByRole("button", { name: "Ouvrir les invocations" }).click({ timeout: 30_000 });
   await expect(page).toHaveURL(/\/duas$/);
@@ -65,16 +106,177 @@ test("invocations and listening open from the welcome page", async ({ page }) =>
   await expect(page.locator(".app-root")).toHaveAttribute("data-home-section", "audio");
 });
 
-test("the welcome page is Arabic and right-to-left at /ar/, and fits small screens", async ({ page }) => {
-  for (const width of [320, 390, 1280]) {
+test("the demo phone follows the entry in view on a wide screen", async ({ page }) => {
+  await open(page, "/", { width: 1280, height: 800 });
+  const stage = page.locator(".landing-demo__stage");
+  await expect(stage).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".landing-demo video")).toHaveCount(3);
+  await expect(stage.locator("video.is-current")).toHaveAttribute("src", /mob-reader-scroll\.mp4$/);
+
+  await page.locator(".landing-entry[data-entry='duas']").scrollIntoViewIfNeeded();
+  await expect(stage.locator("video.is-current")).toHaveAttribute("src", /mob-duas-scroll\.mp4$/);
+
+  await page.locator(".landing-entry[data-entry='listen']").scrollIntoViewIfNeeded();
+  await expect(stage.locator("video.is-current")).toHaveAttribute("src", /mob-listen-player\.mp4$/);
+  // The phone stays on screen while the third entry is read (sticky).
+  const box = await stage.boundingBox();
+  expect(box.y).toBeGreaterThanOrEqual(0);
+  expect(box.y + box.height).toBeLessThanOrEqual(800);
+});
+
+test("on a phone each entry carries its own recording, and only the one in view plays", async ({ page }) => {
+  await spyOnMedia(page);
+  await open(page, "/", { width: 390, height: 844 });
+  await expect(page.locator(".landing-entry")).toHaveCount(3, { timeout: 30_000 });
+  await expect(page.locator(".landing-demo video")).toHaveCount(3);
+  for (const entry of ["read", "duas", "listen"]) {
+    await expect(page.locator(`.landing-entry[data-entry='${entry}'] video`)).toHaveCount(1);
+  }
+  await page.locator(".landing-entry[data-entry='duas'] video").scrollIntoViewIfNeeded();
+  await expect.poll(() => mediaCalls(page, "play")).toContain("/videos/landing/mob-duas-scroll.mp4");
+  expect(await mediaCalls(page, "play")).not.toContain("/videos/landing/mob-listen-player.mp4");
+});
+
+test("recordings are not fetched until the demo is reached", async ({ page }) => {
+  const requested = [];
+  page.on("request", (request) => {
+    if (/\.mp4(\?|$)/.test(request.url())) requested.push(request.url());
+  });
+  await open(page, "/", { width: 1280, height: 800 });
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  await page.waitForTimeout(1200);
+  expect(requested).toEqual([]);
+});
+
+test("a visible pause control stops the demo and brings the native controls back", async ({ page }) => {
+  await spyOnMedia(page);
+  await open(page, "/", { width: 1280, height: 800 });
+  const stage = page.locator(".landing-demo__stage");
+  await stage.scrollIntoViewIfNeeded({ timeout: 30_000 });
+  await expect.poll(() => mediaCalls(page, "play")).toContain("/videos/landing/mob-reader-scroll.mp4");
+  const pause = page.locator(".landing__pause");
+  await expect(pause).toHaveAttribute("aria-pressed", "false");
+  await expect(stage.locator("video.is-current")).not.toHaveAttribute("controls", "");
+  await pause.click();
+  await expect(pause).toHaveAttribute("aria-pressed", "true");
+  await expect(stage.locator("video.is-current")).toHaveAttribute("controls", "");
+  expect(await mediaCalls(page, "pause")).toContain("/videos/landing/mob-reader-scroll.mp4");
+});
+
+test("with reduced motion nothing plays, nothing moves and the controls are native", async ({ page }) => {
+  await spyOnMedia(page);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await open(page, "/", { width: 1280, height: 800 });
+  const stage = page.locator(".landing-demo__stage");
+  await stage.scrollIntoViewIfNeeded({ timeout: 30_000 });
+  await expect(stage.locator("video.is-current")).toHaveAttribute("controls", "");
+  await page.locator(".landing-entry[data-entry='listen']").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(500);
+  expect(await mediaCalls(page, "play")).toEqual([]);
+  await expect(page.locator(".landing")).not.toHaveClass(/landing--motion/);
+  await expect(page.locator(".landing__pause")).toHaveCount(0);
+  // One background layer only, and not a single running animation or transition.
+  await expect(page.locator(".landing__tint")).toHaveCount(1);
+  expect(await page.evaluate(() => document.querySelector(".landing").getAnimations({ subtree: true }).length)).toBe(0);
+});
+
+test("the page takes the colour of the theme shown in the rail, and keeps still when motion is reduced", async ({ page }) => {
+  await open(page, "/", { width: 390, height: 844 });
+  const themes = page.locator(".landing-theme");
+  await expect(themes).toHaveCount(5, { timeout: 30_000 });
+  await expect(page.locator(".landing-theme .landing-theme__new")).toHaveCount(2);
+  await themes.nth(2).scrollIntoViewIfNeeded();
+  await themes.nth(2).click();
+  await expect(page.locator(".landing")).toHaveAttribute("data-tint", "rose");
+  await expect(themes.nth(2)).toHaveAttribute("aria-pressed", "true");
+  await themes.nth(4).click();
+  await expect(page.locator(".landing")).toHaveAttribute("data-tint", "ocean");
+
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator(".landing-theme")).toHaveCount(5, { timeout: 30_000 });
+  await page.locator(".landing-theme").nth(2).scrollIntoViewIfNeeded();
+  await page.locator(".landing-theme").nth(2).click();
+  await expect(page.locator(".landing")).toHaveAttribute("data-tint", "fajr");
+});
+
+const axeOnLanding = (page) =>
+  new AxeBuilder({ page }).include(".landing").withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+const summary = (results) => results.violations.map((violation) => `${violation.id}: ${violation.nodes[0]?.target.join(" ")}`);
+
+for (const [theme, tint] of [["light", "fajr"], ["sepia", "parchemin"], ["dark", "medine"]]) {
+  test(`the page stays readable in the ${theme} theme (axe, reduced motion, one layer)`, async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await open(page, "/", { width: 390, height: 844, extra: { theme } });
+    await expect(page.locator(".landing")).toHaveAttribute("data-tint", tint, { timeout: 30_000 });
+    await expect(page.locator(".landing__tint")).toHaveCount(1);
+    expect(summary(await axeOnLanding(page))).toEqual([]);
+  });
+}
+
+test("the page stays readable when the rail turns it Dawn Rose or Ocean Night (axe, motion on)", async ({ page }) => {
+  await open(page, "/", { width: 390, height: 844 });
+  const themes = page.locator(".landing-theme");
+  await expect(themes).toHaveCount(5, { timeout: 30_000 });
+  for (const [index, tint] of [[2, "rose"], [4, "ocean"]]) {
+    await themes.nth(index).scrollIntoViewIfNeeded();
+    await themes.nth(index).click();
+    await expect(page.locator(".landing")).toHaveAttribute("data-tint", tint);
+    await page.waitForTimeout(900);
+    expect(summary(await axeOnLanding(page)), tint).toEqual([]);
+  }
+});
+
+test("the language switches on the fly, direction included", async ({ page }) => {
+  await open(page, "/");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/Le Coran, tel que vous le lisez/, { timeout: 30_000 });
+  await page.getByRole("button", { name: "EN English" }).click();
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/The Quran, the way you read it\./);
+  await expect(page.locator(".landing")).toHaveAttribute("lang", "en");
+  await expect(page.locator(".landing")).toHaveAttribute("dir", "ltr");
+  await page.getByRole("button", { name: "ع العربية" }).click();
+  await expect(page.locator(".landing")).toHaveAttribute("dir", "rtl");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText(/القرآن، كما تقرؤه أنت\./);
+});
+
+test("the welcome page is Arabic and right-to-left at /ar/, and fits every width", async ({ page }) => {
+  for (const width of [320, 390, 768, 1280, 1440]) {
     await open(page, "/ar/", { width, lang: "ar" });
     await expect(page.locator(".landing")).toHaveAttribute("dir", "rtl", { timeout: 30_000 });
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText("القرآن بالقراءة التي تتبعها");
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(/القرآن، كما تقرؤه أنت/);
     expect(await horizontalOverflow(page), `${width}px`).toBeLessThanOrEqual(1);
     for (const button of await page.locator(".landing button:visible").all()) {
-      expect((await button.boundingBox()).height, "touch target").toBeGreaterThanOrEqual(44);
+      expect((await button.boundingBox()).height, `touch target at ${width}px`).toBeGreaterThanOrEqual(44);
     }
   }
+});
+
+test("French fits every width without a sideways scroll", async ({ page }) => {
+  for (const width of [320, 375, 768, 1024, 1440]) {
+    await open(page, "/", { width, height: 800 });
+    await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+    expect(await horizontalOverflow(page), `${width}px`).toBeLessThanOrEqual(1);
+    for (const button of await page.locator(".landing button:visible, .landing a:visible").all()) {
+      expect((await button.boundingBox()).height, `touch target at ${width}px`).toBeGreaterThanOrEqual(44);
+    }
+  }
+});
+
+test("one image loads eagerly, the others wait, and every image keeps its size", async ({ page }) => {
+  await open(page, "/");
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  const images = await page.locator(".landing img").evaluateAll((nodes) =>
+    nodes.map((node) => ({
+      src: node.getAttribute("src"),
+      loading: node.getAttribute("loading"),
+      priority: node.getAttribute("fetchpriority"),
+      sized: Boolean(node.getAttribute("width") && node.getAttribute("height")),
+    })),
+  );
+  const eager = images.filter((image) => image.loading !== "lazy" && !image.src.includes("logo"));
+  expect(eager).toHaveLength(1);
+  expect(eager[0].priority).toBe("high");
+  expect(images.every((image) => image.sized)).toBe(true);
 });
 
 test("the app home reached from the welcome page keeps the bottom bar behaviour", async ({ page }) => {
@@ -100,23 +302,4 @@ test("the Home tab of the reader leads to /accueil, not back to the welcome page
   await expect(page).toHaveURL(/\/accueil$/);
   await expect(page.locator(".app-view-home")).toBeVisible();
   await expect(page.locator(".landing")).toHaveCount(0);
-});
-
-test("the demo section plays the recording of the chosen step and keeps the controls when motion is reduced", async ({ page }) => {
-  await open(page, "/");
-  const section = page.locator(".landing-how");
-  await section.scrollIntoViewIfNeeded({ timeout: 30_000 });
-  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-onboarding\.mp4$/);
-  await section.getByRole("button", { name: /Lisez et faites défiler/ }).click();
-  await expect(section.locator("video.is-active")).toHaveAttribute("src", /app-scroll\.mp4$/);
-  await expect(section.getByRole("button", { name: /Lisez et faites défiler/ })).toHaveAttribute("aria-current", "step");
-});
-
-test("with reduced motion the demo does not autoplay and shows its controls", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await open(page, "/");
-  const video = page.locator(".landing-how video.is-active");
-  await video.scrollIntoViewIfNeeded({ timeout: 30_000 });
-  await expect(video).toHaveAttribute("controls", "");
-  expect(await video.evaluate((node) => node.paused)).toBe(true);
 });

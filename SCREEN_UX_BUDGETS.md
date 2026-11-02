@@ -18,7 +18,7 @@ This plan defines per-screen source budgets to keep UI/UX iteration safe.
 - Keep main action hierarchy (read, continue, duas) clear.
 
 ### Welcome page (`/`)
-- Three entries only (read, invocations, listen) plus the mobile block; no prayers, search or settings.
+- Five folios in order: hero, the three entries as a demo (read, invocations, listen; one real recording each), the five themes of the mobile app, the mobile block, the foot. No prayers, search or settings. Direction and rules: `docs/design/landing-direction.md`. The page starts in the reader's own theme and takes the colour of the theme on show; with reduced motion it keeps a single tint, plays nothing and shows native video controls.
 - The main action continues the saved reading (`Continuer · sourate v.N`) before offering `Commencer la lecture`.
 - No store address is invented: `site.config.json` `mobileApp.androidUrl` / `iosUrl` stay empty until a public https link exists, and the page says `Bientôt sur Android et iOS`.
 - The app home lives at `/accueil` (also `/en/accueil`, `/ar/accueil`); it is prerendered noindex with the language home as canonical.

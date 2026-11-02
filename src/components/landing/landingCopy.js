@@ -1,219 +1,214 @@
 // Copy of the welcome page (/). Kept beside the page so the French/English/Arabic
 // wording ships with the landing chunk only, not with the app entry.
+// Every claim here has a source (docs/design/landing-direction.md, section 11).
 
 const COPY = {
   fr: {
     brandAria: "MushafPlus, accueil",
     langLabel: "Langue",
-    eyebrow: "Coran · Invocations · Récitations",
-    title: "Le Coran dans la lecture que vous suivez",
-    lead: "Lisez en Hafs ou en Warsh, écoutez plus de 50 récitateurs et retrouvez la Citadelle du musulman. Gratuit, sans compte, même hors ligne.",
-    start: "Commencer la lecture",
-    resume: "Continuer · {surah} v.{ayah}",
-    resumePage: "Continuer · page {page}",
-    resumeJuz: "Continuer · juz {juz}",
-    openApp: "Ouvrir MushafPlus",
-    ticker: ["Hafs","Warsh","Tajwid en couleurs","Mot à mot","Hors ligne","Sans compte","Sans publicité","FR · EN · AR","Trois thèmes"],
-    facts: [
-      ["2", "lectures : Hafs et Warsh"],
-      ["54", "récitateurs"],
-      ["267", "invocations de la Citadelle"],
-      ["3", "langues : FR · EN · AR"],
-    ],
-    read: {
-      kicker: "Lire",
-      title: "Le texte d’abord, rien d’autre entre vous et lui",
-      text: "Pages de mushaf avec cadre doré ou verset par verset. Tajwid en couleurs, traduction, translittération et tafsir quand vous les voulez.",
-      points: ["Hafs et Warsh, avec leurs polices propres", "Votre place est gardée, d’une visite à l’autre", "Trois thèmes : clair, sépia, nuit"],
-      cta: "Lire le Coran",
-      alt: "Lecture de la sourate Al Imran en pages de mushaf, thème sépia",
+    folios: ["I", "II", "III", "IV", "V"],
+    hero: {
+      kicker: "Coran · Invocations · Récitations",
+      title: ["Le Coran,", "tel que", "vous le"],
+      word: "lisez.",
+      lead: "Hafs ou Warsh, 54 récitateurs, la Citadelle du musulman. Gratuit, même hors ligne.",
+      start: "Commencer la lecture",
+      resume: "Continuer · {surah} v.{ayah}",
+      resumePage: "Continuer · page {page}",
+      resumeJuz: "Continuer · juz {juz}",
+      openApp: "Ouvrir MushafPlus",
+      alt: "L’accueil de l’application mobile MushafPlus",
     },
-    duas: {
-      kicker: "Invocations",
-      title: "La Citadelle du musulman, à portée de main",
-      text: "Les invocations du matin et du soir, avant de dormir, après la prière, celles tirées du Coran, les Rabbana et celles de fin de lecture.",
-      points: ["Arabe, traduction et sources de chaque invocation", "Lecture du Coran terminée : invocations de khatm", "Disponibles sans connexion"],
-      cta: "Ouvrir les invocations",
-      alt: "Chapitre des adhkar du matin et du soir, thème nuit",
+    colophon: ["2 lectures", "54 récitateurs", "267 invocations", "FR · EN · AR"],
+    demo: {
+      kicker: "Trois entrées",
+      title: "Que voulez-vous faire ?",
+      pause: "Mettre les démonstrations en pause",
+      entries: {
+        read: {
+          intent: "Je veux lire.",
+          text: "Pages de mushaf à cadre doré, ou verset par verset avec traduction et translittération. Votre place est gardée.",
+          cta: "Lire le Coran",
+        },
+        duas: {
+          intent: "Je veux invoquer.",
+          text: "La Citadelle du musulman : 132 chapitres, 267 invocations, avec leurs sources.",
+          cta: "Ouvrir les invocations",
+        },
+        listen: {
+          intent: "Je veux écouter.",
+          text: "Choisissez une voix : la sourate entière ou verset par verset, avec le lecteur qui suit.",
+          cta: "Écouter",
+        },
+      },
     },
-    listen: {
-      kicker: "Écouter",
-      title: "Votre récitateur, sourate entière ou verset par verset",
-      text: "Choisissez une voix, lancez la sourate et suivez le verset à l’écran pendant qu’il est récité. Téléchargez pour écouter sans réseau.",
-      points: ["Plus de 50 récitateurs en Hafs et en Warsh", "Sourate entière, verset par verset ou radio", "Répétition, vitesse et file d’attente"],
-      cta: "Écouter",
-      reciters: ["Mishary Alafasy", "As-Sudais", "Al-Husary", "Al-Minshawi", "Abdul Basit", "Hani Ar-Rifai"],
+    themes: {
+      kicker: "Application mobile",
+      title: "Cinq thèmes dans l’application mobile.",
+      text: "Du jour clair à la nuit bleue. Rose de l’aube et Nuit océan sont les deux derniers arrivés.",
+      fresh: "Nouveau",
+      names: {
+        fajr: "Lueur du Fajr",
+        parchemin: "Parchemin du Mushaf",
+        rose: "Rose de l’aube",
+        medine: "Nuit de Médine",
+        ocean: "Nuit océan",
+      },
+      videoAlt: "Choisir un thème dans les réglages de l’application mobile",
+      pickerAlt: "Le sélecteur de thèmes dans les réglages de l’application mobile",
     },
-    how: {
-          "kicker": "Comment ça marche",
-          "title": "Voyez l’application en action",
-          "play": "Lancer la démonstration",
-          "steps": [
-                {
-                  "title": "Un démarrage en quatre étapes",
-                  "text": "Langue, thème, lecture en Hafs ou en Warsh : l’essentiel se règle en quelques secondes. Position et rappels restent facultatifs."
-                },
-                {
-                      "title": "Écoutez en un geste",
-                      "text": "Choisissez une voix, touchez écouter : le lecteur s’ouvre, suit chaque verset, et règle la vitesse ou passe au verset suivant."
-                },
-                {
-                      "title": "Lisez et faites défiler",
-                      "text": "Une page de mushaf, puis le verset par verset avec traduction et translittération, en défilant simplement."
-                }
-          ]
+    mobile: {
+      kicker: "Sur mobile",
+      title: "La même lecture, dans la poche.",
+      text: "Votre place retrouvée, des radios thématiques, les téléchargements par sourate pour écouter hors connexion.",
+      soon: "Bientôt sur Android et iOS",
+      android: "Télécharger pour Android",
+      ios: "Télécharger pour iOS",
+      playerAlt: "Le lecteur audio de l’application mobile",
+      radioAlt: "L’onglet Radio de l’application mobile",
     },
-    mobileKicker: "Sur mobile",
-    mobileTitle: "MushafPlus dans votre poche",
-    mobileText: "La même lecture sur Android et iOS : le Coran, les invocations et les récitations, avec les téléchargements pour écouter hors connexion.",
-    mobileSoon: "Bientôt sur Android et iOS",
-    mobileAndroid: "Télécharger pour Android",
-    mobileIos: "Télécharger pour iOS",
-    mobileAlt: "L’application MushafPlus sur mobile, accueil",
-    footerNote: "Gratuit, sans compte, sans publicité.",
-    links: { about: "À propos", privacy: "Confidentialité", sources: "Sources" },
+    footer: {
+      note: "Gratuit, sans compte, sans publicité.",
+      links: { about: "À propos", privacy: "Confidentialité", sources: "Sources" },
+    },
   },
   en: {
     brandAria: "MushafPlus, home",
     langLabel: "Language",
-    eyebrow: "Quran · Supplications · Recitations",
-    title: "The Quran in the reading you follow",
-    lead: "Read in Hafs or Warsh, listen to more than 50 reciters and find the Fortress of the Muslim. Free, no account, even offline.",
-    start: "Start reading",
-    resume: "Continue · {surah} v.{ayah}",
-    resumePage: "Continue · page {page}",
-    resumeJuz: "Continue · juz {juz}",
-    openApp: "Open MushafPlus",
-    ticker: ["Hafs","Warsh","Colour-coded tajweed","Word by word","Offline","No account","No ads","FR · EN · AR","Three themes"],
-    facts: [
-      ["2", "readings: Hafs and Warsh"],
-      ["54", "reciters"],
-      ["267", "supplications of the Fortress"],
-      ["3", "languages: FR · EN · AR"],
-    ],
-    read: {
-      kicker: "Read",
-      title: "The text first, nothing else between you and it",
-      text: "Mushaf pages with a golden frame, or verse by verse. Colour-coded tajweed, translation, transliteration and tafsir when you want them.",
-      points: ["Hafs and Warsh, each with its own font", "Your place is kept from one visit to the next", "Three themes: light, sepia, night"],
-      cta: "Read the Quran",
-      alt: "Reading surah Al Imran as mushaf pages, sepia theme",
+    folios: ["I", "II", "III", "IV", "V"],
+    hero: {
+      kicker: "Quran · Supplications · Recitations",
+      title: ["The Quran,", "the way"],
+      word: "you read it.",
+      lead: "Hafs or Warsh, 54 reciters, the Fortress of the Muslim. Free, even offline.",
+      start: "Start reading",
+      resume: "Continue · {surah} v.{ayah}",
+      resumePage: "Continue · page {page}",
+      resumeJuz: "Continue · juz {juz}",
+      openApp: "Open MushafPlus",
+      alt: "The home screen of the MushafPlus mobile app",
     },
-    duas: {
-      kicker: "Supplications",
-      title: "The Fortress of the Muslim, at hand",
-      text: "Morning and evening supplications, before sleep, after the prayer, those taken from the Quran, the Rabbana duas and those for finishing a recitation.",
-      points: ["Arabic, translation and sources for each supplication", "Finished the Quran: khatm supplications", "Available offline"],
-      cta: "Open the supplications",
-      alt: "Chapter of the morning and evening adhkar, night theme",
+    colophon: ["2 readings", "54 reciters", "267 supplications", "FR · EN · AR"],
+    demo: {
+      kicker: "Three ways in",
+      title: "What would you like to do?",
+      pause: "Pause the demonstrations",
+      entries: {
+        read: {
+          intent: "I want to read.",
+          text: "Mushaf pages with a golden frame, or verse by verse with translation and transliteration. Your place is kept.",
+          cta: "Read the Quran",
+        },
+        duas: {
+          intent: "I want to supplicate.",
+          text: "The Fortress of the Muslim: 132 chapters, 267 supplications, with their sources.",
+          cta: "Open the supplications",
+        },
+        listen: {
+          intent: "I want to listen.",
+          text: "Pick a voice: the whole surah or verse by verse, with the player following along.",
+          cta: "Listen",
+        },
+      },
     },
-    listen: {
-      kicker: "Listen",
-      title: "Your reciter, whole surah or verse by verse",
-      text: "Pick a voice, start the surah and follow the verse on screen as it is recited. Download to listen without a network.",
-      points: ["More than 50 reciters in Hafs and Warsh", "Whole surah, verse by verse or radio", "Repeat, speed and queue"],
-      cta: "Listen",
-      reciters: ["Mishary Alafasy", "As-Sudais", "Al-Husary", "Al-Minshawi", "Abdul Basit", "Hani Ar-Rifai"],
+    themes: {
+      kicker: "Mobile app",
+      title: "Five themes in the mobile app.",
+      text: "From bright day to blue night. Dawn Rose and Ocean Night are the two newest.",
+      fresh: "New",
+      names: {
+        fajr: "Fajr Glow",
+        parchemin: "Mushaf Parchment",
+        rose: "Dawn Rose",
+        medine: "Madinah Night",
+        ocean: "Ocean Night",
+      },
+      videoAlt: "Choosing a theme in the settings of the mobile app",
+      pickerAlt: "The theme picker in the settings of the mobile app",
     },
-    how: {
-          "kicker": "How it works",
-          "title": "See the app in action",
-          "play": "Play the demo",
-          "steps": [
-                {
-                  "title": "Getting started in four steps",
-                  "text": "Language, theme, Hafs or Warsh reading: the essentials are set in seconds. Location and reminders stay optional."
-                },
-                {
-                      "title": "Listen in one tap",
-                      "text": "Pick a voice and tap listen: the player opens, follows each verse, and lets you change speed or skip to the next verse."
-                },
-                {
-                      "title": "Read and scroll",
-                      "text": "A mushaf page, then verse by verse with translation and transliteration, just by scrolling."
-                }
-          ]
+    mobile: {
+      kicker: "On mobile",
+      title: "The same reading, in your pocket.",
+      text: "Your place kept, themed radio stations, downloads by surah to listen offline.",
+      soon: "Coming soon on Android and iOS",
+      android: "Get it for Android",
+      ios: "Get it for iOS",
+      playerAlt: "The audio player of the mobile app",
+      radioAlt: "The Radio tab of the mobile app",
     },
-    mobileKicker: "On mobile",
-    mobileTitle: "MushafPlus in your pocket",
-    mobileText: "The same reading on Android and iOS: the Quran, supplications and recitations, with downloads to listen offline.",
-    mobileSoon: "Coming soon on Android and iOS",
-    mobileAndroid: "Get it for Android",
-    mobileIos: "Get it for iOS",
-    mobileAlt: "The MushafPlus mobile app, home screen",
-    footerNote: "Free, no account, no ads.",
-    links: { about: "About", privacy: "Privacy", sources: "Sources" },
+    footer: {
+      note: "Free, no account, no ads.",
+      links: { about: "About", privacy: "Privacy", sources: "Sources" },
+    },
   },
   ar: {
     brandAria: "مصحف بلس، الرئيسية",
     langLabel: "اللغة",
-    eyebrow: "القرآن · الأدعية · التلاوات",
-    title: "القرآن بالقراءة التي تتبعها",
-    lead: "اقرأ برواية حفص أو ورش، واستمع إلى أكثر من 50 قارئًا، وارجع إلى حصن المسلم. مجاني، بلا حساب، وحتى دون اتصال.",
-    start: "ابدأ القراءة",
-    resume: "متابعة · {surah} آية {ayah}",
-    resumePage: "متابعة · الصفحة {page}",
-    resumeJuz: "متابعة · الجزء {juz}",
-    openApp: "افتح مصحف بلس",
-    ticker: ["حفص","ورش","تجويد ملوّن","كلمة كلمة","دون اتصال","بلا حساب","بلا إعلانات","عربي · فرنسي · إنجليزي","ثلاثة مظاهر"],
-    facts: [
-      ["2", "روايتان: حفص وورش"],
-      ["54", "قارئًا"],
-      ["267", "دعاءً من حصن المسلم"],
-      ["3", "لغات: عربي · فرنسي · إنجليزي"],
-    ],
-    read: {
-      kicker: "القراءة",
-      title: "النص أولًا، ولا شيء بينك وبينه",
-      text: "صفحات المصحف بإطار ذهبي، أو آية آية. تجويد ملوّن، وترجمة، ونقل صوتي، وتفسير حين تريدها.",
-      points: ["حفص وورش، لكلٍّ خطّه", "مكانك محفوظ من زيارة إلى أخرى", "ثلاثة مظاهر: فاتح وسيبيا وليلي"],
-      cta: "اقرأ القرآن",
-      alt: "قراءة سورة آل عمران بصفحات المصحف، المظهر السيبيا",
+    folios: ["١", "٢", "٣", "٤", "٥"],
+    hero: {
+      kicker: "القرآن · الأدعية · التلاوات",
+      title: ["القرآن،", "كما"],
+      word: "تقرؤه أنت.",
+      lead: "حفص أو ورش، ٥٤ قارئًا، وحصن المسلم. مجاني، وحتى دون اتصال.",
+      start: "ابدأ القراءة",
+      resume: "متابعة · {surah} آية {ayah}",
+      resumePage: "متابعة · الصفحة {page}",
+      resumeJuz: "متابعة · الجزء {juz}",
+      openApp: "افتح مصحف بلس",
+      alt: "الشاشة الرئيسية لتطبيق مصحف بلس على الجوال",
     },
-    duas: {
-      kicker: "الأدعية",
-      title: "حصن المسلم في متناول يدك",
-      text: "أذكار الصباح والمساء، وقبل النوم، وبعد الصلاة، والأدعية المأخوذة من القرآن، و«ربّنا»، وأدعية ختم القراءة.",
-      points: ["النص العربي والترجمة ومصدر كل دعاء", "عند ختم القرآن: أدعية الختم", "متاحة دون اتصال"],
-      cta: "افتح الأدعية",
-      alt: "فصل أذكار الصباح والمساء، المظهر الليلي",
+    colophon: ["روايتان", "٥٤ قارئًا", "٢٦٧ دعاءً", "عربي · فرنسي · إنجليزي"],
+    demo: {
+      kicker: "ثلاثة مداخل",
+      title: "ماذا تريد أن تفعل؟",
+      pause: "إيقاف العروض مؤقتًا",
+      entries: {
+        read: {
+          intent: "أريد أن أقرأ.",
+          text: "صفحات المصحف بإطار ذهبي، أو آية آية مع الترجمة والنقل الصوتي. مكانك محفوظ.",
+          cta: "اقرأ القرآن",
+        },
+        duas: {
+          intent: "أريد أن أدعو.",
+          text: "حصن المسلم: ١٣٢ بابًا، ٢٦٧ دعاءً، مع مصادرها.",
+          cta: "افتح الأدعية",
+        },
+        listen: {
+          intent: "أريد أن أستمع.",
+          text: "اختر صوتًا: السورة كاملة أو آية آية، والمشغّل يتابع معك.",
+          cta: "استمع",
+        },
+      },
     },
-    listen: {
-      kicker: "الاستماع",
-      title: "قارئك المفضّل، السورة كاملة أو آية آية",
-      text: "اختر صوتًا وابدأ السورة وتابع الآية على الشاشة أثناء تلاوتها. نزّل لتستمع دون شبكة.",
-      points: ["أكثر من 50 قارئًا بحفص وورش", "السورة كاملة أو آية آية أو راديو", "تكرار وسرعة وقائمة انتظار"],
-      cta: "استمع",
-      reciters: ["مشاري العفاسي", "السديس", "الحصري", "المنشاوي", "عبد الباسط", "هاني الرفاعي"],
+    themes: {
+      kicker: "تطبيق الجوال",
+      title: "خمسة مظاهر في تطبيق الجوال.",
+      text: "من النهار الساطع إلى الليل الأزرق. وردة الفجر وليل المحيط أحدث مظهرين.",
+      fresh: "جديد",
+      names: {
+        fajr: "نور الفجر",
+        parchemin: "رق المصحف",
+        rose: "وردة الفجر",
+        medine: "ليل المدينة",
+        ocean: "ليل المحيط",
+      },
+      videoAlt: "اختيار مظهر من إعدادات تطبيق الجوال",
+      pickerAlt: "منتقي المظاهر في إعدادات تطبيق الجوال",
     },
-    how: {
-          "kicker": "كيف يعمل",
-          "title": "شاهد التطبيق أثناء العمل",
-          "play": "شغّل العرض",
-          "steps": [
-                {
-                  "title": "بداية في أربع خطوات",
-                  "text": "اللغة والمظهر والرواية، حفص أو ورش: تُضبط الأساسيات في ثوانٍ. الموقع والتذكيرات اختيارية."
-                },
-                {
-                      "title": "استمع بلمسة واحدة",
-                      "text": "اختر صوتًا واضغط استمع: يفتح المشغّل ويتابع كل آية، ويتيح تغيير السرعة أو الانتقال إلى الآية التالية."
-                },
-                {
-                      "title": "اقرأ وتصفّح",
-                      "text": "صفحة من المصحف، ثم آية آية مع الترجمة والنقل الصوتي، بالتمرير فقط."
-                }
-          ]
+    mobile: {
+      kicker: "على الجوال",
+      title: "القراءة نفسها، في جيبك.",
+      text: "مكانك محفوظ، وإذاعات موضوعية، وتنزيل بحسب السورة للاستماع دون اتصال.",
+      soon: "قريبًا على أندرويد وآيفون",
+      android: "حمّل لأندرويد",
+      ios: "حمّل لآيفون",
+      playerAlt: "مشغّل الصوت في تطبيق الجوال",
+      radioAlt: "تبويب الإذاعة في تطبيق الجوال",
     },
-    mobileKicker: "على الجوال",
-    mobileTitle: "مصحف بلس في جيبك",
-    mobileText: "القراءة نفسها على أندرويد وآيفون: القرآن والأدعية والتلاوات، مع التنزيل للاستماع دون اتصال.",
-    mobileSoon: "قريبًا على أندرويد وآيفون",
-    mobileAndroid: "حمّل لأندرويد",
-    mobileIos: "حمّل لآيفون",
-    mobileAlt: "تطبيق مصحف بلس على الجوال، الشاشة الرئيسية",
-    footerNote: "مجاني، بلا حساب، بلا إعلانات.",
-    links: { about: "حول", privacy: "الخصوصية", sources: "المصادر" },
+    footer: {
+      note: "مجاني، بلا حساب، بلا إعلانات.",
+      links: { about: "حول", privacy: "الخصوصية", sources: "المصادر" },
+    },
   },
 };
 
