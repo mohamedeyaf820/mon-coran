@@ -1,5 +1,6 @@
 import React from "react";
 import { PhoneIcon } from "./landingIcons";
+import { localizePath } from "../../utils/localePath";
 import { Folio, Kicker, Phone } from "./LandingMedia";
 
 /** Folio IV: the app on a phone. Only an https address from site.config.json becomes a button. */
@@ -28,7 +29,7 @@ export function LandingMobile({ copy, numeral, android, ios }) {
         )}
       </div>
       <div className="landing-mobile__phones">
-        <Phone shot="mob-radio" alt={copy.radioAlt} className="landing-mobile__radio" />
+        <Phone shot="mob-radio" className="landing-mobile__radio" />
         <Phone shot="mob-player" alt={copy.playerAlt} />
       </div>
     </Folio>
@@ -36,15 +37,21 @@ export function LandingMobile({ copy, numeral, android, ios }) {
 }
 
 /** Folio V. */
-export function LandingFooter({ copy, numeral, onOpenLegal }) {
+export function LandingFooter({ copy, numeral, lang, onOpenLegal }) {
+  // Real links (middle click, copy address); a plain click keeps the in-app navigation.
+  const follow = (page) => (event) => {
+    if (event.defaultPrevented || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    onOpenLegal(page);
+  };
   return (
     <Folio n="5" numeral={numeral} as="footer" className="landing__footer">
       <p>{copy.note}</p>
       <nav aria-label="MushafPlus">
         {["about", "privacy", "sources"].map((page) => (
-          <button key={page} type="button" className="landing__link" onClick={() => onOpenLegal(page)}>
+          <a key={page} className="landing__link" href={localizePath(`/${page}`, lang)} onClick={follow(page)}>
             {copy.links[page]}
-          </button>
+          </a>
         ))}
       </nav>
     </Folio>

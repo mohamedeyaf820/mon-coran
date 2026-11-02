@@ -303,3 +303,85 @@ test("the Home tab of the reader leads to /accueil, not back to the welcome page
   await expect(page.locator(".app-view-home")).toBeVisible();
   await expect(page.locator(".landing")).toHaveCount(0);
 });
+
+for (const lang of ["fr", "ar"]) {
+  test(`the mobile folio keeps its text and its phones apart from 768 to 1280 px (${lang})`, async ({ page }) => {
+    for (const width of [768, 820, 1024, 1100, 1280]) {
+      await open(page, lang === "ar" ? "/ar/" : "/", { width, height: 900, lang });
+      await page.locator("[data-folio='4']").scrollIntoViewIfNeeded({ timeout: 30_000 });
+      const m = await page.evaluate(() => {
+        const root = document.querySelector(".landing");
+        const box = (node) => {
+          const b = node.getBoundingClientRect();
+          return [b.left, b.top, b.right, b.bottom];
+        };
+        const phones = [...document.querySelectorAll(".landing-mobile .landing-phone")]
+          .filter((node) => getComputedStyle(node).display !== "none")
+          .map(box);
+        return { scroll: root.scrollWidth, client: root.clientWidth, text: box(document.querySelector(".landing-mobile__text")), phones };
+      });
+      const at = `${lang} ${width}px`;
+      // .landing is its own scroller: the window never shows a sideways scroll here.
+      expect(m.scroll, `${at} scrollWidth`).toBeLessThanOrEqual(m.client + 1);
+      for (const phone of m.phones) {
+        expect(phone[0], `${at} phone left`).toBeGreaterThanOrEqual(0);
+        expect(phone[2], `${at} phone right`).toBeLessThanOrEqual(m.client + 1);
+        const sideBySide = Math.min(phone[3], m.text[3]) > Math.max(phone[1], m.text[1]);
+        if (sideBySide) {
+          const gap = Math.max(phone[0] - m.text[2], m.text[0] - phone[2]);
+          expect(gap, `${at} gap between text and phone`).toBeGreaterThanOrEqual(16);
+        }
+      }
+      if (m.phones.length === 2) {
+        const gap = Math.max(m.phones[1][0] - m.phones[0][2], m.phones[0][0] - m.phones[1][2]);
+        expect(gap, `${at} gap between phones`).toBeGreaterThanOrEqual(8);
+      }
+    }
+  });
+}
+
+test("the theme rail starts at its edge on a tablet, with no empty space before the first theme", async ({ page }) => {
+  await open(page, "/", { width: 768, height: 900 });
+  const rail = page.locator(".landing-themes__rail");
+  await expect(rail).toBeVisible({ timeout: 30_000 });
+  const railBox = await rail.boundingBox();
+  const firstBox = await page.locator(".landing-theme").first().boundingBox();
+  expect(firstBox.x - railBox.x).toBeLessThanOrEqual(24);
+});
+
+test("the foot links are real links that keep the in-app navigation", async ({ page }) => {
+  await open(page, "/");
+  const links = page.locator(".landing__footer nav a");
+  await expect(links).toHaveCount(3, { timeout: 30_000 });
+  expect(await links.evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href")))).toEqual([
+    "/about", "/privacy", "/sources",
+  ]);
+  await links.nth(1).click();
+  await expect(page).toHaveURL(/\/privacy$/);
+  await expect(page.locator(".landing")).toHaveCount(0);
+
+  await open(page, "/ar/", { lang: "ar" });
+  await expect(page.locator(".landing__footer nav a")).toHaveCount(3, { timeout: 30_000 });
+  expect(
+    await page.locator(".landing__footer nav a").evaluateAll((nodes) => nodes.map((node) => node.getAttribute("href"))),
+  ).toEqual(["/ar/about", "/ar/privacy", "/ar/sources"]);
+});
+
+test("offline, the page says before any click that only opened content will load", async ({ page, context }) => {
+  await open(page, "/");
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".landing__offline")).toHaveCount(0);
+  await context.setOffline(true);
+  await expect(page.locator(".landing__offline")).toBeVisible();
+  await expect(page.locator(".landing__offline")).toHaveAttribute("role", "status");
+  await context.setOffline(false);
+  await expect(page.locator(".landing__offline")).toHaveCount(0);
+});
+
+test("the hero never promises more than the app keeps offline", async ({ page }) => {
+  await open(page, "/");
+  const lead = page.locator(".landing-hero .landing__lead");
+  await expect(lead).toBeVisible({ timeout: 30_000 });
+  await expect(lead).not.toHaveText(/même hors ligne/);
+  await expect(lead).toHaveText(/hors ligne/);
+});

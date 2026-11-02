@@ -443,6 +443,18 @@
 .landing-mobile__radio { display: none; }
 .landing__stores { display: flex; flex-wrap: wrap; gap: 12px; margin-block-start: 12px; }
 
+.landing__offline {
+  margin-block-start: 16px;
+  max-width: var(--landing-measure);
+  padding: 10px 14px;
+  border: var(--landing-rule) solid var(--lp-rule-strong);
+  border-radius: var(--landing-r-ctl);
+  background: var(--lp-surface);
+  color: var(--lp-text);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+}
+
 .landing__soon {
   display: inline-flex;
   align-items: center;
@@ -470,6 +482,8 @@
 .landing__footer nav { display: flex; flex-wrap: wrap; }
 
 .landing__link {
+  display: inline-flex;
+  align-items: center;
   min-height: 44px;
   padding-inline: 12px;
   border: 0;
@@ -493,10 +507,14 @@
   .landing__brand strong { display: none; }
 }
 
+@media (min-width: 640px) {
+  .landing-themes__rail { padding-inline: 0; }
+  .landing-themes__rail li { scroll-snap-align: start; }
+}
+
 @media (min-width: 768px) {
-  .landing-mobile { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
   .landing-mobile__radio { display: block; margin-block-start: 56px; }
-  
+  .landing-mobile__phones { --landing-phone-w: min(260px, calc(50% - 10px)); }
 }
 
 @media (min-width: 900px) {
@@ -512,6 +530,8 @@
 }
 
 @media (min-width: 1024px) {
+  .landing-mobile { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 32px; }
+
   .landing-demo__body {
     display: grid;
     grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
@@ -592,10 +612,10 @@
   .landing__lang:hover:not([aria-pressed="true"]),
   .landing__pause:hover:not([aria-pressed="true"]) { background: var(--lp-surface); }
   .landing__link:hover { color: var(--lp-primary); }
-  .landing-theme:hover .landing-phone--thumb { transform: translateY(-8px); }
 }
 
 @media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .landing-theme:hover .landing-phone--thumb { transform: translateY(-8px); }
   .landing-phone--thumb { transition: transform 160ms ease; }
   .landing__btn--primary:hover,
   .landing__btn--solid:hover { transition-duration: 160ms; transition-timing-function: ease; }

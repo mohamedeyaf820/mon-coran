@@ -11,6 +11,16 @@ const SHELL_ENTRIES = [
   "src/components/landing/LandingPage.jsx",
   "src/components/QuranDisplay.jsx",
   "src/styles/deferredStyles.js",
+  // Small lazy parts that every route mounts (navigation, player, dialogs, tooltips). Without
+  // them a first visit that only used "/" could not open the app once offline.
+  "src/components/AudioPlayer.jsx",
+  "src/components/MobileNavigation.jsx",
+  "src/components/CompactMenuTrigger.jsx",
+  "src/components/ConfirmDialogHost.jsx",
+  "src/components/ProgressBar.jsx",
+  "src/components/Quran/TajweedTooltip.jsx",
+  "src/services/audioServiceEntry.js",
+  "src/utils/reciterRanking.js",
 ];
 
 const manifest = JSON.parse(await readFile(VITE_MANIFEST_PATH, "utf8"));

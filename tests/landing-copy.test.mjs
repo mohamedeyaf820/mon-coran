@@ -36,9 +36,17 @@ test("the verified figures are the ones on the page", () => {
   }
 });
 
-test("a store button needs a real https address", () => {
-  assert.equal(storeUrl("https://play.google.com/store/apps/details?id=x"), "https://play.google.com/store/apps/details?id=x");
-  for (const bad of ["", undefined, null, 42, "http://example.com", "//example.com", "javascript:alert(1)", " https://example.com", "https:/example.com", "ftp://example.com"]) {
+test("a store button needs a real https address on a store host", () => {
+  const play = "https://play.google.com/store/apps/details?id=x";
+  const apple = "https://apps.apple.com/app/id123";
+  assert.equal(storeUrl(play), play);
+  assert.equal(storeUrl(apple), apple);
+  for (const bad of [
+    "", undefined, null, 42, "http://play.google.com/x", "//play.google.com/x", "javascript:alert(1)",
+    " https://play.google.com/x", "https:/play.google.com/x", "ftp://apps.apple.com/x",
+    "https://example.com/app", "https://play.google.com.evil.example/x", "https://evil.example/play.google.com/",
+    "https://play.google.com@evil.example/x", "https://user:pw@apps.apple.com/x", "https://play.google.com:8443/x",
+  ]) {
     assert.equal(storeUrl(bad), "", String(bad));
   }
 });

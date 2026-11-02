@@ -14,6 +14,16 @@ export const TINTS = {
   ocean: { fresh: true },
 };
 
+// Images the page keeps for offline once the browser is idle (the lazy ones included).
+export const WARM_IMAGES = [
+  ...Object.keys(TINTS).map((id) => `${SHOTS}mob-home-${id}.webp`),
+  `${SHOTS}mob-radio.webp`,
+  `${SHOTS}mob-player.webp`,
+  `${SHOTS}mob-themes-picker-a.webp`,
+  `${SHOTS}mob-themes-picker-b.webp`,
+  ...["mob-reader-scroll", "mob-duas-scroll", "mob-listen-player", "mob-themes"].map((name) => `${CLIPS}${name}.jpg`),
+];
+
 export const WEB_TINTS = ["fajr", "parchemin", "medine"];
 const BY_WEB_THEME = { light: "fajr", sepia: "parchemin", dark: "medine" };
 
@@ -33,7 +43,15 @@ export const ENTRIES = [
   { id: "listen", clip: "mob-listen-player" },
 ];
 
-// Only an https address can become a store button; an empty field keeps the
-// honest "coming soon" state.
-export const storeUrl = (value) =>
-  typeof value === "string" && /^https:\/\/[^\s/]+/.test(value) ? value : "";
+// Only an https address on a store host can become a store button (no credentials, no
+// port); an empty field keeps the honest "coming soon" state. Nothing here invents a URL.
+const STORE_HOSTS = new Set(["play.google.com", "apps.apple.com"]);
+export function storeUrl(value) {
+  try {
+    const url = new URL(value);
+    const ok = url.protocol === "https:" && STORE_HOSTS.has(url.hostname) && !url.username && !url.password && !url.port;
+    return ok && value.startsWith("https://") ? value : "";
+  } catch {
+    return "";
+  }
+}

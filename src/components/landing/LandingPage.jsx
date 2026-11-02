@@ -3,8 +3,8 @@ import siteConfig from "../../../site.config.json";
 import SURAHS from "../../data/surahs";
 import { useApp } from "../../context/AppContext";
 import { landingCopy } from "./landingCopy";
-import { TINTS, storeUrl, tintForTheme, tintSequence } from "./landingData";
-import { useLandingMotion, useMedia, usePlayback, useReducedMotion } from "./useLandingMotion";
+import { TINTS, WARM_IMAGES, storeUrl, tintForTheme, tintSequence } from "./landingData";
+import { useLandingMotion, useMedia, useOnline, usePlayback, useReducedMotion, useWarmImages } from "./useLandingMotion";
 import LandingHero from "./LandingHero";
 import LandingDemo from "./LandingDemo";
 import LandingThemes from "./LandingThemes";
@@ -32,6 +32,8 @@ export default function LandingPage() {
   const reduce = useReducedMotion();
   const wide = useMedia("(min-width: 1024px)");
   const playback = usePlayback(reduce);
+  const online = useOnline();
+  useWarmImages(WARM_IMAGES);
   const base = tintForTheme(theme);
   const sequence = useMemo(() => tintSequence(base), [base]);
   const setTint = useLandingMotion(rootRef, base);
@@ -120,6 +122,7 @@ export default function LandingPage() {
           numeral={copy.folios[0]}
           sequence={sequence}
           primaryLabel={primaryLabel}
+          offline={!online}
           onStart={openReading}
           onOpenApp={openApp}
         />
@@ -134,7 +137,7 @@ export default function LandingPage() {
         <LandingMobile copy={copy.mobile} numeral={copy.folios[3]} android={android} ios={ios} />
       </main>
 
-      <LandingFooter copy={copy.footer} numeral={copy.folios[4]} onOpenLegal={openLegal} />
+      <LandingFooter copy={copy.footer} numeral={copy.folios[4]} lang={lang} onOpenLegal={openLegal} />
     </div>
   );
 }

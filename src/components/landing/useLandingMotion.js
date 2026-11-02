@@ -10,20 +10,45 @@ const QUERY_REDUCE = "(prefers-reduced-motion: reduce)";
 
 /** A media query as a boolean that follows the browser live. */
 export function useMedia(query) {
-  const read = () => typeof window !== "undefined" && Boolean(window.matchMedia?.(query).matches);
-  const [matches, setMatches] = useState(read);
+  const [matches, setMatches] = useState(() => window.matchMedia(query).matches);
   useEffect(() => {
-    const list = window.matchMedia?.(query);
-    if (!list) return undefined;
+    const list = window.matchMedia(query);
     const sync = () => setMatches(list.matches);
     sync();
-    list.addEventListener?.("change", sync);
-    return () => list.removeEventListener?.("change", sync);
+    list.addEventListener("change", sync);
+    return () => list.removeEventListener("change", sync);
   }, [query]);
   return matches;
 }
 
 export const useReducedMotion = () => useMedia(QUERY_REDUCE);
+
+/** Network state as a boolean, live (the offline notice of the page). */
+export function useOnline() {
+  const [online, setOnline] = useState(() => navigator.onLine !== false);
+  useEffect(() => {
+    const sync = () => setOnline(navigator.onLine !== false);
+    window.addEventListener("online", sync);
+    window.addEventListener("offline", sync);
+    return () => {
+      window.removeEventListener("online", sync);
+      window.removeEventListener("offline", sync);
+    };
+  }, []);
+  return online;
+}
+
+/** Fetches the given images once the browser is idle, so the service worker keeps them for offline. */
+export function useWarmImages(urls) {
+  useEffect(() => {
+    if (navigator.onLine === false || navigator.connection?.saveData || !navigator.serviceWorker) return;
+    const idle = window.requestIdleCallback || ((run) => setTimeout(run, 2000));
+    // Only once the service worker answers for the page, or nothing would be kept.
+    const sw = navigator.serviceWorker;
+    const warm = () => idle(() => urls.forEach((url) => fetch(url).catch(() => {})));
+    sw.ready.then(() => (sw.controller ? warm() : sw.addEventListener("controllerchange", warm, { once: true })));
+  }, [urls]);
+}
 
 /** True while at least `threshold` of the node is inside the landing scroller. */
 export function useInView(ref, threshold = 0.4) {

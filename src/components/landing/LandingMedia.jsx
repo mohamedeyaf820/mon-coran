@@ -29,9 +29,9 @@ export function Folio({ n, numeral, as: Tag = "section", className = "", childre
 }
 
 /** A capture of the mobile app in a device frame. Sizes are fixed: no layout shift. */
-export function Phone({ shot, alt = "", eager = false, className = "", ...rest }) {
+export function Phone({ shot, alt = "", eager = false, className = "" }) {
   return (
-    <div className={`landing-phone ${className}`} {...rest}>
+    <div className={`landing-phone ${className}`}>
       <img
         src={`${SHOTS}${shot}.webp`}
         alt={alt}

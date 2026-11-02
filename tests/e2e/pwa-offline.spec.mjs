@@ -295,3 +295,58 @@ test("PWA: the welcome page opens offline for someone who only used /accueil", a
   });
   await expect(page.locator(".landing")).toBeVisible();
 });
+
+test("PWA: after visiting only the welcome page, it warns offline, keeps its images and its buttons stay safe", async ({ page, context }) => {
+  const problems = [];
+  page.on("pageerror", (error) => problems.push(`pageerror: ${error.message}`));
+  await page.addInitScript(() => {
+    localStorage.setItem("mushaf-plus-settings", JSON.stringify({
+      skipSplashAnimation: true,
+      lang: "fr",
+      riwaya: "hafs",
+    }));
+  });
+
+  await page.goto("/");
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  await page.evaluate(() => navigator.serviceWorker.ready);
+  if (!(await page.evaluate(() => Boolean(navigator.serviceWorker.controller)))) {
+    await page.reload();
+    await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  }
+  await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  // The page fetches its remaining images once the browser is idle: wait until the last one is kept.
+  await expect
+    .poll(() => page.evaluate(async () => Boolean(await caches.match("/videos/landing/mob-themes.jpg"))), { timeout: 30_000 })
+    .toBe(true);
+
+  await context.setOffline(true);
+  const failedImages = [];
+  page.on("requestfailed", (request) => {
+    if (/\/images\/landing\//.test(request.url())) failedImages.push(request.url());
+  });
+  await page.reload({ waitUntil: "domcontentloaded" });
+  await expect(page.locator(".landing")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator(".landing__offline")).toBeVisible();
+
+  // Every image of the page was kept, including the lazy ones of the last folios.
+  await page.locator("[data-folio='4']").scrollIntoViewIfNeeded();
+  await page.locator("[data-folio='3']").scrollIntoViewIfNeeded();
+  await page.waitForTimeout(1500);
+  const broken = await page.locator(".landing img").evaluateAll((nodes) =>
+    nodes.filter((node) => node.currentSrc && !(node.complete && node.naturalWidth > 0)).map((node) => node.getAttribute("src")),
+  );
+  expect(broken).toEqual([]);
+  expect(failedImages).toEqual([]);
+
+  // The buttons open the app, not an error screen about a missing chunk.
+  await page.locator(".landing__actions").getByRole("button", { name: "Ouvrir MushafPlus" }).click();
+  await expect(page.locator(".app-root")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator("[role='alert']")).toHaveCount(0);
+
+  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.locator(".landing__actions").getByRole("button", { name: "Commencer la lecture" }).click();
+  await expect(page.locator(".app-root")).toBeVisible({ timeout: 30_000 });
+  await expect(page.locator("[role='alert']")).toHaveCount(0);
+  expect(problems).toEqual([]);
+});

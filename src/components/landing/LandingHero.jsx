@@ -4,7 +4,7 @@ import { Folio, Kicker } from "./LandingMedia";
 import { SHOTS } from "./landingData";
 
 /** Folio I: the promise in one sentence, one action, and the real app. */
-export default function LandingHero({ copy, numeral, sequence, primaryLabel, onStart, onOpenApp }) {
+export default function LandingHero({ copy, numeral, sequence, primaryLabel, offline, onStart, onOpenApp }) {
   const { title, word } = copy.hero;
   const head = title.slice(0, -1);
   return (
@@ -30,6 +30,9 @@ export default function LandingHero({ copy, numeral, sequence, primaryLabel, onS
             {copy.hero.openApp}
           </button>
         </div>
+        {offline ? (
+          <p className="landing__offline" role="status">{copy.hero.offline}</p>
+        ) : null}
       </div>
       <div className="landing-hero__phone">
         <div className="landing-phone landing-phone--hero">
