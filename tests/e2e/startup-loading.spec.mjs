@@ -54,7 +54,7 @@ test("first launch keeps the critical network payload compact", async ({ page })
     (response) => new URL(response.url()).pathname === "/logo-ui.webp",
   );
 
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/accueil", { waitUntil: "domcontentloaded" });
   await expect(page.locator(".splash-logo")).toBeAttached();
   await expect(page.locator("#main-content")).toBeAttached();
   await expect(page.locator(".hp-wrapper")).toBeAttached({ timeout: 5_000 });
@@ -135,7 +135,7 @@ test("first launch keeps the critical network payload compact", async ({ page })
 });
 
 test("the branded splash is shown again on each app launch", async ({ page }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/accueil", { waitUntil: "domcontentloaded" });
   // The splash may already be fading on low-performance CI runners; check for
   // its presence in the DOM rather than requiring it to be fully visible.
   const splash = page.locator(".splash-screen");

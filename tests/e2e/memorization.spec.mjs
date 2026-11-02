@@ -3,7 +3,7 @@ import { installQuranNetworkFixtures } from "./helpers/quran-network-fixtures.mj
 
 async function goToSurah(page, surahNum = 1) {
   await installQuranNetworkFixtures(page);
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.waitForLoadState("networkidle");
 
   if (

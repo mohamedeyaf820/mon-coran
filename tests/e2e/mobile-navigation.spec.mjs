@@ -7,7 +7,7 @@ test("desktop keeps its header while mobile commands live in the bottom navigati
   await installQuranNetworkFixtures(page);
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.addInitScript(() => localStorage.setItem("mushaf-plus-settings", JSON.stringify({ skipSplashAnimation: true, showHome: true, lang: "fr" })));
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator('html[data-deferred-styles="ready"]')).toBeAttached();
   await expect(page.locator(".mp-header")).toBeVisible();
   await expect(page.locator(".mobile-navigation")).toBeHidden();

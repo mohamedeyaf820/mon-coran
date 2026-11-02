@@ -101,7 +101,7 @@ test("diagnostic: loading + scroll perf on reader and home", async ({ page }) =>
 
   // --- Home page ---
   t0 = Date.now();
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/accueil", { waitUntil: "domcontentloaded" });
   results.homeDCLMs = Date.now() - t0;
   await page.waitForSelector("#main-content", { timeout: 30000 });
   await page.waitForTimeout(1500);

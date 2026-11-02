@@ -118,7 +118,7 @@ function contrastRatio(foreground, background) {
 for (const [theme, expectedTokens] of Object.entries(CANONICAL_THEMES)) {
   test(`${theme}: la palette reste identique après accueil → lecteur → accueil`, async ({ page }) => {
     await seedState(page, theme, true);
-    await page.goto("/");
+    await page.goto("/accueil");
     await expect(page.locator(".app-view-home")).toBeVisible();
     await expect(page.locator(".mp-header")).toBeVisible();
 
@@ -146,7 +146,7 @@ for (const [theme, expectedTokens] of Object.entries(CANONICAL_THEMES)) {
 
 test("sombre: les cartes de l'accueil restent sur la palette sombre", async ({ page }) => {
   await seedState(page, "dark", true);
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".home-resume-panel")).toBeVisible();
 
   const surfaces = await page.locator(".home-resume-panel").evaluate((card) => {

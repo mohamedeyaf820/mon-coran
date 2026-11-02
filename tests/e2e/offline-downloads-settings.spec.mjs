@@ -13,7 +13,7 @@ for (const lang of ["fr", "en", "ar"]) {
     await page.addInitScript(({ lang }) => {
       localStorage.setItem("mushaf-plus-settings", JSON.stringify({ lang, skipSplashAnimation: true, showHome: true, riwaya: "hafs", sidebarOpen: false }));
     }, { lang });
-    await page.goto("/");
+    await page.goto("/accueil");
     await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30000 });
     await page.evaluate(async ({ clip, cacheName }) => {
       const cache = await caches.open(cacheName);

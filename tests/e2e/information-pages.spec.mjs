@@ -113,7 +113,7 @@ test("Arabic information pages read right to left without overflow", async ({ pa
 
 for (const width of [320, 390, 768, 1280]) {
   test(`the footer groups the project's links and fits ${width}px`, async ({ page }) => {
-    await open(page, "/", { width, height: 900 });
+    await open(page, "/accueil", { width, height: 900 });
     await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
     const footer = page.locator(".mp-footer-v2");
     await footer.scrollIntoViewIfNeeded();
@@ -128,7 +128,7 @@ for (const width of [320, 390, 768, 1280]) {
 }
 
 test("a popular surah in the footer opens that surah", async ({ page }) => {
-  await open(page, "/", { width: 1280, height: 900 });
+  await open(page, "/accueil", { width: 1280, height: 900 });
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await page.locator(".mp-footer-v2").scrollIntoViewIfNeeded();
   const link = page.locator(".mp-footer-v2__group--popular a").nth(1);
@@ -138,7 +138,7 @@ test("a popular surah in the footer opens that surah", async ({ page }) => {
 });
 
 test("settings: downloads moved to Data, with the other tabs improved", async ({ page }) => {
-  await open(page, "/", { width: 1280, height: 900 });
+  await open(page, "/accueil", { width: 1280, height: 900 });
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 30_000 });
   await openQuickMenuItem(page, "settings");
   const tabs = page.getByRole("tab");

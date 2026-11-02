@@ -301,6 +301,7 @@ export default {
     markPrayed: 'Mark',
     markedAria: 'Prayer performed',
     unmarkedAria: 'Not noted yet',
+    notDueAria: 'Its time has not come yet',
     notYet: 'Not noted yet',
     upcoming: 'Upcoming',
     privateNote: 'Your answers stay on this device, encrypted with this browser\'s local key.',

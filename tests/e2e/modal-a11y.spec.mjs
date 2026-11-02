@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 
 // Helper: navigue vers la page de lecture
 async function goToReader(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.waitForLoadState("networkidle");
 
   if (await page.locator(".qc-verse-card, .qc-ayah-text-ar").first().isVisible().catch(() => false)) {

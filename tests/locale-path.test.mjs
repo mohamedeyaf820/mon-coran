@@ -37,6 +37,15 @@ test("a prefixed address resolves to the same route and names its language", () 
   assert.deepEqual(parseRoutePath("/ar/surah/2/255"), { ...surah, lang: "ar" });
 
   assert.equal(parseRoutePath("/ar/").showHome, true);
+  assert.equal(parseRoutePath("/").landing, true);
+  assert.equal(parseRoutePath("/ar/").landing, true);
+  for (const path of ["/accueil", "/en/accueil", "/ar/accueil/"]) {
+    assert.deepEqual(
+      [parseRoutePath(path).showHome, parseRoutePath(path).landing],
+      [true, false],
+      path,
+    );
+  }
   assert.equal(parseRoutePath("/ar/").lang, "ar");
   assert.equal(parseRoutePath("/en/duas/hisn/27").duasRoute, "/hisn/27");
   assert.equal(parseRoutePath("/en/about").legalPage, "about");

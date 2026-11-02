@@ -11,7 +11,7 @@ function schemaTypes(schema) {
 test("production pages expose coherent crawl and social metadata", async ({
   page,
 }) => {
-  await page.goto("/", { waitUntil: "domcontentloaded" });
+  await page.goto("/accueil", { waitUntil: "domcontentloaded" });
 
   await expect(page).toHaveTitle(/Coran en ligne.+MushafPlus/);
   await expect(page.locator('meta[name="robots"]')).toHaveAttribute(

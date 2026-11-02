@@ -350,6 +350,8 @@ export default function PrayersPage() {
               const time = timings?.[key]?.hhmm;
               const isNext = prayer.next?.key === key;
               const isPast = Boolean(timings?.[key]) && !isNext && timings[key].minutes <= nowMinutes;
+              // A prayer whose time has not come cannot be noted as performed; a noted one can still be cleared.
+              const notDue = Boolean(timings?.[key]) && timings[key].minutes > nowMinutes && !prayed;
               const rows = [];
               if (key === "Dhuhr") {
                 rows.push(
@@ -387,8 +389,9 @@ export default function PrayersPage() {
                     className={`prayers-mark-btn${prayed ? " is-on" : ""}`}
                     onClick={() => togglePrayer(key)}
                     aria-pressed={prayed}
+                    disabled={notDue}
                     aria-label={`${t(`prayer.names.${key}`, lang)} — ${
-                      prayed ? t("prayers.markedAria", lang) : t("prayers.unmarkedAria", lang)
+                      prayed ? t("prayers.markedAria", lang) : notDue ? t("prayers.notDueAria", lang) : t("prayers.unmarkedAria", lang)
                     }`}
                   >
                     {prayed ? <Check size={16} aria-hidden="true" /> : <Circle size={16} aria-hidden="true" />}

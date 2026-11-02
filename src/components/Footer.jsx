@@ -94,8 +94,8 @@ export default function Footer({ goSurah }) {
   };
 
   const navigateLinks = [
-    { key: "home", label: t("nav.home", lang), ...go("/", openHome("surah")) },
-    { key: "recitations", label: t("footer.navRecitations", lang), ...go("/", openHome("audio")) },
+    { key: "home", label: t("nav.home", lang), ...go("/accueil", openHome("surah")) },
+    { key: "recitations", label: t("footer.navRecitations", lang), ...go("/accueil", openHome("audio")) },
     {
       key: "prayers",
       label: t("nav.prayers", lang),

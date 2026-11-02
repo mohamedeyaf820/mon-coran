@@ -23,7 +23,7 @@ async function seedFrenchState(page) {
 }
 
 async function openSearch(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await page.locator(".mp-header__search").first().click();
   return page.locator(".search-pro").getByRole("textbox").first();

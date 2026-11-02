@@ -22,7 +22,7 @@ async function seedTheme(page, theme = "dark") {
 }
 
 async function openReader(page) {
-  await page.goto("/");
+  await page.goto("/accueil");
   const start = page.getByRole("button", {
     name: /Commencer la lecture|Reprendre la lecture|Continuer|Start reading|Continue|Resume reading/i,
   });

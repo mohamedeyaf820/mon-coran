@@ -33,7 +33,7 @@ async function pseudoStyle(page, selector) {
 test("home, audio and reading use distinct asset-free atmospheres", async ({ page }) => {
   await installQuranNetworkFixtures(page);
   await seed(page, { showHome: true, showDuas: false, homeSection: "surah" });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   const root = page.locator(".app-root");
   await expect(root).toHaveAttribute("data-view", "home");
@@ -57,7 +57,7 @@ test("home, audio and reading use distinct asset-free atmospheres", async ({ pag
 test("duas atmosphere adapts to mobile and all three themes", async ({ page }) => {
   await seed(page, { showHome: true, showDuas: false, theme: "light" });
   await page.setViewportSize({ width: 360, height: 740 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   const root = page.locator(".app-root");
   await openQuickMenuItem(page, "duas");

@@ -139,6 +139,7 @@ const getInitialState = () => {
     routeOverrides.showHome ??
     (stored.showHome !== undefined ? Boolean(stored.showHome) : true),
   homeSection: "surah",
+  landing: routeOverrides.landing,
   showDuas: routeOverrides.showDuas ?? false,
   // Sub-page of /duas ("", "/hisn", "/hisn/27", "/coran"); read from the URL, never persisted.
   duasRoute: routeOverrides.duasRoute ?? "",
@@ -256,6 +257,7 @@ export function appReducer(state, action) {
       if (payload.showHome === true) {
         next.showDuas = false;
         next.showPrayers = false;
+        next.landing = payload.landing === true;
       } else if (payload.showDuas === true) {
         next.showHome = false;
         next.showPrayers = false;

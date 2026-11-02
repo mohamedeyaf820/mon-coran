@@ -10,7 +10,7 @@ async function openSettings(page) {
 }
 
 test("privacy control deletes settings, notes, bookmarks and caches", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.evaluate(() => {
     localStorage.setItem("mushaf-plus-settings", JSON.stringify({ lang: "fr", theme: "light", showHome: true, skipSplashAnimation: true }));
     localStorage.setItem("mushaf-reading-history", "seed");

@@ -8,5 +8,6 @@
   "projectOwner": "Mohamed Eyaf",
   "contactUrl": "https://github.com/mohamedeyaf820/mon-coran/issues",
   "version": "1.2.0",
-  "lastUpdated": "2026-10-07"
+  "lastUpdated": "2026-10-07",
+  "mobileApp": { "androidUrl": "", "iosUrl": "" }
 }

@@ -8,14 +8,14 @@ import { installQuranNetworkFixtures } from "../tests/e2e/helpers/quran-network-
 
 const BASE = process.env.BASE_URL || "http://127.0.0.1:4173";
 const TOUR = [
-  ["home", "/", { showHome: true }],
+  ["home", "/accueil", { showHome: true }],
   ["reader-list", "/surah/2", { showHome: false, displayMode: "surah", mushafLayout: "list" }],
   ["reader-mushaf", "/surah/2", { showHome: false, displayMode: "surah", mushafLayout: "mushaf" }],
   ["reader-page", "/page/50", { showHome: false, displayMode: "page" }],
   ["reader-warsh", "/surah/2", { showHome: false, riwaya: "warsh", displayMode: "surah" }],
-  ["duas", "/", { showHome: false, showDuas: true }],
-  ["prayers", "/", { showHome: false, showPrayers: true }],
-  ["audio-home", "/", { showHome: true, homeSection: "audio" }],
+  ["duas", "/accueil", { showHome: false, showDuas: true }],
+  ["prayers", "/accueil", { showHome: false, showPrayers: true }],
+  ["audio-home", "/accueil", { showHome: true, homeSection: "audio" }],
   ["not-found", "/no-such-page", { showHome: false }],
 ];
 // Overlays reached from the shell. Each step is best effort: a control missing

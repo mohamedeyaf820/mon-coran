@@ -76,7 +76,7 @@ test("home, reader and browser history form a complete navigation loop", async (
   page,
 }) => {
   await seedFrenchState(page);
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
 
   await page.getByTestId("surah-card-open").first().click();
@@ -86,7 +86,7 @@ test("home, reader and browser history form a complete navigation loop", async (
   });
 
   await page.goBack();
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/accueil$/);
   await expect(page.locator(".app-view-home")).toBeVisible();
 });
 
@@ -94,7 +94,7 @@ test("theme selection through settings is immediate and persists after reload", 
   page,
 }) => {
   await seedFrenchState(page);
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
 
   await openSettings(page);
@@ -114,7 +114,7 @@ test("settings keep essential controls visible and advanced tools contextual", a
 }) => {
   await seedFrenchState(page, { autoNightMode: false });
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/accueil");
   await openSettings(page);
 
   await expect(page.getByRole("button", { name: "Français" })).toBeVisible();
@@ -166,7 +166,7 @@ test("home presents one reading journey and one unified audio library", async ({
     favoriteReciters: ["ar.alafasy"],
   });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/accueil");
 
   await expect(page.locator(".home-resume-panel")).toHaveCount(1);
   await expect(page.locator(".home-today-panel")).toHaveCount(1);
@@ -293,7 +293,7 @@ test("searching a translation result navigates to the matching ayah", async ({
     });
   });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await page.locator(".mp-header__search").first().click();
 

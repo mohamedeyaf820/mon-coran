@@ -30,7 +30,7 @@ async function seedHome(page, overrides = {}) {
 
 test("privacy: the removed prayer feature never requests geolocation", async ({ page }) => {
   await seedHome(page, { usePrayerTimes: true });
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible();
   await page.waitForTimeout(2_500);
 

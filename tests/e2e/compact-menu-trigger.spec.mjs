@@ -14,7 +14,7 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-for (const path of ["/", "/duas", "/prieres", "/about", "/privacy"]) {
+for (const path of ["/accueil", "/duas", "/prieres", "/about", "/privacy"]) {
   test(`phone ${path} has no floating menu button over its content`, async ({ page }) => {
     await page.goto(path);
     await expect(page.locator(".app-root")).toBeVisible();
@@ -32,7 +32,7 @@ test("phone reader keeps the menu button and it opens the directory", async ({ p
 });
 
 test("phone Plus menu reaches the surah directory from Home", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/accueil");
   await page.locator(".mobile-navigation [data-destination=more]").click();
   await page.locator(".mobile-navigation-menu").getByRole("button", { name: "Liste des sourates" }).click();
   await expect(page.locator(".app-root")).toHaveClass(/is-sidebar-open/);

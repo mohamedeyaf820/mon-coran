@@ -18,7 +18,7 @@ test("les outils de progression retirés ne sont plus accessibles", async ({ pag
     );
   });
 
-  await page.goto("/");
+  await page.goto("/accueil");
   await expect(page.locator(".app-view-home")).toBeVisible({ timeout: 20_000 });
 
   await page.getByRole("button", { name: "Plus d'options" }).click();

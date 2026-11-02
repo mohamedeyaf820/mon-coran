@@ -19,7 +19,7 @@ for (const theme of THEMES) {
     }, theme);
     await page.setViewportSize({ width: 1280, height: 820 });
     await page.emulateMedia({ reducedMotion: "reduce" });
-    await page.goto("/");
+    await page.goto("/accueil");
     const card = page.locator(".hp-card--surah").first();
     await expect(card).toBeVisible();
     // Linux and Windows Chromium rasterize the same font metrics to different
